@@ -1,7 +1,7 @@
 import typing
 from google.cloud import ndb
 from config.exception_handlers import handle_store_errors
-from config.exceptions import InputError, DataServiceError
+from config.exceptions import InputError
 from database.mixins import AmountMixin
 from database.setters import setters
 
