@@ -228,11 +228,11 @@ class Memberships(ndb.Model):
     def __repr__(self) -> str:
         return "Memberships: {}{}{}".format(self.uid, self.plan_id, self.status)
 
-    def __len__(self) -> int:
-        return len(self.uid)
-
     def __bool__(self) -> bool:
         return bool(self.uid)
+
+    def __len__(self) -> int:
+        return int(self.__bool__())
 
 
 # noinspection DuplicatedCode
@@ -274,13 +274,11 @@ class MembershipPlans(ndb.Model):
     def __repr__(self) -> str:
         return "<Memberships: {}{}".format(self.plan_id, self.plan_name)
 
-    def __len__(self) -> int:
-        if self.plan_id:
-            return 1
-        return 0
-
     def __bool__(self) -> bool:
         return bool(self.plan_id)
+
+    def __len__(self) -> int:
+        return int(self.__bool__())
 
 
 # noinspection DuplicatedCode
@@ -333,13 +331,11 @@ class MembershipInvoices(ndb.Model):
     def __repr__(self) -> str:
         return self.__str__()
 
-    def __len__(self) -> int:
-        if self.uid:
-            return 1
-        return 0
-
     def __bool__(self) -> bool:
         return bool(self.uid)
+
+    def __len__(self) -> int:
+        return int(self.__bool__())
 
 
 # noinspection DuplicatedCode
@@ -393,13 +389,11 @@ class Coupons(ndb.Model):
             return False
         return True
 
-    def __len__(self) -> int:
-        if self.code:
-            return 1
-        return 0
-
     def __bool__(self) -> bool:
         return bool(self.code)
+
+    def __len__(self) -> int:
+        return int(self.__bool__())
 
 
 # noinspection DuplicatedCode
@@ -416,11 +410,11 @@ class AccessRights(ndb.Model):
 
     # TODO - finish this
 
-    def __len__(self) -> int:
-        return len(self.plan_id)
-
     def __bool__(self) -> bool:
         return bool(self.plan_id)
+
+    def __len__(self) -> int:
+        return int(self.__bool__())
 
 
 class MembershipDailyStats(ndb.Model):
@@ -463,8 +457,8 @@ class MembershipDailyStats(ndb.Model):
             return False
         return True
 
-    def __len__(self) -> int:
-        return len(self.daily_id)
-
     def __bool__(self) -> bool:
         return bool(self.daily_id)
+
+    def __len__(self) -> int:
+        return int(self.__bool__())

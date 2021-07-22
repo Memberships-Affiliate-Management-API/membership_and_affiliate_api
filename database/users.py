@@ -68,9 +68,9 @@ class UserModel(ndb.Model):
             return False
         return True
 
-    def __len__(self) -> int:
-        return len(self.uid)
-
     def __bool__(self) -> bool:
         # return True if self.transaction_id else False
         return bool(self.uid)
+
+    def __len__(self) -> int:
+        return int(self.__bool__())

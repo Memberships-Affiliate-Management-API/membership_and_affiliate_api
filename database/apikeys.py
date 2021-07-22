@@ -31,7 +31,7 @@ class APIKeys(ndb.Model):
         return bool(self.api_key)
 
     def __len__(self) -> int:
-        return 1 if self.__bool__() else 0
+        return int(self.__bool__())
 
 
 

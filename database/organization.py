@@ -50,7 +50,7 @@ class Organization(ndb.Model):
         return bool(self.organization_id)
 
     def __len__(self) -> int:
-        return 1 if self.__bool__() else 0
+        return int(self.__bool__())
 
 
 class OrgAccounts(ndb.Model):
@@ -77,7 +77,7 @@ class OrgAccounts(ndb.Model):
         return bool(self.organization_id)
 
     def __len__(self) -> int:
-        return 1 if self.__bool__() else 0
+        return int(self.__bool__())
 
 
 class PaymentResults(ndb.Model):
@@ -105,4 +105,4 @@ class PaymentResults(ndb.Model):
         return bool(self.organization_id)
 
     def __len__(self) -> int:
-        return 1 if self.__bool__() else 0
+        return int(self.__bool__())
