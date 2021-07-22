@@ -3,7 +3,8 @@ from datetime import datetime, date
 from google.api_core.exceptions import RetryError, Aborted
 from google.cloud import ndb
 from database.mixins import AmountMixin
-from utils.utils import get_days, get_payment_methods
+from database.setters import setters
+from utils.utils import get_days
 
 
 class MembershipValidators:
@@ -191,104 +192,6 @@ class CouponsValidator:
         return True
 
 
-class ClassSetters:
-    def __init__(self):
-        pass
-
-    @staticmethod
-    def set_id(prop, value: str) -> str:
-        if (value is None) or (value == ""):
-            raise ValueError("{} cannot be Null".format(str(prop)))
-        if not (isinstance(value, str)):
-            raise TypeError("{} can only be a string ".format(str(prop)))
-        if len(value) > 64:
-            raise ValueError("Invalid format for ID")
-        return value.strip()
-
-    @staticmethod
-    def set_status(prop, value: str) -> str:
-        if (value is None) or (value == ""):
-            raise ValueError("{} cannot be Null".format(str(prop)))
-        if not (isinstance(value, str)):
-            raise TypeError("{} invalid status".format(str(prop)))
-        value = value.strip().lower()
-        if value not in ['paid', 'unpaid']:
-            raise TypeError("{} invalid status".format(str(prop)))
-        return value
-
-    @staticmethod
-    def set_datetime(prop, value: date) -> object:
-        if not (isinstance(value, date)):
-            raise TypeError("{}, invalid datetime".format(str(prop)))
-        return value
-
-    @staticmethod
-    def set_string(prop, value: str) -> str:
-        if (value is None) or (value == ""):
-            raise ValueError("{} cannot be Null".format(str(prop)))
-        if not (isinstance(value, str)):
-            raise TypeError("{} can only be a string ".format(str(prop)))
-        return value.strip()
-
-    @staticmethod
-    def set_schedule_term(prop, value: str) -> str:
-        if (value is None) or (value == ""):
-            raise ValueError("{} cannot be Null".format(str(prop)))
-        if not (isinstance(value, str)):
-            raise TypeError("{} can only be a string ".format(str(prop)))
-        value = value.strip().lower()
-        if value in ["monthly", "quarterly", "annually"]:
-            return value
-        raise ValueError("Invalid scheduled term")
-
-    @staticmethod
-    def set_schedule_day(prop, value: int) -> int:
-        if not (isinstance(value, int)):
-            raise TypeError('{} can only be an integer'.format(str(prop)))
-        if value not in [1, 2, 3, 4, 5]:
-            raise ValueError('{} can only be between 1 -> 5 of every month'.format(str(prop)))
-        return value
-
-    @staticmethod
-    def set_number(prop, value: int) -> int:
-        if not (isinstance(value, int)):
-            raise TypeError('{} can only be an integer'.format(str(prop)))
-
-        if value < 0:
-            raise TypeError("{} no negative numbers".format(str(prop)))
-
-        return value
-
-    @staticmethod
-    def set_bool(prop, value: bool) -> bool:
-        if not (isinstance(value, bool)):
-            raise TypeError("{}, should be boolean".format(str(prop)))
-        return value
-
-    @staticmethod
-    def set_amount(prop, value: AmountMixin) -> AmountMixin:
-        if not (isinstance(value, AmountMixin)):
-            raise TypeError("{}, Amount Invalid".format(str(prop)))
-        return value
-
-    @staticmethod
-    def set_date(prop, value: date) -> date:
-        if not (isinstance(value, date)):
-            raise TypeError("{}, Invalid Type".format(str(prop)))
-        return value
-
-    @staticmethod
-    def set_payment_method(prop, value: str) -> str:
-        if not (isinstance(value, str)):
-            raise TypeError("{}, Invalid Type".format(str(prop)))
-        if value not in get_payment_methods():
-            raise ValueError("{}, Invalid Payment Method".format(str(prop)))
-        return value
-
-
-setters: ClassSetters = ClassSetters()
-
-
 # noinspection DuplicatedCode
 class Memberships(ndb.Model):
     ***REMOVED***
@@ -347,8 +250,8 @@ class MembershipPlans(ndb.Model):
     # every month or # week, or three months
     schedule_term: str = ndb.StringProperty(default="monthly", validator=setters.set_schedule_term)  # Monthly,
     # Quarterly, Annually
-    term_payment_amount: AmountMixin = ndb.StructuredProperty(AmountMixin, validator=setters.set_amount)
-    registration_amount: AmountMixin = ndb.StructuredProperty(AmountMixin, validator=setters.set_amount)
+    term_payment_amount: AmountMixin = ndb.StructuredProperty(AmountMixin)
+    registration_amount: AmountMixin = ndb.StructuredProperty(AmountMixin)
     is_active: bool = ndb.BooleanProperty(default=False, validator=setters.set_bool)
     date_created: int = ndb.DateProperty(auto_now_add=True, validator=setters.set_datetime)
 
@@ -391,8 +294,8 @@ class MembershipInvoices(ndb.Model):
     invoice_sent: bool = ndb.BooleanProperty(default=False, validator=setters.set_bool)
     invoice_paid: bool = ndb.BooleanProperty(default=False, validator=setters.set_bool)
     date_paid: date = ndb.DateProperty(validator=setters.set_date)
-    payment_amount: AmountMixin = ndb.StructuredProperty(AmountMixin, validator=setters.set_amount)
-    amount_paid: AmountMixin = ndb.StructuredProperty(AmountMixin, validator=setters.set_amount)
+    payment_amount: AmountMixin = ndb.StructuredProperty(AmountMixin)
+    amount_paid: AmountMixin = ndb.StructuredProperty(AmountMixin)
 
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
@@ -530,11 +433,11 @@ class MembershipDailyStats(ndb.Model):
     daily_id: str = ndb.StringProperty(validator=setters.set_id)
     total_users: int = ndb.IntegerProperty(default=0)
     total_members: int = ndb.IntegerProperty(default=0)
-    expected_monthly_earnings: AmountMixin = ndb.StructuredProperty(AmountMixin, validator=setters.set_amount)
-    expected_quarterly_earnings: AmountMixin = ndb.StructuredProperty(AmountMixin, validator=setters.set_amount)
-    expected_annual_earnings: AmountMixin = ndb.StructuredProperty(AmountMixin, validator=setters.set_amount)
-    expected_earnings_this_month: AmountMixin = ndb.StructuredProperty(AmountMixin, validator=setters.set_amount)
-    total_earned_so_far: AmountMixin = ndb.StructuredProperty(AmountMixin, validator=setters.set_amount)
+    expected_monthly_earnings: AmountMixin = ndb.StructuredProperty(AmountMixin)
+    expected_quarterly_earnings: AmountMixin = ndb.StructuredProperty(AmountMixin)
+    expected_annual_earnings: AmountMixin = ndb.StructuredProperty(AmountMixin)
+    expected_earnings_this_month: AmountMixin = ndb.StructuredProperty(AmountMixin)
+    total_earned_so_far: AmountMixin = ndb.StructuredProperty(AmountMixin)
 
     def __str__(self) -> str:
         return "<Stats Users: {} Members: {}  Earnings: {} Total: {}".format(self.total_users,

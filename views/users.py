@@ -50,18 +50,14 @@ class UserView:
             the cell you submitted is already attached to an account please login again or reset your password
             '''
             return jsonify({'status': False, 'message': message}), 500
-        user_instance: UserModel = UserModel()
-        if (uid is not None) and (uid != ""):
-            user_instance.set_uid(uid=uid)
-        else:
-            user_instance.set_uid(uid=create_id())
 
-        user_instance.set_names(names=names)
-        user_instance.set_surname(surname=surname)
-        user_instance.set_cell(cell=cell)
-        user_instance.set_email(email=email)
-        user_instance.set_password(password=password)
-        user_instance.set_is_active(is_active=True)
+        if (uid is not None) and (uid != ""):
+            pass
+        else:
+            uid = create_id()
+
+        user_instance: UserModel = UserModel(names=names, surname=surname, cell=cell, email=email, password=password,
+                                             is_active=True)
         user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
         return jsonify({'status': True,
                         "message": "Successfully created new user",
@@ -100,18 +96,14 @@ class UserView:
             the cell you submitted is already attached to an account please login again or reset your password
             '''
             return jsonify({'status': False, 'message': message}), 500
-        user_instance: UserModel = UserModel()
-        if (uid is not None) and (uid != ""):
-            user_instance.set_uid(uid=uid)
-        else:
-            user_instance.set_uid(uid=create_id())
 
-        user_instance.set_names(names=names)
-        user_instance.set_surname(surname=surname)
-        user_instance.set_cell(cell=cell)
-        user_instance.set_email(email=email)
-        user_instance.set_password(password=password)
-        user_instance.set_is_active(is_active=True)
+        if (uid is not None) and (uid != ""):
+            pass
+        else:
+            uid = create_id()
+
+        user_instance: UserModel = UserModel(names=names, surname=surname, cell=cell, email=email, password=password,
+                                             is_active=True)
         key = user_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
         return jsonify({'status': True,
                         "message": "Successfully created new user",
@@ -131,12 +123,12 @@ class UserView:
 
         user_instance: UserModel = UserModel.query(UserModel.uid == uid).get()
         if isinstance(user_instance, UserModel):
-            user_instance.set_names(names=names)
-            user_instance.set_surname(surname=surname)
-            user_instance.set_cell(cell=cell)
-            user_instance.set_email(email=email)
-            user_instance.set_admin(is_admin=is_admin)
-            user_instance.set_support(is_support=is_support)
+            user_instance.names = names
+            user_instance.surname = surname
+            user_instance.cell = cell
+            user_instance.email = email
+            user_instance.is_admin = is_admin
+            user_instance.is_support = is_support
             user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             return jsonify({'status': True, 'message': 'successfully updated user details',
                             'payload': user_instance.to_dict()}), 200
@@ -156,12 +148,12 @@ class UserView:
 
         user_instance: UserModel = UserModel.query(UserModel.uid == uid).get_async().get_result()
         if isinstance(user_instance, UserModel):
-            user_instance.set_names(names=names)
-            user_instance.set_surname(surname=surname)
-            user_instance.set_cell(cell=cell)
-            user_instance.set_email(email=email)
-            user_instance.set_admin(is_admin=is_admin)
-            user_instance.set_support(is_support=is_support)
+            user_instance.names = names
+            user_instance.surname = surname
+            user_instance.cell = cell
+            user_instance.email = email
+            user_instance.is_admin = is_admin
+            user_instance.is_support = is_support
             key = user_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
             return jsonify({'status': True, 'message': 'successfully updated user details',
                             'payload': user_instance.to_dict()}), 200
@@ -269,7 +261,6 @@ class UserView:
         ***REMOVED***
         users_list: dict_list_type = [user.to_dict() for user in UserModel.query(UserModel.is_active == False).fetch_async().get_result()]
         return jsonify({'status': True, 'payload': users_list, 'message': 'successfully retrieved active users'}), 200
-
 
     @cache_affiliates.cached(timeout=return_ttl(name='short'))
     @use_context

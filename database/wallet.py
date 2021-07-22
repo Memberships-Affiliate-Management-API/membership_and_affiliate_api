@@ -3,6 +3,7 @@ from datetime import datetime
 from google.cloud import ndb
 from database.mixins import AmountMixin
 from config.exception_handlers import handle_store_errors
+from database.setters import setters
 
 
 class WalletValidator:
@@ -25,60 +26,9 @@ class WalletValidator:
     # TODO be sure to integrate all models to the view
 
 
-class ClassSetters:
-    def __init__(self):
-        pass
-
-    @staticmethod
-    def set_id(prop, value: typing.Union[str, None]) -> str:
-        if (value is None) or (value == ""):
-            raise ValueError(" {} cannot be Null".format(str(prop)))
-
-        if not(isinstance(value, str)):
-            raise ValueError(" {} can only be a string".format(str(prop)))
-        return value
-
-    @staticmethod
-    def set_funds(prop, value: AmountMixin) -> AmountMixin:
-        if not(isinstance(value, AmountMixin)):
-            raise ValueError(" {} Invalid Argument Type".format(str(prop)))
-        return value
-
-    @staticmethod
-    def set_paypal(prop, value: typing.Union[str, None]) -> str:
-        if (value is None) or (value == ""):
-            raise ValueError(" {} cannot be Null".format(str(prop)))
-
-        if not(isinstance(value, str)):
-            raise ValueError(" {} can only be a string".format(str(prop)))
-        return value
-
-    @staticmethod
-    def set_transaction_types(prop, value: typing.Union[str, None]) -> str:
-        transaction_types = ['withdrawal', 'deposit']
-        if value not in transaction_types:
-            raise ValueError(" {} invalid transaction type".format(str(prop)))
-        return value
-
-    @staticmethod
-    def set_datetime(prop, value: datetime) -> datetime:
-        if not(isinstance(value, datetime)):
-            raise ValueError("{} invalid argument".format(str(prop)))
-        return value
-
-    @staticmethod
-    def set_bool(prop, value: bool) -> bool:
-        if not(isinstance(value, bool)):
-            raise ValueError("{} invalid argument".format(str(prop)))
-        return value
-
-
-setters: ClassSetters = ClassSetters()
-
-
 class WalletModel(ndb.Model):
     organization_id: str = ndb.StringProperty(validator=setters.set_id)
-    uid: str = ndb.StringProperty(validator=ClassSetters.set_id)
+    uid: str = ndb.StringProperty(validator=setters.set_id)
     available_funds: AmountMixin = ndb.StructuredProperty(AmountMixin, validator=setters.set_funds)
     time_created: datetime = ndb.DateTimeProperty(auto_now_add=True)
     last_transaction_time: datetime = ndb.DateTimeProperty(auto_now=True)

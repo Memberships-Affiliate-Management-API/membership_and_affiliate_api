@@ -1,49 +1,9 @@
 from google.cloud import ndb
-from config.stocks import currency_symbols
-import re
-
-
-class Setters:
-    def __init__(self):
-        pass
-
-    @staticmethod
-    def set_amount(prop, value) -> int:
-        if not (isinstance(value, int)):
-            raise TypeError("{} can only be integer".format(str(prop)))
-        return value
-
-    @staticmethod
-    def set_currency(prop, value) -> str:
-        if not (isinstance(value, str)):
-            raise TypeError("{} can only be string".format(prop))
-        if value not in currency_symbols():
-            raise ValueError("{} not a valid currency symbol".format(str(prop)))
-        return value
-
-    @staticmethod
-    def set_email(prop, value) -> str:
-        ***REMOVED***
-            TODO validate email here
-        ***REMOVED***
-        regex = '\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b'
-        if re.search(regex, value) is not None:
-            return value
-        raise ValueError("{} invalid email address".format(str(prop)))
-
-    @staticmethod
-    def set_password(prop, value) -> str:
-        ***REMOVED***
-            TODO validate password here, using regex
-        ***REMOVED***
-        return value
-
-
-setters: Setters = Setters()
+from database.setters import setters
 
 
 class AmountMixin(ndb.Model):
-    amount: int = ndb.IntegerProperty(default=0, validator=setters.set_amount)
+    amount: int = ndb.IntegerProperty(default=0, validator=setters.set_value_amount)
     currency: str = ndb.StringProperty(validator=setters.set_currency)
 
     def __eq__(self, other) -> bool:

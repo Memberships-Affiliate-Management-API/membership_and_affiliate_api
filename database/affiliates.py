@@ -3,6 +3,7 @@ from google.cloud import ndb
 from datetime import date, datetime
 from google.api_core.exceptions import RetryError, Aborted
 from database.mixins import AmountMixin
+from database.setters import setters
 
 
 class AffiliatesValidators:
@@ -102,56 +103,6 @@ class EarningsValidators:
             return None
 
 
-class ClassSetters:
-    def __init__(self):
-        pass
-
-    @staticmethod
-    def set_id(prop, value: typing.Union[str, None]) -> str:
-        if value == "":
-            raise ValueError("{} cannot be Null".format(str(prop)))
-        if not isinstance(value, str):
-            raise TypeError("{} can only be a string".format(str(prop)))
-        return value
-
-    @staticmethod
-    def set_number(prop, value: int) -> int:
-        if not(isinstance(value, int)):
-            raise TypeError("{} can only be an integer".format(str(prop)))
-        if value < 0:
-            raise ValueError('{} can only be positive integer'.format(str(prop)))
-        return value
-
-    @staticmethod
-    def set_date(prop, value: datetime) -> datetime:
-        if not(isinstance(value, datetime)):
-            raise TypeError("{}, can only be a datetime".format(str(prop)))
-        return value
-
-    @staticmethod
-    def set_bool(prop, value: bool) -> bool:
-        if not(isinstance(value, bool)):
-            raise TypeError("{}, can only be a boolean".format(str(prop)))
-        return value
-
-    @staticmethod
-    def set_percent(prop, value: int) -> int:
-        if not(isinstance(value, int)):
-            raise TypeError("{}, can only be an integer".format(str(prop)))
-        if 0 < value > 100:
-            raise ValueError("{}, should be a percent".format(str(prop)))
-        return value
-
-    @staticmethod
-    def set_amount(prop, amount: AmountMixin) -> AmountMixin:
-        if not(isinstance(amount, AmountMixin)):
-            raise TypeError('{} is invalid'.format(str(prop)))
-        return amount
-
-
-setters: ClassSetters = ClassSetters()
-
-
 class Affiliates(ndb.Model):
     ***REMOVED***
         class used to track affiliates registered
@@ -163,7 +114,7 @@ class Affiliates(ndb.Model):
         return value
     organization_id: str = ndb.StringProperty(validator=setters.set_id)
     affiliate_id: str = ndb.StringProperty(validator=setters.set_id)
-    uid: str = ndb.StringProperty(validator=ClassSetters.set_id)
+    uid: str = ndb.StringProperty(validator=setters.set_id)
     last_updated: datetime = ndb.DateTimeProperty(auto_now=True, validator=set_date_time)
     datetime_recruited: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=set_date_time)
     total_recruits: int = ndb.IntegerProperty(default=0, validator=setters.set_number)
@@ -240,7 +191,7 @@ class EarningsData(ndb.Model):
     affiliate_id: str = ndb.StringProperty(validator=setters.set_id)
     start_date: date = ndb.DateProperty(auto_now_add=True)
     last_updated: date = ndb.DateProperty(validator=setters.set_date)
-    total_earned: AmountMixin = ndb.StructuredProperty(AmountMixin, validator=setters.set_amount)
+    total_earned: AmountMixin = ndb.StructuredProperty(AmountMixin)
     is_paid: bool = ndb.BooleanProperty(default=False, validator=setters.set_bool)
     on_hold: bool = ndb.BooleanProperty(default=False, validator=setters.set_bool)
 

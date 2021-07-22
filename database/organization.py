@@ -8,6 +8,29 @@ class Organization(ndb.Model):
     organization_name: str = ndb.StringProperty()
     total_affiliates: int = ndb.IntegerProperty()
     total_paid: AmountMixin = ndb.StructuredProperty(AmountMixin)
+    total_members: int = ndb.IntegerProperty()
+    projected_membership_payments: AmountMixin = ndb.StructuredProperty(AmountMixin)
+    total_membership_payments: AmountMixin = ndb.StructuredProperty(AmountMixin)
+
+    def __str__(self) -> str:
+        return "<Organization Name: {} Affiliates: {} Members: {}".format(self.organization_name, self.total_affiliates,
+                                                                          self.total_members)
+
+    def __repr__(self) -> str:
+        return self.__str__()
+
+    def __eq__(self, other) -> bool:
+        if self.__class__ != other.__class__:
+            return False
+        if self.organization_id != other.organization_id:
+            return False
+        return True
+
+    def __bool__(self) -> bool:
+        return bool(self.organization_id)
+
+    def __len__(self) -> int:
+        return 1 if self.__bool__() else 0
 
 
 class OrgAccounts(ndb.Model):
@@ -16,6 +39,25 @@ class OrgAccounts(ndb.Model):
     ***REMOVED***
     organization_id: str = ndb.StringProperty()
     paypal_email: str = ndb.StringProperty()
+
+    def __str__(self) -> str:
+        return "<OrgAccounts : Paypal {} ".format(self.paypal_email)
+
+    def __repr__(self) -> str:
+        return self.__str__()
+
+    def __eq__(self, other) -> bool:
+        if self.__class__ != other.__class__:
+            return False
+        if self.organization_id != other.organization_id:
+            return False
+        return True
+
+    def __bool__(self) -> bool:
+        return bool(self.organization_id)
+
+    def __len__(self) -> int:
+        return 1 if self.__bool__() else 0
 
 
 class PaymentResults(ndb.Model):
@@ -26,5 +68,21 @@ class PaymentResults(ndb.Model):
     transaction_id: str = ndb.StringProperty()
     payment_result: str = ndb.StringProperty()
 
+    def __str__(self) -> str:
+        return "<PaymentResults : PaymentResults {} ".format(self.payment_result)
 
+    def __repr__(self) -> str:
+        return self.__str__()
 
+    def __eq__(self, other) -> bool:
+        if self.__class__ != other.__class__:
+            return False
+        if self.organization_id != other.organization_id:
+            return False
+        return True
+
+    def __bool__(self) -> bool:
+        return bool(self.organization_id)
+
+    def __len__(self) -> int:
+        return 1 if self.__bool__() else 0
