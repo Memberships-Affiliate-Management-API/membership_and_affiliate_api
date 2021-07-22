@@ -1,6 +1,25 @@
+import typing
 from google.cloud import ndb
+from config.exception_handlers import handle_store_errors
+from config.exceptions import InputError, DataServiceError
 from database.mixins import AmountMixin
 from database.setters import setters
+
+
+class OrgValidators:
+    def __init__(self):
+        pass
+
+    @staticmethod
+    @handle_store_errors
+    def is_organization_exist(organization_id: typing.Union[str, None]) -> typing.Union[None, bool]:
+        if not(isinstance(organization_id, str)):
+            raise InputError(status=500, description="organization_id cannot be null")
+
+        organization_instance: Organization = Organization.query(Organization.organization_id == organization_id).get()
+        if isinstance(organization_instance, Organization):
+            return False
+        return True
 
 
 class Organization(ndb.Model):
