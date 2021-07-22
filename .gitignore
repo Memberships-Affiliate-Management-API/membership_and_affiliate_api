@@ -1,0 +1,10 @@
+# Google App Engine generated folder
+appengine-generated/
+app.yaml
+.env
+/venv/
+/gen/
+.idea/
+.pytest_cache/
+*.pyc
+open-api.json
