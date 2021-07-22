@@ -1,6 +1,6 @@
 import typing
 from flask import Blueprint, request, jsonify
-from utils.api_authenticator import handle_auth
+from security.api_authenticator import handle_auth
 from views.users import UserView
 users_bp = Blueprint("users", __name__)
 

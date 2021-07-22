@@ -1,5 +1,5 @@
 from flask import Blueprint, request
-from utils.api_authenticator import handle_auth
+from security.api_authenticator import handle_auth
 from views.affiliates import AffiliatesView, RecruitsView
 affiliates_bp = Blueprint('affiliates', __name__)
 

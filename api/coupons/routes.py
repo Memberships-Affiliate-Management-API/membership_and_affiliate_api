@@ -1,5 +1,5 @@
 from flask import Blueprint, request
-from utils.api_authenticator import handle_auth
+from security.api_authenticator import handle_auth
 from views.memberships import CouponsView
 coupons_bp = Blueprint('coupons', __name__)
 

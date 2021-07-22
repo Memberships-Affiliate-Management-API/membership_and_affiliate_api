@@ -1,7 +1,7 @@
 import typing
 from flask import Blueprint, request, jsonify
 from datetime import datetime, date
-from utils.api_authenticator import handle_auth
+from security.api_authenticator import handle_auth
 from config.exceptions import InputError
 from utils.utils import date_string_to_date
 from views.memberships import MembershipsView, MembershipPlansView

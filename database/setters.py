@@ -167,6 +167,17 @@ class ClassSetters:
             raise TypeError("{} can only be integer".format(str(prop)))
         return value
 
+    @staticmethod
+    def set_domain(prop, value) -> str:
+        ***REMOVED***
+            :return:
+        ***REMOVED***
+        import requests
+        response = requests.get(url=value)
+        if response.status_code == 200:
+            return value
+        raise ValueError("invalid domain name")
+
 
 setters: ClassSetters = ClassSetters()
 
