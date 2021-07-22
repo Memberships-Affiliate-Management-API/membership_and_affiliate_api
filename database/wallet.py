@@ -77,6 +77,7 @@ setters: ClassSetters = ClassSetters()
 
 
 class WalletModel(ndb.Model):
+    organization_id: str = ndb.StringProperty(validator=setters.set_id)
     uid: str = ndb.StringProperty(validator=ClassSetters.set_id)
     available_funds: AmountMixin = ndb.StructuredProperty(AmountMixin, validator=setters.set_funds)
     time_created: datetime = ndb.DateTimeProperty(auto_now_add=True)
@@ -107,6 +108,7 @@ class WalletModel(ndb.Model):
 
 
 class WalletTransactionsModel(ndb.Model):
+    organization_id: str = ndb.StringProperty(validator=setters.set_id)
     uid: str = ndb.StringProperty(validator=setters.set_id)
     transaction_id: str = ndb.StringProperty(validator=setters.set_id)
     transaction_type: str = ndb.StringProperty(validator=setters.set_transaction_types)

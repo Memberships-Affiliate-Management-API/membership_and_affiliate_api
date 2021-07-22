@@ -28,6 +28,7 @@ class MembershipValidators:
             return True
         return False
 
+
 class PlanValidators:
 
     @staticmethod
@@ -127,7 +128,7 @@ class CouponsValidator:
 
     @staticmethod
     def coupon_exist(code: str) -> typing.Union[None, bool]:
-        if not(isinstance(code, str)):
+        if not (isinstance(code, str)):
             return False
         if code == "":
             return False
@@ -143,7 +144,7 @@ class CouponsValidator:
 
     @staticmethod
     async def coupon_exist_async(code: str) -> typing.Union[None, bool]:
-        if not(isinstance(code, str)):
+        if not (isinstance(code, str)):
             return False
         if code == "":
             return False
@@ -159,7 +160,7 @@ class CouponsValidator:
 
     @staticmethod
     def expiration_valid(expiration_time: int) -> bool:
-        if not(isinstance(expiration_time, int)):
+        if not (isinstance(expiration_time, int)):
             return False
         if expiration_time < get_days(days=1):
             return False
@@ -167,7 +168,7 @@ class CouponsValidator:
 
     @staticmethod
     async def expiration_valid_async(expiration_time: int) -> bool:
-        if not(isinstance(expiration_time, int)):
+        if not (isinstance(expiration_time, int)):
             return False
         if expiration_time < get_days(days=1):
             return False
@@ -175,7 +176,7 @@ class CouponsValidator:
 
     @staticmethod
     def discount_valid(discount_valid: int) -> bool:
-        if not(isinstance(discount_valid, int)):
+        if not (isinstance(discount_valid, int)):
             return False
         if 0 < discount_valid > 100:
             return False
@@ -183,7 +184,7 @@ class CouponsValidator:
 
     @staticmethod
     async def discount_valid_async(discount_valid: int) -> bool:
-        if not(isinstance(discount_valid, int)):
+        if not (isinstance(discount_valid, int)):
             return False
         if 0 < discount_valid > 100:
             return False
@@ -198,7 +199,7 @@ class ClassSetters:
     def set_id(prop, value: str) -> str:
         if (value is None) or (value == ""):
             raise ValueError("{} cannot be Null".format(str(prop)))
-        if not(isinstance(value, str)):
+        if not (isinstance(value, str)):
             raise TypeError("{} can only be a string ".format(str(prop)))
         if len(value) > 64:
             raise ValueError("Invalid format for ID")
@@ -208,7 +209,7 @@ class ClassSetters:
     def set_status(prop, value: str) -> str:
         if (value is None) or (value == ""):
             raise ValueError("{} cannot be Null".format(str(prop)))
-        if not(isinstance(value, str)):
+        if not (isinstance(value, str)):
             raise TypeError("{} invalid status".format(str(prop)))
         value = value.strip().lower()
         if value not in ['paid', 'unpaid']:
@@ -217,7 +218,7 @@ class ClassSetters:
 
     @staticmethod
     def set_datetime(prop, value: date) -> object:
-        if not(isinstance(value, date)):
+        if not (isinstance(value, date)):
             raise TypeError("{}, invalid datetime".format(str(prop)))
         return value
 
@@ -225,7 +226,7 @@ class ClassSetters:
     def set_string(prop, value: str) -> str:
         if (value is None) or (value == ""):
             raise ValueError("{} cannot be Null".format(str(prop)))
-        if not(isinstance(value, str)):
+        if not (isinstance(value, str)):
             raise TypeError("{} can only be a string ".format(str(prop)))
         return value.strip()
 
@@ -233,7 +234,7 @@ class ClassSetters:
     def set_schedule_term(prop, value: str) -> str:
         if (value is None) or (value == ""):
             raise ValueError("{} cannot be Null".format(str(prop)))
-        if not(isinstance(value, str)):
+        if not (isinstance(value, str)):
             raise TypeError("{} can only be a string ".format(str(prop)))
         value = value.strip().lower()
         if value in ["monthly", "quarterly", "annually"]:
@@ -242,7 +243,7 @@ class ClassSetters:
 
     @staticmethod
     def set_schedule_day(prop, value: int) -> int:
-        if not(isinstance(value, int)):
+        if not (isinstance(value, int)):
             raise TypeError('{} can only be an integer'.format(str(prop)))
         if value not in [1, 2, 3, 4, 5]:
             raise ValueError('{} can only be between 1 -> 5 of every month'.format(str(prop)))
@@ -250,7 +251,7 @@ class ClassSetters:
 
     @staticmethod
     def set_number(prop, value: int) -> int:
-        if not(isinstance(value, int)):
+        if not (isinstance(value, int)):
             raise TypeError('{} can only be an integer'.format(str(prop)))
 
         if value < 0:
@@ -260,25 +261,25 @@ class ClassSetters:
 
     @staticmethod
     def set_bool(prop, value: bool) -> bool:
-        if not(isinstance(value, bool)):
+        if not (isinstance(value, bool)):
             raise TypeError("{}, should be boolean".format(str(prop)))
         return value
 
     @staticmethod
     def set_amount(prop, value: AmountMixin) -> AmountMixin:
-        if not(isinstance(value, AmountMixin)):
+        if not (isinstance(value, AmountMixin)):
             raise TypeError("{}, Amount Invalid".format(str(prop)))
         return value
 
     @staticmethod
     def set_date(prop, value: date) -> date:
-        if not(isinstance(value, date)):
+        if not (isinstance(value, date)):
             raise TypeError("{}, Invalid Type".format(str(prop)))
         return value
 
     @staticmethod
     def set_payment_method(prop, value: str) -> str:
-        if not(isinstance(value, str)):
+        if not (isinstance(value, str)):
             raise TypeError("{}, Invalid Type".format(str(prop)))
         if value not in get_payment_methods():
             raise ValueError("{}, Invalid Payment Method".format(str(prop)))
@@ -293,12 +294,14 @@ class Memberships(ndb.Model):
     ***REMOVED***
         TODO - add validators
     ***REMOVED***
+    organization_id: str = ndb.StringProperty(validator=setters.set_id)
     uid: str = ndb.StringProperty(validator=setters.set_id)
     plan_id: str = ndb.StringProperty(validator=setters.set_id)
     status: str = ndb.StringProperty(default="unpaid", validator=setters.set_status)  # Paid/ Unpaid
     date_created: date = ndb.DateTimeProperty(auto_now_add=True, validator=setters.set_date)
     plan_start_date: date = ndb.DateProperty(validator=setters.set_datetime)  # the date this plan will
     payment_method: str = ndb.StringProperty(validator=setters.set_payment_method)
+
     # become active
 
     def __eq__(self, other) -> bool:
@@ -335,6 +338,7 @@ class MembershipPlans(ndb.Model):
         contains a definition of all membership plans
         TODO - add validators
     ***REMOVED***
+    organization_id: str = ndb.StringProperty(validator=setters.set_id)
     plan_id: str = ndb.StringProperty(validator=setters.set_id)
     plan_name: str = ndb.StringProperty(validator=setters.set_string)
     description: str = ndb.StringProperty(validator=setters.set_string)
@@ -378,6 +382,7 @@ class MembershipPlans(ndb.Model):
 
 # noinspection DuplicatedCode
 class MembershipInvoices(ndb.Model):
+    organization_id: str = ndb.StringProperty(validator=setters.set_id)
     uid: str = ndb.StringProperty(validator=setters.set_id)
     plan_id: str = ndb.StringProperty(validator=setters.set_id)
     invoice_id: str = ndb.StringProperty(validator=setters.set_id)
@@ -442,22 +447,23 @@ class Coupons(ndb.Model):
         the admin app should setup the coupon codes.
         endpoints should be provided via view and api
     ***REMOVED***
+
     def set_code(self, value: str) -> str:
-        if not(isinstance(value, str)):
+        if not (isinstance(value, str)):
             raise TypeError("{} can only be a string".format(str(self)))
 
         return value
 
     def set_discount(self, value: int) -> int:
-        if not(isinstance(value, int)):
+        if not (isinstance(value, int)):
             raise TypeError("{} can only be an integer".format(str(self)))
         return value
 
     def set_expiration_time(self, value: int) -> int:
-        if not(isinstance(value, int)):
+        if not (isinstance(value, int)):
             raise TypeError("{} can only be an integer".format(str(self)))
         return value
-
+    organization_id: str = ndb.StringProperty(validator=setters.set_id)
     code: str = ndb.StringProperty(validator=set_code)
     discount: AmountMixin = ndb.StructuredProperty(AmountMixin)
     is_valid: bool = ndb.BooleanProperty(default=True, validator=setters.set_bool)
@@ -520,6 +526,7 @@ class MembershipDailyStats(ndb.Model):
 
         run update stats task against this class daily
     ***REMOVED***
+    organization_id: str = ndb.StringProperty(validator=setters.set_id)
     daily_id: str = ndb.StringProperty(validator=setters.set_id)
     total_users: int = ndb.IntegerProperty(default=0)
     total_members: int = ndb.IntegerProperty(default=0)

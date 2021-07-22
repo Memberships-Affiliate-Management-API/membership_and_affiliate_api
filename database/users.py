@@ -39,6 +39,7 @@ class UserValidators:
 
 
 class UserModel(ndb.Model):
+    organization_id: str = ndb.StringProperty(required=True, indexed=True)
     uid: str = ndb.StringProperty(required=True, indexed=True)
     names: str = ndb.StringProperty()
     surname: str = ndb.StringProperty()

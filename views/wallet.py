@@ -308,5 +308,21 @@ class WalletView(Validator):
         message: str = "Unable to find wallet"
         return jsonify({'status': False, 'message': message}), 500
 
+    @use_context
+    @handle_view_errors
+    def wallet_withdraw_funds(self, uid: str, amount: int) -> tuple:
+        ***REMOVED***
+            organization must contain settings for funds withdrawals
+            i.e from which paypal account may the withdrawal occur
+            and so on.
 
-    # TODO add wallet_withdrawals
+            steps create a withdrawal transaction,
+            with the requested amount,
+            await admin approvals,
+            cron job must run and process all approved withdrawals
+            cron job must retain all the results of the transactions and save on the database
+        :param uid:
+        :param amount:
+        :return:
+        ***REMOVED***
+        pass

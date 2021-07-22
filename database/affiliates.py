@@ -161,7 +161,7 @@ class Affiliates(ndb.Model):
         if not(isinstance(value, datetime)):
             raise TypeError("{} can only be a datetime object".format(str(self)))
         return value
-
+    organization_id: str = ndb.StringProperty(validator=setters.set_id)
     affiliate_id: str = ndb.StringProperty(validator=setters.set_id)
     uid: str = ndb.StringProperty(validator=ClassSetters.set_id)
     last_updated: datetime = ndb.DateTimeProperty(auto_now=True, validator=set_date_time)
@@ -198,6 +198,7 @@ class Recruits(ndb.Model):
     ***REMOVED***
         class used to track recruited affiliates
     ***REMOVED***
+    organization_id: str = ndb.StringProperty(validator=setters.set_id)
     affiliate_id: str = ndb.StringProperty(validator=setters.set_id)
     referrer_uid: str = ndb.StringProperty(validator=setters.set_id)
     datetime_recruited: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=setters.set_date)
@@ -235,7 +236,7 @@ class EarningsData(ndb.Model):
         class used to track periodical earnings per affiliate
         #
     ***REMOVED***
-
+    organization_id: str = ndb.StringProperty(validator=setters.set_id)
     affiliate_id: str = ndb.StringProperty(validator=setters.set_id)
     start_date: date = ndb.DateProperty(auto_now_add=True)
     last_updated: date = ndb.DateProperty(validator=setters.set_date)
@@ -273,6 +274,7 @@ class AffiliateEarningsTransactions(ndb.Model):
     ***REMOVED***
         keeps track of amounts paid from earningsData
     ***REMOVED***
+    organization_id: str = ndb.StringProperty(validator=setters.set_id)
     affiliate_id: str = ndb.StringProperty(validator=setters.set_id)
     total_earned: AmountMixin = ndb.StructuredProperty(AmountMixin)
     transaction_id_list: typing.List[str] = ndb.StringProperty(repeated=True)
@@ -339,6 +341,7 @@ class AffiliateSettingsStats(ndb.Model):
         if not then income will be earned once off when a recruited
         user becomes a member.
     ***REMOVED***
+    organization_id: str = ndb.StringProperty(validator=setters.set_id)
     earnings_percent: int = ndb.IntegerProperty(validator=setters.set_percent)
     recurring_earnings: bool = ndb.BooleanProperty(default=False, validator=setters.set_bool)
     total_affiliates_earnings: AmountMixin = ndb.StructuredProperty(AmountMixin)
