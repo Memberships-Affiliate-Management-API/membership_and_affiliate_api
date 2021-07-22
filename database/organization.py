@@ -1,14 +1,15 @@
 from google.cloud import ndb
 from database.mixins import AmountMixin
+from database.setters import setters
 
 
 class Organization(ndb.Model):
-    owner_uid: str = ndb.StringProperty()
-    organization_id: str = ndb.StringProperty()
-    organization_name: str = ndb.StringProperty()
-    total_affiliates: int = ndb.IntegerProperty()
+    owner_uid: str = ndb.StringProperty(validator=setters.set_id)
+    organization_id: str = ndb.StringProperty(validator=setters.set_id)
+    organization_name: str = ndb.StringProperty(validator=setters.set_string)
+    total_affiliates: int = ndb.IntegerProperty(validator=setters.set_number)
     total_paid: AmountMixin = ndb.StructuredProperty(AmountMixin)
-    total_members: int = ndb.IntegerProperty()
+    total_members: int = ndb.IntegerProperty(validator=setters.set_number)
     projected_membership_payments: AmountMixin = ndb.StructuredProperty(AmountMixin)
     total_membership_payments: AmountMixin = ndb.StructuredProperty(AmountMixin)
 
@@ -37,8 +38,8 @@ class OrgAccounts(ndb.Model):
     ***REMOVED***
         include details of the main organization payments accounts here
     ***REMOVED***
-    organization_id: str = ndb.StringProperty()
-    paypal_email: str = ndb.StringProperty()
+    organization_id: str = ndb.StringProperty(validator=setters.set_id)
+    paypal_email: str = ndb.StringProperty(validator=setters.set_email)
 
     def __str__(self) -> str:
         return "<OrgAccounts : Paypal {} ".format(self.paypal_email)
@@ -64,9 +65,9 @@ class PaymentResults(ndb.Model):
     ***REMOVED***
         for every payment which is approved by admin, retain the result of the payment here
     ***REMOVED***
-    organization_id: str = ndb.StringProperty()
-    transaction_id: str = ndb.StringProperty()
-    payment_result: str = ndb.StringProperty()
+    organization_id: str = ndb.StringProperty(validator=setters.set_id)
+    transaction_id: str = ndb.StringProperty(validator=setters.set_id)
+    payment_result: str = ndb.StringProperty(validator=setters.set_string)
 
     def __str__(self) -> str:
         return "<PaymentResults : PaymentResults {} ".format(self.payment_result)

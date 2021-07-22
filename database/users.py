@@ -1,7 +1,6 @@
 import typing
 from google.api_core.exceptions import RetryError
 from google.cloud import ndb
-from werkzeug.security import generate_password_hash
 from database.mixins import AddressMixin
 from utils.utils import timestamp
 from database.setters import setters
