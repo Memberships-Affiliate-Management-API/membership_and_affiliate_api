@@ -1,7 +1,7 @@
 import typing
 from flask import jsonify, current_app
 from config.exceptions import DataServiceError
-from main import cache_stocks
+from main import cache_affiliates
 from database.mixins import AmountMixin
 from database.wallet import WalletModel, WalletValidator
 from utils.utils import return_ttl, end_of_month
@@ -125,7 +125,7 @@ class WalletView(Validator):
                             'payload': wallet_instance.to_dict()}), 200
         return jsonify({'status': False, 'message': 'Unable to create wallet'}), 500
 
-    @cache_stocks.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
+    @cache_affiliates.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
     @use_context
     @handle_view_errors
     def get_wallet(self, uid: typing.Union[str, None]) -> tuple:
@@ -134,7 +134,7 @@ class WalletView(Validator):
             return jsonify({'status': True, 'payload': wallet_instance.to_dict(), 'message': 'wallet found'}), 200
         return jsonify({'status': False, 'message': 'uid cannot be None'}), 500
 
-    @cache_stocks.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
+    @cache_affiliates.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
     @use_context
     @handle_view_errors
     async def get_wallet_async(self, uid: typing.Union[str, None]) -> tuple:
@@ -226,7 +226,7 @@ class WalletView(Validator):
                             'message': 'wallet is rest'}), 200
         return jsonify({'status': False, 'message': 'Unable to reset wallet'}), 500
 
-    @cache_stocks.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
+    @cache_affiliates.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
     @use_context
     @handle_view_errors
     def return_all_wallets(self) -> tuple:
@@ -236,7 +236,7 @@ class WalletView(Validator):
                         'payload': payload,
                         'message': 'wallets returned'}), 200
 
-    @cache_stocks.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
+    @cache_affiliates.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
     @use_context
     @handle_view_errors
     async def return_all_wallets_async(self) -> tuple:

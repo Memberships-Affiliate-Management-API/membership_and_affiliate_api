@@ -2,7 +2,7 @@ import typing
 from flask import jsonify, current_app
 from werkzeug.security import check_password_hash
 from config.types import dict_list_type
-from main import cache_users
+from main import cache_affiliates
 from database.users import UserModel
 from utils.utils import create_id, return_ttl
 from config.exception_handlers import handle_view_errors
@@ -226,7 +226,7 @@ class UserView:
                 return jsonify({'status': True, 'message': 'successfully deleted user'}), 200
         return jsonify({'status': False, 'message': 'user not found'}), 500
 
-    @cache_users.cached(timeout=return_ttl(name='short'))
+    @cache_affiliates.cached(timeout=return_ttl(name='short'))
     @use_context
     @handle_view_errors
     def get_active_users(self) -> tuple:
@@ -237,7 +237,7 @@ class UserView:
         users_list: dict_list_type = [user.to_dict() for user in UserModel.query(UserModel.is_active == True).fetch()]
         return jsonify({'status': True, 'payload': users_list, 'message': 'successfully retrieved active users'}), 200
 
-    @cache_users.cached(timeout=return_ttl(name='short'))
+    @cache_affiliates.cached(timeout=return_ttl(name='short'))
     @use_context
     @handle_view_errors
     async def get_active_users_async(self) -> tuple:
@@ -248,7 +248,7 @@ class UserView:
         users_list: dict_list_type = [user.to_dict() for user in UserModel.query(UserModel.is_active == True).fetch_async().get_result()]
         return jsonify({'status': True, 'payload': users_list, 'message': 'successfully retrieved active users'}), 200
 
-    @cache_users.cached(timeout=return_ttl(name='short'))
+    @cache_affiliates.cached(timeout=return_ttl(name='short'))
     @use_context
     @handle_view_errors
     def get_in_active_users(self) -> tuple:
@@ -259,7 +259,7 @@ class UserView:
         users_list: dict_list_type = [user.to_dict() for user in UserModel.query(UserModel.is_active == False).fetch()]
         return jsonify({'status': True, 'payload': users_list, 'message': 'successfully retrieved active users'}), 200
 
-    @cache_users.cached(timeout=return_ttl(name='short'))
+    @cache_affiliates.cached(timeout=return_ttl(name='short'))
     @use_context
     @handle_view_errors
     async def get_in_active_users_async(self) -> tuple:
@@ -271,7 +271,7 @@ class UserView:
         return jsonify({'status': True, 'payload': users_list, 'message': 'successfully retrieved active users'}), 200
 
 
-    @cache_users.cached(timeout=return_ttl(name='short'))
+    @cache_affiliates.cached(timeout=return_ttl(name='short'))
     @use_context
     @handle_view_errors
     def get_all_users(self) -> tuple:
@@ -283,7 +283,7 @@ class UserView:
         message: str = 'successfully retrieved active users'
         return jsonify({'status': True, 'payload': users_list, 'message': message}), 200
 
-    @cache_users.cached(timeout=return_ttl(name='short'))
+    @cache_affiliates.cached(timeout=return_ttl(name='short'))
     @use_context
     @handle_view_errors
     async def get_all_users_async(self) -> tuple:
@@ -295,7 +295,7 @@ class UserView:
         message: str = 'successfully retrieved active users'
         return jsonify({'status': True, 'payload': users_list, 'message': message}), 200
 
-    @cache_users.cached(timeout=return_ttl(name='medium'))
+    @cache_affiliates.cached(timeout=return_ttl(name='medium'))
     @use_context
     @handle_view_errors
     def get_user(self, uid:  typing.Union[str, None] = None, cell:  typing.Union[str, None] = None,
@@ -327,7 +327,7 @@ class UserView:
 
         return jsonify({'status': False, 'message': 'to retrieve a user either submit an email, cell or user id'}), 500
 
-    @cache_users.cached(timeout=return_ttl(name='medium'))
+    @cache_affiliates.cached(timeout=return_ttl(name='medium'))
     @use_context
     @handle_view_errors
     async def get_user_async(self, uid:  typing.Union[str, None] = None, cell:  typing.Union[str, None] = None,

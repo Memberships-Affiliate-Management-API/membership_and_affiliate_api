@@ -11,7 +11,7 @@ from database.users import UserValidators as UserValid
 from database.memberships import MembershipValidators as MemberValid
 from database.memberships import CouponsValidator as CouponValid
 from utils.utils import create_id, end_of_month, return_ttl, timestamp
-from main import cache_memberships
+from main import cache_affiliates
 from config.exception_handlers import handle_view_errors
 from config.use_context import use_context
 
@@ -294,7 +294,7 @@ class MembershipsView(Validators):
         ***REMOVED***
         return "Ok", 200
 
-    @cache_memberships.cached(timeout=return_ttl(name='long'), unless=end_of_month)
+    @cache_affiliates.cached(timeout=return_ttl(name='long'), unless=end_of_month)
     @use_context
     @handle_view_errors
     def return_plan_members_by_payment_status(self, plan_id: typing.Union[str, None],
@@ -313,7 +313,7 @@ class MembershipsView(Validators):
             message: str = "Unable to find plan members whose payment status is {}".format(status)
             return jsonify({'status': False, 'message': message}), 500
 
-    @cache_memberships.cached(timeout=return_ttl(name='long'), unless=end_of_month)
+    @cache_affiliates.cached(timeout=return_ttl(name='long'), unless=end_of_month)
     @use_context
     @handle_view_errors
     async def return_plan_members_by_payment_status_async(self, plan_id: typing.Union[str, None],
@@ -332,7 +332,7 @@ class MembershipsView(Validators):
             message: str = "Unable to find plan members whose payment status is {}".format(status)
             return jsonify({'status': False, 'message': message}), 500
 
-    @cache_memberships.cached(timeout=return_ttl(name='long'), unless=end_of_month)
+    @cache_affiliates.cached(timeout=return_ttl(name='long'), unless=end_of_month)
     @use_context
     @handle_view_errors
     def return_members_by_payment_status(self, status: typing.Union[str, None]) -> tuple:
@@ -345,7 +345,7 @@ class MembershipsView(Validators):
             message: str = "Unable to find plan members whose payment status is {}".format(status)
             return jsonify({'status': False, 'message': message}), 500
 
-    @cache_memberships.cached(timeout=return_ttl(name='long'), unless=end_of_month)
+    @cache_affiliates.cached(timeout=return_ttl(name='long'), unless=end_of_month)
     @use_context
     @handle_view_errors
     async def return_members_by_payment_status_async(self, status: typing.Union[str, None]) -> tuple:
@@ -359,7 +359,7 @@ class MembershipsView(Validators):
             message: str = "Unable to find plan members whose payment status is {}".format(status)
             return jsonify({'status': False, 'message': message}), 500
 
-    @cache_memberships.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
+    @cache_affiliates.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
     @use_context
     @handle_view_errors
     def return_plan_members(self, plan_id: typing.Union[str, None]) -> tuple:
@@ -377,7 +377,7 @@ class MembershipsView(Validators):
             message: str = "Unable to find members of plan {}"
             return jsonify({'status': False, 'message': message}), 500
 
-    @cache_memberships.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
+    @cache_affiliates.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
     @use_context
     @handle_view_errors
     async def return_plan_members_async(self, plan_id: typing.Union[str, None]) -> tuple:
@@ -396,7 +396,7 @@ class MembershipsView(Validators):
             message: str = "Unable to find members of plan {}"
             return jsonify({'status': False, 'message': message}), 500
 
-    @cache_memberships.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
+    @cache_affiliates.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
     @use_context
     @handle_view_errors
     async def return_plan_members_async(self, plan_id: typing.Union[str, None]) -> tuple:
@@ -415,7 +415,7 @@ class MembershipsView(Validators):
             message: str = "Unable to find members of plan {}"
             return jsonify({'status': False, 'message': message}), 500
 
-    @cache_memberships.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
+    @cache_affiliates.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
     @use_context
     @handle_view_errors
     def is_member_off(self, uid: typing.Union[str, None]) -> tuple:
@@ -429,7 +429,7 @@ class MembershipsView(Validators):
         else:
             return jsonify({'status': False, 'message': 'user does not have any membership plan'}), 500
 
-    @cache_memberships.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
+    @cache_affiliates.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
     @use_context
     @handle_view_errors
     async def is_member_off_async(self, uid: typing.Union[str, None]) -> tuple:
@@ -443,7 +443,7 @@ class MembershipsView(Validators):
         else:
             return jsonify({'status': False, 'message': 'user does not have any membership plan'}), 500
 
-    @cache_memberships.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
+    @cache_affiliates.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
     @use_context
     @handle_view_errors
     def payment_amount(self, uid: typing.Union[str, None]) -> tuple:
@@ -470,7 +470,7 @@ class MembershipsView(Validators):
         message: str = 'unable to locate membership details'
         return jsonify({'status': False, 'message': message}), 500
 
-    @cache_memberships.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
+    @cache_affiliates.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
     @use_context
     @handle_view_errors
     async def payment_amount_async(self, uid: typing.Union[str, None]) -> tuple:
@@ -789,7 +789,7 @@ class MembershipPlansView(Validators):
             message: str = 'Membership plan not found'
             return jsonify({'status': False, 'message': message}), 500
 
-    @cache_memberships.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
+    @cache_affiliates.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
     @use_context
     @handle_view_errors
     def return_plans_by_schedule_term(self, schedule_term: str) -> tuple:
@@ -799,7 +799,7 @@ class MembershipPlansView(Validators):
         return jsonify({'status': False, 'payload': payload,
                         'message': 'successfully retrieved monthly plans'}), 200
 
-    @cache_memberships.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
+    @cache_affiliates.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
     @use_context
     @handle_view_errors
     async def return_plans_by_schedule_term_async(self, schedule_term: str) -> tuple:
@@ -851,7 +851,7 @@ class MembershipPlansView(Validators):
                 return None
         return None
 
-    @cache_memberships.cached(timeout=return_ttl(name='long'))
+    @cache_affiliates.cached(timeout=return_ttl(name='long'))
     def return_plan(self, plan_id: str) -> tuple:
         plan_instance = self.get_plan(plan_id=plan_id)
         if plan_instance is not None:
@@ -859,7 +859,7 @@ class MembershipPlansView(Validators):
             return jsonify({'status': True, 'payload': plan_instance.to_dict(), 'message': message}), 200
         return jsonify({'status': False, 'message': 'Unable to get plan'}), 500
 
-    @cache_memberships.cached(timeout=return_ttl(name='long'))
+    @cache_affiliates.cached(timeout=return_ttl(name='long'))
     async def return_plan_async(self, plan_id: str) -> tuple:
         plan_instance = await self.get_plan_async(plan_id=plan_id)
         if plan_instance is not None:
@@ -1075,7 +1075,7 @@ class CouponsView(Validators):
 
         return jsonify({'status': False, 'message': 'unable to cancel coupon code'}), 500
 
-    @cache_memberships.cached(timeout=return_ttl(name='long'))
+    @cache_affiliates.cached(timeout=return_ttl(name='long'))
     @use_context
     @handle_view_errors
     def get_all_coupons(self) -> tuple:
@@ -1084,7 +1084,7 @@ class CouponsView(Validators):
         message: str = "coupons successfully created"
         return jsonify({'status': True, 'payload': payload, 'message': message}), 200
 
-    @cache_memberships.cached(timeout=return_ttl(name='long'))
+    @cache_affiliates.cached(timeout=return_ttl(name='long'))
     @use_context
     @handle_view_errors
     async def get_all_coupons_async(self) -> tuple:
@@ -1093,7 +1093,7 @@ class CouponsView(Validators):
         message: str = "coupons successfully created"
         return jsonify({'status': True, 'payload': payload, 'message': message}), 200
 
-    @cache_memberships.cached(timeout=return_ttl(name='long'))
+    @cache_affiliates.cached(timeout=return_ttl(name='long'))
     @use_context
     @handle_view_errors
     def get_valid_coupons(self) -> tuple:
@@ -1102,7 +1102,7 @@ class CouponsView(Validators):
         message: str = "coupons successfully created"
         return jsonify({'status': True, 'payload': payload, 'message': message}), 200
 
-    @cache_memberships.cached(timeout=return_ttl(name='long'))
+    @cache_affiliates.cached(timeout=return_ttl(name='long'))
     @use_context
     @handle_view_errors
     async def get_valid_coupons_async(self) -> tuple:
@@ -1111,7 +1111,7 @@ class CouponsView(Validators):
         message: str = "coupons successfully created"
         return jsonify({'status': True, 'payload': payload, 'message': message}), 200
 
-    @cache_memberships.cached(timeout=return_ttl(name='long'))
+    @cache_affiliates.cached(timeout=return_ttl(name='long'))
     @use_context
     @handle_view_errors
     def get_expired_coupons(self) -> tuple:
@@ -1120,7 +1120,7 @@ class CouponsView(Validators):
         message: str = "coupons successfully created"
         return jsonify({'status': True, 'payload': payload, 'message': message}), 200
 
-    @cache_memberships.cached(timeout=return_ttl(name='long'))
+    @cache_affiliates.cached(timeout=return_ttl(name='long'))
     @use_context
     @handle_view_errors
     async def get_expired_coupons_async(self) -> tuple:
@@ -1130,7 +1130,7 @@ class CouponsView(Validators):
         message: str = "coupons successfully created"
         return jsonify({'status': True, 'payload': payload, 'message': message}), 200
 
-    @cache_memberships.cached(timeout=return_ttl(name='long'))
+    @cache_affiliates.cached(timeout=return_ttl(name='long'))
     @use_context
     @handle_view_errors
     def get_coupon(self, coupon_data: dict) -> tuple:
@@ -1146,7 +1146,7 @@ class CouponsView(Validators):
         message: str = "Invalid Coupon Code"
         return jsonify({'status': True, 'message': message}), 500
 
-    @cache_memberships.cached(timeout=return_ttl(name='long'))
+    @cache_affiliates.cached(timeout=return_ttl(name='long'))
     @use_context
     @handle_view_errors
     async def get_coupon_async(self, coupon_data: dict) -> tuple:
