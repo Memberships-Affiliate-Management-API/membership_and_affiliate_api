@@ -1,7 +1,7 @@
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
-    <a href="{{ url_for('admin_dashboard.admin_dashboard') }}" class="brand-link">
+    <a href="{{ url_for('client_dashboard.client_dashboard') }}" class="brand-link">
       <img src="{{ url_for('static', filename='img/AdminLTELogo.png') }}" alt="Memberships API" class="brand-image img-circle elevation-3"
            style="opacity: .8">
       <span class="brand-text font-weight-light">Memberships API</span>
@@ -25,7 +25,7 @@
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
           <li class="nav-item">
-            <a href="{{ url_for('admin_dashboard.admin_dashboard') }}" class="nav-link">
+            <a href="{{ url_for('client_dashboard.client_dashboard') }}" class="nav-link">
               <i class="nav-icon fas fa-dashboard"></i>
               <p>
                 Dashboard
@@ -34,38 +34,37 @@
           </li>
 
           <li class="nav-item">
-            <a href="{{ url_for('admin_dashboard.admin_dashboard_routes', path='organizations') }}" class="nav-link">
+            <a href="{{ url_for('memberships_main.memberships_main') }}" class="nav-link">
               <i class="nav-icon fas fa-folder"></i>
               <p>
-                Organizations
+                Home
               </p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="{{ url_for('admin_dashboard.admin_dashboard_routes', path='users') }}" class="nav-link">
+            <a href="{{ url_for('memberships_main.memberships_main_routes', path='contact') }}" class="nav-link">
               <i class="nav-icon fas fa-user"></i>
               <p>
-                Users
+                Contact
               </p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="{{ url_for('admin_dashboard.admin_dashboard_routes', path='api-keys') }}" class="nav-link">
-              <i class="nav-icon fas fa-link"></i>
+            <a href="{{ url_for('memberships_main.memberships_main_routes', path='login') }}" class="nav-link">
+              <i class="nav-icon fas fa-sign-in-alt"></i>
               <p>
-                API
+                Login
               </p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="{{ url_for('admin_dashboard.admin_dashboard_routes', path='affiliates') }}" class="nav-link">
-              <i class="nav-icon fas fa-line-chart"></i>
+            <a href="{{ url_for('memberships_main.memberships_main_routes', path='subscribe') }}" class="nav-link">
+              <i class="nav-icon fas fa-user-plus"></i>
               <p>
-                Affiliates
+                Subscribe
               </p>
             </a>
           </li>
-
 
         </ul>
       </nav>
