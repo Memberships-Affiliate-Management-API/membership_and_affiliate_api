@@ -25,5 +25,9 @@ def memberships_main_routes(path: str) -> tuple:
         return render_template('main/robots.txt')
     elif path == 'sitemap.xml':
         return render_template('main/sitemap.xml')
+    elif path == 'favicon.ico':
+        return render_template('main/favicon.ico')
+    elif path == 'sw.js':
+        return render_template('main/sw.js')
 
 
