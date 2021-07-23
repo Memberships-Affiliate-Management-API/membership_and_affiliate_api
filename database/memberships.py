@@ -346,28 +346,12 @@ class Coupons(ndb.Model):
         the admin app should setup the coupon codes.
         endpoints should be provided via view and api
     ***REMOVED***
-
-    def set_code(self, value: str) -> str:
-        if not (isinstance(value, str)):
-            raise TypeError("{} can only be a string".format(str(self)))
-
-        return value
-
-    def set_discount(self, value: int) -> int:
-        if not (isinstance(value, int)):
-            raise TypeError("{} can only be an integer".format(str(self)))
-        return value
-
-    def set_expiration_time(self, value: int) -> int:
-        if not (isinstance(value, int)):
-            raise TypeError("{} can only be an integer".format(str(self)))
-        return value
     organization_id: str = ndb.StringProperty(validator=setters.set_id)
-    code: str = ndb.StringProperty(validator=set_code)
+    code: str = ndb.StringProperty(validator=setters.set_id)
     discount: AmountMixin = ndb.StructuredProperty(AmountMixin)
     is_valid: bool = ndb.BooleanProperty(default=True, validator=setters.set_bool)
     date_created: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=setters.set_datetime)
-    expiration_time: int = ndb.IntegerProperty(default=0, validator=set_expiration_time)
+    expiration_time: int = ndb.IntegerProperty(default=0, validator=setters.set_number)
 
     def __str__(self) -> str:
         return "Code: {} Discount: {} Is Valid: {} Date Created: {} Expire at : {}".format(self.code, self.discount,
@@ -425,13 +409,14 @@ class MembershipDailyStats(ndb.Model):
     ***REMOVED***
     organization_id: str = ndb.StringProperty(validator=setters.set_id)
     daily_id: str = ndb.StringProperty(validator=setters.set_id)
-    total_users: int = ndb.IntegerProperty(default=0)
-    total_members: int = ndb.IntegerProperty(default=0)
+    total_users: int = ndb.IntegerProperty(default=0, validator=setters.set_number)
+    total_members: int = ndb.IntegerProperty(default=0, validator=setters.set_number)
     expected_monthly_earnings: AmountMixin = ndb.StructuredProperty(AmountMixin)
     expected_quarterly_earnings: AmountMixin = ndb.StructuredProperty(AmountMixin)
     expected_annual_earnings: AmountMixin = ndb.StructuredProperty(AmountMixin)
     expected_earnings_this_month: AmountMixin = ndb.StructuredProperty(AmountMixin)
     total_earned_so_far: AmountMixin = ndb.StructuredProperty(AmountMixin)
+    date_created: date = ndb.DateProperty(validator=setters.set_date)
 
     def __str__(self) -> str:
         return "<Stats Users: {} Members: {}  Earnings: {} Total: {}".format(self.total_users,

@@ -1,6 +1,8 @@
 import typing
 from google.api_core.exceptions import RetryError
 from google.cloud import ndb
+
+from config.exception_handlers import handle_store_errors
 from database.mixins import AddressMixin
 from utils.utils import timestamp
 from database.setters import setters
@@ -10,29 +12,21 @@ class UserValidators:
     # Which ever module calls this validators it will provide its own context
 
     @staticmethod
+    @handle_store_errors
     def is_user_valid(uid: str) -> typing.Union[None, bool]:
         if not(isinstance(uid, str)) or (uid == ""):
             return False
-        try:
-            user_instance: UserModel = UserModel.query(UserModel.uid == uid).get()
-        except ConnectionRefusedError:
-            return None
-        except RetryError:
-            return None
+        user_instance: UserModel = UserModel.query(UserModel.uid == uid).get()
         if isinstance(user_instance, UserModel):
             return True
         return False
 
     @staticmethod
+    @handle_store_errors
     async def is_user_valid_async(uid: str) -> typing.Union[None, bool]:
         if not(isinstance(uid, str)) or (uid == ""):
             return False
-        try:
-            user_instance: UserModel = UserModel.query(UserModel.uid == uid).get_async().get_result()
-        except ConnectionRefusedError:
-            return None
-        except RetryError:
-            return None
+        user_instance: UserModel = UserModel.query(UserModel.uid == uid).get_async().get_result()
         if isinstance(user_instance, UserModel):
             return True
         return False

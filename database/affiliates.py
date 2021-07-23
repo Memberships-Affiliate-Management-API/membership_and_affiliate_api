@@ -107,16 +107,11 @@ class Affiliates(ndb.Model):
     ***REMOVED***
         class used to track affiliates registered
     ***REMOVED***
-
-    def set_date_time(self, value: datetime) -> datetime:
-        if not(isinstance(value, datetime)):
-            raise TypeError("{} can only be a datetime object".format(str(self)))
-        return value
     organization_id: str = ndb.StringProperty(validator=setters.set_id)
     affiliate_id: str = ndb.StringProperty(validator=setters.set_id)
     uid: str = ndb.StringProperty(validator=setters.set_id)
-    last_updated: datetime = ndb.DateTimeProperty(auto_now=True, validator=set_date_time)
-    datetime_recruited: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=set_date_time)
+    last_updated: datetime = ndb.DateTimeProperty(auto_now=True, validator=setters.set_datetime)
+    datetime_recruited: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=setters.set_datetime)
     total_recruits: int = ndb.IntegerProperty(default=0, validator=setters.set_number)
     is_active: bool = ndb.BooleanProperty(default=True, validator=setters.set_bool)
     is_deleted: bool = ndb.BooleanProperty(default=False, validator=setters.set_bool)
@@ -137,12 +132,12 @@ class Affiliates(ndb.Model):
     def __repr__(self) -> str:
         return "<Affiliates: {}{}".format(self.affiliate_id, self.uid)
 
-    def __len__(self) -> int:
-        return int(self.__bool__())
-
     def __bool__(self) -> bool:
         return bool(self.affiliate_id)
         # return True if self.affiliate_id else False
+
+    def __len__(self) -> int:
+        return int(self.__bool__())
 
 
 class Recruits(ndb.Model):

@@ -7,7 +7,7 @@ from utils.utils import is_development
 import os
 
 if is_development():
-    credential_path = "C:\\gcp_credentials\\pinoydesk.json"
+    credential_path = "C:\\gcp_credentials\\affiliates.json"
     os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credential_path
 
 

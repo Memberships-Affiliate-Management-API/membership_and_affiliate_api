@@ -43,13 +43,13 @@ class ClassSetters:
         return value
 
     @staticmethod
-    def set_bool(prop, value: bool) -> bool:
+    def set_bool(prop, value: typing.Union[bool, None]) -> bool:
         if not(isinstance(value, bool)):
             raise ValueError("{} invalid argument".format(str(prop)))
         return value
 
     @staticmethod
-    def set_status(prop, value: str) -> str:
+    def set_status(prop, value: typing.Union[str, None]) -> str:
         if (value is None) or (value == ""):
             raise ValueError("{} cannot be Null".format(str(prop)))
         if not (isinstance(value, str)):
@@ -60,7 +60,7 @@ class ClassSetters:
         return value
 
     @staticmethod
-    def set_string(prop, value: str) -> str:
+    def set_string(prop, value: typing.Union[str, None]) -> str:
         if (value is None) or (value == ""):
             raise ValueError("{} cannot be Null".format(str(prop)))
         if not (isinstance(value, str)):
@@ -68,7 +68,7 @@ class ClassSetters:
         return value.strip()
 
     @staticmethod
-    def set_schedule_term(prop, value: str) -> str:
+    def set_schedule_term(prop, value: typing.Union[str, None]) -> str:
         if (value is None) or (value == ""):
             raise ValueError("{} cannot be Null".format(str(prop)))
         if not (isinstance(value, str)):
@@ -79,7 +79,7 @@ class ClassSetters:
         raise ValueError("Invalid scheduled term")
 
     @staticmethod
-    def set_schedule_day(prop, value: int) -> int:
+    def set_schedule_day(prop, value: typing.Union[int, None]) -> int:
         if not (isinstance(value, int)):
             raise TypeError('{} can only be an integer'.format(str(prop)))
         if value not in [1, 2, 3, 4, 5]:
@@ -87,7 +87,7 @@ class ClassSetters:
         return value
 
     @staticmethod
-    def set_number(prop, value: int) -> int:
+    def set_number(prop, value: typing.Union[int, None]) -> int:
         if not (isinstance(value, int)):
             raise TypeError('{} can only be an integer'.format(str(prop)))
 
@@ -103,7 +103,7 @@ class ClassSetters:
         return value
 
     @staticmethod
-    def set_payment_method(prop, value: str) -> str:
+    def set_payment_method(prop, value: typing.Union[str, None]) -> str:
         if not (isinstance(value, str)):
             raise TypeError("{}, Invalid Type".format(str(prop)))
         if value not in get_payment_methods():
@@ -111,7 +111,7 @@ class ClassSetters:
         return value
 
     @staticmethod
-    def set_percent(prop, value: int) -> int:
+    def set_percent(prop, value: typing.Union[int, None]) -> int:
         if not isinstance(value, int):
             raise TypeError("{}, Invalid Type".format(str(prop)))
         if 0 < value > 100:
@@ -119,7 +119,7 @@ class ClassSetters:
         return value
 
     @staticmethod
-    def set_currency(prop, value) -> str:
+    def set_currency(prop, value: typing.Union[str, None]) -> str:
         if not (isinstance(value, str)):
             raise TypeError("{} can only be string".format(prop))
         if value not in currency_symbols():
@@ -127,7 +127,7 @@ class ClassSetters:
         return value
 
     @staticmethod
-    def set_email(prop, value) -> str:
+    def set_email(prop, value: typing.Union[str, None]) -> str:
         ***REMOVED***
             TODO validate email here
         ***REMOVED***
@@ -139,7 +139,7 @@ class ClassSetters:
 
     # noinspection PyUnusedLocal
     @staticmethod
-    def set_cell(prop, value) -> str:
+    def set_cell(prop, value : typing.Union[str, None]) -> str:
         if not isinstance(value, str):
             raise TypeError("invalid argument for cell")
         # TODO check cell number with regex
@@ -148,7 +148,7 @@ class ClassSetters:
 
     # noinspection PyUnusedLocal
     @staticmethod
-    def set_password(prop, value) -> str:
+    def set_password(prop, value: typing.Union[str, None]) -> str:
         ***REMOVED***
             TODO validate password here, using regex
         ***REMOVED***
@@ -162,19 +162,21 @@ class ClassSetters:
         return generate_password_hash(value, method="pbkdf2:sha256", salt_length=8)
 
     @staticmethod
-    def set_value_amount(prop, value) -> int:
+    def set_value_amount(prop, value: typing.Union[int, None]) -> int:
         if not (isinstance(value, int)):
             raise TypeError("{} can only be integer".format(str(prop)))
         return value
 
     @staticmethod
-    def set_domain(prop, value) -> str:
+    def set_domain(prop, value: typing.Union[str, None]) -> str:
         ***REMOVED***
             :return:
         ***REMOVED***
         import requests
+        if not (isinstance(value, str)):
+            raise TypeError("domain name can only be a string")
         response = requests.get(url=value)
-        if response.status_code == 200:
+        if 400 < response.status_code >= 200:
             return value
         raise ValueError("invalid domain name")
 

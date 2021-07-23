@@ -107,8 +107,11 @@ def task_counter(timer_limit: int = 10000) -> any:
         y += 1
 
 
-def get_timer() -> int:
-    return next(task_counter())
+counter = task_counter()
+
+
+def get_counter() -> int:
+    return next(counter)
 
 
 def get_payment_methods() -> typing.List[str]:
@@ -123,4 +126,3 @@ if __name__ == '__main__':
     # expire_after = datetime.datetime.now() - datetime.timedelta(days=30)
     # print(expire_after.date())
     pass
-
