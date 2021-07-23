@@ -1,8 +1,7 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, url_for, get_flashed_messages
 from security.users_authenticator import handle_users_auth
 
-temp_folder = "../admin_templates/templates"
-admin_dashboard_bp = Blueprint("admin_dashboard", __name__, template_folder=temp_folder)
+admin_dashboard_bp = Blueprint("admin_dashboard", __name__)
 
 
 @admin_dashboard_bp.route("/admin/dashboard", methods=["GET"])

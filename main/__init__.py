@@ -7,7 +7,7 @@ default_timeout: int = 60 * 60 * 6
 
 
 def create_app(config_class=Config):
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder="app/resources/admin/static", template_folder="app/resources/admin/templates")
     app.config.from_object(config_class)
 
     cache_affiliates.init_app(app=app, config={'CACHE_TYPE': 'simple', 'CACHE_DEFAULT_TIMEOUT': default_timeout})
@@ -24,6 +24,7 @@ def create_app(config_class=Config):
 
     # importing admin app blueprints
     from main.app.admin.routes.dashboard import admin_dashboard_bp
+    from main.app.admin.routes.home import admin_bp
 
     app.register_blueprint(affiliates_bp)
     app.register_blueprint(users_bp)
@@ -37,7 +38,9 @@ def create_app(config_class=Config):
 
     # admin app handlers
     app.register_blueprint(admin_dashboard_bp)
+    app.register_blueprint(admin_bp)
 
+    # Error Handlers
     app.register_blueprint(default_handlers_bp)
 
     return app
