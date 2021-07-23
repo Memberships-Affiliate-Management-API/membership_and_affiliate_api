@@ -9,6 +9,7 @@
 .gcloudignore
 *.bat
 .gitignore
+.idea/
 .github/
 venv/
 .pytest_cache/

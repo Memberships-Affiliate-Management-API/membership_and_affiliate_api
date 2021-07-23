@@ -1,7 +1,7 @@
 import typing
 from flask import Blueprint, request, jsonify
 from datetime import datetime, date
-from security.api_authenticator import handle_auth
+from security.api_authenticator import handle_api_auth
 from config.exceptions import InputError
 from utils.utils import date_string_to_date
 from views.memberships import MembershipsView, MembershipPlansView
@@ -9,14 +9,14 @@ memberships_bp = Blueprint('memberships', __name__)
 
 
 @memberships_bp.route("/api/v1/members/<path:plan_id>", methods=['POST'])
-@handle_auth
+@handle_api_auth
 def get_members(plan_id: str) -> tuple:
     members_instance: MembershipsView = MembershipsView()
     return members_instance.return_plan_members(plan_id=plan_id)
 
 
 @memberships_bp.route("/api/v1/member", methods=['POST', 'PUT'])
-@handle_auth
+@handle_api_auth
 def create_member() -> tuple:
     ***REMOVED***
         create or update member
@@ -46,7 +46,7 @@ def create_member() -> tuple:
 
 
 @memberships_bp.route("/api/v1/member/status/<path:uid>", methods=['GET', 'PUT'])
-@handle_auth
+@handle_api_auth
 def get_update_status(uid: str) -> tuple:
     ***REMOVED***
         plan_id for the status to get or update
@@ -69,7 +69,7 @@ def get_update_status(uid: str) -> tuple:
 
 
 @memberships_bp.route("/api/v1/members/<path:plan_id>/status/<path:status>", methods=["GET"])
-@handle_auth
+@handle_api_auth
 def get_plan_members_by_payment_status(plan_id: str, status: str) -> tuple:
     if (plan_id != "") and (status != ""):
         membership_view_instance: MembershipsView = MembershipsView()
@@ -77,7 +77,7 @@ def get_plan_members_by_payment_status(plan_id: str, status: str) -> tuple:
 
 
 @memberships_bp.route("/api/v1/membership/plan/<path:plan_id>")
-@handle_auth
+@handle_api_auth
 def change_membership_plan(plan_id: str) -> tuple:
     if plan_id != "":
         json_data: dict = request.get_json()

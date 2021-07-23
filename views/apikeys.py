@@ -114,9 +114,20 @@ class APIKeysView(APIKeysValidators):
     @cache_affiliates.cached(timeout=return_ttl(name='short'))
     @use_context
     @handle_view_errors
-    def return_organization_keys(self, organization_id: typing.Union[str, None]) -> tuple:
+    def return_all_organization_keys(self, organization_id: typing.Union[str, None]) -> tuple:
 
         api_keys_list: typing.List[APIKeys] = APIKeys.query(APIKeys.organization_id == organization_id).fetch()
         payload: typing.List[dict] = [_key.to_dict() for _key in api_keys_list]
         return jsonify({'status': True, 'payload': payload, 'message': 'organization keys returned successfully'}), 200
+
+    @cache_affiliates.cached(timeout=return_ttl(name='short'))
+    @use_context
+    @handle_view_errors
+    def return_active_organization_keys(self, organization_id: typing.Union[str, None]) -> tuple:
+
+        api_keys_list: typing.List[APIKeys] = APIKeys.query(APIKeys.organization_id == organization_id,
+                                                            APIKeys.is_active == True).fetch()
+        payload: typing.List[dict] = [_key.to_dict() for _key in api_keys_list]
+        return jsonify({'status': True, 'payload': payload, 'message': 'organization keys returned successfully'}), 200
+
 

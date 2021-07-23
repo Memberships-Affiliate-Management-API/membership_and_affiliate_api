@@ -21,7 +21,7 @@ def is_api_key_valid(api_key: str, secret: str, domain: str) -> bool:
     return False
 
 
-def handle_auth(func):
+def handle_api_auth(func):
     @functools.wraps(func)
     def auth_wrapper(*args, **kwargs):
         api_key: str = request.headers.get('api-key')

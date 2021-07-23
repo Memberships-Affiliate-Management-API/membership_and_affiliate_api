@@ -1,6 +1,6 @@
 import typing
 from flask import Blueprint, request, jsonify
-from security.api_authenticator import handle_auth
+from security.api_authenticator import handle_api_auth
 from views.users import UserView
 users_bp = Blueprint("users", __name__)
 
@@ -23,7 +23,7 @@ def get_kwargs(user_data: dict) -> tuple:
 
 
 @users_bp.route("/api/v1/create-user", methods=["POST"])
-@handle_auth
+@handle_api_auth
 def create_user() -> tuple:
     ***REMOVED***
         given user details create new user
@@ -43,7 +43,7 @@ def create_user() -> tuple:
 
 
 @users_bp.route("/api/v1/user/<path:path>", methods=["GET", "POST"])
-@handle_auth
+@handle_api_auth
 def user(path: str) -> tuple:
     ***REMOVED***
         update or get a specific user by uid
@@ -80,7 +80,7 @@ def user(path: str) -> tuple:
 
 
 @users_bp.route("/api/v1/users/<path:path>", methods=["GET", "POST"])
-@handle_auth
+@handle_api_auth
 def get_all(path: str) -> tuple:
     ***REMOVED***
         get all , active or in-active users
@@ -101,7 +101,7 @@ def get_all(path: str) -> tuple:
 
 
 @users_bp.route("/api/v1/check-password", methods=["POST"])
-@handle_auth
+@handle_api_auth
 def check_password() -> tuple:
     ***REMOVED***
         given a password in json check if it matches the hash in file
@@ -115,7 +115,7 @@ def check_password() -> tuple:
 
 
 @users_bp.route("/api/v1/deactivate-user", methods=["POST"])
-@handle_auth
+@handle_api_auth
 def de_activate_user() -> tuple:
     ***REMOVED***
         given uid in json de-activate user
@@ -128,7 +128,7 @@ def de_activate_user() -> tuple:
 
 
 @users_bp.route("/api/v1/auth/login", methods=["POST"])
-@handle_auth
+@handle_api_auth
 def login() -> tuple:
     user_view_instance: UserView = UserView()
     user_data: dict = request.get_json()
@@ -145,7 +145,7 @@ def login() -> tuple:
 
 
 @users_bp.route("/api/v1/auth/logout", methods=["POST"])
-@handle_auth
+@handle_api_auth
 def logout() -> tuple:
     user_view_instance: UserView = UserView()
     user_data: dict = request.get_json()
@@ -153,7 +153,7 @@ def logout() -> tuple:
 
 
 @users_bp.route("/api/v1/auth/register", methods=["POST"])
-@handle_auth
+@handle_api_auth
 def register() -> tuple:
     user_view_instance: UserView = UserView()
     user_data: dict = request.get_json()

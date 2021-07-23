@@ -119,8 +119,6 @@ class AuthorizedUsers(ndb.Model):
         return int(self.__bool__())
 
 
-
-
 class OrgAccounts(ndb.Model):
     ***REMOVED***
         include details of the main organization payments accounts here
