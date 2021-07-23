@@ -2,12 +2,8 @@ from flask import Flask
 from flask_caching import Cache
 from config import Config
 
-# TODO find a way to insure errors are not cached
-
 cache_affiliates: Cache = Cache(config={'CACHE_TYPE': 'simple'})
-# Cache data for six hours- cached data should be volume data
-# TODO - there should be a function to purge the cache when not needed
-# but normally when the data-service is not being used it will shutdown and thereby auto purging cache
+
 default_timeout: int = 60 * 60 * 6
 
 

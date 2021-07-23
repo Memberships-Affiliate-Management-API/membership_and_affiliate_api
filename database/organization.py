@@ -53,6 +53,74 @@ class Organization(ndb.Model):
         return int(self.__bool__())
 
 
+class AuthUserValidators:
+    def __init__(self):
+        pass
+
+    @staticmethod
+    @handle_store_errors
+    def user_is_member_of_org(uid: typing.Union[str, None],
+                              organization_id: typing.Union[str, None]) -> typing.Union[None, bool]:
+        if not(isinstance(uid, str)):
+            raise InputError(status=500, description="uid cannot be Null")
+        if not(isinstance(organization_id, str)):
+            raise InputError(status=500, description="organization_id cannot be Null")
+
+        auth_users_list: typing.List[AuthorizedUsers] = AuthorizedUsers.query(AuthorizedUsers.uid == uid).fetch()
+        for user_instance in auth_users_list:
+            if user_instance.organization_id == organization_id:
+                return True
+        return False
+
+    @staticmethod
+    @handle_store_errors
+    def org_user_is_admin(uid: typing.Union[str, None],
+                          organization_id: typing.Union[str, None]) -> typing.Union[None, bool]:
+        if not(isinstance(uid, str)):
+            raise InputError(status=500, description="uid cannot be Null")
+        if not(isinstance(organization_id, str)):
+            raise InputError(status=500, description="organization_id cannot be Null")
+
+        auth_user_instance: AuthorizedUsers = AuthorizedUsers.query(
+            AuthorizedUsers.uid == uid, AuthorizedUsers.organization_id == organization_id).get()
+
+        if isinstance(auth_user_instance, AuthorizedUsers) and (auth_user_instance.role == "admin"):
+            return True
+        return False
+
+
+class AuthorizedUsers(ndb.Model):
+    organization_id: str = ndb.StringProperty(validator=setters.set_id)
+    uid: str = ndb.StringProperty(validator=setters.set_id)
+    role: str = ndb.StringProperty(validator=setters.set_string)
+    is_active: bool = ndb.BooleanProperty(default=True, validator=setters.set_bool)
+
+    def __str__(self) -> str:
+        return "<AuthorizedUser role: {}, is_active: {}".format(self.role, self.is_active)
+
+    def __repr__(self) -> str:
+        return self.__str__()
+
+    def __eq__(self, other) -> bool:
+        if self.__class__ != other.__class__:
+            return False
+        if self.organization_id != other.organization_id:
+            return False
+        if self.uid != other.uid:
+            return False
+        if self.role != other.role:
+            return False
+        return True
+
+    def __bool__(self) -> bool:
+        return bool(self.organization_id)
+
+    def __len__(self) -> int:
+        return int(self.__bool__())
+
+
+
+
 class OrgAccounts(ndb.Model):
     ***REMOVED***
         include details of the main organization payments accounts here

@@ -156,7 +156,7 @@ class AffiliatesView(Validator):
             return all affiliates
         ***REMOVED***
         affiliates_list: typing.List[Affiliates] = Affiliates.query().fetch()
-        payload = [affiliate.to_dict() for affiliate in affiliates_list]
+        payload: typing.List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
         message: str = "Successfully returned all affiliates"
         return jsonify({'status': True,
                         'message': message,
@@ -171,7 +171,7 @@ class AffiliatesView(Validator):
         ***REMOVED***
         affiliates_list: typing.List[Affiliates] = Affiliates.query(
             Affiliates.is_active == True, Affiliates.is_deleted == False).fetch()
-        payload = [affiliate.to_dict() for affiliate in affiliates_list]
+        payload: typing.List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
         return jsonify({'status': True, 'message': 'successfully returned all affiliates',
                         'payload': payload}), 200
     
@@ -184,7 +184,7 @@ class AffiliatesView(Validator):
         ***REMOVED***
         affiliates_list: typing.List[Affiliates] = Affiliates.query(Affiliates.is_active == False,
                                                                     Affiliates.is_deleted == False).fetch()
-        payload = [affiliate.to_dict() for affiliate in affiliates_list]
+        payload: typing.List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
         message: str = "successfully returned all affiliates"
         return jsonify({'status': True,
                         'message': message,
@@ -198,7 +198,7 @@ class AffiliatesView(Validator):
             return affiliates who are not active
         ***REMOVED***
         affiliates_list: typing.List[Affiliates] = Affiliates.query(Affiliates.is_deleted == True).fetch()
-        payload = [affiliate.to_dict() for affiliate in affiliates_list]
+        payload: typing.List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
         message: str = "Successfully returned deleted affiliates"
         return jsonify({'status': True,
                         'message': message,
@@ -212,7 +212,7 @@ class AffiliatesView(Validator):
             return affiliates who are not active
         ***REMOVED***
         affiliates_list: typing.List[Affiliates] = Affiliates.query(Affiliates.is_deleted == False).fetch()
-        payload = [affiliate.to_dict() for affiliate in affiliates_list]
+        payload: typing.List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
         message: str = "Successfully returned affiliates which are not deleted"
         return jsonify({'status': True,
                         'message': message,
@@ -317,7 +317,7 @@ class RecruitsView(Validator):
         if not(isinstance(is_active, bool)):
             return jsonify({'status': False, 'message': 'is_active status is required'}), 500
         recruits_list: typing.List[Recruits] = Recruits.query(Recruits.is_active == is_active).fetch()
-        payload = [recruit.to_dict() for recruit in recruits_list]
+        payload: typing.List[dict] = [recruit.to_dict() for recruit in recruits_list]
         message: str = "{} recruits successfully fetched recruits by active status".format(str(len(recruits_list)))
         return jsonify({'status': True, 'message': message, 'payload': payload}), 200
 
@@ -340,7 +340,7 @@ class RecruitsView(Validator):
         if (affiliate_id is None) or (affiliate_id == ""):
             return jsonify({'status': False, 'message': 'affiliate_id is required'}), 500
         recruits_list: typing.List[Recruits] = Recruits.query(Recruits.affiliate_id == affiliate_id).fetch()
-        payload = [recruit.to_dict() for recruit in recruits_list]
+        payload: typing.List[dict] = [recruit.to_dict() for recruit in recruits_list]
 
         message: str = "{} recruits successfully fetched recruits by active status".format(str(len(recruits_list)))
         return jsonify({'status': True, 'message': message, 'payload': payload}), 200
@@ -357,7 +357,7 @@ class RecruitsView(Validator):
             return jsonify({'status': False, 'message': 'is_active status can only be a boolean'}), 500
         recruits_list: typing.List[Recruits] = Recruits.query(Recruits.affiliate_id == affiliate_id,
                                                               Recruits.is_active == is_active).fetch()
-        payload = [recruit.to_dict() for recruit in recruits_list]
+        payload: typing.List[dict] = [recruit.to_dict() for recruit in recruits_list]
 
         message: str = "{} recruits successfully fetched affiliate recruits by status".format(str(len(recruits_list)))
         return jsonify({'status': True, 'message': message, 'payload': payload}), 200

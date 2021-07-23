@@ -226,7 +226,8 @@ class UserView:
             return a list of all users
         :return:
         ***REMOVED***
-        users_list: dict_list_type = [user.to_dict() for user in UserModel.query(UserModel.is_active == True).fetch()]
+        users_list: typing.List[dict] = [user.to_dict() for user in
+                                         UserModel.query(UserModel.is_active == True).fetch()]
         return jsonify({'status': True, 'payload': users_list, 'message': 'successfully retrieved active users'}), 200
 
     @cache_affiliates.cached(timeout=return_ttl(name='short'))
@@ -237,7 +238,8 @@ class UserView:
             return a list of all users
         :return:
         ***REMOVED***
-        users_list: dict_list_type = [user.to_dict() for user in UserModel.query(UserModel.is_active == True).fetch_async().get_result()]
+        users_list: typing.List[dict] = [user.to_dict() for user in
+                                         UserModel.query(UserModel.is_active == True).fetch_async().get_result()]
         return jsonify({'status': True, 'payload': users_list, 'message': 'successfully retrieved active users'}), 200
 
     @cache_affiliates.cached(timeout=return_ttl(name='short'))
@@ -248,7 +250,8 @@ class UserView:
             return a list of non active users
         :return:
         ***REMOVED***
-        users_list: dict_list_type = [user.to_dict() for user in UserModel.query(UserModel.is_active == False).fetch()]
+        users_list: typing.List[dict] = [user.to_dict() for user in
+                                         UserModel.query(UserModel.is_active == False).fetch()]
         return jsonify({'status': True, 'payload': users_list, 'message': 'successfully retrieved active users'}), 200
 
     @cache_affiliates.cached(timeout=return_ttl(name='short'))
@@ -259,7 +262,8 @@ class UserView:
             return a list of non active users
         :return:
         ***REMOVED***
-        users_list: dict_list_type = [user.to_dict() for user in UserModel.query(UserModel.is_active == False).fetch_async().get_result()]
+        users_list: typing.List[dict] = [user.to_dict() for user in
+                                         UserModel.query(UserModel.is_active == False).fetch_async().get_result()]
         return jsonify({'status': True, 'payload': users_list, 'message': 'successfully retrieved active users'}), 200
 
     @cache_affiliates.cached(timeout=return_ttl(name='short'))
@@ -270,7 +274,7 @@ class UserView:
             get a list of all users
         :return:
         ***REMOVED***
-        users_list: dict_list_type = [user.to_dict() for user in UserModel.query().fetch()]
+        users_list: typing.List[dict] = [user.to_dict() for user in UserModel.query().fetch()]
         message: str = 'successfully retrieved active users'
         return jsonify({'status': True, 'payload': users_list, 'message': message}), 200
 
@@ -282,7 +286,7 @@ class UserView:
             get a list of all users
         :return:
         ***REMOVED***
-        users_list: dict_list_type = [user.to_dict() for user in UserModel.query().fetch_async().get_result()]
+        users_list: typing.List[dict] = [user.to_dict() for user in UserModel.query().fetch_async().get_result()]
         message: str = 'successfully retrieved active users'
         return jsonify({'status': True, 'payload': users_list, 'message': message}), 200
 
@@ -391,11 +395,9 @@ class UserView:
             return jsonify({'status': False, 'message': 'please submit user id'}), 500
         user_instance: UserModel = UserModel.query(UserModel.uid == uid).get()
         if isinstance(user_instance, UserModel):
-            if user_instance.set_is_active(is_active=False) is True:
-                user_instance.put()
-                return jsonify({'status': True, 'message': 'user deactivated'}), 200
-            else:
-                return jsonify({'status': False, 'message': 'could not de-activate user'}), 200
+            user_instance.is_active = False
+            user_instance.put()
+            return jsonify({'status': True, 'message': 'user deactivated'}), 200
         else:
             return jsonify({'status': False, 'message': 'user not found'}), 200
 
@@ -406,11 +408,9 @@ class UserView:
             return jsonify({'status': False, 'message': 'please submit user id'}), 500
         user_instance: UserModel = UserModel.query(UserModel.uid == uid).get_async().get_result()
         if isinstance(user_instance, UserModel):
-            if user_instance.set_is_active(is_active=False) is True:
-                key = user_instance.put_async().get_result()
-                return jsonify({'status': True, 'message': 'user deactivated'}), 200
-            else:
-                return jsonify({'status': False, 'message': 'could not de-activate user'}), 200
+            user_instance.is_active = False
+            key = user_instance.put_async().get_result()
+            return jsonify({'status': True, 'message': 'user deactivated'}), 200
         else:
             return jsonify({'status': False, 'message': 'user not found'}), 200
 
@@ -421,6 +421,7 @@ class UserView:
             this login utility may support client app , not necessary for admin and service to service calls
             Options:
             firebase login, JWT Token
+            TODO - complete login
         ***REMOVED***
         pass
 

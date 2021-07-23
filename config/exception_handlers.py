@@ -21,22 +21,22 @@ def handle_view_errors(func):
             return({'status': False, 'message': message}), 500
         except TypeError as e:
             message: str = str(e)
-            raise InputError(status=500, description='Bad input values, please check your input')
+            raise InputError(status=500, description='InputError: Bad input values, please check your input')
         except BadRequestError as e:
             message: str = str(e)
-            raise RequestError(status=500, description='Bad request while connecting to database')
+            raise RequestError(status=500, description='Bad Request: while connecting to database')
         except BadQueryError as e:
             message: str = str(e)
-            raise DataServiceError(status=500, description="Error creating database query please check your input")
+            raise DataServiceError(status=500, description="Database Error: Error while querying database please inform admin")
         except ConnectionRefusedError as e:
             message: str = str(e)
-            raise RequestError(status=500, description="database server is refusing connection please try again later")
+            raise RequestError(status=500, description="Request Error: Unable to connect to database please try again later")
         except RetryError as e:
             message: str = str(e)
-            raise RequestError(status=500, description="database server is refusing connection please try again later")
+            raise RequestError(status=500, description="Request error: Unable to connect to database please try again later")
         except Aborted as e:
             message: str = str(e.message or e)
-            raise RequestError(status=500, description="database server is refusing connection please try again later")
+            raise RequestError(status=500, description="Abort Error: due to some error on our servers your connection was aborted try again later")
 
     return wrapper
 

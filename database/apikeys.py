@@ -9,8 +9,6 @@ class APIKeys(ndb.Model):
     assigned_to_uid: str = ndb.StringProperty(validator=setters.set_id)
     domain: str = ndb.StringProperty(validator=setters.set_domain)
     is_active: bool = ndb.BooleanProperty(default=True, validator=setters.set_bool)
-    # admin, support, user
-    access_control: list = ndb.StringProperty(repeated=True)
 
     def __str__(self) -> str:
         return "APIKeys: Organization: {}, key: {} ".format(self.organization_id, self.api_key)

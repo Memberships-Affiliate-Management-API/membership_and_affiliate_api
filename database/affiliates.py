@@ -154,6 +154,12 @@ class Recruits(ndb.Model):
     is_active: bool = ndb.BooleanProperty(default=True, validator=setters.set_bool)
     is_deleted: bool = ndb.BooleanProperty(default=False, validator=setters.set_bool)
 
+    def __str__(self) -> str:
+        return "<Recruits: {}{}{}".format(self.affiliate_id, self.referrer_uid, self.datetime_recruited)
+
+    def __repr__(self) -> str:
+        return self.__str__()
+
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
             return False
@@ -162,12 +168,6 @@ class Recruits(ndb.Model):
         if self.referrer_uid != other.referrer_uid:
             return False
         return True
-
-    def __str__(self) -> str:
-        return "<Recruits: {}{}{}".format(self.affiliate_id, self.referrer_uid, self.datetime_recruited)
-
-    def __repr__(self) -> str:
-        return self.__str__()
 
     def __bool__(self) -> bool:
         return bool(self.affiliate_id)
