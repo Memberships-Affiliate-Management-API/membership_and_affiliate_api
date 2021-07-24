@@ -2,7 +2,7 @@
 {% extends "main/layouts/layout.html" %}
 {% block metatags %}
         <!-- metatags -->
-        <title> Login - Memberships &amp; Affiliates Management API</title>
+        <title> Logout - Memberships &amp; Affiliates Management API</title>
         <meta name="description" content=" " />
         <meta content="width=device-width, initial-scale=1.0" name="viewport" />
         <!-- og:properties -->
@@ -10,7 +10,7 @@
         <meta property="og:type" content="website" />
         <meta property="og:description" content="Memberships & Affiliates Management API" />
         <meta property="og:title" content="Memberships & Affiliates Management API" />
-        <meta property="og:url" content="{{ url_for('memberships_main.memberships_main_routes', path='login', _external=True ) }}" />
+        <meta property="og:url" content="{{ url_for('memberships_main.memberships_main_routes', path='logout', _external=True ) }}" />
         <!-- og:image -->
         <meta property="og:image" content=" " />
         <meta property="og:image:type" content="image/png" />
@@ -20,7 +20,7 @@
         <!--- favicon -->
         <link rel="shortcut icon" href="{{ url_for('static', filename='manifests/icon.jpg') }}" />
         <link rel="manifest" href="{{ url_for('static', filename='manifests/manifest.json')}}" />
-        <link rel="canonical" href="{{ url_for('memberships_main.memberships_main_routes', path='login', _external=True ) }}" />
+        <link rel="canonical" href="{{ url_for('memberships_main.memberships_main_routes', path='logout', _external=True ) }}" />
         <!-- end metatags -->
 {% endblock metatags %}
 
@@ -41,30 +41,14 @@
                             <!-- jquery validation -->
                             <div class="card card-primary">
                               <div class="card-header">
-                                <h3 class="card-title">Login <small> Page</small></h3>
+                                <h3 class="card-title">Logout <small> Page</small></h3>
                               </div>
                               <!-- /.card-header -->
                               <!-- form start -->
                               <form role="form" id="quickForm">
-                                <div class="card-body">
-                                  <div class="form-group">
-                                    <label for="exampleInputEmail1">Email address</label>
-                                    <input type="email" name="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
-                                  </div>
-                                  <div class="form-group">
-                                    <label for="exampleInputPassword1">Password</label>
-                                    <input type="password" name="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
-                                  </div>
-                                  <div class="form-group mb-0">
-                                    <div class="custom-control custom-checkbox">
-                                      <input type="checkbox" name="terms" class="custom-control-input" id="exampleCheck1">
-                                      <label class="custom-control-label" for="exampleCheck1">I agree to the <a href="#">terms of service</a>.</label>
-                                    </div>
-                                  </div>
-                                </div>
                                 <!-- /.card-body -->
                                 <div class="card-footer">
-                                  <button type="submit" class="btn btn-primary">Submit</button>
+                                  <button type="submit" class="btn btn-primary">Logout</button>
                                 </div>
                               </form>
                             </div>

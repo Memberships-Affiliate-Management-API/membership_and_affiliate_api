@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-          <!-- Tell the browser to be responsive to screen width -->
-          <meta name="viewport" content="width=device-width, initial-scale=1">
+          {% block metatags %}
+                <!-- every page will include its meta-tags here -->
+          {% endblock metatags %}
           <!-- Font Awesome -->
           <link rel="stylesheet" href="{{ url_for('static', filename='plugins/fontawesome-free/css/all.min.css') }}">
           <!-- Ionicons -->

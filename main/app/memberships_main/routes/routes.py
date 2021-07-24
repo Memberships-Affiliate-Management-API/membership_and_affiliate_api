@@ -19,6 +19,8 @@ def memberships_main_routes(path: str) -> tuple:
         return render_template('main/contact.html')
     elif path == 'login':
         return render_template('main/login.html')
+    elif path == 'logout':
+        return render_template('main/logout.html')
     elif path == 'subscribe':
         return render_template('main/subscribe.html')
     elif path == 'robots.txt':
