@@ -21,8 +21,10 @@ def admin_dashboard_routes(path: str) -> tuple:
         return render_template('admin/organizations.html')
     elif path == "api-keys":
         return render_template('admin/api_keys.html')
-
-
+    elif path == "accounts":
+        return render_template('admin/accounts.html')
+    elif path == "help-desk":
+        return render_template('admin/helpdesk.html')
 
 
 

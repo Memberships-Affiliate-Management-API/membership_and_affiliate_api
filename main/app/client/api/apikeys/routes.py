@@ -10,7 +10,7 @@ from views.apikeys import APIKeysView
 api_keys_bp = Blueprint('api_keys', __name__)
 
 
-@api_keys_bp.route('/api/v1/api-keys', methods=["GET", "POST"])
+@api_keys_bp.route('/api/v1/client-admin/api-keys', methods=["GET", "POST"])
 @handle_users_auth
 def api_keys() -> tuple:
     json_data: dict = request.get_json()
