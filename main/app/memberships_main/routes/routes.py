@@ -23,6 +23,8 @@ def memberships_main_routes(path: str) -> tuple:
         return render_template('main/logout.html')
     elif path == 'subscribe':
         return render_template('main/subscribe.html')
+    elif path == 'terms':
+        return render_template('main/terms.html')
     elif path == 'robots.txt':
         return render_template('main/robots.txt')
     elif path == 'sitemap.xml':
@@ -33,3 +35,23 @@ def memberships_main_routes(path: str) -> tuple:
         return render_template('main/sw.js')
 
 
+@memberships_main_bp.route('/demos/api/<path:path>', methods=["GET"])
+def api_demos(path: str) -> tuple:
+    if path == "demos":
+        return render_template('main/demos/demos.html')
+    elif path == "memberships":
+        return render_template('main/demos/memberships.html')
+    elif path == "organizations":
+        return render_template('main/demos/organizations.html')
+    elif path == "coupons":
+        return render_template('main/demos/coupons.html')
+    elif path == "users":
+        return render_template('main/demos/users.html')
+    elif path == "affiliates":
+        return render_template('main/demos/affiliates.html')
+
+
+@memberships_main_bp.route('/examples/sdk/<path:path>', methods=["GET"])
+def sdk_examples(path: str) -> tuple:
+    if path == "examples":
+        return render_template('main/examples/sdk/examples.html')

@@ -29,9 +29,7 @@
     <section class="content">
       <div class="container-fluid">
         <!-- Small boxes (Stat box) -->
-
                 <!-- /.row -->
-
                 <!-- Main content -->
                     <section class="content">
                       <div class="container-fluid">
@@ -39,9 +37,9 @@
                           <!-- left column -->
                           <div class="col-md-12">
                             <!-- jquery validation -->
-                            <div class="card card-primary">
+                            <div class="card">
                               <div class="card-header">
-                                <h3 class="card-title">Subscribe <small> to start</small></h3>
+                                <h3 class="card-title">Subscribe <small> if you dont already have an account</small></h3>
                               </div>
                               <!-- /.card-header -->
                               <!-- form start -->
@@ -72,14 +70,18 @@
 
                                   <div class="form-group mb-0">
                                     <div class="custom-control custom-checkbox">
-                                      <input type="checkbox" name="terms" class="custom-control-input" id="exampleCheck1">
-                                      <label class="custom-control-label" for="exampleCheck1">I agree to the <a href="#">terms of service</a>.</label>
+                                      <input type="checkbox" name="terms" class="custom-control-input" id="terms">
+                                      <label class="custom-control-label" for="terms">I agree to the <a href="{{ url_for('memberships_main.memberships_main_routes', path='terms')}}">terms of service</a>.</label>
                                     </div>
                                   </div>
                                 </div>
                                 <!-- /.card-body -->
                                 <div class="card-footer">
-                                  <button type="submit" class="btn btn-primary">Submit</button>
+                                  <button type="submit" class="btn btn-primary"> <i class="fa fa-user-plus"> </i> Subscribe </button> OR
+                                  <a href="{{ url_for('memberships_main.memberships_main_routes', path='login') }}" type="button" class="btn btn-warning">
+                                      <i class="fa fa-link"> </i>
+                                      Login
+                                  </a>
                                 </div>
                               </form>
                             </div>

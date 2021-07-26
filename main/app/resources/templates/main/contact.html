@@ -1,7 +1,6 @@
-
 {% extends "main/layouts/layout.html" %}
 {% block metatags %}
-        <!-- metatags -->
+        <!-- meta_tags -->
         <title> Contact - Memberships &amp; Affiliates Management API</title>
         <meta name="description" content=" " />
         <meta content="width=device-width, initial-scale=1.0" name="viewport" />
@@ -21,17 +20,14 @@
         <link rel="shortcut icon" href="{{ url_for('static', filename='manifests/icon.jpg') }}" />
         <link rel="manifest" href="{{ url_for('static', filename='manifests/manifest.json')}}" />
         <link rel="canonical" href="{{ url_for('memberships_main.memberships_main_routes', path='contact',_external=True ) }}" />
-        <!-- end metatags -->
+        <!-- end meta_tags -->
 {% endblock metatags %}
-
 {% block content %}
 <!-- Main content -->
     <section class="content">
       <div class="container-fluid">
         <!-- Small boxes (Stat box) -->
-
                 <!-- /.row -->
-
                 <!-- Main content -->
                     <section class="content">
                       <div class="container-fluid">
@@ -39,7 +35,7 @@
                           <!-- left column -->
                           <div class="col-md-12">
                             <!-- jquery validation -->
-                            <div class="card card-primary">
+                            <div class="card">
                               <div class="card-header">
                                 <h3 class="card-title">Contact Us<small> Helpdesk </small></h3>
                               </div>
@@ -80,7 +76,6 @@
                                     <textarea id="body" name="body" class="form-control">
                                     </textarea>
                                   </div>
-
                                 </div>
                                 <!-- /.card-body -->
                                 <div class="card-footer">
@@ -94,7 +89,6 @@
                           <!--/.col (left) -->
                           <!-- right column -->
                           <div class="col-md-6">
-
                           </div>
                           <!--/.col (right) -->
                         </div>
@@ -102,9 +96,7 @@
                       </div><!-- /.container-fluid -->
                     </section>
                 <!-- /.content -->
-
       </div><!-- /.container-fluid -->
     </section>
 <!-- /.content -->
-
 {% endblock content %}

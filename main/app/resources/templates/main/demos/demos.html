@@ -1,0 +1,156 @@
+
+{% extends "main/layouts/layout.html" %}
+{% block metatags %}
+        <!-- metatags -->
+        <title> Logout - Memberships &amp; Affiliates Management API</title>
+        <meta name="description" content=" " />
+        <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+        <!-- og:properties -->
+        <meta property="og:site_name" name="Memberships & Affiliates Management API" />
+        <meta property="og:type" content="website" />
+        <meta property="og:description" content="Memberships & Affiliates Management API" />
+        <meta property="og:title" content="Memberships & Affiliates Management API" />
+        <meta property="og:url" content="{{ url_for('memberships_main.memberships_main_routes', path='logout', _external=True ) }}" />
+        <!-- og:image -->
+        <meta property="og:image" content=" " />
+        <meta property="og:image:type" content="image/png" />
+        <meta property="og:image:width" content="1024" />
+        <meta property="og:image:height" content="1270" />
+        <meta property="og:image:alt" content="Memberships & Affiliates Management API" />
+        <!--- favicon -->
+        <link rel="shortcut icon" href="{{ url_for('static', filename='manifests/icon.jpg') }}" />
+        <link rel="manifest" href="{{ url_for('static', filename='manifests/manifest.json')}}" />
+        <link rel="canonical" href="{{ url_for('memberships_main.memberships_main_routes', path='logout', _external=True ) }}" />
+        <!-- end metatags -->
+{% endblock metatags %}
+
+{% block content %}
+<!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <!-- Small boxes (Stat box) -->
+
+                <!-- /.row -->
+                <div class="row">
+                <!-- Main content -->
+                    <div class="col-md-8">
+                        <section class="content">
+                          <div class="container-fluid">
+                            <div class="row">
+                              <!-- left column -->
+                              <div class="col-md-12">
+                                <!-- jquery validation -->
+                                <div class="card">
+                                  <div class="card-header">
+                                    <h3 class="card-title">API Demos</h3>
+                                  </div>
+                                  <!-- /.card-header -->
+                                    <div class="card-content">
+                                        <div class="card-header">
+                                            <div class="card-title">
+                                                <h3 class="card-title"> Memberships Management API Demo</h3>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <form class="form-horizontal">
+                                                  <div class="form-group">
+                                                        <label for="memberships_endpoint">Memberships endpoint</label>
+                                                      <select id="memberships_endpoint" class="form-control">
+                                                          <option>Select End-Point</option>
+                                                          <option value="create"> Create Membership Plan</option>
+                                                          <option value="update"> Update Membership Plan</option>
+                                                          <option value="read"> Read Membership Plan</option>
+                                                          <option value="return-all"> Return All Membership Plans</option>
+                                                          <option value="delete"> Delete Membership Plan</option>
+                                                      </select>
+                                                  </div>
+                                                  <div class="form-group">
+                                                        <label for="membership_payload"> Memberships payload</label>
+                                                        <textarea name="membership_payload" id="membership_payload" class="form-control">{}</textarea>
+                                                  </div>
+                                                  <div class="form-group">
+                                                      <button type="button" class="btn btn-default"> Submit</button>
+                                                  </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                  <!-- /.card-header -->
+                                    <div class="card-content">
+                                        <div class="card-header">
+                                            <div class="card-title">
+                                                <h3 class="card-title"> Coupons Management API Demo</h3>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <form class="form-horizontal">
+                                                  <div class="form-group">
+                                                        <label for="coupons_payload"> Coupons payload</label>
+                                                        <textarea name="coupons_payload" id="coupons_payload" class="form-control"> </textarea>
+                                                  </div>
+
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                  <!-- /.card-header -->
+                                    <div class="card-content">
+                                        <div class="card-header">
+                                            <div class="card-title">
+                                                <h3 class="card-title"> Users Management API Demo</h3>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <form class="form-horizontal">
+                                                  <div class="form-group">
+                                                        <label for="users_payload"> Users payload</label>
+                                                        <textarea name="users_payload" id="users_payload" class="form-control"> </textarea>
+                                                  </div>
+
+                                            </form>
+                                        </div>
+
+                                    </div>
+
+                                  <!-- /.card-header -->
+                                    <div class="card-content">
+                                        <div class="card-header">
+                                            <div class="card-title">
+                                                <h3 class="card-title"> Affiliates Management API Demo</h3>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <form class="form-horizontal">
+                                                  <div class="form-group">
+                                                        <label for="affiliates_payload"> Affiliates payload</label>
+                                                        <textarea name="affiliates_payload" id="affiliates_payload" class="form-control"> </textarea>
+                                                  </div>
+
+                                            </form>
+                                        </div>
+
+                                    </div>
+
+
+                                </div>
+                                <!-- /.card -->
+                                </div>
+                              <!--/.col (left) -->
+                              <!-- right column -->
+                              <div class="col-md-6">
+
+                              </div>
+                              <!--/.col (right) -->
+                            </div>
+                            <!-- /.row -->
+                          </div><!-- /.container-fluid -->
+                        </section>
+                    </div>
+                <!-- /.content -->
+                    <div class="col-md-4">
+
+                    </div>
+                </div>
+      </div><!-- /.container-fluid -->
+    </section>
+<!-- /.content -->
+{% endblock content %}
