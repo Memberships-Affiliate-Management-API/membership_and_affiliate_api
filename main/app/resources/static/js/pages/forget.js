@@ -22,6 +22,7 @@ self.addEventListener('load', async e => {
 async function recover_email(email){
 /** recover email will send the email address to the backend and then retrieve a response, response is always positive*/
     if (email !== ''){
+        //TODO- authentication not required
         const request_par = {
                 method : 'POST',
                 headers: new Headers({'Content-Type': 'application/json'}),

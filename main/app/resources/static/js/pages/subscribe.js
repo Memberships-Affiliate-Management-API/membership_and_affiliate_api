@@ -42,6 +42,7 @@ async function do_subscribe(names, cell, email, password){
      */
     if ((email !== '') && (cell !== '') && (names !== '') && (password !== '')){
         console.log(`fields are being captured ${email} ${cell} ${names} ${password}`)
+        //TODO- add authentication fields
         const request_par = {
             method: 'POST',
             headers: new Headers({'Content-Type': 'application/json'}),
