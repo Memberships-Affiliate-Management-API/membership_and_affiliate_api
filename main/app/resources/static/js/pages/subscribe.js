@@ -20,14 +20,13 @@ self.addEventListener('load', async e => {
          * @type {*}
          */
 
-        if ((terms === false) || (password === '') ||
-            (password !== repeat_password)) {
+        if (!terms || !password  || (password !== repeat_password)) {
             document.getElementById('message').innerHTML = 'please accept <code>terms</code> and insure ' +
                 '<code>password</code> is not empty and <code>repeat password match</code>'
             return null
         }
         const response = await do_subscribe(names, cell, email, password)
-        if (response.status === false) {
+        if (!response.status) {
             document.getElementById('message').innerHTML = `${response.message}`
             return null
         }
@@ -40,8 +39,7 @@ async function do_subscribe(names, cell, email, password){
     /** function used to actually subscribe and then login if success flask will redirect to dashboard and flash message
      *  otherwise it will return the error message
      */
-    if ((email !== '') && (cell !== '') && (names !== '') && (password !== '')){
-        console.log(`fields are being captured ${email} ${cell} ${names} ${password}`)
+    if ((!!email  && !!cell  && !!names && !!password)){
         //TODO- add authentication fields
         const request_par = {
             method: 'POST',

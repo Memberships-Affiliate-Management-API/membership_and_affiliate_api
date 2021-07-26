@@ -60,7 +60,6 @@ def create_app(config_class=Config):
     # registering main api handlers
     app.register_blueprint(main_api_bp)
 
-
     # Error Handlers
     app.register_blueprint(default_handlers_bp)
 

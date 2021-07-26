@@ -17,13 +17,16 @@ self.addEventListener('load', async e => {
         const subject = document.getElementById('subject').value
         const body = document.getElementById('body').value
         const response = await do_send_contact(names, email, cell, topic, subject, body)
+        /** whatever the message is show it to the user **/
         document.getElementById('message').innerHTML =`${response.message}`
     })
 })
 
 
 async function do_send_contact(names, email, cell, topic, subject, body){
-        if ((names !== '') && (email !== '') && (cell !== '') && (topic !== '') && (subject !== '') && (body !== '')){
+        /** send contact information and returns response**/
+        /** handling Null or undefined input **/
+        if (!!names && !!email  && !!cell && !!topic && !!subject && !!body){
         // TODO add authentication fields , if available
         const request_par = {
             method: 'POST',
@@ -38,6 +41,7 @@ async function do_send_contact(names, email, cell, topic, subject, body){
         const response = await fetch(request)
         return await response.json()
         }
+        /** some or all of the inputs is undefined or Null **/
         document.getElementById('message').innerHTML= 'please insure that all <code>required fields</code> are ' +
             'correctly filled in'
 }

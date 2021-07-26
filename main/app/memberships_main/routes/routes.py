@@ -1,6 +1,4 @@
-
 from flask import Blueprint, request, render_template, get_flashed_messages, make_response
-
 memberships_main_bp = Blueprint('memberships_main', __name__)
 
 

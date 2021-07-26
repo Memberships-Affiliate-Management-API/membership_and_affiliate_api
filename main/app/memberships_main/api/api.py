@@ -27,7 +27,7 @@ def auth(path: str) -> tuple:
         message: str = 'unable to subscribe user please check your data or try again later'
         return jsonify({'status': False, 'message': message}), 200
 
-    elif path == 'recover':
+    elif path == 'send-recovery-email':
         json_data: dict = request.get_json()
         print("email : {}".format(json_data.get('email')))
         # TODO: pass email address to a function to check its validity and then send a password recovery email

@@ -1,7 +1,6 @@
 /**
- * Forget page scripts: for Memberships & Affiliates Management API
+ * Forget Password & Recovery page scripts: for Memberships & Affiliates Management API
  */
-
 self.addEventListener('load', async e => {
 /** forget page event listener it helps to setup a submit event listener **/
     const form_forget = document.getElementById('forget');
@@ -11,17 +10,18 @@ self.addEventListener('load', async e => {
         e.preventDefault()
         const email = document.getElementById('email').value
         // call submit recovery email
-        const response = await recover_email(email)
-        if (response.status === true){
-            document.getElementById('message').innerHTML = `${response.message}`
-        }
+        const response = await send_recovery_email(email)
+        /** whatever the response tell the user **/
+        document.getElementById('message').innerHTML = `${response.message}`
+
     })
 })
 
 
-async function recover_email(email){
+async function send_recovery_email(email){
 /** recover email will send the email address to the backend and then retrieve a response, response is always positive*/
-    if (email !== ''){
+    /** if not Undefined or Null **/
+    if (!!email){
         //TODO- authentication not required
         const request_par = {
                 method : 'POST',
@@ -31,11 +31,12 @@ async function recover_email(email){
                 credentials: "same-origin",
                 cache: "no-cache",
         }
-        const url = '/api/v1/main/auth/recover'
+        const url = '/api/v1/main/auth/send-recovery-email'
         const request = new Request(url, request_par);
         const response = await fetch(request)
         return await response.json()
     }
+    /** email is undefined or Null **/
     document.getElementById('message').innerHTML = 'please enter the <code>email address</code> ' +
         'attached to your account for <code>password recovery</code>'
 }
