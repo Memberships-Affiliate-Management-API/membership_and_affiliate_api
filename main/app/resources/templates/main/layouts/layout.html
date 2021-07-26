@@ -79,5 +79,8 @@
         <!-- AdminLTE App -->
         <script src="{{ url_for('static', filename='js/adminlte.js') }}"></script>
         <script src="{{ url_for('static', filename='js/demo.js') }}"></script>
+        {% block page_scripts %}
+            <!-- page specific scripts will be inserted here -->
+        {% endblock page_scripts %}
     </body>
 </html>

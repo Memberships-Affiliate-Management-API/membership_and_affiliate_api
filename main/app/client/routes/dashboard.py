@@ -17,18 +17,18 @@ def client_dashboard() -> tuple:
 @handle_users_auth
 def client_dashboard_routes(path: str) -> tuple:
     if path == "dashboard":
-        return render_template('client/dashboard.html')
+        return render_template('client/dashboard.html'), 200
     elif path == "organizations":
-        return render_template('client/organizations.html')
+        return render_template('client/organizations.html'), 200
     elif path == "affiliates":
-        return render_template('client/affiliates.html')
+        return render_template('client/affiliates.html'), 200
     elif path == "users":
-        return render_template('client/users.html')
+        return render_template('client/users.html'), 200
     elif path == "api-keys":
-        return render_template('client/api_keys.html')
+        return render_template('client/api_keys.html'), 200
     elif path == "accounts":
-        return render_template('client/accounts.html')
+        return render_template('client/accounts.html'), 200
     elif path == "help-desk":
-        return render_template('client/helpdesk.html')
+        return render_template('client/helpdesk.html'), 200
 
 

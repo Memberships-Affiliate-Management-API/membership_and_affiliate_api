@@ -33,6 +33,9 @@ def create_app(config_class=Config):
     # import main app blueprints
     from main.app.memberships_main.routes.routes import memberships_main_bp
 
+    # importing main api
+    from main.app.memberships_main.api.api import main_api_bp
+
     app.register_blueprint(affiliates_bp)
     app.register_blueprint(users_bp)
     app.register_blueprint(memberships_bp)
@@ -53,6 +56,10 @@ def create_app(config_class=Config):
 
     # main app handlers
     app.register_blueprint(memberships_main_bp)
+
+    # registering main api handlers
+    app.register_blueprint(main_api_bp)
+
 
     # Error Handlers
     app.register_blueprint(default_handlers_bp)

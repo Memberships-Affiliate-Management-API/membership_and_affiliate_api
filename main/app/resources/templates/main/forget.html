@@ -1,8 +1,8 @@
 
 {% extends "main/layouts/layout.html" %}
 {% block metatags %}
-        <!-- meta_tags -->
-        <title> Login - Memberships &amp; Affiliates Management API</title>
+        <!-- metatags -->
+        <title> Password recovery - Memberships &amp; Affiliates Management API</title>
         <meta name="description" content=" " />
         <meta content="width=device-width, initial-scale=1.0" name="viewport" />
         <!-- og:properties -->
@@ -21,7 +21,7 @@
         <link rel="shortcut icon" href="{{ url_for('static', filename='manifests/icon.jpg') }}" />
         <link rel="manifest" href="{{ url_for('static', filename='manifests/manifest.json')}}" />
         <link rel="canonical" href="{{ url_for('memberships_main.memberships_main_routes', path='login', _external=True ) }}" />
-        <!-- end meta_tags -->
+        <!-- end metatags -->
 {% endblock metatags %}
 
 {% block content %}
@@ -39,40 +39,33 @@
                             <!-- jquery validation -->
                             <div class="card">
                               <div class="card-header">
-                                <h3 class="card-title">Login <small> to start using this app</small></h3>
+                                <h3 class="card-title">Password Recovery <small></small></h3>
                               </div>
                               <!-- /.card-header -->
                               <!-- form start -->
-                              <form role="form" id="login">
+                              <form role="form" id="forget">
                                 <div class="card-body">
                                   <div class="form-group">
-                                    <label for="email"><code>*</code> Email address</label>
+                                    <label for="email">Email address</label>
                                     <input type="email" name="email" class="form-control" id="email" placeholder="Enter email">
-                                  </div>
-                                  <div class="form-group">
-                                    <label for="password"><code>*</code> Password</label>
-                                    <input type="password" name="password" class="form-control" id="password" placeholder="Password">
                                   </div>
                                 </div>
                                 <!-- /.card-body -->
                                 <div class="card-footer">
                                   <button type="submit" class="btn btn-primary">
-                                      <i class="nav-icon fas fa-sign-in-alt"> </i>
-                                      Login
+                                      <i class="nav-icon fas fa-file-alt"> </i>
+                                      Recover
                                   </button> OR
-                                  <a href="{{ url_for('memberships_main.memberships_main_routes', path='subscribe') }}" type="button" class="btn btn-warning">
+                                  <a href="{{ url_for('memberships_main.memberships_main_routes', path='login') }}" type="button" class="btn btn-warning">
                                       <i class="nav-icon fas fa-link"> </i>
-                                      Subscribe
-                                  </a>
-                                  <hr/>
-                                  <a href="{{ url_for('memberships_main.memberships_main_routes', path='forget') }}">
-                                      I Forgot My Password
+                                      Login
                                   </a>
                                 </div>
-                                <div class="card-footer">
-                                    <!-- displaying event message in-case login was not successful -->
-                                    <span id="message" class="card-text"></span>
-                                </div>
+
+                                  <div class="form-group">
+                                      <!-- Response messages container -->
+                                      <span id="message" class="form-control"></span>
+                                  </div>
                               </form>
                             </div>
                             <!-- /.card -->
@@ -88,10 +81,14 @@
                       </div><!-- /.container-fluid -->
                     </section>
                 <!-- /.content -->
+
       </div><!-- /.container-fluid -->
     </section>
+<!-- /.content -->
+
 {% endblock content %}
+
 {% block page_scripts %}
-    <!-- page specific scripts -->
-    <script src="{{ url_for('static', filename='js/pages/login.js') }}"> </script>
+    <!-- Page Specific scripts -->
+    <script src="{{ url_for('static', filename='js/pages/forget.js')}}"> </script>
 {% endblock page_scripts %}

@@ -43,28 +43,28 @@
                               </div>
                               <!-- /.card-header -->
                               <!-- form start -->
-                              <form role="form" id="quickForm">
+                              <form role="form" id="subscribe">
                                 <div class="card-body">
                                   <div class="form-group">
-                                    <label for="names">Names</label>
+                                    <label for="names"><code>*</code> Names</label>
                                     <input type="text" name="names" class="form-control" id="names" placeholder="Enter Names">
                                   </div>
 
                                   <div class="form-group">
-                                    <label for="cell">Cell</label>
+                                    <label for="cell"><code>*</code> Cell</label>
                                     <input type="text" name="cell" class="form-control" id="cell" placeholder="Enter Cell">
                                   </div>
 
                                   <div class="form-group">
-                                    <label for="exampleInputEmail1">Email address</label>
-                                    <input type="email" name="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
+                                    <label for="email"><code>*</code> Email address</label>
+                                    <input type="email" name="email" class="form-control" id="email" placeholder="Enter email">
                                   </div>
                                   <div class="form-group">
-                                    <label for="password">Password</label>
-                                    <input type="password" name="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+                                    <label for="password"><code>*</code> Password</label>
+                                    <input type="password" name="password" class="form-control" id="password" placeholder="Password">
                                   </div>
                                   <div class="form-group">
-                                    <label for="repeat-password">Repeat Password</label>
+                                    <label for="repeat-password"><code>*</code> Repeat Password</label>
                                     <input type="password" name="repeat-password" class="form-control" id="repeat-password" placeholder="Repeat Password">
                                   </div>
 
@@ -82,6 +82,10 @@
                                       <i class="fa fa-link"> </i>
                                       Login
                                   </a>
+                                </div>
+                                <div class="card-footer">
+                                    <!-- message field -->
+                                    <span class="card-text" id="message"></span>
                                 </div>
                               </form>
                             </div>
@@ -104,3 +108,8 @@
 <!-- /.content -->
 
 {% endblock content %}
+
+{% block page_scripts %}
+    <!-- page specific scripts -->
+    <script src="{{ url_for('static', filename='js/pages/subscribe.js')}}"> </script>
+{% endblock page_scripts %}

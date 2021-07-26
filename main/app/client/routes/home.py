@@ -8,6 +8,6 @@ client_home_bp = Blueprint('client_home', __name__)
 
 @client_home_bp.route('/client', methods=["GET"])
 def client_home() -> tuple:
-    return render_template('client/home.html')
+    return render_template('client/home.html'), 200
 
 
