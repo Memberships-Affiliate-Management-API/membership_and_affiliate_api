@@ -28,3 +28,14 @@ def auth(path: str) -> tuple:
         return jsonify({'status': True,
                         'message': 'successfully sent a password recovery email please check your email'}), 200
 
+
+@main_api_bp.route('/api/v1/main/contact', methods=['POST'])
+def contact() -> tuple:
+    json_data: dict = request.get_json()
+    # TODO: send contact data to contact format
+    print('Names: {}, Email: {}, Cell: {}, '
+          'Topic: {}, Subject: {}, Body: {}'.format(json_data.get('names'), json_data.get('email'),
+                                                    json_data.get('cell'), json_data.get('topic'),
+                                                    json_data.get('subject'), json_data.get('body')))
+
+    return jsonify({'status': False, 'message': 'Unable to send request please try again later'}), 200

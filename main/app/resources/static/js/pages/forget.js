@@ -42,6 +42,6 @@ async function recover_email(email){
         console.log(response_object)
         return response_object
     }
-    document.getElementById('message').innerHTML = 'please enter the email address attached to your ' +
-        'account for password recovery'
+    document.getElementById('message').innerHTML = 'please enter the <code>email address</code> ' +
+        'attached to your account for <code>password recovery</code>'
 }
