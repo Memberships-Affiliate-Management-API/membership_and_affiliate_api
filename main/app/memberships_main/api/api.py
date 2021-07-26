@@ -3,6 +3,7 @@ from flask import Blueprint, jsonify, request
 main_api_bp = Blueprint('main_api', __name__)
 
 
+# TODO: insure the organization for Memberships & affiliates Management API is created before running any API's this can be done on app setup
 @main_api_bp.route('/api/v1/main/auth/<path:path>', methods=['POST'])
 def auth(path: str) -> tuple:
     ***REMOVED***
@@ -19,6 +20,11 @@ def auth(path: str) -> tuple:
                        '<strong>email: <code>{}</code> </strong> or <strong>password: <code>{}</code></strong>'.format(
                         json_data.get('email'), json_data.get('password'))
 
+        return jsonify({'status': False, 'message': message}), 200
+
+    elif path == 'subscribe':
+        # TODO: pass subscription data to user add function if successfull redirect to dashboard and flash message
+        message: str = 'unable to subscribe user please check your data or try again later'
         return jsonify({'status': False, 'message': message}), 200
 
     elif path == 'recover':

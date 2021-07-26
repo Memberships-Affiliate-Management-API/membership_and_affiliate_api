@@ -20,16 +20,18 @@ self.addEventListener('load', async e => {
          * @type {*}
          */
 
-        if ((terms === true) && (names !== '') && (cell !== '') && (email !== '') && (password !== '') &&
-            (password === repeat_password)) {
-            const response = await do_subscribe(names, cell, email, password)
-            if (response.status === false) {
-                console.log(`there was an error subscribing : ${response.message}`)
-                document.getElementById('message').innerHTML = `${response.message}`
-            }
+        if ((terms === false) || (password === '') ||
+            (password !== repeat_password)) {
+            document.getElementById('message').innerHTML = 'please accept <code>terms</code> and insure ' +
+                '<code>password</code> is not empty and <code>repeat password match</code>'
+            return null
         }
-        document.getElementById('message').innerHTML= 'please specify all <code>required fields</code> ' +
-            '<em>accept terms</em> and insure that <em>passwords match</em>'
+        const response = await do_subscribe(names, cell, email, password)
+        if (response.status === false) {
+            document.getElementById('message').innerHTML = `${response.message}`
+            return null
+        }
+
     })
 })
 
@@ -38,5 +40,20 @@ async function do_subscribe(names, cell, email, password){
     /** function used to actually subscribe and then login if success flask will redirect to dashboard and flash message
      *  otherwise it will return the error message
      */
-
+    if ((email !== '') && (cell !== '') && (names !== '') && (password !== '')){
+        console.log(`fields are being captured ${email} ${cell} ${names} ${password}`)
+        const request_par = {
+            method: 'POST',
+            headers: new Headers({'Content-Type': 'application/json'}),
+            body: JSON.stringify({email,cell, names, password}),
+            mode: 'cors',
+            credentials: 'same-origin',
+            cache: 'no-cache'
+        }
+        const url = '/api/v1/main/auth/subscribe'
+        const request = new Request(url, request_par)
+        const response = await fetch(request)
+        return await response.json()
+    }
+    document.getElementById('message').innerHTML= 'please specify all <code>required fields</code>'
 }

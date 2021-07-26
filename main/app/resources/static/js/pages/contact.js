@@ -51,7 +51,7 @@ async function do_send_contact(names, email, cell, topic, subject, body){
         console.log(response_object)
         return response_object
         }
-        document.getElementById('message').innerHTML= 'please insure that all required fields are ' +
+        document.getElementById('message').innerHTML= 'please insure that all <code>required fields</code> are ' +
             'correctly filled in'
 
 }
