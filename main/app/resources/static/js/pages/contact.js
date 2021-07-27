@@ -17,7 +17,7 @@ self.addEventListener('load', async e => {
         const subject = document.getElementById('subject').value
         const body = document.getElementById('body').value
         const response = await do_send_contact(names, email, cell, topic, subject, body)
-        /** whatever the message is show it to the user **/
+        /** showing response message to the user **/
         document.getElementById('message').innerHTML =`${response.message}`
     })
 })
