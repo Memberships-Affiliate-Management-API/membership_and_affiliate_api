@@ -32,7 +32,7 @@ def deposit_failed_ipn(path: str) -> tuple:
     return "OK", 200
 
 
-@paypal_ipn_bp.route('_ipn/paypal/deposit/cancelled/<path:path>', methods=["GET", "POST"])
+@paypal_ipn_bp.route('/_ipn/paypal/deposit/cancelled/<path:path>', methods=["GET", "POST"])
 def deposit_cancelled_ipn(path: str) -> tuple:
 
     ***REMOVED***

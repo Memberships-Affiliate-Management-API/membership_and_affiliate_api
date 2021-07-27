@@ -1,38 +1,51 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, url_for, flash
+
+from database.users import UserModel
+from security.users_authenticator import logged_user
+from views.users import UserView
 
 main_api_bp = Blueprint('main_api', __name__)
 
 
-# TODO: insure the organization for Memberships & affiliates Management API is created before running any API's this can be done on app setup
+# TODO: insure the organization for Memberships & affiliates Management API is created before
+#  running any API's this can be done on app setup
 @main_api_bp.route('/api/v1/main/auth/<path:path>', methods=['POST'])
-def auth(path: str) -> tuple:
+@logged_user
+def auth(current_user: UserModel, path: str) -> tuple:
     ***REMOVED***
         authentication api, handles login, password recovery, and user subscriptions,
         for membership & affiliates Management API, main app
     :return:
     ***REMOVED***
+    if current_user:
+        message: str = "User already logged in"
+        return jsonify({'status': False, 'message': message}), 500
+
     if path == 'login':
         json_data: dict = request.get_json()
-        # TODO: pass login email and password to a function to login_form
-        #  If login successful redirect to dashboard page and flash login success message
-
-        message: str = 'login was not successful please check your ' \
-                       '<strong>email: <code>{}</code> </strong> or <strong>password: <code>{}</code></strong>'.format(
-                        json_data.get('email'), json_data.get('password'))
-
-        return jsonify({'status': False, 'message': message}), 200
+        users_view_instance: UserView = UserView()
+        email: str = json_data.get('email')
+        password: str = json_data.get('password')
+        return users_view_instance.login(email=email, password=password)
 
     elif path == 'subscribe':
-        # TODO: pass subscription data to user add function if successfull redirect to dashboard and flash message
-        message: str = 'unable to subscribe user please check your data or try again later'
-        return jsonify({'status': False, 'message': message}), 200
+        json_data: dict = request.get_json()
+        # TODO - check data validity
+        names: str = json_data.get('names')
+        cell: str = json_data.get('cell')
+        email: str = json_data.get('email')
+        password: str = json_data.get('password')
+        print(json_data)
+        users_view_instance: UserView = UserView()
+        return users_view_instance.add_user(names=names, cell=cell, email=email, password=password)
 
     elif path == 'send-recovery-email':
         json_data: dict = request.get_json()
         print("email : {}".format(json_data.get('email')))
         # TODO: pass email address to a function to check its validity and then send a password recovery email
-        return jsonify({'status': True,
-                        'message': 'successfully sent a password recovery email please check your email'}), 200
+        email = json_data.get('email')
+        users_view_instance: UserView = UserView()
+        return users_view_instance.send_recovery_email(email=email)
 
 
 @main_api_bp.route('/api/v1/main/contact', methods=['POST'])

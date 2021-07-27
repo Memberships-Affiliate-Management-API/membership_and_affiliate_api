@@ -4,6 +4,7 @@ from werkzeug.security import check_password_hash
 from config.types import dict_list_type
 from main import cache_affiliates
 from database.users import UserModel
+from security.users_authenticator import encode_auth_token
 from utils.utils import create_id, return_ttl
 from config.exception_handlers import handle_view_errors
 from config.use_context import use_context
@@ -33,30 +34,29 @@ class UserView:
         :param uid:
         :return:
         ***REMOVED***
+        # TODO - refactor this code
         if (uid is not None) and (uid != ""):
-            user_list: users_type = UserModel.query(UserModel.uid == uid).fetch()
-            if len(user_list) > 0:
+            user_instance: UserModel = UserModel.query(UserModel.uid == uid).get()
+            if isinstance(user_instance, UserModel):
                 return jsonify({'status': False, 'message': 'user already exists'}), 500
-        user_list: users_type = UserModel.query(UserModel.email == email).fetch()
-        if len(user_list) > 0:
-            message: str = '''
-            the email you submitted is already attached to an account please login again or reset your password
-            '''
+
+        user_instance: UserModel = UserModel.query(UserModel.email == email).get()
+        if isinstance(user_instance, UserModel):
+            # NOTE: Email already attached to an existing user
+            message: str = '''the email you submitted is already attached to an account please 
+            login again or reset your password'''
             return jsonify({'status': False, 'message': message}), 500
 
-        user_list: users_type = UserModel.query(UserModel.cell == cell).fetch()
-        if len(user_list) > 0:
-            message: str = '''
-            the cell you submitted is already attached to an account please login again or reset your password
-            '''
+        user_instance: UserModel = UserModel.query(UserModel.cell == cell).get()
+        if isinstance(user_instance, UserModel):
+            message: str = '''the cell you submitted is already attached to an account please login again or 
+            reset your password'''
             return jsonify({'status': False, 'message': message}), 500
 
-        if (uid is not None) and (uid != ""):
-            pass
-        else:
+        if (uid is None) or (uid != ""):
             uid = create_id()
-
-        user_instance: UserModel = UserModel(names=names, surname=surname, cell=cell, email=email, password=password,
+        print(uid, names, surname, cell, email, password)
+        user_instance: UserModel = UserModel(uid=uid, names=names, surname=surname, cell=cell, email=email, password=password,
                                              is_active=True)
         user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
         return jsonify({'status': True,
@@ -421,7 +421,32 @@ class UserView:
             this login utility may support client app , not necessary for admin and service to service calls
             Options:
             firebase login, JWT Token
-            TODO - complete login
         ***REMOVED***
-        pass
+        user_model: UserModel = UserModel.query(email=email).get()
+        if isinstance(user_model, UserModel):
+            return jsonify({"message": "User not found"}), 401
+
+        if not user_model.is_active:
+            message: str = 'login was not successful user is de-activated please contact admin'
+            return jsonify({"message": message}), 403
+
+        if check_password_hash(user_model.password, password):
+            token = encode_auth_token(uid=user_model.uid)
+            return jsonify({'token': token, 'message': "you have successfully logged in"}), 200
+        else:
+            message: str = 'login was not successful please check your <strong>email: <code>{}</code> </strong> or ' \
+                           '<strong>password: <code>{}</code></strong>'.format(email, password)
+
+            return jsonify({"message": message}), 401
+
+    @use_context
+    @handle_view_errors
+    def send_recovery_email(self, email: typing.Union[str, None]) -> tuple:
+        ***REMOVED***
+            # Use the email sdk to send recovery email and return
+            :return:
+        ***REMOVED***
+        # TODO: complete this by actually sending recovery email
+        return jsonify({'status': False, 'message':'Unable to send recovery email please try again later'}), 500
+
 

@@ -181,7 +181,7 @@ class PayPalRecurring(PayPalClient):
                    "home_url": "{}".format(self.home_url)
             }
 
-    def create_plan(self, debug: bool = False):
+    def create_service_plan(self, debug: bool = False):
         ***REMOVED***
             used to create a new recurring plan
         :return:

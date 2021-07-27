@@ -18,6 +18,7 @@ class Config:
     PAYPAL_CLIENT_ID_SAND: str = os.environ.get("PAYPAL_CLIENT_ID_SAND") or config("PAYPAL_CLIENT_ID_SAND")
     PAYPAL_CLIENT_SECRET_SAND: str = os.environ.get("PAYPAL_CLIENT_SECRET_SAND") or config("PAYPAL_CLIENT_SECRET_SAND")
     IS_PRODUCTION: bool = False
+    SECRET_KEY: str = os.environ.get("SECRET_KEY") or config("SECRET_KEY")
 
 
 
