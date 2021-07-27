@@ -61,3 +61,10 @@ def handle_store_errors(func):
             return None
 
     return wrapper
+
+
+if __name__ == '__main__':
+    ***REMOVED***
+        NOTE: fast testing of functions here 
+    ***REMOVED***
+    pass

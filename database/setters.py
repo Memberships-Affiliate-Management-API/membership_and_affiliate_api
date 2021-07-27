@@ -3,7 +3,7 @@
 ***REMOVED***
 import typing
 from datetime import datetime, date
-from config.stocks import currency_symbols
+from config.currencies import currency_symbols
 from utils.utils import get_payment_methods
 
 

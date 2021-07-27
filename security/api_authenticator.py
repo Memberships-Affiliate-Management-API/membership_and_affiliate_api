@@ -34,3 +34,10 @@ def handle_api_auth(func):
         raise UnAuthenticatedError(status=401, description=message)
 
     return auth_wrapper
+
+
+if __name__ == '__main__':
+    ***REMOVED***
+        NOTE: fast testing of functions here 
+    ***REMOVED***
+    pass

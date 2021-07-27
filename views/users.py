@@ -26,13 +26,6 @@ class UserView:
                  password:  typing.Union[str, None], uid:  typing.Union[str, None] = None) -> tuple:
         ***REMOVED***
             create new user
-        :param names:
-        :param surname:
-        :param cell:
-        :param email:
-        :param password:
-        :param uid:
-        :return:
         ***REMOVED***
         # TODO - refactor this code
         if (uid is not None) and (uid != ""):
@@ -71,13 +64,6 @@ class UserView:
                              password:  typing.Union[str, None], uid:  typing.Union[str, None] = None) -> tuple:
         ***REMOVED***
             create new user
-        :param names:
-        :param surname:
-        :param cell:
-        :param email:
-        :param password:
-        :param uid:
-        :return:
         ***REMOVED***
         if (uid is not None) and (uid != ""):
             user_list: users_type = UserModel.query(UserModel.uid == uid).fetch_async().get_result()

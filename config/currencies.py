@@ -2,15 +2,6 @@
     this module describes a list of stocks using Symbols which may be accessed
 ***REMOVED***
 import typing
-
-stock_ticker: dict = {
-    "stock_id": "",
-    "stock_code": "",
-    "symbol": "",
-    "stock_name": ""
-}
-
-default_stock_tickers: typing.List[dict] = []
 # _code,_unicode-decimal,_unicode-hex,__text
 list_of_currencies: typing.List[list] = [
     ["ALL", 'Albania Lek'],

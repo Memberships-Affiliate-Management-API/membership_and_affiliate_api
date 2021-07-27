@@ -173,3 +173,10 @@ def authenticated_user(token: str):
         return current_user
     except jwt.DecodeError as e:
         return None
+
+
+if __name__ == '__main__':
+    ***REMOVED***
+        NOTE: fast testing of functions here 
+    ***REMOVED***
+    pass
