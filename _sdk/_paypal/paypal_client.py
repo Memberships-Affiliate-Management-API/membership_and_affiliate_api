@@ -1,18 +1,22 @@
-import os
 import sys
-from _sdk._paypal_checkout.core.environment import SandboxEnvironment
-from _sdk._paypal_checkout.core.paypal_http_client import PayPalHttpClient
+from _sdk._paypal.core.environment import SandboxEnvironment, LiveEnvironment
+from _sdk._paypal.core.paypal_http_client import PayPalHttpClient
 
 
 class PayPalClient:
-    def __init__(self):
-        self.client_id = os.environ["PAYPAL_CLIENT_ID"] if 'PAYPAL_CLIENT_ID' in os.environ else "<<PAYPAL-CLIENT-ID>>"
-        self.client_secret = os.environ["PAYPAL_CLIENT_SECRET"] if 'PAYPAL_CLIENT_SECRET' in os.environ else "<<PAYPAL-CLIENT-SECRET>>"
+    def __init__(self, app):
 
+        self.client_id_live = app.config.get('PAYPAL_CLIENT_ID')
+        self.client_secret_live = app.config.get('PAYPAL_CLIENT_SECRET')
+        self.client_id_sand = app.config.get('PAYPAL_CLIENT_ID_SAND')
+        self.client_secret_sand = app.config.get('PAYPAL_CLIENT_SECRET_SAND')
         ***REMOVED***Setting up and Returns PayPal SDK environment with PayPal Access credentials.
            For demo purpose, we are using SandboxEnvironment. In production this will be
            LiveEnvironment.***REMOVED***
-        self.environment = SandboxEnvironment(client_id=self.client_id, client_secret=self.client_secret)
+        if app.config.get('IS_PRODUCTION'):
+            self.environment = LiveEnvironment(client_id=self.client_id_live, client_secret=self.client_secret_live)
+        else:
+            self.environment = SandboxEnvironment(client_id=self.client_id_sand, client_secret=self.client_secret_sand)
 
         ***REMOVED*** Returns PayPal HTTP client instance with environment which has access
             credentials context. This can be used invoke PayPal API's provided the
@@ -28,7 +32,7 @@ class PayPalClient:
             itr = json_data.__dict__.iteritems()
         else:
             itr = json_data.__dict__.items()
-        for key,value in itr:
+        for key, value in itr:
             # Skip internal attributes.
             if key.startswith("__") or key.startswith("_"):
                 continue

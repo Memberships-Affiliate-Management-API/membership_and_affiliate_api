@@ -29,8 +29,6 @@ class OrdersCaptureRequest:
     def prefer(self, prefer):
         self.headers["Prefer"] = str(prefer)
 
-
-
     def request_body(self, order_action_request):
         self.body = order_action_request
         return self

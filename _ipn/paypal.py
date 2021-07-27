@@ -12,11 +12,12 @@ paypal_ipn_bp = Blueprint("paypal_ipn", __name__)
 @paypal_ipn_bp.route('/_ipn/paypal/deposit/success/<path:path>', methods=["GET", "POST"])
 def deposit_successfull_ipn(path: str) -> tuple:
     ***REMOVED***
-
-    :param path: organization_id
-    :return: "OK", 200
+        deposit is successfull capture the approve url and redirect the user there after saving the deposit
+        details to the store
+        :param path: organization_id
+        :return: "OK", 200
     ***REMOVED***
-
+    # TODO - get authorization link and redirect the user to this link
     return "OK", 200
 
 
@@ -28,6 +29,17 @@ def deposit_failed_ipn(path: str) -> tuple:
     :return: "OK", 200
     ***REMOVED***
 
+    return "OK", 200
+
+
+@paypal_ipn_bp.route('_ipn/paypal/deposit/cancelled/<path:path>', methods=["GET", "POST"])
+def deposit_cancelled_ipn(path: str) -> tuple:
+
+    ***REMOVED***
+        paypal deposit is cancelled handle this event
+        path: is organization_id
+    :return:
+    ***REMOVED***
     return "OK", 200
 
 

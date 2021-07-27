@@ -1,4 +1,5 @@
-# This class was generated on Mon, 02 Jul 2018 17:09:03 PDT by version 0.1.0-dev+0ee05a-dirty of Braintree SDK Generator
+# This class was generated on Mon, 02 Jul 2018 17:09:03 PDT by version 0.1.0-dev+0ee05a-dirty of
+# Braintree SDK Generator
 # orders_create_request.py
 # @version 0.1.0-dev+0ee05a-dirty
 # @type request

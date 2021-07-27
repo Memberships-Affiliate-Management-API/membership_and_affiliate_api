@@ -13,6 +13,12 @@ class Config:
     DATASTORE_TIMEOUT: int = 3600  # seconds
     DATASTORE_RETRIES: int = 10  # total retries when saving to datastore
     CURRENCY: str = "USD"
+    PAYPAL_CLIENT_ID: str = os.environ.get("PAYPAL_CLIENT_ID") or config("PAYPAL_CLIENT_ID")
+    PAYPAL_CLIENT_SECRET: str = os.environ.get("PAYPAL_CLIENT_SECRET") or config("PAYPAL_CLIENT_SECRET")
+    PAYPAL_CLIENT_ID_SAND: str = os.environ.get("PAYPAL_CLIENT_ID_SAND") or config("PAYPAL_CLIENT_ID_SAND")
+    PAYPAL_CLIENT_SECRET_SAND: str = os.environ.get("PAYPAL_CLIENT_SECRET_SAND") or config("PAYPAL_CLIENT_SECRET_SAND")
+    IS_PRODUCTION: bool = False
+
 
 
 
