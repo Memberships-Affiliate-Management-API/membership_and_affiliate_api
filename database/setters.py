@@ -3,7 +3,6 @@
 ***REMOVED***
 import typing
 from datetime import datetime, date
-from config.currencies import currency_symbols
 from utils.utils import get_payment_methods
 
 
@@ -120,6 +119,7 @@ class ClassSetters:
 
     @staticmethod
     def set_currency(prop, value: typing.Union[str, None]) -> str:
+        from config.currencies import currency_symbols
         if not (isinstance(value, str)):
             raise TypeError("{} can only be string".format(prop))
         if value not in currency_symbols():

@@ -2,7 +2,10 @@
     this module describes a list of stocks using Symbols which may be accessed
 ***REMOVED***
 import typing
+
+
 # _code,_unicode-decimal,_unicode-hex,__text
+
 list_of_currencies: typing.List[list] = [
     ["ALL", 'Albania Lek'],
     ["AFN", "Afghanistan Afghani"],
@@ -121,3 +124,43 @@ list_of_currencies: typing.List[list] = [
 
 def currency_symbols() -> typing.List[str]:
     return [currency[0] for currency in list_of_currencies]
+
+
+class CurrencyConverter:
+    from database.mixins import AmountMixin
+
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def get_conversion_rate(from_symbol: str, to_symbol: str) -> typing.Union[float, None]:
+        ***REMOVED***
+            :param from_symbol:
+            :param to_symbol:
+            :return: float number representing the conversion rate
+        ***REMOVED***
+        # TODO- use an api to get the present conversion_rate
+        pass
+
+    def currency_conversion(self, from_amount: AmountMixin, convert_to_symbol: str) -> typing.Union[AmountMixin, None]:
+        ***REMOVED***
+            given an origin amount convert to any supported currency
+        :param from_amount:
+        :param convert_to_symbol:
+        :return:
+        ***REMOVED***
+        conversion_rate: typing.Union[float, None] = self.get_conversion_rate(from_symbol=from_amount.currency,
+                                                                              to_symbol=convert_to_symbol)
+        if convert_to_symbol is not None:
+            from_amount.currency = convert_to_symbol
+            converted = from_amount.amount * conversion_rate
+            from_amount.amount = int(converted)
+            return from_amount
+        return None
+
+
+if __name__ == '__main__':
+    ***REMOVED***
+        quick tests here
+    ***REMOVED***
+    pass
