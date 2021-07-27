@@ -139,7 +139,7 @@ class ClassSetters:
 
     # noinspection PyUnusedLocal
     @staticmethod
-    def set_cell(prop, value : typing.Union[str, None]) -> str:
+    def set_cell(prop, value: typing.Union[str, None]) -> str:
         if not isinstance(value, str):
             raise TypeError("invalid argument for cell")
         # TODO check cell number with regex
@@ -182,4 +182,3 @@ class ClassSetters:
 
 
 setters: ClassSetters = ClassSetters()
-
