@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify
 from werkzeug.exceptions import BadRequest, Forbidden, NotFound, MethodNotAllowed, Unauthorized, HTTPException
-from config.exceptions import DataServiceError, InputError, RemoteDataError, UnAuthenticatedError, \
-    RequestError
+from config.exceptions import DataServiceError, InputError, RemoteDataError
+from config.exceptions import UnAuthenticatedError, RequestError
 
 default_handlers_bp = Blueprint('handlers', __name__)
 

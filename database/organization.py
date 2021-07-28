@@ -7,7 +7,7 @@ from database.setters import setters
 
 
 class OrgValidators:
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
     @staticmethod
@@ -54,7 +54,7 @@ class Organization(ndb.Model):
 
 
 class AuthUserValidators:
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
     @staticmethod

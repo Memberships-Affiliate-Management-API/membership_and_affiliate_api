@@ -1,7 +1,7 @@
 import functools
 from flask import current_app
 from main import create_app
-from config import Config
+from config import config_instance
 from google.cloud import ndb
 from utils.utils import is_development
 import os
@@ -15,7 +15,7 @@ def use_context(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         if not current_app:
-            app = create_app(config_class=Config)
+            app = create_app(config_class=config_instance)
             app.app_context().push()
         else:
             app = current_app

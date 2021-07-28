@@ -1,14 +1,23 @@
-from flask import Blueprint, request, render_template, get_flashed_messages, make_response
+from flask import Blueprint, request, render_template, get_flashed_messages, make_response, current_app
+from main import app_cache
+from utils.utils import return_ttl, can_cache
+
 memberships_main_bp = Blueprint('memberships_main', __name__)
 
 
+# noinspection PyTypeChecker
 @memberships_main_bp.route('/', methods=["GET"])
+@app_cache.cached(timeout=return_ttl('short'), unless=can_cache())
 def memberships_main() -> tuple:
+    get_flashed_messages()
     return render_template('main/home.html'), 200
 
 
+# noinspection PyTypeChecker
 @memberships_main_bp.route('/<path:path>', methods=["GET"])
+@app_cache.cached(timeout=return_ttl('short'), unless=can_cache())
 def memberships_main_routes(path: str) -> tuple:
+    get_flashed_messages()
     if path == 'home':
         return render_template('main/home.html'), 200
     elif path == 'index':
@@ -41,8 +50,11 @@ def memberships_main_routes(path: str) -> tuple:
         return response, 200
 
 
+# noinspection PyTypeChecker
 @memberships_main_bp.route('/demos/api/<path:path>', methods=["GET"])
+@app_cache.cached(timeout=return_ttl('short'), unless=can_cache())
 def api_demos(path: str) -> tuple:
+    get_flashed_messages()
     if path == "demos":
         return render_template('main/demos/demos.html'), 200
     elif path == "memberships":
@@ -57,7 +69,10 @@ def api_demos(path: str) -> tuple:
         return render_template('main/demos/affiliates.html'), 200
 
 
+# noinspection PyTypeChecker
 @memberships_main_bp.route('/examples/sdk/<path:path>', methods=["GET"])
+@app_cache.cached(timeout=return_ttl('short'), unless=can_cache())
 def sdk_examples(path: str) -> tuple:
+    get_flashed_messages()
     if path == "examples":
         return render_template('main/examples/sdk/examples.html'), 200

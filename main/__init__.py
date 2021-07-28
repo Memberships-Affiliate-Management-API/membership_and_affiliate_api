@@ -1,17 +1,21 @@
 from flask import Flask
 from flask_caching import Cache
-from config import Config
+from config import config_instance
 
 # TODO: consider upgrading the cache service from version 2 of this api
-cache_affiliates: Cache = Cache(config={'CACHE_TYPE': 'simple'})
+app_cache: Cache = Cache(config=config_instance.cache_dict())
+# TODO: problems will arise with a simple cache implementation where there are moreEl
+#  than one instance of this api, as one of the instance may or will hold different
+#  or stale data on cache and serve this data to the clients, and users.
+
 default_timeout: int = 60 * 60 * 6
 
 
-def create_app(config_class=Config):
+def create_app(config_class=config_instance):
     app = Flask(__name__, static_folder="app/resources/static", template_folder="app/resources/templates")
     app.config.from_object(config_class)
-
-    cache_affiliates.init_app(app=app, config={'CACHE_TYPE': 'simple', 'CACHE_DEFAULT_TIMEOUT': default_timeout})
+    print(config_class)
+    app_cache.init_app(app=app, config=config_class.cache_dict())
 
     from _api.affiliates.routes import affiliates_bp
     from _api.users.routes import users_bp

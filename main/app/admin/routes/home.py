@@ -8,6 +8,7 @@ admin_bp = Blueprint("admin_home", __name__)
 @admin_bp.route("/admin", methods=["GET"])
 @handle_users_auth
 def admin_home() -> tuple:
+    get_flashed_messages()
     return render_template('admin/home.html')
 
 

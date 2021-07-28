@@ -4,13 +4,15 @@ import random
 import string
 import time
 import typing
+from flask import current_app
 from datetime import date
 from datetime import time as time_class
-
+from config import config_instance
 char_set = string.ascii_lowercase + string.digits
 
 
-def is_development() -> bool: return False if os.environ.get("IS_PRODUCTION") else True
+# NOTE : Cannot use current_app
+def is_development() -> bool: return False if config_instance.IS_PRODUCTION else True
 
 
 def create_id(size: int = 64, chars: str = char_set) -> str: return ''.join(random.choice(chars) for _ in range(size))
@@ -116,6 +118,11 @@ def get_counter() -> int:
 
 def get_payment_methods() -> typing.List[str]:
     return ['eft', 'paypal']
+
+
+def can_cache() -> bool:
+    ***REMOVED***NOTE: de activates the cache in case we are running on development server or debug is enabled***REMOVED***
+    return is_development() or not config_instance.DEBUG
 
 
 if __name__ == '__main__':

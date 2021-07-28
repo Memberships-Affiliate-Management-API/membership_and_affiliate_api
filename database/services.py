@@ -8,19 +8,20 @@
 
 ***REMOVED***
 import typing
-import functools
 from google.cloud import ndb
 from config.exceptions import DataServiceError
 from database.setters import setters
 from database.organization import OrgValidators, AuthUserValidators
 from database.users import UserValidators
+from main import app_cache
+from utils.utils import return_ttl
 
 
 class ServiceValidator(OrgValidators, AuthUserValidators, UserValidators):
     def __init__(self):
         super(ServiceValidator, self).__init__()
 
-    @functools.lru_cache(maxsize=1024)
+    @app_cache.cached(timeout=return_ttl(name='short'))
     def can_create_service(self, uid: typing.Union[str, None],
                            organization_id: typing.Union[str, None] ) -> typing.Union[None, bool]:
 

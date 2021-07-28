@@ -1,7 +1,5 @@
 import typing
-from google.api_core.exceptions import RetryError
 from google.cloud import ndb
-
 from config.exception_handlers import handle_store_errors
 from database.mixins import AddressMixin
 from utils.utils import timestamp
