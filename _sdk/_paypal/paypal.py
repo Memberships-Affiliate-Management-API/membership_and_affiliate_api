@@ -1,10 +1,15 @@
 import typing
+from datetime import datetime
+from urllib import request
+
 from flask import url_for, json
 from _sdk._paypal.paypal_client import PayPalClient
 from _sdk._paypal.orders import OrdersCreateRequest, OrdersAuthorizeRequest
 from _sdk._paypal.payments import AuthorizationsCaptureRequest
 from _sdk._paypal.reccuring import PlansCreateServiceProduct
-from database.mixins import AmountMixin
+from _sdk._paypal.reccuring.create_plan_request import PlansCreatePlan
+from _sdk._paypal.reccuring.create_subscriber_request import PlansCreateSubscriptionRequest
+from database.mixins import AmountMixin, UserMixin
 
 
 class PayPalOrders(PayPalClient):
@@ -181,16 +186,160 @@ class PayPalRecurring(PayPalClient):
                    "home_url": "{}".format(self.home_url)
             }
 
+    @staticmethod
+    def build_plan_body(product_id: str, plan_name: str, plan_description: str, plan_amount: AmountMixin,
+                        setup_amount: AmountMixin, include_trial: bool = True, interval: str = "MONTH",
+                        total_cycles: int = 12, include_taxes: bool = False, tax_percent: int = 15):
+        ***REMOVED***
+                curl -v -k -X POST https://api-m.sandbox.paypal.com/v1/billing/plans \
+                  -H "Accept: application/json" \
+                  -H "Authorization: Bearer Access-Token" \
+                  -H "PayPal-Request-Id: PLAN-18062020-001" \  // merchant generated ID, optional and needed for idempotent samples
+                  -H "Prefer: return=representation" \
+                  -H "Content-Type: application/json" \
+
+              -d '{
+                  "product_id": "PROD-6XB24663H4094933M",
+                  "name": "Basic Plan",
+                  "description": "Basic plan",
+                  "billing_cycles": [
+                    {
+                      "frequency": {
+                        "interval_unit": "MONTH",
+                        "interval_count": 1
+                      },
+                      "tenure_type": "TRIAL",
+                      "sequence": 1,
+                      "total_cycles": 1
+                    },
+                    {
+                      "frequency": {
+                        "interval_unit": "MONTH",
+                        "interval_count": 1
+                      },
+                      "tenure_type": "REGULAR",
+                      "sequence": 2,
+                      "total_cycles": 12,
+                      "pricing_scheme": {
+                        "fixed_price": {
+                          "value": "10",
+                          "currency_code": "USD"
+                        }
+                      }
+                    }
+                  ],
+                  "payment_preferences": {
+                    "auto_bill_outstanding": true,
+                    "setup_fee": {
+                      "value": "10",
+                      "currency_code": "USD"
+                    },
+                    "setup_fee_failure_action": "CONTINUE",
+                    "payment_failure_threshold": 3
+                  },
+                  "taxes": {
+                    "percentage": "10",
+                    "inclusive": false
+                  }
+                }'
+        ***REMOVED***
+        if include_trial:
+            return {
+                "product_id": "{}".format(product_id),
+                "name": "{}".format(plan_name),
+                "description": "{}".format(plan_description),
+                "billing_cycles": [
+                    {
+                        "frequency": {
+                            "interval_unit": "{}".format(interval),
+                            "interval_count": 1
+                        },
+                        "tenure_type": "TRIAL",
+                        "sequence": 1,
+                        "total_cycles": 1
+                    },
+                    {
+                        "frequency":{
+                            "interval_unit": "{}".format(interval),
+                            "interval_count": 1
+                        },
+                        "tenure_type": "REGULAR",
+                        "sequence": 2,
+                        "total_cycles": total_cycles,
+                        "pricing_scheme": {
+                            "fixed_price":{
+                                "value": "{}".format(plan_amount.amount),
+                                "currency_code": "{}".format(plan_amount.currency)
+                            }
+                        }
+                    }
+                ],
+                "payment_preferences":{
+                    "auto_bill_outstanding": True,
+                    "setup_fee": {
+                        "value": "{}".format(setup_amount.amount),
+                        "currency_code": "{}".format(setup_amount.currency)
+                    },
+                    "setup_fee_failure_action": "CONTINUE",
+                    "payment_failure_threshold": 4
+                },
+                "taxes": {
+                    "percentage": "{}".format(tax_percent),
+                    "inclusive": include_taxes
+                }
+            }
+
+        return {
+            "product_id": "{}".format(product_id),
+            "name": "{}".format(plan_name),
+            "description": "{}".format(plan_description),
+            "billing_cycles": [
+                {
+                    "frequency": {
+                        "interval_unit": "{}".format(interval),
+                        "interval_count": 1
+                    },
+                    "tenure_type": "REGULAR",
+                    "sequence": 1,
+                    "total_cycles": total_cycles,
+                    "pricing_scheme": {
+                        "fixed_price": {
+                            "value": "{}".format(plan_amount.amount),
+                            "currency_code": "{}".format(plan_amount.currency)
+                        }
+                    }
+                }
+            ],
+            "payment_preferences": {
+                "auto_bill_outstanding": True,
+                "setup_fee": {
+                    "value": "{}".format(setup_amount.amount),
+                    "currency_code": "{}".format(setup_amount.currency)
+                },
+                "setup_fee_failure_action": "CONTINUE",
+                "payment_failure_threshold": 4
+            },
+            "taxes": {
+                "percentage": "{}".format(tax_percent),
+                "inclusive": include_taxes
+            }
+        }
+
+    # NOTE: use this function to create a service or product for a membership plan
     def create_service(self, debug: bool = False):
         ***REMOVED***
             used to create a new recurring plan
+            If creating a product/service succeeds,
+            it triggers the CATALOG.PRODUCT.CREATED webhook.
+            #TODO - from this webhook save the plan data
+            #The data structure to save the plan data must include the organization_id
         :return:
         ***REMOVED***
-        request = PlansCreateServiceProduct()
-        request.prefer(prefer='return=representation')
-        request.request_body(service_action_request=self.build_service_request_body())
+        service_request = PlansCreateServiceProduct()
+        service_request.prefer(prefer='return=representation')
+        service_request.request_body(service_action_request=self.build_service_request_body())
         # NOTE: the serialize response encoder does support json content- but test this with v1 api
-        response = self.client.execute(request)
+        response = self.client.execute(service_request)
         if debug:
             print('Product or service for payment plan created:')
             print('Status Code: {}'.format(response.status_code))
@@ -198,13 +347,230 @@ class PayPalRecurring(PayPalClient):
             print('Create_time: {}'.format(response.create_time))
         return response
 
-    def create_plan(self):
+    # NOTE: use this function to create a service or product plan
+    def create_a_plan(self, product_id: str, plan_name: str, plan_description: str, plan_amount: AmountMixin,
+                      setup_amount: AmountMixin, include_trial: bool = True, interval: str = "MONTH",
+                      total_cycles: int = 0, include_taxes: bool = False, tax_percent: int = 15, debug: bool = False):
+
         ***REMOVED***
             from a defined service, create the plans needed
-            example: Bronze, Gold and Platinum
-        :return: created_plan
+            example: Basic Plan,Standard and Premium
+            /v1/billing/plans
+            Plans are active by default.
+
+            For quantity (user or seat) based pricing plans,
+            set the quantity_supported attribute to true to indicate that customers can
+            subscribe to this plan by providing the number of units they what to subscribe to.
+            (eg. web hosting services)
+
+            If creating a plan succeeds, it triggers the BILLING.PLAN.CREATED webhook.
+            :return: created_plan
         ***REMOVED***
-        pass
+
+        plan_request = PlansCreatePlan()
+        plan_request.prefer(prefer='return=representation')
+
+        plan_request.request_body(service_action_request=self.build_plan_body(
+            product_id=product_id, plan_name=plan_name, plan_description=plan_description,
+            plan_amount=plan_amount, setup_amount=setup_amount, include_trial=include_trial,
+            interval=interval, total_cycles=total_cycles, include_taxes=include_taxes,
+            tax_percent=tax_percent))
+
+        response = self.client.execute(plan_request)
+        # NOTE: If creating a plan succeeds, it triggers the BILLING.PLAN.CREATED webhook.
+        if debug:
+            print("Create a Finite Plan")
+            print("Plan ID: {}".format(response.result.id))
+            print("Product ID: {}".format(response.result.product_id))
+            print("Plan Name: {}".format(response.result.name))
+            print("Status: {}".format(response.result.status))
+            print("LINKS : ")
+            for link in response.result.links:
+                print('\t{}: {}\tCall Type: {}'.format(link.rel, link.href, link.method))
+
+        return response
+
+    # NOTE: subscription body
+    @staticmethod
+    def create_subscription_body(plan_id: str, start_time: datetime, name: str, surname: str,
+                                 paypal_email_address: str, brand_name: str,
+                                 return_url: str, cancel_url: str,  locale: str = "en-US"):
+        return {
+                  "plan_id": "{}".format(plan_id),
+                  "start_time": "{}".format(start_time),
+                  "subscriber": {
+                    "name": {
+                      "given_name": "{}".format(name),
+                      "surname": "{}".format(surname)
+                    },
+                    "email_address": "{}".format(paypal_email_address)
+                  },
+                  "application_context": {
+                    "brand_name": "{}".format(brand_name),
+                    "locale": "{}".format(locale),
+                    "shipping_preference": "SET_PROVIDED_ADDRESS",
+                    "user_action": "SUBSCRIBE_NOW",
+                    "payment_method": {
+                      "payer_selected": "PAYPAL",
+                      "payee_preferred": "IMMEDIATE_PAYMENT_REQUIRED"
+                    },
+                    "return_url": "{}".format(return_url),
+                    "cancel_url": "{}".format(cancel_url)
+                  }
+            }
+
+    # Call this function to subscribe users to an existing and active plan
+    # on success redirect users to an authorize screen
+
+    def create_subscription(self, plan_id: str, start_time: datetime, name: str, surname: str,
+                            paypal_email_address: str, brand_name: str,
+                            return_url: str, cancel_url: str,  locale: str = "en-US",
+                            debug: bool = True):
+        ***REMOVED***
+            Subscriptions with Smart Payment Buttons
+                To use Subscriptions with Smart Payment Buttons:
+
+                1. Add the PayPal script to your web page.
+                2. Render the Smart Payment Button.
+                3. Create the subscription.
+            Add the PayPal script
+                Add the PayPal script to your web page and add your sandbox client_id to the script tag.
+
+
+                <!DOCTYPE html>
+
+                <head>
+                  <meta name="viewport" content="width=device-width, initial-scale=1">
+                  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+                </head>
+
+                <body>
+                  <script
+                      src="https://www.paypal.com/sdk/js?client-id=SB_CLIENT_ID&vault=true&intent=subscription">
+                  </script>
+                </body>
+
+            client-id	test	required	Your PayPal REST client ID. This identifies your
+            PayPal account and determines where transactions are paid to.
+            While you're testing in sandbox, you can use client-id=test as a shortcut.
+
+            vault	true, false	false	Set to true for subscriptions.
+
+            intent	capture, authorize, subscription, tokenize	capture	Set to subscription
+            for subscriptions
+
+            Next Step
+
+            Render the Smart Payment Button
+            Next, render the PayPal Smart Payment Buttons to a container element on your page.
+
+            <script
+                src="https://www.paypal.com/sdk/js?client-id=SB_CLIENT_ID&vault=true&intent=subscription">
+            </script>
+
+            <div id="paypal-button-container"></div>
+
+            <script>
+                paypal.Buttons().render('#paypal-button-container');
+            </script>
+
+
+
+            Create the subscription
+                Finally, implement the createSubscription function that's called when the buyer
+                clicks the PayPal button. This function:
+
+                Calls PayPal using actions.subscription.create() to create a subscription for
+                your plan and includes the plan ID, subscriber details, shipping,
+                and other details.
+
+                Launches the PayPal subscription window so the buyer can log in and approve the
+                subscription on www.paypal.com.
+
+
+                paypal.Buttons({
+
+                  createSubscription: function(data, actions) {
+
+                    return actions.subscription.create({
+
+                      'plan_id': 'P-2UF78835G6983425GLSM44MA'
+
+                    });
+
+                  },
+
+
+                  onApprove: function(data, actions) {
+
+                    alert('You have successfully created subscription ' + data.subscriptionID);
+
+                  }
+
+
+                }).render('#paypal-button-container');
+
+            :return: created plan with an indeterminate cycle
+
+            # NOTE Subscriber Flow
+
+            curl -v -k -X POST https://api-m.sandbox.paypal.com/v1/billing/subscriptions \
+               -H "Accept: application/json" \
+               -H "Authorization: Bearer Access-Token" \
+               -H "PayPal-Request-Id: SUBSCRIPTION-21092020-001" \
+               -H "Prefer: return=representation" \
+               -H "Content-Type: application/json" \
+               -d '{
+                  "plan_id": "P-2UF78835G6983425GLSM44MA",
+                  "start_time": "2020-02-27T06:00:00Z",
+                  "subscriber": {
+                    "name": {
+                      "given_name": "John",
+                      "surname": "Doe"
+                    },
+                    "email_address": "customer@example.com"
+                  },
+                  "application_context": {
+                    "brand_name": "example",
+                    "locale": "en-US",
+                    "shipping_preference": "SET_PROVIDED_ADDRESS",
+                    "user_action": "SUBSCRIBE_NOW",
+                    "payment_method": {
+                      "payer_selected": "PAYPAL",
+                      "payee_preferred": "IMMEDIATE_PAYMENT_REQUIRED"
+                    },
+                    "return_url": "https://example.com/returnUrl",
+                    "cancel_url": "https://example.com/cancelUrl"
+                  }
+                }'        
+        ***REMOVED***
+
+        subscription_request = PlansCreateSubscriptionRequest()
+        subscription_request.prefer(prefer='return=representation')
+        subscription_request.request_body(service_action_request=self.create_subscription_body(
+            plan_id=plan_id, start_time=start_time, name=name, surname=surname,
+            paypal_email_address=paypal_email_address, brand_name=brand_name, return_url=return_url,
+            cancel_url=cancel_url, locale=locale))
+        response = self.client.execute(subscription_request)
+        if debug:
+            print("Creating Subscriptions")
+            print("Subscription ID: {}".format(response.result.id))
+            print("Plan_ID: {}".format(response.result.plan_id))
+            print("Start Time: {}".format(response.result.start_time))
+            print("Create Time: {}".format(response.result.create_time))
+            print("STATUS : {}".format(response.result.status))
+            print("STATUS UPDATE TIME: {}".format(response.results.status_update_time))
+            print("Subscription Link :")
+
+            for link in response.result.links:
+                print('\t{}: {}\tCall Type: {}'.format(link.rel, link.href, link.method))
+
+        # NOTE: the user must be redirected to the approve link in order to approve the plan
+        # link rel : "approve"
+        # NOTE: If creating a subscription succeeds, it triggers the BILLING.SUBSCRIPTION.CREATED webhook
+        # NOTE: When a subscription has been paid using auto debit, it triggers the PAYMENT.SALE.COMPLETED webhook.
+        # Redirect User here to approve GET https://www.paypal.com/webapps/billing/subscriptions?ba_token={BA-Token-ID}
+        return response
 
     def activate_plan(self):
         ***REMOVED***
