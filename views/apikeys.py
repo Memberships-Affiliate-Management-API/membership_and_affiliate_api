@@ -1,3 +1,4 @@
+import functools
 import typing
 from flask import jsonify
 from config.exception_handlers import handle_view_errors
@@ -13,12 +14,16 @@ class APIKeysValidators(OrgValidators, AuthUserValidators):
     def __init__(self):
         super(APIKeysValidators, self).__init__()
 
+    # NOTE: so that we dont do the same check twice
+    @functools.lru_cache(maxsize=1024)
     def organization_exist(self, organization_id: typing.Union[str, None]) -> bool:
         does_organization_exist: typing.Union[bool, None] = self.is_organization_exist(organization_id=organization_id)
         if isinstance(does_organization_exist, bool):
             return does_organization_exist
         raise DataServiceError(status=500, description="Database Error: Unable to verify organization")
 
+    # NOTE: so that we dont do the same check twice
+    @functools.lru_cache(maxsize=1024)
     def user_can_create_key(self, uid: typing.Union[str, None], organization_id: typing.Union[str, None]) -> bool:
         is_member_of_org: typing.Union[bool, None] = self.user_is_member_of_org(uid=uid, organization_id=organization_id)
         user_is_admin: typing.Union[bool, None] = self.org_user_is_admin(uid=uid, organization_id=organization_id)

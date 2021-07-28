@@ -24,6 +24,8 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         self._max_retries = current_app.config.get('DATASTORE_RETRIES')
         self._max_timeout = current_app.config.get('DATASTORE_TIMEOUT')
 
+    # NOTE: so that we dont do the same check twice
+    @functools.lru_cache(maxsize=1024)
     def can_add_member(self, uid: typing.Union[str, None], plan_id: typing.Union[str, None], start_date: date) -> bool:
         user_valid: typing.Union[None, bool] = self.is_user_valid(uid=uid)
         plan_exist: typing.Union[None, bool] = self.plan_exist(plan_id=plan_id)
@@ -35,6 +37,8 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         message: str = "Unable to verify input data, due to database error, please try again later"
         raise DataServiceError(status=500, description=message)
 
+    # NOTE: so that we dont do the same check twice
+    @functools.lru_cache(maxsize=1024)
     async def can_add_member_async(self, uid: typing.Union[str, None], plan_id: typing.Union[str, None],
                                    start_date: date) -> bool:
         user_valid: typing.Union[None, bool] = await self.is_user_valid_async(uid=uid)
@@ -47,6 +51,8 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         message: str = "Unable to verify input data, due to database error, please try again later"
         raise DataServiceError(status=500, description=message)
 
+    # NOTE: so that we dont do the same check twice
+    @functools.lru_cache(maxsize=1024)
     def can_add_plan(self, plan_name: typing.Union[str, None]) -> bool:
         name_exist: typing.Union[None, bool] = self.plan_name_exist(plan_name)
         if isinstance(name_exist, bool):
@@ -54,6 +60,8 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         message: str = "Unable to verify input data, due to database error, please try again later"
         raise DataServiceError(status=500, description=message)
 
+    # NOTE: so that we dont do the same check twice
+    @functools.lru_cache(maxsize=1024)
     async def can_add_plan_async(self, plan_name: typing.Union[str, None]) -> bool:
         name_exist: typing.Union[None, bool] = await self.plan_name_exist_async(plan_name)
         if isinstance(name_exist, bool):
@@ -61,6 +69,8 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         message: str = "Unable to verify input data, due to database error, please try again later"
         raise DataServiceError(status=500, description=message)
 
+    # NOTE: so that we dont do the same check twice
+    @functools.lru_cache(maxsize=1024)
     def can_update_plan(self, plan_id: typing.Union[str, None], plan_name: typing.Union[str, None]) -> bool:
         plan_exist: typing.Union[None, bool] = self.plan_exist(plan_id=plan_id)
         plan_name_exist: typing.Union[None, bool] = self.plan_name_exist(plan_name=plan_name)
@@ -69,6 +79,8 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         message: str = "Unable to verify input data, due to database error, please try again later"
         raise DataServiceError(status=500, description=message)
 
+    # NOTE: so that we dont do the same check twice
+    @functools.lru_cache(maxsize=1024)
     async def can_update_plan_async(self, plan_id: typing.Union[str, None], plan_name: typing.Union[str, None]) -> bool:
         plan_exist: typing.Union[None, bool] = await self.plan_exist_async(plan_id=plan_id)
         plan_name_exist: typing.Union[None, bool] = await self.plan_name_exist_async(plan_name=plan_name)
@@ -77,6 +89,8 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         message: str = "Unable to verify input data, due to database error, please try again later"
         raise DataServiceError(status=500, description=message)
 
+    # NOTE: so that we dont do the same check twice
+    @functools.lru_cache(maxsize=1024)
     def can_add_coupon(self, code: typing.Union[str, None], expiration_time: typing.Union[int, None],
                        discount: typing.Union[int, None]) -> bool:
         coupon_exist: typing.Union[None, bool] = self.coupon_exist(code=code)
@@ -88,6 +102,8 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         message: str = "Unable to verify input data"
         raise DataServiceError(status=500, description=message)
 
+    # NOTE: so that we dont do the same check twice
+    @functools.lru_cache(maxsize=1024)
     async def can_add_coupon_async(self, code: typing.Union[str, None], expiration_time: typing.Union[int, None],
                                    discount: typing.Union[int, None]) -> bool:
         coupon_exist: typing.Union[None, bool] = await self.coupon_exist_async(code=code)
@@ -99,6 +115,8 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         message: str = "Unable to verify input data"
         raise DataServiceError(status=500, description=message)
 
+    # NOTE: so that we dont do the same check twice
+    @functools.lru_cache(maxsize=1024)
     def can_update_coupon(self, code: typing.Union[str, None], expiration_time: typing.Union[int, None],
                           discount: typing.Union[int, None]) -> bool:
         coupon_exist: typing.Union[None, bool] = self.coupon_exist(code=code)
@@ -110,6 +128,8 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         message: str = "Unable to verify input data"
         raise DataServiceError(status=500, description=message)
 
+    # NOTE: so that we dont do the same check twice
+    @functools.lru_cache(maxsize=1024)
     async def can_update_coupon_async(self, code: typing.Union[str, None], expiration_time: typing.Union[int, None],
                                       discount: typing.Union[int, None]) -> bool:
         coupon_exist: typing.Union[None, bool] = await self.coupon_exist_async(code=code)

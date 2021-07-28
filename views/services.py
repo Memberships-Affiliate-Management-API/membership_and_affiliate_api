@@ -1,10 +1,20 @@
 ***REMOVED***
     Services View , will handle service Creation
-    on the database and also on paypal
+    on the database and also on paypal, Services are necessary in order for organization
+    admins to create membership payment plans,
+
+    organizations administrators
+    should host the service page on their website,
+
+     and expose the service on the admin section of their website.
+     users will be able to access any such website admin section upon registering
+     and becoming a member of such a service.
 ***REMOVED***
 from flask import jsonify, current_app
 # noinspection PyProtectedMember
 from _sdk._paypal.paypal import PayPalRecurring
+from config.exception_handlers import handle_view_errors
+from config.use_context import use_context
 from database.services import ServiceValidator, Services
 
 
@@ -19,6 +29,8 @@ class ServicesView(ServiceValidator):
         self._max_retries = current_app.config.get('DATASTORE_RETRIES')
         self._max_timeout = current_app.config.get('DATASTORE_TIMEOUT')
 
+    @use_context
+    @handle_view_errors
     def create_service(self, organization_id: str, uid: str, name: str,
                        description: str, category: str, image_url: str,
                        home_url: str) -> tuple:

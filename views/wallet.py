@@ -1,3 +1,4 @@
+import functools
 import typing
 from flask import jsonify, current_app
 from config.exceptions import DataServiceError
@@ -28,6 +29,8 @@ class Validator(WalletValidator):
             return True
         return False
 
+    # NOTE: so that we dont do the same check twice
+    @functools.lru_cache(maxsize=1024)
     def can_add_wallet(self, uid: typing.Union[None, str] = None) -> bool:
         if not(self.is_uid_none(uid=uid)):
             wallet_exist: typing.Union[bool, None] = self.wallet_exist(uid=uid)
@@ -36,6 +39,8 @@ class Validator(WalletValidator):
             raise DataServiceError(status=500, description='Unable to verify wallet data')
         return False
 
+    # NOTE: so that we dont do the same check twice
+    @functools.lru_cache(maxsize=1024)
     async def can_add_wallet_async(self, uid: typing.Union[None, str] = None) -> bool:
         if not(self.is_uid_none(uid=uid)):
             wallet_exist: typing.Union[bool, None] = await self.wallet_exist_async(uid=uid)
@@ -44,6 +49,8 @@ class Validator(WalletValidator):
             raise DataServiceError(status=500, description='Unable to verify wallet data')
         return False
 
+    # NOTE: so that we dont do the same check twice
+    @functools.lru_cache(maxsize=1024)
     def can_update_wallet(self, uid: typing.Union[None, str] = None) -> bool:
         if not(self.is_uid_none(uid=uid)):
             wallet_exist: typing.Union[bool, None] = self.wallet_exist(uid=uid)
@@ -52,6 +59,8 @@ class Validator(WalletValidator):
             raise DataServiceError(status=500, description='Unable to verify wallet data')
         return False
 
+    # NOTE: so that we dont do the same check twice
+    @functools.lru_cache(maxsize=1024)
     async def can_update_wallet_async(self, uid: typing.Union[None, str] = None) -> bool:
         if not(self.is_uid_none(uid=uid)):
             wallet_exist: typing.Union[bool, None] = await self.wallet_exist_async(uid=uid)
@@ -60,6 +69,8 @@ class Validator(WalletValidator):
             raise DataServiceError(status=500, description='Unable to verify wallet data')
         return False
 
+    # NOTE: so that we dont do the same check twice
+    @functools.lru_cache(maxsize=1024)
     def can_reset_wallet(self, uid: typing.Union[None, str]) -> bool:
         if not(self.is_uid_none(uid=uid)):
             wallet_exist: typing.Union[bool, None] = self.wallet_exist(uid=uid)
@@ -68,6 +79,8 @@ class Validator(WalletValidator):
             raise DataServiceError(status=500, description='Unable to verify wallet data')
         return False
 
+    # NOTE: so that we dont do the same check twice
+    @functools.lru_cache(maxsize=1024)
     async def can_reset_wallet_async(self, uid: typing.Union[None, str]) -> bool:
         if not(self.is_uid_none(uid=uid)):
             wallet_exist: typing.Union[bool, None] = await self.wallet_exist_async(uid=uid)

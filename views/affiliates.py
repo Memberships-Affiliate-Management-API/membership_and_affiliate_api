@@ -1,3 +1,4 @@
+import functools
 import typing
 from flask import current_app, jsonify
 from main import cache_affiliates
@@ -16,6 +17,13 @@ from config.use_context import use_context
 
 class Validator(ValidAffiliate, ValidRecruit, ValidEarnings):
 
+    def __init__(self):
+        super(Validator, self).__init__()
+
+    # NOTE: May need to revise this cache implementation
+    # NOTE: the problem is if the app does not reset the cache does not
+    # NOTE: reset also , hopefully this issues wont exist on version two
+    @functools.lru_cache(maxsize=1024)
     def can_register_affiliate(self, uid: str) -> bool:
         already_registered: typing.Union[bool, None] = self.user_already_registered(uid=uid)
         if not isinstance(already_registered, bool):
@@ -174,7 +182,7 @@ class AffiliatesView(Validator):
         payload: typing.List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
         return jsonify({'status': True, 'message': 'successfully returned all affiliates',
                         'payload': payload}), 200
-    
+
     @cache_affiliates.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
     @use_context
     @handle_view_errors
@@ -314,7 +322,7 @@ class RecruitsView(Validator):
     @use_context
     @handle_view_errors
     def get_recruits_by_active_status(self, is_active: bool) -> tuple:
-        if not(isinstance(is_active, bool)):
+        if not (isinstance(is_active, bool)):
             return jsonify({'status': False, 'message': 'is_active status is required'}), 500
         recruits_list: typing.List[Recruits] = Recruits.query(Recruits.is_active == is_active).fetch()
         payload: typing.List[dict] = [recruit.to_dict() for recruit in recruits_list]
@@ -325,7 +333,7 @@ class RecruitsView(Validator):
     @use_context
     @handle_view_errors
     def get_recruits_by_deleted_status(self, is_deleted: bool) -> tuple:
-        if not(isinstance(is_deleted, bool)):
+        if not (isinstance(is_deleted, bool)):
             return jsonify({'status': False, 'message': 'is_deleted status is required'}), 500
         recruits_list: typing.List[Recruits] = Recruits.query(Recruits.is_deleted == is_deleted).fetch()
         payload = [recruit.to_dict() for recruit in recruits_list]
@@ -353,7 +361,7 @@ class RecruitsView(Validator):
         if (affiliate_id is None) or (affiliate_id == ""):
             return jsonify({'status': False, 'message': 'affiliate_id is required'}), 500
 
-        if not(isinstance(is_active, bool)):
+        if not (isinstance(is_active, bool)):
             return jsonify({'status': False, 'message': 'is_active status can only be a boolean'}), 500
         recruits_list: typing.List[Recruits] = Recruits.query(Recruits.affiliate_id == affiliate_id,
                                                               Recruits.is_active == is_active).fetch()
