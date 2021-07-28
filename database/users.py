@@ -18,7 +18,7 @@ class UserValidators:
             return False
         user_instance: UserModel = UserModel.query(UserModel.uid == uid).get()
         if isinstance(user_instance, UserModel):
-            return True
+            return user_instance.is_active
         return False
 
     @staticmethod
@@ -28,15 +28,7 @@ class UserValidators:
             return False
         user_instance: UserModel = UserModel.query(UserModel.uid == uid).get_async().get_result()
         if isinstance(user_instance, UserModel):
-            return True
-        return False
-
-    @staticmethod
-    @handle_store_errors
-    def is_user_org_admin(uid: str, organization_id: str) -> typing.Union[None, bool]:
-        user_instance: UserModel = UserModel.query(UserModel.uid == uid).get()
-        if isinstance(user_instance, UserModel) and user_instance.organization_id == organization_id:
-            return user_instance.is_admin
+            return user_instance.is_active
         return False
 
 

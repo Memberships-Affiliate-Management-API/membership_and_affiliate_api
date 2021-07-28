@@ -11,21 +11,27 @@ import typing
 from google.cloud import ndb
 from config.exceptions import DataServiceError
 from database.setters import setters
-from database.organization import OrgValidators
+from database.organization import OrgValidators, AuthUserValidators
 from database.users import UserValidators
 
 
-class ServiceValidator(OrgValidators, UserValidators):
+class ServiceValidator(OrgValidators, AuthUserValidators, UserValidators):
     def __init__(self):
         super(ServiceValidator, self).__init__()
 
     def can_create_service(self, uid: typing.Union[str, None],
                            organization_id: typing.Union[str, None] ) -> typing.Union[None, bool]:
 
+        # NOTE: Organization has to be valid itself
         org_exist: typing.Union[None, bool] = self.is_organization_exist(organization_id=organization_id)
-        is_admin: typing.Union[None, bool] = self.is_user_org_admin(uid=uid, organization_id=organization_id)
-        if isinstance(org_exist, bool) and isinstance(is_admin, bool):
-            return org_exist and is_admin
+        # NOTE: only members of the organization administrator group can create services for a plan
+        is_admin: typing.Union[None, bool] = self.user_is_member_of_org(uid=uid, organization_id=organization_id)
+        # NOTE: de activated users cannot add services
+        is_user_valid: typing.Union[None, bool] = self.is_user_valid(uid=uid)
+
+        if isinstance(org_exist, bool) and isinstance(is_admin, bool) and isinstance(is_user_valid, bool):
+            return org_exist and is_admin and is_user_valid
+
         message: str = "Database Error: Unable to verify if user can create service"
         raise DataServiceError(status=500, description=message)
 

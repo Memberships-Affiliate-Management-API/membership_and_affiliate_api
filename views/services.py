@@ -53,12 +53,16 @@ class ServicesView(ServiceValidator):
                 return jsonify({'status': False, 'message': message}), 500
             # TODO create service in paypal obtain service_id
             paypal_services_instance: PayPalRecurring = PayPalRecurring(app=current_app, custom_id=organization_id)
+            # NOTE: Adding service descriptions to a paypal plan endpoint
             paypal_services_instance.set_service_details(name=name, description=description, category=category,
                                                          image_url=image_url, home_url=home_url)
 
-            # TODO -Alternatively Use webhooks to capture the results of service creation also
+            # NOTE: this creates the paypal service / product and returns a response
             service_response = paypal_services_instance.create_service()
+            # TODO -Alternatively Use webhooks to capture the results of service creation
+
             if service_response.status_code == 201:
+                # NOTE: Status Code or 201 mean the service was created successfully
                 service_id = service_response.result.id
                 services_instance: Services = Services(organization_id=organization_id, created_by_uid=uid,
                                                        service_id=service_id, name=name, description=description,
