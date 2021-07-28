@@ -8,6 +8,8 @@ coupons_bp = Blueprint('coupons', __name__)
 @handle_api_auth
 def coupons(path: str) -> tuple:
     coupons_view_instance: CouponsView = CouponsView()
+    # TODO - include organization_id for this routes, and refactor the view functions
+
     if path == "get":
         coupon_data: dict = request.get_json()
         return coupons_view_instance.get_coupon(coupon_data=coupon_data)

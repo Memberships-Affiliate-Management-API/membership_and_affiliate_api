@@ -5,6 +5,9 @@ from views.users import UserView
 users_bp = Blueprint("users", __name__)
 
 
+# TODO - include organization_id for this routes, and refactor the view functions
+
+
 def get_kwargs(user_data: dict) -> tuple:
     if ("uid" in user_data) and (user_data["uid"] != ""):
         uid: typing.Union[str, None] = user_data.get("uid")

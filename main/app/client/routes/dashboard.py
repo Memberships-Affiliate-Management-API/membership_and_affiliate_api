@@ -6,7 +6,6 @@ from database.users import UserModel
 from main import app_cache
 from security.users_authenticator import handle_users_auth
 from utils.utils import return_ttl, can_cache
-
 client_dashboard_bp = Blueprint('client_dashboard', __name__)
 
 
@@ -17,6 +16,7 @@ def client_dashboard(current_user: UserModel) -> tuple:
     if current_user:
         return render_template('client/dashboard.html')
     else:
+        # TODO: insure local cache does not cache info if redirected
         flash('Please login or register to start using this app')
         return redirect(url_for('memberships_main.memberships_main_routes', path='login'))
 

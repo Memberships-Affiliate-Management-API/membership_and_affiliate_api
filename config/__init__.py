@@ -1,4 +1,5 @@
 import os
+# noinspection PyPackageRequirements
 from decouple import config
 import datetime
 
@@ -39,15 +40,29 @@ class Config:
         ***REMOVED***
         if not self.IS_PRODUCTION:
             return {
-                "CACHE_TYPE": self.CACHE_TYPE,
-                "CACHE_DEFAULT_TIMEOUT": self.CACHE_DEFAULT_TIMEOUT
+                "CACHE_TYPE": "simple",
+                "CACHE_DEFAULT_TIMEOUT": self.CACHE_DEFAULT_TIMEOUT,
+                "CACHE_KEY_PREFIX": "memberships_cache_"
             }
         else:
             # TODO: Respond with Cache Configuration for a production environment
+            user = os.environ.get("CACHE_REDIS_USER") or config("CACHE_REDIS_USER")
+            password = os.environ.get("CACHE_REDIS_PASSWORD") or config("CACHE_REDIS_PASSWORD")
+            redis_host = os.environ.get("CACHE_REDIS_HOST") or config("CACHE_REDIS_HOST")
+            db = os.environ.get("CACHE_REDIS_DB") or config("CACHE_REDIS_DB")
             return {
-                "CACHE_TYPE": self.CACHE_TYPE,
-                "CACHE_DEFAULT_TIMEOUT": self.CACHE_DEFAULT_TIMEOUT
+                "CACHE_TYPE": "redis",
+                "CACHE_DEFAULT_TIMEOUT": self.CACHE_DEFAULT_TIMEOUT,
+                "CACHE_KEY_PREFIX": "memberships_cache_",
+                "CACHE_REDIS_HOST": "{}".format(redis_host),
+                "CACHE_REDIS_PORT": 6379,
+                "CACHE_REDIS_PASSWORD": "{}".format(password),
+                "CACHE_REDIS_DB": "{}".format(db),
+                "CACHE_REDIS_URL": "{}{}@{}:6379/2".format(user, password, redis_host),
+                "CACHE_OPTIONS": ""
             }
+
+            # TODO: Note replace with a redis server connection url
 
 
 config_instance: Config = Config()

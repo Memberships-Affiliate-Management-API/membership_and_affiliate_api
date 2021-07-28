@@ -2,12 +2,7 @@
     handle users and admin authentication
 ***REMOVED***
 import datetime
-import time
 import jwt
-import functools
-from config.exception_handlers import handle_view_errors
-from config.exceptions import UnAuthenticatedError
-from config.use_context import use_context
 from flask import current_app, jsonify, request, redirect, url_for, flash
 from functools import wraps
 

@@ -3,6 +3,9 @@ from views.wallet import WalletView
 wallet_bp = Blueprint("wallet", __name__)
 
 
+# TODO - include organization_id for this routes, and refactor the view functions
+
+
 @wallet_bp.route('/api/v1/wallet', methods=["GET", "POST", "DELETE", "PUT"])
 def wallet() -> tuple:
     wallet_instance: WalletView = WalletView()

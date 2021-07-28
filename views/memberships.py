@@ -10,7 +10,7 @@ from database.mixins import AmountMixin
 from database.users import UserValidators as UserValid
 from database.memberships import MembershipValidators as MemberValid
 from database.memberships import CouponsValidator as CouponValid
-from utils.utils import create_id, end_of_month, return_ttl, timestamp
+from utils.utils import create_id, end_of_month, return_ttl, timestamp, can_cache
 from main import app_cache
 from config.exception_handlers import handle_view_errors
 from config.use_context import use_context
@@ -24,7 +24,7 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         self._max_retries = current_app.config.get('DATASTORE_RETRIES')
         self._max_timeout = current_app.config.get('DATASTORE_TIMEOUT')
 
-    @app_cache.cached(timeout=return_ttl(name='short'))
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def can_add_member(self, uid: typing.Union[str, None], plan_id: typing.Union[str, None], start_date: date) -> bool:
         user_valid: typing.Union[None, bool] = self.is_user_valid(uid=uid)
         plan_exist: typing.Union[None, bool] = self.plan_exist(plan_id=plan_id)
@@ -36,7 +36,7 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         message: str = "Unable to verify input data, due to database error, please try again later"
         raise DataServiceError(status=500, description=message)
 
-    @app_cache.cached(timeout=return_ttl(name='short'))
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def can_add_member_async(self, uid: typing.Union[str, None], plan_id: typing.Union[str, None],
                                    start_date: date) -> bool:
         user_valid: typing.Union[None, bool] = await self.is_user_valid_async(uid=uid)
@@ -49,7 +49,7 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         message: str = "Unable to verify input data, due to database error, please try again later"
         raise DataServiceError(status=500, description=message)
 
-    @app_cache.cached(timeout=return_ttl(name='short'))
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def can_add_plan(self, plan_name: typing.Union[str, None]) -> bool:
         name_exist: typing.Union[None, bool] = self.plan_name_exist(plan_name)
         if isinstance(name_exist, bool):
@@ -57,7 +57,7 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         message: str = "Unable to verify input data, due to database error, please try again later"
         raise DataServiceError(status=500, description=message)
 
-    @app_cache.cached(timeout=return_ttl(name='short'))
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def can_add_plan_async(self, plan_name: typing.Union[str, None]) -> bool:
         name_exist: typing.Union[None, bool] = await self.plan_name_exist_async(plan_name)
         if isinstance(name_exist, bool):
@@ -65,7 +65,7 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         message: str = "Unable to verify input data, due to database error, please try again later"
         raise DataServiceError(status=500, description=message)
 
-    @app_cache.cached(timeout=return_ttl(name='short'))
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def can_update_plan(self, plan_id: typing.Union[str, None], plan_name: typing.Union[str, None]) -> bool:
         plan_exist: typing.Union[None, bool] = self.plan_exist(plan_id=plan_id)
         plan_name_exist: typing.Union[None, bool] = self.plan_name_exist(plan_name=plan_name)
@@ -74,7 +74,7 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         message: str = "Unable to verify input data, due to database error, please try again later"
         raise DataServiceError(status=500, description=message)
 
-    @app_cache.cached(timeout=return_ttl(name='short'))
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def can_update_plan_async(self, plan_id: typing.Union[str, None], plan_name: typing.Union[str, None]) -> bool:
         plan_exist: typing.Union[None, bool] = await self.plan_exist_async(plan_id=plan_id)
         plan_name_exist: typing.Union[None, bool] = await self.plan_name_exist_async(plan_name=plan_name)
@@ -83,7 +83,7 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         message: str = "Unable to verify input data, due to database error, please try again later"
         raise DataServiceError(status=500, description=message)
 
-    @app_cache.cached(timeout=return_ttl(name='short'))
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def can_add_coupon(self, code: typing.Union[str, None], expiration_time: typing.Union[int, None],
                        discount: typing.Union[int, None]) -> bool:
         coupon_exist: typing.Union[None, bool] = self.coupon_exist(code=code)
@@ -95,7 +95,7 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         message: str = "Unable to verify input data"
         raise DataServiceError(status=500, description=message)
 
-    @app_cache.cached(timeout=return_ttl(name='short'))
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def can_add_coupon_async(self, code: typing.Union[str, None], expiration_time: typing.Union[int, None],
                                    discount: typing.Union[int, None]) -> bool:
         coupon_exist: typing.Union[None, bool] = await self.coupon_exist_async(code=code)
@@ -107,7 +107,7 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         message: str = "Unable to verify input data"
         raise DataServiceError(status=500, description=message)
 
-    @app_cache.cached(timeout=return_ttl(name='short'))
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def can_update_coupon(self, code: typing.Union[str, None], expiration_time: typing.Union[int, None],
                           discount: typing.Union[int, None]) -> bool:
         coupon_exist: typing.Union[None, bool] = self.coupon_exist(code=code)
@@ -119,7 +119,7 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         message: str = "Unable to verify input data"
         raise DataServiceError(status=500, description=message)
 
-    @app_cache.cached(timeout=return_ttl(name='short'))
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def can_update_coupon_async(self, code: typing.Union[str, None], expiration_time: typing.Union[int, None],
                                       discount: typing.Union[int, None]) -> bool:
         coupon_exist: typing.Union[None, bool] = await self.coupon_exist_async(code=code)
@@ -304,9 +304,9 @@ class MembershipsView(Validators):
         ***REMOVED***
         return "Ok", 200
 
-    @app_cache.cached(timeout=return_ttl(name='long'), unless=end_of_month)
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def return_plan_members_by_payment_status(self, plan_id: typing.Union[str, None],
                                               status: typing.Union[str, None]) -> tuple:
         ***REMOVED***
@@ -323,9 +323,9 @@ class MembershipsView(Validators):
             message: str = "Unable to find plan members whose payment status is {}".format(status)
             return jsonify({'status': False, 'message': message}), 500
 
-    @app_cache.cached(timeout=return_ttl(name='long'), unless=end_of_month)
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def return_plan_members_by_payment_status_async(self, plan_id: typing.Union[str, None],
                                                           status: typing.Union[str, None]) -> tuple:
         ***REMOVED***
@@ -342,9 +342,9 @@ class MembershipsView(Validators):
             message: str = "Unable to find plan members whose payment status is {}".format(status)
             return jsonify({'status': False, 'message': message}), 500
 
-    @app_cache.cached(timeout=return_ttl(name='long'), unless=end_of_month)
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def return_members_by_payment_status(self, status: typing.Union[str, None]) -> tuple:
         membership_list: typing.List[Memberships] = Memberships.query(Memberships.status == status).fetch()
         if isinstance(membership_list, list) and len(membership_list) > 0:
@@ -355,9 +355,9 @@ class MembershipsView(Validators):
             message: str = "Unable to find plan members whose payment status is {}".format(status)
             return jsonify({'status': False, 'message': message}), 500
 
-    @app_cache.cached(timeout=return_ttl(name='long'), unless=end_of_month)
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def return_members_by_payment_status_async(self, status: typing.Union[str, None]) -> tuple:
         membership_list: typing.List[Memberships] = Memberships.query(
             Memberships.status == status).fetch_async().get_result()
@@ -369,9 +369,9 @@ class MembershipsView(Validators):
             message: str = "Unable to find plan members whose payment status is {}".format(status)
             return jsonify({'status': False, 'message': message}), 500
 
-    @app_cache.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def return_plan_members(self, plan_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             return all members of a plan
@@ -387,9 +387,9 @@ class MembershipsView(Validators):
             message: str = "Unable to find members of plan {}"
             return jsonify({'status': False, 'message': message}), 500
 
-    @app_cache.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def return_plan_members_async(self, plan_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             return all members of a plan
@@ -406,9 +406,9 @@ class MembershipsView(Validators):
             message: str = "Unable to find members of plan {}"
             return jsonify({'status': False, 'message': message}), 500
 
-    @app_cache.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def return_plan_members_async(self, plan_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             return all members of a plan
@@ -425,9 +425,9 @@ class MembershipsView(Validators):
             message: str = "Unable to find members of plan {}"
             return jsonify({'status': False, 'message': message}), 500
 
-    @app_cache.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def is_member_off(self, uid: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             returns user membership details
@@ -439,9 +439,9 @@ class MembershipsView(Validators):
         else:
             return jsonify({'status': False, 'message': 'user does not have any membership plan'}), 500
 
-    @app_cache.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def is_member_off_async(self, uid: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             returns user membership details
@@ -454,9 +454,9 @@ class MembershipsView(Validators):
             message: str = 'user does not have any membership plan'
             return jsonify({'status': False, 'message': message}), 500
 
-    @app_cache.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def payment_amount(self, uid: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             for a specific user return payment amount
@@ -481,9 +481,9 @@ class MembershipsView(Validators):
         message: str = 'unable to locate membership details'
         return jsonify({'status': False, 'message': message}), 500
 
-    @app_cache.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def payment_amount_async(self, uid: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             for a specific user return payment amount
@@ -801,9 +801,9 @@ class MembershipPlansView(Validators):
             message: str = 'Membership plan not found'
             return jsonify({'status': False, 'message': message}), 500
 
-    @app_cache.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def return_plans_by_schedule_term(self, schedule_term: str) -> tuple:
         membership_plan_list: typing.List[MembershipPlans] = MembershipPlans.query(
             MembershipPlans.schedule_term == schedule_term).fetch()
@@ -811,9 +811,9 @@ class MembershipPlansView(Validators):
         return jsonify({'status': False, 'payload': payload,
                         'message': 'successfully retrieved monthly plans'}), 200
 
-    @app_cache.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def return_plans_by_schedule_term_async(self, schedule_term: str) -> tuple:
         membership_plan_list: typing.List[MembershipPlans] = MembershipPlans.query(
             MembershipPlans.schedule_term == schedule_term).fetch_async().get_result()
@@ -863,7 +863,7 @@ class MembershipPlansView(Validators):
                 return None
         return None
 
-    @app_cache.cached(timeout=return_ttl(name='long'))
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def return_plan(self, plan_id: str) -> tuple:
         plan_instance = self.get_plan(plan_id=plan_id)
         if plan_instance is not None:
@@ -871,7 +871,7 @@ class MembershipPlansView(Validators):
             return jsonify({'status': True, 'payload': plan_instance.to_dict(), 'message': message}), 200
         return jsonify({'status': False, 'message': 'Unable to get plan'}), 500
 
-    @app_cache.cached(timeout=return_ttl(name='long'))
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def return_plan_async(self, plan_id: str) -> tuple:
         plan_instance = await self.get_plan_async(plan_id=plan_id)
         if plan_instance is not None:
@@ -880,6 +880,7 @@ class MembershipPlansView(Validators):
         return jsonify({'status': False, 'message': 'Unable to get plan'}), 500
 
     @staticmethod
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def return_all_plans() -> tuple:
         membership_plan_list: typing.List[MembershipPlans] = MembershipPlans.query().fetch()
         plan_list: typing.List[dict] = [plan.to_dict() for plan in membership_plan_list]
@@ -887,6 +888,7 @@ class MembershipPlansView(Validators):
                         'message': 'successfully fetched all memberships'}), 200
 
     @staticmethod
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def return_all_plans_async() -> tuple:
         membership_plan_list: typing.List[MembershipPlans] = MembershipPlans.query().fetch_async().get_result()
         plan_list: typing.List[dict] = [plan.to_dict() for plan in membership_plan_list]
@@ -1087,54 +1089,54 @@ class CouponsView(Validators):
 
         return jsonify({'status': False, 'message': 'unable to cancel coupon code'}), 500
 
-    @app_cache.cached(timeout=return_ttl(name='long'))
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_all_coupons(self) -> tuple:
         coupons_list: typing.List[Coupons] = Coupons.query().fetch()
         payload: typing.List[dict] = [coupon.to_dict() for coupon in coupons_list]
         message: str = "coupons successfully created"
         return jsonify({'status': True, 'payload': payload, 'message': message}), 200
 
-    @app_cache.cached(timeout=return_ttl(name='long'))
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def get_all_coupons_async(self) -> tuple:
         coupons_list: typing.List[Coupons] = Coupons.query().fetch_async().get_result()
         payload: typing.List[dict] = [coupon.to_dict() for coupon in coupons_list]
         message: str = "coupons successfully created"
         return jsonify({'status': True, 'payload': payload, 'message': message}), 200
 
-    @app_cache.cached(timeout=return_ttl(name='long'))
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_valid_coupons(self) -> tuple:
         coupons_list: typing.List[Coupons] = Coupons.query(Coupons.is_valid == True).fetch()
         payload: typing.List[dict] = [coupon.to_dict() for coupon in coupons_list]
         message: str = "coupons successfully created"
         return jsonify({'status': True, 'payload': payload, 'message': message}), 200
 
-    @app_cache.cached(timeout=return_ttl(name='long'))
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def get_valid_coupons_async(self) -> tuple:
         coupons_list: typing.List[Coupons] = Coupons.query(Coupons.is_valid == True).fetch_async().get_result()
         payload: typing.List[dict] = [coupon.to_dict() for coupon in coupons_list]
         message: str = "coupons successfully created"
         return jsonify({'status': True, 'payload': payload, 'message': message}), 200
 
-    @app_cache.cached(timeout=return_ttl(name='long'))
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_expired_coupons(self) -> tuple:
         coupons_list: typing.List[Coupons] = Coupons.query(Coupons.expiration_time < timestamp()).fetch()
         payload: typing.List[dict] = [coupon.to_dict() for coupon in coupons_list]
         message: str = "coupons successfully created"
         return jsonify({'status': True, 'payload': payload, 'message': message}), 200
 
-    @app_cache.cached(timeout=return_ttl(name='long'))
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def get_expired_coupons_async(self) -> tuple:
         coupons_list: typing.List[Coupons] = Coupons.query(
             Coupons.expiration_time < timestamp()).fetch_async().get_result()
@@ -1142,9 +1144,9 @@ class CouponsView(Validators):
         message: str = "coupons successfully created"
         return jsonify({'status': True, 'payload': payload, 'message': message}), 200
 
-    @app_cache.cached(timeout=return_ttl(name='long'))
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_coupon(self, coupon_data: dict) -> tuple:
         if 'code' in coupon_data and coupon_data['code'] != "":
             code: str = coupon_data['code']
@@ -1158,9 +1160,9 @@ class CouponsView(Validators):
         message: str = "Invalid Coupon Code"
         return jsonify({'status': True, 'message': message}), 500
 
-    @app_cache.cached(timeout=return_ttl(name='long'))
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def get_coupon_async(self, coupon_data: dict) -> tuple:
         if ('code' in coupon_data) and (coupon_data['code'] != ""):
             code: str = coupon_data['code']

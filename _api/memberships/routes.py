@@ -8,6 +8,9 @@ from views.memberships import MembershipsView, MembershipPlansView
 memberships_bp = Blueprint('memberships', __name__)
 
 
+# TODO - include organization_id for this routes, and refactor the view functions
+
+
 @memberships_bp.route("/api/v1/members/<path:plan_id>", methods=['POST'])
 @handle_api_auth
 def get_members(plan_id: str) -> tuple:

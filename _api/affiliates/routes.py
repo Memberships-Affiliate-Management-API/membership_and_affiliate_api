@@ -10,6 +10,8 @@ def affiliate(path: str) -> tuple:
     affiliate_view_instance: AffiliatesView = AffiliatesView()
     affiliate_data: dict = request.get_json()
 
+    # TODO - include organization_id for this routes
+
     if path == "get":
         return affiliate_view_instance.get_affiliate(affiliate_data=affiliate_data)
     elif path == "get-all":

@@ -5,7 +5,7 @@ from config.exceptions import DataServiceError
 from main import app_cache
 from database.mixins import AmountMixin
 from database.wallet import WalletModel, WalletValidator
-from utils.utils import return_ttl, end_of_month
+from utils.utils import return_ttl, end_of_month, can_cache
 from config.exception_handlers import handle_view_errors
 from config.use_context import use_context
 
@@ -29,7 +29,7 @@ class Validator(WalletValidator):
             return True
         return False
 
-    @app_cache.cached(timeout=return_ttl(name='short'))
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def can_add_wallet(self, uid: typing.Union[None, str] = None) -> bool:
         if not(self.is_uid_none(uid=uid)):
             wallet_exist: typing.Union[bool, None] = self.wallet_exist(uid=uid)
@@ -38,7 +38,7 @@ class Validator(WalletValidator):
             raise DataServiceError(status=500, description='Unable to verify wallet data')
         return False
 
-    @app_cache.cached(timeout=return_ttl(name='short'))
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def can_add_wallet_async(self, uid: typing.Union[None, str] = None) -> bool:
         if not(self.is_uid_none(uid=uid)):
             wallet_exist: typing.Union[bool, None] = await self.wallet_exist_async(uid=uid)
@@ -47,7 +47,7 @@ class Validator(WalletValidator):
             raise DataServiceError(status=500, description='Unable to verify wallet data')
         return False
 
-    @app_cache.cached(timeout=return_ttl(name='short'))
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def can_update_wallet(self, uid: typing.Union[None, str] = None) -> bool:
         if not(self.is_uid_none(uid=uid)):
             wallet_exist: typing.Union[bool, None] = self.wallet_exist(uid=uid)
@@ -56,7 +56,7 @@ class Validator(WalletValidator):
             raise DataServiceError(status=500, description='Unable to verify wallet data')
         return False
 
-    @app_cache.cached(timeout=return_ttl(name='short'))
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def can_update_wallet_async(self, uid: typing.Union[None, str] = None) -> bool:
         if not(self.is_uid_none(uid=uid)):
             wallet_exist: typing.Union[bool, None] = await self.wallet_exist_async(uid=uid)
@@ -65,7 +65,7 @@ class Validator(WalletValidator):
             raise DataServiceError(status=500, description='Unable to verify wallet data')
         return False
 
-    @app_cache.cached(timeout=return_ttl(name='short'))
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def can_reset_wallet(self, uid: typing.Union[None, str]) -> bool:
         if not(self.is_uid_none(uid=uid)):
             wallet_exist: typing.Union[bool, None] = self.wallet_exist(uid=uid)
@@ -74,7 +74,7 @@ class Validator(WalletValidator):
             raise DataServiceError(status=500, description='Unable to verify wallet data')
         return False
 
-    @app_cache.cached(timeout=return_ttl(name='short'))
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def can_reset_wallet_async(self, uid: typing.Union[None, str]) -> bool:
         if not(self.is_uid_none(uid=uid)):
             wallet_exist: typing.Union[bool, None] = await self.wallet_exist_async(uid=uid)
@@ -134,18 +134,18 @@ class WalletView(Validator):
                             'payload': wallet_instance.to_dict()}), 200
         return jsonify({'status': False, 'message': 'Unable to create wallet'}), 500
 
-    @app_cache.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_wallet(self, uid: typing.Union[str, None]) -> tuple:
         if not(self.is_uid_none(uid=uid)):
             wallet_instance: WalletModel = WalletModel.query(WalletModel.uid == uid).get()
             return jsonify({'status': True, 'payload': wallet_instance.to_dict(), 'message': 'wallet found'}), 200
         return jsonify({'status': False, 'message': 'uid cannot be None'}), 500
 
-    @app_cache.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def get_wallet_async(self, uid: typing.Union[str, None]) -> tuple:
         if not(self.is_uid_none(uid=uid)):
             wallet_instance: WalletModel = WalletModel.query(WalletModel.uid == uid).get_async().get_result()
@@ -235,9 +235,9 @@ class WalletView(Validator):
                             'message': 'wallet is rest'}), 200
         return jsonify({'status': False, 'message': 'Unable to reset wallet'}), 500
 
-    @app_cache.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def return_all_wallets(self) -> tuple:
         wallet_list: typing.List[WalletModel] = WalletModel.query().fetch()
         payload: typing.List[dict] = [wallet.to_dict() for wallet in wallet_list]
@@ -245,9 +245,9 @@ class WalletView(Validator):
                         'payload': payload,
                         'message': 'wallets returned'}), 200
 
-    @app_cache.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def return_all_wallets_async(self) -> tuple:
         wallet_list: typing.List[WalletModel] = WalletModel.query().fetch_async().get_result()
         payload: typing.List[dict] = [wallet.to_dict() for wallet in wallet_list]

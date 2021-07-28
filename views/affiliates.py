@@ -6,7 +6,7 @@ from database.affiliates import RecruitsValidators as ValidRecruit
 from database.affiliates import EarningsValidators as ValidEarnings
 from database.affiliates import Affiliates, Recruits
 from config.exceptions import DataServiceError
-from utils.utils import create_id, return_ttl, end_of_month
+from utils.utils import create_id, return_ttl, end_of_month, can_cache
 from config.exception_handlers import handle_view_errors
 from config.use_context import use_context
 
@@ -19,7 +19,8 @@ class Validator(ValidAffiliate, ValidRecruit, ValidEarnings):
     def __init__(self):
         super(Validator, self).__init__()
 
-    @app_cache.cached(timeout=return_ttl(name='short'))
+    # noinspection PyTypeChecker
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def can_register_affiliate(self, uid: str) -> bool:
         already_registered: typing.Union[bool, None] = self.user_already_registered(uid=uid)
         if not isinstance(already_registered, bool):
@@ -128,9 +129,9 @@ class AffiliatesView(Validator):
             message: str = "Unable to locate affiliate record"
             return jsonify({'status': False, 'message': message}), 500
 
-    @app_cache.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_affiliate(self, affiliate_data: dict) -> tuple:
         ***REMOVED***
             with affiliate_id or uid return affiliate
@@ -152,9 +153,9 @@ class AffiliatesView(Validator):
         else:
             return jsonify({'status': False, 'message': 'unable to locate affiliate'}), 500
 
-    @app_cache.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_all_affiliates(self) -> tuple:
         ***REMOVED***
             return all affiliates
@@ -166,9 +167,9 @@ class AffiliatesView(Validator):
                         'message': message,
                         'payload': payload}), 200
 
-    @app_cache.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_active_affiliates(self) -> tuple:
         ***REMOVED***
             return affiliates who are not deleted and are active
@@ -179,9 +180,9 @@ class AffiliatesView(Validator):
         return jsonify({'status': True, 'message': 'successfully returned all affiliates',
                         'payload': payload}), 200
 
-    @app_cache.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_in_active_affiliates(self) -> tuple:
         ***REMOVED***
             return affiliates who are not active
@@ -194,9 +195,10 @@ class AffiliatesView(Validator):
                         'message': message,
                         'payload': payload}), 200
 
-    @app_cache.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
+
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_deleted_affiliates(self) -> tuple:
         ***REMOVED***
             return affiliates who are not active
@@ -208,9 +210,9 @@ class AffiliatesView(Validator):
                         'message': message,
                         'payload': payload}), 200
 
-    @app_cache.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_not_deleted_affiliates(self) -> tuple:
         ***REMOVED***
             return affiliates who are not active
@@ -299,9 +301,9 @@ class RecruitsView(Validator):
             message: str = "Recruit does not exist"
             return jsonify({'status': False, 'message': message}), 500
 
-    @app_cache.cached(timeout=return_ttl(name='short'), unless=end_of_month)
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_recruit(self, recruit_data: dict) -> tuple:
         affiliate_id: typing.Union[str, None] = recruit_data.get('affiliate_id')
         if (affiliate_id is None) or (affiliate_id == ""):
@@ -314,9 +316,9 @@ class RecruitsView(Validator):
             message: str = "Recruit does not exist"
             return jsonify({'status': False, 'message': message}), 500
 
-    @app_cache.cached(timeout=return_ttl(name='short'), unless=end_of_month)
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_recruits_by_active_status(self, is_active: bool) -> tuple:
         if not (isinstance(is_active, bool)):
             return jsonify({'status': False, 'message': 'is_active status is required'}), 500
@@ -325,9 +327,9 @@ class RecruitsView(Validator):
         message: str = "{} recruits successfully fetched recruits by active status".format(str(len(recruits_list)))
         return jsonify({'status': True, 'message': message, 'payload': payload}), 200
 
-    @app_cache.cached(timeout=return_ttl(name='short'), unless=end_of_month)
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_recruits_by_deleted_status(self, is_deleted: bool) -> tuple:
         if not (isinstance(is_deleted, bool)):
             return jsonify({'status': False, 'message': 'is_deleted status is required'}), 500
@@ -336,9 +338,9 @@ class RecruitsView(Validator):
         message: str = "{} recruits successfully fetched recruits by deleted status".format(str(len(recruits_list)))
         return jsonify({'status': True, 'message': message, 'payload': payload}), 200
 
-    @app_cache.cached(timeout=return_ttl(name='short'), unless=end_of_month)
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_recruits_by_affiliate(self, affiliate_data: dict) -> tuple:
         affiliate_id: typing.Union[str, None] = affiliate_data.get('affiliate_id')
         if (affiliate_id is None) or (affiliate_id == ""):
@@ -349,9 +351,9 @@ class RecruitsView(Validator):
         message: str = "{} recruits successfully fetched recruits by active status".format(str(len(recruits_list)))
         return jsonify({'status': True, 'message': message, 'payload': payload}), 200
 
-    @app_cache.cached(timeout=return_ttl(name='short'), unless=end_of_month)
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_recruits_by_active_affiliate(self, affiliate_data: dict, is_active: bool) -> tuple:
         affiliate_id: typing.Union[str, None] = affiliate_data.get('affiliate_id')
         if (affiliate_id is None) or (affiliate_id == ""):

@@ -1,10 +1,13 @@
 ***REMOVED***
     this module describes a list of stocks using Symbols which may be accessed
 ***REMOVED***
+import functools
 import typing
 
 
 # _code,_unicode-decimal,_unicode-hex,__text
+from main import app_cache
+from utils.utils import return_ttl, can_cache
 
 list_of_currencies: typing.List[list] = [
     ["ALL", 'Albania Lek'],
@@ -122,6 +125,7 @@ list_of_currencies: typing.List[list] = [
     ["ZWD", "Zimbabwe Dollar"]]
 
 
+@functools.cache
 def currency_symbols() -> typing.List[str]:
     return [currency[0] for currency in list_of_currencies]
 
@@ -133,6 +137,7 @@ class CurrencyConverter:
         pass
 
     @staticmethod
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_conversion_rate(from_symbol: str, to_symbol: str) -> typing.Union[float, None]:
         ***REMOVED***
             :param from_symbol:
@@ -142,6 +147,7 @@ class CurrencyConverter:
         # TODO- use an api to get the present conversion_rate
         pass
 
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def currency_conversion(self, from_amount: AmountMixin, convert_to_symbol: str) -> typing.Union[AmountMixin, None]:
         ***REMOVED***
             given an origin amount convert to any supported currency

@@ -66,9 +66,9 @@ def end_of_month() -> bool:
 
 
 def return_ttl(name: str) -> int:
-    cache_ttl_short: int = 60 * 60 * 3  # 3 hours
-    cache_ttl_medium: int = 60 * 60 * 6  # 6 hours
-    cache_ttl_long: int = 60 * 60 * 12  # 24 hours
+    cache_ttl_short: int = int(60 * 60 * 0.5)  # 30 minutes
+    cache_ttl_medium: int = int(60 * 60 * 1)  # 1 hour
+    cache_ttl_long: int = int(60 * 60 * 1.5)  # 1 hour 30 minutes
 
     if name == "long":
         return cache_ttl_long
@@ -120,9 +120,20 @@ def get_payment_methods() -> typing.List[str]:
     return ['eft', 'paypal']
 
 
-def can_cache() -> bool:
+def can_cache() -> any:
     ***REMOVED***NOTE: de activates the cache in case we are running on development server or debug is enabled***REMOVED***
     return is_development() or not config_instance.DEBUG
+
+
+def clear_cache(app, cache) -> bool:
+    try:
+        with app.context():
+            cache.clear()
+            return True
+    except Exception as e:
+        cache.clear()
+        return True
+    return False
 
 
 if __name__ == '__main__':

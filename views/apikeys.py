@@ -7,21 +7,21 @@ from config.use_context import use_context
 from database.organization import OrgValidators, AuthUserValidators
 from database.apikeys import APIKeys
 from main import app_cache
-from utils.utils import create_id, return_ttl
+from utils.utils import create_id, return_ttl, can_cache
 
 
 class APIKeysValidators(OrgValidators, AuthUserValidators):
     def __init__(self):
         super(APIKeysValidators, self).__init__()
 
-    @app_cache.cached(timeout=return_ttl(name='short'))
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def organization_exist(self, organization_id: typing.Union[str, None]) -> bool:
         does_organization_exist: typing.Union[bool, None] = self.is_organization_exist(organization_id=organization_id)
         if isinstance(does_organization_exist, bool):
             return does_organization_exist
         raise DataServiceError(status=500, description="Database Error: Unable to verify organization")
 
-    @app_cache.cached(timeout=return_ttl(name='short'))
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def user_can_create_key(self, uid: typing.Union[str, None], organization_id: typing.Union[str, None]) -> bool:
         is_member_of_org: typing.Union[bool, None] = self.user_is_member_of_org(uid=uid, organization_id=organization_id)
         user_is_admin: typing.Union[bool, None] = self.org_user_is_admin(uid=uid, organization_id=organization_id)
@@ -110,9 +110,9 @@ class APIKeysView(APIKeysValidators):
                             'message': message}), 200
         return jsonify({'status': False, 'message': 'api key not found'}), 500
 
-    @app_cache.cached(timeout=return_ttl(name='short'))
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def return_all_organization_keys(self, organization_id: typing.Union[str, None]) -> tuple:
 
         api_keys_list: typing.List[APIKeys] = APIKeys.query(APIKeys.organization_id == organization_id).fetch()
@@ -120,9 +120,9 @@ class APIKeysView(APIKeysValidators):
         message: str = 'organization keys returned successfully'
         return jsonify({'status': True, 'payload': payload, 'message': message }), 200
 
-    @app_cache.cached(timeout=return_ttl(name='short'))
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def return_active_organization_keys(self, organization_id: typing.Union[str, None]) -> tuple:
 
         api_keys_list: typing.List[APIKeys] = APIKeys.query(APIKeys.organization_id == organization_id,

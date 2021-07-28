@@ -16,7 +16,7 @@ grpcio
 Jinja2
 proto-plus
 protobuf
-PyJWT
+PyJWT~=2.1.0
 requests~=2.25.1
 requests-toolbelt
 shortuuid

@@ -14,14 +14,14 @@ from database.setters import setters
 from database.organization import OrgValidators, AuthUserValidators
 from database.users import UserValidators
 from main import app_cache
-from utils.utils import return_ttl
+from utils.utils import return_ttl, can_cache
 
 
 class ServiceValidator(OrgValidators, AuthUserValidators, UserValidators):
     def __init__(self):
         super(ServiceValidator, self).__init__()
 
-    @app_cache.cached(timeout=return_ttl(name='short'))
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def can_create_service(self, uid: typing.Union[str, None],
                            organization_id: typing.Union[str, None] ) -> typing.Union[None, bool]:
 

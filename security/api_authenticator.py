@@ -7,11 +7,13 @@ from config.exceptions import UnAuthenticatedError
 from config.use_context import use_context
 import functools
 from database.apikeys import APIKeys
+from main import app_cache
+from utils.utils import return_ttl, can_cache
 
 
 @use_context
-@functools.lru_cache(maxsize=1024)
 @handle_view_errors
+@app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
 def is_api_key_valid(api_key: str, secret: str, domain: str) -> bool:
     api_instance: APIKeys = APIKeys.query(APIKeys.api_key == api_key).get()
     if isinstance(api_instance, APIKeys):

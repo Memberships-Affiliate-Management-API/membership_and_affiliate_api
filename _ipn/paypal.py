@@ -6,10 +6,15 @@
     the owner may use the endpoint while setting up paypal payments on their website
 ***REMOVED***
 from flask import Blueprint, request
+
+from main import app_cache
+from utils.utils import return_ttl, can_cache
+
 paypal_ipn_bp = Blueprint("paypal_ipn", __name__)
 
 
 @paypal_ipn_bp.route('/_ipn/paypal/deposit/success/<path:path>', methods=["GET", "POST"])
+@app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
 def deposit_successfull_ipn(path: str) -> tuple:
     ***REMOVED***
         deposit is successfull capture the approve url and redirect the user there after saving the deposit
@@ -22,6 +27,7 @@ def deposit_successfull_ipn(path: str) -> tuple:
 
 
 @paypal_ipn_bp.route('/_ipn/paypal/deposit/failure/<path:path>', methods=["GET", "POST"])
+@app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
 def deposit_failed_ipn(path: str) -> tuple:
     ***REMOVED***
 
@@ -33,6 +39,7 @@ def deposit_failed_ipn(path: str) -> tuple:
 
 
 @paypal_ipn_bp.route('/_ipn/paypal/deposit/cancelled/<path:path>', methods=["GET", "POST"])
+@app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
 def deposit_cancelled_ipn(path: str) -> tuple:
 
     ***REMOVED***
@@ -44,6 +51,7 @@ def deposit_cancelled_ipn(path: str) -> tuple:
 
 
 @paypal_ipn_bp.route('/_ipn/paypal/withdrawal/failure/<path:path>', methods=["GET", "POST"])
+@app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
 def withdrawal_failed_ipn(path: str) -> tuple:
     ***REMOVED***
 
@@ -55,6 +63,7 @@ def withdrawal_failed_ipn(path: str) -> tuple:
 
 
 @paypal_ipn_bp.route('/_ipn/paypal/withdrawal/success/<path:path>', methods=["GET", "POST"])
+@app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
 def withdrawal_successfull_ipn(path: str) -> tuple:
     ***REMOVED***
 

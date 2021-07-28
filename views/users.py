@@ -4,7 +4,7 @@ from werkzeug.security import check_password_hash
 from main import app_cache
 from database.users import UserModel
 from security.users_authenticator import encode_auth_token
-from utils.utils import create_id, return_ttl
+from utils.utils import create_id, return_ttl, can_cache
 from config.exception_handlers import handle_view_errors
 from config.use_context import use_context
 
@@ -199,9 +199,9 @@ class UserView:
                 return jsonify({'status': True, 'message': 'successfully deleted user'}), 200
         return jsonify({'status': False, 'message': 'user not found'}), 500
 
-    @app_cache.cached(timeout=return_ttl(name='short'))
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_active_users(self) -> tuple:
         ***REMOVED***
             return a list of all users
@@ -223,9 +223,9 @@ class UserView:
                                          UserModel.query(UserModel.is_active == True).fetch_async().get_result()]
         return jsonify({'status': True, 'payload': users_list, 'message': 'successfully retrieved active users'}), 200
 
-    @app_cache.cached(timeout=return_ttl(name='short'))
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_in_active_users(self) -> tuple:
         ***REMOVED***
             return a list of non active users
@@ -235,9 +235,9 @@ class UserView:
                                          UserModel.query(UserModel.is_active == False).fetch()]
         return jsonify({'status': True, 'payload': users_list, 'message': 'successfully retrieved active users'}), 200
 
-    @app_cache.cached(timeout=return_ttl(name='short'))
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def get_in_active_users_async(self) -> tuple:
         ***REMOVED***
             return a list of non active users
@@ -247,9 +247,9 @@ class UserView:
                                          UserModel.query(UserModel.is_active == False).fetch_async().get_result()]
         return jsonify({'status': True, 'payload': users_list, 'message': 'successfully retrieved active users'}), 200
 
-    @app_cache.cached(timeout=return_ttl(name='short'))
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_all_users(self) -> tuple:
         ***REMOVED***
             get a list of all users
@@ -259,9 +259,9 @@ class UserView:
         message: str = 'successfully retrieved active users'
         return jsonify({'status': True, 'payload': users_list, 'message': message}), 200
 
-    @app_cache.cached(timeout=return_ttl(name='short'))
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def get_all_users_async(self) -> tuple:
         ***REMOVED***
             get a list of all users
@@ -271,9 +271,9 @@ class UserView:
         message: str = 'successfully retrieved active users'
         return jsonify({'status': True, 'payload': users_list, 'message': message}), 200
 
-    @app_cache.cached(timeout=return_ttl(name='medium'))
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_user(self, uid:  typing.Union[str, None] = None, cell:  typing.Union[str, None] = None,
                  email:  typing.Union[str, None] = None) -> tuple:
         ***REMOVED***
@@ -303,9 +303,9 @@ class UserView:
 
         return jsonify({'status': False, 'message': 'to retrieve a user either submit an email, cell or user id'}), 500
 
-    @app_cache.cached(timeout=return_ttl(name='medium'))
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def get_user_async(self, uid:  typing.Union[str, None] = None, cell:  typing.Union[str, None] = None,
                              email:  typing.Union[str, None] = None) -> tuple:
         ***REMOVED***
