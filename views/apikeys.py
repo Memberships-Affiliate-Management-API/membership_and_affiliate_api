@@ -42,10 +42,6 @@ class APIKeysView(APIKeysValidators):
                 3. check if domain is valid
                 4. check if users plan allows api_key creation
                 5. create api_key secret combination
-
-                :param domain:
-                :param uid:
-                :param organization_id:
             :return:
         ***REMOVED***
         org_exist = self.organization_exist(organization_id=organization_id)
@@ -118,7 +114,8 @@ class APIKeysView(APIKeysValidators):
 
         api_keys_list: typing.List[APIKeys] = APIKeys.query(APIKeys.organization_id == organization_id).fetch()
         payload: typing.List[dict] = [_key.to_dict() for _key in api_keys_list]
-        return jsonify({'status': True, 'payload': payload, 'message': 'organization keys returned successfully'}), 200
+        message: str = 'organization keys returned successfully'
+        return jsonify({'status': True, 'payload': payload, 'message': message }), 200
 
     @cache_affiliates.cached(timeout=return_ttl(name='short'))
     @use_context
@@ -128,6 +125,7 @@ class APIKeysView(APIKeysValidators):
         api_keys_list: typing.List[APIKeys] = APIKeys.query(APIKeys.organization_id == organization_id,
                                                             APIKeys.is_active == True).fetch()
         payload: typing.List[dict] = [_key.to_dict() for _key in api_keys_list]
-        return jsonify({'status': True, 'payload': payload, 'message': 'organization keys returned successfully'}), 200
+        message: str = 'organization keys returned successfully'
+        return jsonify({'status': True, 'payload': payload, 'message': message}), 200
 
 

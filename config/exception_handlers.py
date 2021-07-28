@@ -17,9 +17,10 @@ def handle_view_errors(func):
             message: str = str(e)
             # IF debug please print debug messages
             # raise InputError(description='Bad input values, please check your input')
-            return({'status': False, 'message': message}), 500
-        except TypeError:
-            raise InputError(status=500, description='InputError: Bad input values, please check your input')
+            raise InputError(status=500, description=message)
+        except TypeError as e:
+            message: str = str(e)
+            raise InputError(status=500, description=message)
         except BadRequestError:
             raise RequestError(status=500, description='Bad Request: while connecting to database')
         except BadQueryError:

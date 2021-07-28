@@ -2,7 +2,6 @@
     authorize api calls
 ***REMOVED***
 from flask import request
-
 from config.exception_handlers import handle_view_errors
 from config.exceptions import UnAuthenticatedError
 from config.use_context import use_context
@@ -36,8 +35,14 @@ def handle_api_auth(func):
     return auth_wrapper
 
 
+# NOTE: this is irrelevant
+@handle_api_auth
+def main():
+    pass
+
+
 if __name__ == '__main__':
     ***REMOVED***
         NOTE: fast testing of functions here 
     ***REMOVED***
-    pass
+    main()

@@ -441,7 +441,8 @@ class MembershipsView(Validators):
             return jsonify(
                 {'status': True, 'payload': member_instance.to_dict(), 'message': 'successfully fetched members'}), 200
         else:
-            return jsonify({'status': False, 'message': 'user does not have any membership plan'}), 500
+            message: str = 'user does not have any membership plan'
+            return jsonify({'status': False, 'message': message}), 500
 
     @cache_affiliates.cached(timeout=return_ttl(name='medium'), unless=end_of_month)
     @use_context
@@ -515,7 +516,8 @@ class MembershipsView(Validators):
             message: str = "Membership not found"
             return jsonify({'status': False, 'message': message}), 500
 
-        return jsonify({'status': True, 'message': 'payment status has been successfully set',
+        message: str = 'payment status has been successfully set'
+        return jsonify({'status': True, 'message': message,
                         'payload': membership_instance.to_dict()}), 200
 
     @use_context
@@ -765,8 +767,8 @@ class MembershipPlansView(Validators):
             if key is None:
                 message: str = 'for some reason we are unable to create a new plan'
                 return jsonify({'status': False, 'message': message}), 500
-
-            return jsonify({'status': True, 'message': 'successfully update membership plan status',
+            message: str = 'successfully update membership plan status'
+            return jsonify({'status': True, 'message': message,
                             'payload': membership_plans_instance.to_dict()}), 200
         else:
             message: str = 'Membership plan not found'

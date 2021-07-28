@@ -1,7 +1,7 @@
 ### Contributions
 
-first this project is intended for use as an api for a membership based website with affiliate support.
-it therefore only provides api end-points to save update and work with users, membership information,and affiliates. 
+first this project is intended for use as an **api for a membership based platform** with **affiliate support**.
+it therefore only provides **api end-points to save update and work with** _users_, _membership information_,and _affiliates_. 
 on a daily basis for any platform that may be offering online services.
 
 ### Accepted Contributions

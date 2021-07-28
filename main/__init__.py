@@ -2,6 +2,7 @@ from flask import Flask
 from flask_caching import Cache
 from config import Config
 
+# TODO: consider upgrading the cache service from version 2 of this api
 cache_affiliates: Cache = Cache(config={'CACHE_TYPE': 'simple'})
 default_timeout: int = 60 * 60 * 6
 

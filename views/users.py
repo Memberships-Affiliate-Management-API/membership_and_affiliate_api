@@ -1,7 +1,6 @@
 import typing
 from flask import jsonify, current_app
 from werkzeug.security import check_password_hash
-from config.types import dict_list_type
 from main import cache_affiliates
 from database.users import UserModel
 from security.users_authenticator import encode_auth_token
@@ -66,31 +65,27 @@ class UserView:
             create new user
         ***REMOVED***
         if (uid is not None) and (uid != ""):
-            user_list: users_type = UserModel.query(UserModel.uid == uid).fetch_async().get_result()
-            if len(user_list) > 0:
+            user_instance: UserModel = UserModel.query(UserModel.uid == uid).get_async().get_result()
+            if isinstance(user_instance, UserModel):
                 return jsonify({'status': False, 'message': 'user already exists'}), 500
-        user_list: users_type = UserModel.query(UserModel.email == email).fetch_async().get_result()
-        if len(user_list) > 0:
-            message: str = '''
-            the email you submitted is already attached to an account please login again or reset your password
-            '''
+        user_instance: UserModel = UserModel.query(UserModel.email == email).get_async().get_result()
+        if isinstance(user_instance, UserModel):
+            message: str = '''the email you submitted is already attached to an account please login again or 
+            reset your password'''
             return jsonify({'status': False, 'message': message}), 500
 
-        user_list: users_type = UserModel.query(UserModel.cell == cell).fetch_async().get_result()
-        if len(user_list) > 0:
-            message: str = '''
-            the cell you submitted is already attached to an account please login again or reset your password
-            '''
+        user_instance: UserModel = UserModel.query(UserModel.cell == cell).fetch_async().get_result()
+        if isinstance(user_instance, UserModel):
+            message: str = '''the cell you submitted is already attached to an account please login again 
+            or reset your password'''
             return jsonify({'status': False, 'message': message}), 500
 
-        if (uid is not None) and (uid != ""):
-            pass
-        else:
+        if (uid is None) or (uid == ""):
             uid = create_id()
 
-        user_instance: UserModel = UserModel(names=names, surname=surname, cell=cell, email=email, password=password,
+        user_instance: UserModel = UserModel(uid=uid, names=names, surname=surname, cell=cell, email=email, password=password,
                                              is_active=True)
-        key = user_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
+        user_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
         return jsonify({'status': True,
                         "message": "Successfully created new user",
                         "payload": user_instance.to_dict()
@@ -140,7 +135,7 @@ class UserView:
             user_instance.email = email
             user_instance.is_admin = is_admin
             user_instance.is_support = is_support
-            key = user_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
+            user_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
             return jsonify({'status': True, 'message': 'successfully updated user details',
                             'payload': user_instance.to_dict()}), 200
         else:
@@ -152,10 +147,10 @@ class UserView:
                     cell:  typing.Union[str, None] = None) -> tuple:
         ***REMOVED***
             given either, uid, email or cell delete user
-        :param uid:
-        :param email:
-        :param cell:
-        :return:
+            :param uid:
+            :param email:
+            :param cell:
+            :return:
         ***REMOVED***
         if (uid != "") and (uid is not None):
             user_instance: UserModel = UserModel.query(UserModel.uid == uid).get()
@@ -178,13 +173,13 @@ class UserView:
     @use_context
     @handle_view_errors
     async def delete_user_async(self, uid: typing.Union[str, None] = None, email: typing.Union[str, None] = None,
-                    cell:  typing.Union[str, None] = None) -> tuple:
+                                cell:  typing.Union[str, None] = None) -> tuple:
         ***REMOVED***
             given either, uid, email or cell delete user
-        :param uid:
-        :param email:
-        :param cell:
-        :return:
+            :param uid:
+            :param email:
+            :param cell:
+            :return:
         ***REMOVED***
         if (uid != "") and (uid is not None):
             user_instance: UserModel = UserModel.query(UserModel.uid == uid).get_async().get_result()
@@ -283,10 +278,10 @@ class UserView:
                  email:  typing.Union[str, None] = None) -> tuple:
         ***REMOVED***
             return a user either by uid, cell or email
-        :param uid:
-        :param cell:
-        :param email:
-        :return:
+            :param uid:
+            :param cell:
+            :param email:
+            :return:
         ***REMOVED***
         if (uid is not None) and (uid != ""):
             user_instance: UserModel = UserModel.query(UserModel.uid == uid).get()
@@ -395,7 +390,7 @@ class UserView:
         user_instance: UserModel = UserModel.query(UserModel.uid == uid).get_async().get_result()
         if isinstance(user_instance, UserModel):
             user_instance.is_active = False
-            key = user_instance.put_async().get_result()
+            user_instance.put_async().get_result()
             return jsonify({'status': True, 'message': 'user deactivated'}), 200
         else:
             return jsonify({'status': False, 'message': 'user not found'}), 200
@@ -408,7 +403,7 @@ class UserView:
             Options:
             firebase login, JWT Token
         ***REMOVED***
-        user_model: UserModel = UserModel.query(email=email).get()
+        user_model: UserModel = UserModel.query(UserModel.email == email).get()
         if isinstance(user_model, UserModel):
             return jsonify({"message": "User not found"}), 401
 
@@ -433,6 +428,6 @@ class UserView:
             :return:
         ***REMOVED***
         # TODO: complete this by actually sending recovery email
-        return jsonify({'status': False, 'message':'Unable to send recovery email please try again later'}), 500
+        return jsonify({'status': False, 'message': 'Unable to send recovery email please try again later'}), 500
 
 

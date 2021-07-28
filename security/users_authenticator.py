@@ -77,10 +77,10 @@ def decode_auth_token(auth_token):
     try:
         payload = jwt.decode(jwt=auth_token, key=current_app.config.get('SECRET_KEY'), algorithms=['HS256'])
         return payload['sub']
-    except jwt.ExpiredSignatureError as e:
+    except jwt.ExpiredSignatureError:
         print("Error Expired Signature")
         return None
-    except jwt.InvalidTokenError as e:
+    except jwt.InvalidTokenError:
         print("Error : invalid token")
         return None
 
@@ -126,6 +126,7 @@ def verify_external_auth_token(f):
         sent_data = request.get_json()
         api = sent_data['api']
         secret = sent_data['secret']
+        print("API: {} Secret: {}".format(api, secret))
         # TODO- find the api token if valid pass if not revoke
         return f(identity=api, *args, **kwargs)
 
@@ -147,7 +148,7 @@ def logged_user(f):
                             current_user = UserModel.query.filter_by(_uid=uid).first()
                     else:
                         pass
-                except jwt.DecodeError as e:
+                except jwt.DecodeError:
                     # If user not logged in do nothing
                     pass
             else:
@@ -162,7 +163,7 @@ def is_authenticated(token: str) -> bool:
         uid = decode_auth_token(auth_token=token)
         current_user = UserModel.query.filter_by(_uid=uid).first()
         return True
-    except jwt.DecodeError as e:
+    except jwt.DecodeError:
         return False
 
 
@@ -171,7 +172,7 @@ def authenticated_user(token: str):
         uid = decode_auth_token(auth_token=token)
         current_user = UserModel.query.filter_by(_uid=uid).first()
         return current_user
-    except jwt.DecodeError as e:
+    except jwt.DecodeError:
         return None
 
 

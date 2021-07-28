@@ -37,7 +37,9 @@ def auth(current_user: UserModel, path: str) -> tuple:
         password: str = json_data.get('password')
         print(json_data)
         users_view_instance: UserView = UserView()
-        return users_view_instance.add_user(names=names, cell=cell, email=email, password=password)
+        name, surname = names.split(" ")
+        print(name, surname)
+        return users_view_instance.add_user(names=names, surname=surname, cell=cell, email=email, password=password)
 
     elif path == 'send-recovery-email':
         json_data: dict = request.get_json()

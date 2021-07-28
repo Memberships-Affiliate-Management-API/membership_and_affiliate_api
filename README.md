@@ -8,40 +8,44 @@
  **What it Handles**
  --
  **Presently the api can handle several services**
-   - ***Users***
-   - ***Memberships***
-   - ***Organizations***
-   - ***Wallet***
-   - ***Affiliates***
-   - ***Coupon Codes***
---     
+   - **_Users_**
+   - **_Memberships_**
+   - **_Organizations_**
+   - **_Wallet_**
+   - **_Affiliates_**
+   - **_Coupon Codes_**
+
  ####Access to our service is provided through: 
-   - API
-   - SDK's
+   - _API_
+   - _SDK's_
 
 
 ####Prerequisites
-- Python 3.8 +
+- _Python 3.8 +_
 
 
 ####Credentials
-- Create your credentials on RapidAPI or on our portal see below
+- _Create your credentials on RapidAPI or on our portal see below_
 
 ####Examples
 
 
 ####Licensed
-- Code Released under MIT License
+- _Code Released under MIT License_
 
 
 ####Contributions
-- See Contributions.MD on this repo for instructions
+- _See Contributions.MD on this repo for instructions_
+
+####Links
+- _RapidAPI_ 
+- _Platform Home_
 
 ####Author
 
-- ***Justice Ndou*** 
-- **Email:*** mobiusndou@gmail.com
-
+- ***Justice Ndou*** _[https://justice-ndou.site](https://justice-ndou.site)
+- **Email:*** _mobiusndou@gmail.com_
+- **Twitter** _@blueitserver_
 
 
 

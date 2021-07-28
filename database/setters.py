@@ -132,10 +132,16 @@ class ClassSetters:
             TODO validate email here
         ***REMOVED***
         import re
+        # TODO fix email regex match
         regex = '\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b'
-        if re.search(regex, value) is not None:
-            return value
-        raise ValueError("{} invalid email address".format(str(prop)))
+        # print(value)
+        # if re.search(regex, value) is not None:
+        #     return value
+        if not isinstance(value, str):
+            raise TypeError("invalid argument for email")
+
+        return value
+        # raise ValueError("{} invalid email address".format(str(prop)))
 
     # noinspection PyUnusedLocal
     @staticmethod
