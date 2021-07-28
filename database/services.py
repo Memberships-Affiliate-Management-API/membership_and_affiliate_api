@@ -7,8 +7,27 @@
     so that the subscription amount can be taken off the user paypal_address
 
 ***REMOVED***
+import typing
 from google.cloud import ndb
+from config.exceptions import DataServiceError
 from database.setters import setters
+from database.organization import OrgValidators
+from database.users import UserValidators
+
+
+class ServiceValidator(OrgValidators, UserValidators):
+    def __init__(self):
+        super(ServiceValidator, self).__init__()
+
+    def can_create_service(self, uid: typing.Union[str, None],
+                           organization_id: typing.Union[str, None] ) -> typing.Union[None, bool]:
+
+        org_exist: typing.Union[None, bool] = self.is_organization_exist(organization_id=organization_id)
+        is_admin: typing.Union[None, bool] = self.is_user_org_admin(uid=uid, organization_id=organization_id)
+        if isinstance(org_exist, bool) and isinstance(is_admin, bool):
+            return org_exist and is_admin
+        message: str = "Database Error: Unable to verify if user can create service"
+        raise DataServiceError(status=500, description=message)
 
 
 class Services(ndb.Model):
@@ -29,7 +48,7 @@ class Services(ndb.Model):
     # NOTE: home_url is the location online of the page containing
     # the service information page
     home_url: str = ndb.StringProperty(validator=setters.set_domain)
-    
+
     def __eq__(self, other):
         if self.__class__ != other.__class__:
             return False
@@ -52,7 +71,3 @@ class Services(ndb.Model):
 
     def __len__(self) -> int:
         return int(self.__bool__())
-
-
-
-

@@ -342,8 +342,8 @@ class PayPalRecurring(PayPalClient):
         if self.debug:
             print('Product or service for payment plan created:')
             print('Status Code: {}'.format(response.status_code))
-            print('Product or Service ID: {}'.format(response.id))
-            print('Create_time: {}'.format(response.create_time))
+            print('Product or Service ID: {}'.format(response.result.id))
+            print('Create_time: {}'.format(response.result.create_time))
         return response
 
     # NOTE: use this function to create a service or product plan

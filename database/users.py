@@ -31,6 +31,14 @@ class UserValidators:
             return True
         return False
 
+    @staticmethod
+    @handle_store_errors
+    def is_user_org_admin(uid: str, organization_id: str) -> typing.Union[None, bool]:
+        user_instance: UserModel = UserModel.query(UserModel.uid == uid).get()
+        if isinstance(user_instance, UserModel) and user_instance.organization_id == organization_id:
+            return user_instance.is_admin
+        return False
+
 
 class UserModel(ndb.Model):
     organization_id: str = ndb.StringProperty(required=True, indexed=True, validator=setters.set_id)

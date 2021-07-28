@@ -26,7 +26,7 @@ class ClassSetters:
 
         if not(isinstance(value, str)):
             raise ValueError(" {} can only be a string".format(str(prop)))
-        return value
+        return value.strip().lower()
 
     @staticmethod
     def set_transaction_types(prop, value: typing.Union[str, None]) -> str:
@@ -56,7 +56,7 @@ class ClassSetters:
         value = value.strip().lower()
         if value not in ['paid', 'unpaid']:
             raise TypeError("{} invalid status".format(str(prop)))
-        return value
+        return value.strip().lower()
 
     @staticmethod
     def set_string(prop, value: typing.Union[str, None]) -> str:
@@ -64,7 +64,7 @@ class ClassSetters:
             raise ValueError("{} cannot be Null".format(str(prop)))
         if not (isinstance(value, str)):
             raise TypeError("{} can only be a string ".format(str(prop)))
-        return value.strip()
+        return value.strip().lower()
 
     @staticmethod
     def set_schedule_term(prop, value: typing.Union[str, None]) -> str:
@@ -73,6 +73,7 @@ class ClassSetters:
         if not (isinstance(value, str)):
             raise TypeError("{} can only be a string ".format(str(prop)))
         value = value.strip().lower()
+        # TODO - Rewrite this or create a translator for paypal plans payment schedule
         if value in ["monthly", "quarterly", "annually"]:
             return value
         raise ValueError("Invalid scheduled term")
