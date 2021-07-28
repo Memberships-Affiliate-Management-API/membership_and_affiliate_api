@@ -181,7 +181,7 @@ class PayPalRecurring(PayPalClient):
                    "home_url": "{}".format(self.home_url)
             }
 
-    def create_service_plan(self, debug: bool = False):
+    def create_service(self, debug: bool = False):
         ***REMOVED***
             used to create a new recurring plan
         :return:
@@ -198,10 +198,11 @@ class PayPalRecurring(PayPalClient):
             print('Create_time: {}'.format(response.create_time))
         return response
 
-    def authorize_plan(self):
+    def create_plan(self):
         ***REMOVED***
-            used to authorize recurring plans
-        :return:
+            from a defined service, create the plans needed
+            example: Bronze, Gold and Platinum
+        :return: created_plan
         ***REMOVED***
         pass
 

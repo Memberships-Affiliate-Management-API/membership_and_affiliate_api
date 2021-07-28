@@ -2,6 +2,7 @@ import functools
 from google.api_core.exceptions import Aborted, RetryError
 from google.cloud.ndb.exceptions import BadRequestError, BadQueryError
 from config.exceptions import InputError, RequestError, DataServiceError
+from flask import current_app
 
 
 def handle_view_errors(func):
@@ -20,17 +21,36 @@ def handle_view_errors(func):
             raise InputError(status=500, description=message)
         except TypeError as e:
             message: str = str(e)
+            if current_app.config.get('DEBUG'):
+                print(e)
             raise InputError(status=500, description=message)
-        except BadRequestError:
-            raise RequestError(status=500, description='Bad Request: while connecting to database')
-        except BadQueryError:
-            raise DataServiceError(status=500, description="Database Error: Error while querying database please inform admin")
-        except ConnectionRefusedError:
-            raise RequestError(status=500, description="Request Error: Unable to connect to database please try again later")
-        except RetryError:
-            raise RequestError(status=500, description="Request error: Unable to connect to database please try again later")
-        except Aborted:
-            raise RequestError(status=500, description="Abort Error: due to some error on our servers your connection was aborted try again later")
+        except BadRequestError as e:
+            if current_app.config.get('DEBUG'):
+                print(e)
+            message: str = '''<code>Bad Request:</code> while connecting to database'''
+            raise RequestError(status=500, description=message)
+        except BadQueryError as e:
+            if current_app.config.get('DEBUG'):
+                print(e)
+            message: str = '''<code>Database Query Error:</code> Error while querying database please inform admin'''
+            raise DataServiceError(status=500, description=message)
+        except ConnectionRefusedError as e:
+            if current_app.config.get('DEBUG'):
+                print(e)
+            message: str = '''<code>Connection Refused:</code> Unable to connect to database please try again later'''
+            raise RequestError(status=500, description=message)
+        except RetryError as e:
+            if current_app.config.get('DEBUG'):
+                print(e)
+            message: str = '''<code>Retries Exceeded:</code> Unable to connect to database please try again later 
+            or inform the administrator'''
+            raise RequestError(status=500, description=message)
+        except Aborted as e:
+            if current_app.config.get('DEBUG'):
+                print(e)
+            message: str = '''<code>Abort Error:</code> due to some error on our servers your connection 
+            was aborted try again later'''
+            raise RequestError(status=500, description=message)
 
     return wrapper
 
@@ -43,15 +63,25 @@ def handle_store_errors(func):
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
-        except ConnectionRefusedError:
+        except ConnectionRefusedError as e:
+            if current_app.config.get('DEBUG'):
+                print(e)
             return None
-        except RetryError:
+        except RetryError as e:
+            if current_app.config.get('DEBUG'):
+                print(e)
             return None
-        except Aborted:
+        except Aborted as e:
+            if current_app.config.get('DEBUG'):
+                print(e)
             return None
-        except BadQueryError:
+        except BadQueryError as e:
+            if current_app.config.get('DEBUG'):
+                print(e)
             return None
-        except BadRequestError:
+        except BadRequestError as e:
+            if current_app.config.get('DEBUG'):
+                print(e)
             return None
 
     return wrapper
