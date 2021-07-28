@@ -6,4 +6,6 @@ from database.organization import Organization, OrgAccounts, OrgValidators
 
 
 class OrganizationView(OrgValidators):
+    # NOTE: used to create an organization so users can login into organization OrgAccounts
+    # or become affiliates of such organizations,
     pass

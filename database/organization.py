@@ -13,7 +13,7 @@ class OrgValidators:
     @staticmethod
     @handle_store_errors
     def is_organization_exist(organization_id: typing.Union[str, None]) -> typing.Union[None, bool]:
-        if not(isinstance(organization_id, str)):
+        if not (isinstance(organization_id, str)):
             raise InputError(status=500, description="organization_id cannot be null")
 
         organization_instance: Organization = Organization.query(Organization.organization_id == organization_id).get()
@@ -61,9 +61,9 @@ class AuthUserValidators:
     @handle_store_errors
     def user_is_member_of_org(uid: typing.Union[str, None],
                               organization_id: typing.Union[str, None]) -> typing.Union[None, bool]:
-        if not(isinstance(uid, str)):
+        if not (isinstance(uid, str)):
             raise InputError(status=500, description="uid cannot be Null")
-        if not(isinstance(organization_id, str)):
+        if not (isinstance(organization_id, str)):
             raise InputError(status=500, description="organization_id cannot be Null")
 
         auth_users_list: typing.List[AuthorizedUsers] = AuthorizedUsers.query(AuthorizedUsers.uid == uid).fetch()
@@ -76,9 +76,9 @@ class AuthUserValidators:
     @handle_store_errors
     def org_user_is_admin(uid: typing.Union[str, None],
                           organization_id: typing.Union[str, None]) -> typing.Union[None, bool]:
-        if not(isinstance(uid, str)):
+        if not (isinstance(uid, str)):
             raise InputError(status=500, description="uid cannot be Null")
-        if not(isinstance(organization_id, str)):
+        if not (isinstance(organization_id, str)):
             raise InputError(status=500, description="organization_id cannot be Null")
 
         auth_user_instance: AuthorizedUsers = AuthorizedUsers.query(
@@ -122,9 +122,14 @@ class AuthorizedUsers(ndb.Model):
 class OrgAccounts(ndb.Model):
     ***REMOVED***
         include details of the main organization payments accounts here
+        # NOTE: OrgAccounts PayPal Email will be used for making payments out
+        # to the Organization Upon successful collection
+        # NOTE: Funds must be available in wallet in order to be withdrawn to
+        # NOTE: the organization PayPal account
     ***REMOVED***
     organization_id: str = ndb.StringProperty(validator=setters.set_id)
     paypal_email: str = ndb.StringProperty(validator=setters.set_email)
+    is_verified: bool = ndb.BooleanProperty(default=setters.set_bool)
 
     def __str__(self) -> str:
         return "<OrgAccounts : Paypal {} ".format(self.paypal_email)
@@ -148,7 +153,9 @@ class OrgAccounts(ndb.Model):
 
 class PaymentResults(ndb.Model):
     ***REMOVED***
-        for every payment which is approved by admin, retain the result of the payment here
+        # NOTE: this are payments from Organization Wallets to Organization PayPal Accounts
+        for every payment which is approved by admin, retain the result of the
+        payment here
     ***REMOVED***
     organization_id: str = ndb.StringProperty(validator=setters.set_id)
     transaction_id: str = ndb.StringProperty(validator=setters.set_id)

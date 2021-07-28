@@ -91,6 +91,8 @@ class WalletView(Validator):
     @handle_view_errors
     def create_wallet(self, uid: typing.Union[str, None], currency: typing.Union[str, None],
                       paypal_address: typing.Union[str, None]) -> tuple:
+        # TODO - refactor the create wallet to include organization_id and also
+        #   to include is_organization account in-case the wallet belongs to an organization
         if self.can_add_wallet(uid=uid) is True:
             wallet_instance: WalletModel = WalletModel()
             amount_instance: AmountMixin = AmountMixin()
