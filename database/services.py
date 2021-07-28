@@ -26,5 +26,33 @@ class Services(ndb.Model):
     description: str = ndb.StringProperty(validator=setters.set_string)
     category: str = ndb.StringProperty(validator=setters.set_string)
     image_url: str = ndb.StringProperty(validator=setters.set_domain)
+    # NOTE: home_url is the location online of the page containing
+    # the service information page
     home_url: str = ndb.StringProperty(validator=setters.set_domain)
+    
+    def __eq__(self, other):
+        if self.__class__ != other.__class__:
+            return False
+        if self.organization_id != other.organization_id:
+            return False
+        if self.service_id != other.service_id:
+            return False
+        return True
+
+    def __str__(self) -> str:
+        return "<Service name: {}, description: {}, category: {}".format(self.name,
+                                                                         self.description,
+                                                                         self.category)
+
+    def __repr__(self) -> str:
+        return self.__str__()
+
+    def __bool__(self) -> bool:
+        return bool(self.service_id)
+
+    def __len__(self) -> int:
+        return int(self.__bool__())
+
+
+
 
