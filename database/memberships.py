@@ -195,7 +195,7 @@ class CouponsValidator:
 # noinspection DuplicatedCode
 class Memberships(ndb.Model):
     ***REMOVED***
-        TODO - add validators
+        # NOTE: plan_id
     ***REMOVED***
     organization_id: str = ndb.StringProperty(validator=setters.set_id)
     uid: str = ndb.StringProperty(validator=setters.set_id)
@@ -238,8 +238,10 @@ class Memberships(ndb.Model):
 # noinspection DuplicatedCode
 class MembershipPlans(ndb.Model):
     ***REMOVED***
-        contains a definition of all membership plans
-        TODO - add validators
+        Contains a definition of all Membership Plans
+        TODO - Memberships Plans must relate to PayPal Service Plans, when a plan gets created here
+        it must also be created on PayPal, plan_id here must be the same as plan_id in paypal or
+        another field to relate the two plans may be created...
     ***REMOVED***
     organization_id: str = ndb.StringProperty(validator=setters.set_id)
     plan_id: str = ndb.StringProperty(validator=setters.set_id)

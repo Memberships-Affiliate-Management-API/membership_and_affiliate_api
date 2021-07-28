@@ -1,7 +1,5 @@
 import typing
 from datetime import datetime
-from urllib import request
-
 from flask import url_for, json
 from _sdk._paypal.paypal_client import PayPalClient
 from _sdk._paypal.orders import OrdersCreateRequest, OrdersAuthorizeRequest
@@ -9,7 +7,7 @@ from _sdk._paypal.payments import AuthorizationsCaptureRequest
 from _sdk._paypal.reccuring import PlansCreateServiceProduct
 from _sdk._paypal.reccuring.create_plan_request import PlansCreatePlan
 from _sdk._paypal.reccuring.create_subscriber_request import PlansCreateSubscriptionRequest
-from database.mixins import AmountMixin, UserMixin
+from database.mixins import AmountMixin
 
 
 class PayPalOrders(PayPalClient):
@@ -66,10 +64,10 @@ class PayPalOrders(PayPalClient):
         :param debug:
         :return:
         ***REMOVED***
-        request = OrdersCreateRequest()
-        request.prefer('return=representation')
-        request.request_body(self.build_order_request_body())
-        response = self.client.execute(request)
+        create_order_request = OrdersCreateRequest()
+        create_order_request.prefer('return=representation')
+        create_order_request.request_body(self.build_order_request_body())
+        response = self.client.execute(create_order_request)
         if debug:
             print('Order With Minimum Payload:')
             print('Status Code:', response.status_code)
@@ -100,13 +98,13 @@ class PayPalOrders(PayPalClient):
     def authorize_order(self, order_id: typing.Union[str, None],  debug: bool = False):
         ***REMOVED***Method to authorize order using order_id***REMOVED***
         if isinstance(order_id, str):
-            request = OrdersAuthorizeRequest(order_id)
+            auth_order_request = OrdersAuthorizeRequest(order_id)
         else:
-            request = OrdersAuthorizeRequest(self.order_id)
+            auth_order_request = OrdersAuthorizeRequest(self.order_id)
 
-        request.prefer("return=representation")
-        request.request_body(self.build_order_request_body())
-        response = self.client.execute(request)
+        auth_order_request.prefer("return=representation")
+        auth_order_request.request_body(self.build_order_request_body())
+        response = self.client.execute(auth_order_request)
         if debug:
             print('Status Code: ', response.status_code)
             print('Status: ', response.result.status)
@@ -132,12 +130,12 @@ class PayPalOrders(PayPalClient):
     def capture_order(self, authorization_id: typing.Union[str, None] = None, debug=False):
         ***REMOVED***Method to capture order using authorization_id***REMOVED***
         if isinstance(authorization_id, str):
-            request = AuthorizationsCaptureRequest(authorization_id)
+            capture_request = AuthorizationsCaptureRequest(authorization_id)
         else:
-            request = AuthorizationsCaptureRequest(self.authorization_id)
+            capture_request = AuthorizationsCaptureRequest(self.authorization_id)
 
-        request.request_body(capture=self.build_order_request_body())
-        response = self.client.execute(request)
+        capture_request.request_body(capture=self.build_order_request_body())
+        response = self.client.execute(capture_request)
         if debug:
             print('Status Code: ', response.status_code)
             print('Status: ', response.result.status)
@@ -164,6 +162,7 @@ class PayPalRecurring(PayPalClient):
     def __init__(self, app, custom_id: str):
         super(PayPalRecurring, self).__init__(app=app)
         self.custom_id = custom_id
+        self.debug = app.config.get('DEBUG')
 
     def set_service_details(self, name: str, description: str, category: str, image_url: str, home_url: str):
         self.name = name
@@ -259,7 +258,7 @@ class PayPalRecurring(PayPalClient):
                         "total_cycles": 1
                     },
                     {
-                        "frequency":{
+                        "frequency": {
                             "interval_unit": "{}".format(interval),
                             "interval_count": 1
                         },
@@ -267,14 +266,14 @@ class PayPalRecurring(PayPalClient):
                         "sequence": 2,
                         "total_cycles": total_cycles,
                         "pricing_scheme": {
-                            "fixed_price":{
+                            "fixed_price": {
                                 "value": "{}".format(plan_amount.amount),
                                 "currency_code": "{}".format(plan_amount.currency)
                             }
                         }
                     }
                 ],
-                "payment_preferences":{
+                "payment_preferences": {
                     "auto_bill_outstanding": True,
                     "setup_fee": {
                         "value": "{}".format(setup_amount.amount),
@@ -326,7 +325,7 @@ class PayPalRecurring(PayPalClient):
         }
 
     # NOTE: use this function to create a service or product for a membership plan
-    def create_service(self, debug: bool = False):
+    def create_service(self):
         ***REMOVED***
             used to create a new recurring plan
             If creating a product/service succeeds,
@@ -340,7 +339,7 @@ class PayPalRecurring(PayPalClient):
         service_request.request_body(service_action_request=self.build_service_request_body())
         # NOTE: the serialize response encoder does support json content- but test this with v1 api
         response = self.client.execute(service_request)
-        if debug:
+        if self.debug:
             print('Product or service for payment plan created:')
             print('Status Code: {}'.format(response.status_code))
             print('Product or Service ID: {}'.format(response.id))
@@ -350,7 +349,7 @@ class PayPalRecurring(PayPalClient):
     # NOTE: use this function to create a service or product plan
     def create_a_plan(self, product_id: str, plan_name: str, plan_description: str, plan_amount: AmountMixin,
                       setup_amount: AmountMixin, include_trial: bool = True, interval: str = "MONTH",
-                      total_cycles: int = 0, include_taxes: bool = False, tax_percent: int = 15, debug: bool = False):
+                      total_cycles: int = 0, include_taxes: bool = False, tax_percent: int = 15):
 
         ***REMOVED***
             from a defined service, create the plans needed
@@ -378,7 +377,7 @@ class PayPalRecurring(PayPalClient):
 
         response = self.client.execute(plan_request)
         # NOTE: If creating a plan succeeds, it triggers the BILLING.PLAN.CREATED webhook.
-        if debug:
+        if self.debug:
             print("Create a Finite Plan")
             print("Plan ID: {}".format(response.result.id))
             print("Product ID: {}".format(response.result.product_id))
@@ -390,7 +389,9 @@ class PayPalRecurring(PayPalClient):
 
         return response
 
-    # NOTE: subscription body
+    # NOTE: Create a subscription Body this assumes an active plan already exists to subscribe the user
+    # NOTE: to, the API will recognize to whom the plan belong to through the Memberships Module
+
     @staticmethod
     def create_subscription_body(plan_id: str, start_time: datetime, name: str, surname: str,
                                  paypal_email_address: str, brand_name: str,
@@ -419,13 +420,12 @@ class PayPalRecurring(PayPalClient):
                   }
             }
 
-    # Call this function to subscribe users to an existing and active plan
-    # on success redirect users to an authorize screen
-
+    # NOTE: Call this function to subscribe users to an existing and active plan
+    # NOTE: on success redirect users to an authorize screen users will authorize the subscription
+    # NOTE:  and we are done
     def create_subscription(self, plan_id: str, start_time: datetime, name: str, surname: str,
                             paypal_email_address: str, brand_name: str,
-                            return_url: str, cancel_url: str,  locale: str = "en-US",
-                            debug: bool = True):
+                            return_url: str, cancel_url: str,  locale: str = "en-US"):
         ***REMOVED***
             Subscriptions with Smart Payment Buttons
                 To use Subscriptions with Smart Payment Buttons:
@@ -552,7 +552,7 @@ class PayPalRecurring(PayPalClient):
             paypal_email_address=paypal_email_address, brand_name=brand_name, return_url=return_url,
             cancel_url=cancel_url, locale=locale))
         response = self.client.execute(subscription_request)
-        if debug:
+        if self.debug:
             print("Creating Subscriptions")
             print("Subscription ID: {}".format(response.result.id))
             print("Plan_ID: {}".format(response.result.plan_id))
@@ -571,10 +571,3 @@ class PayPalRecurring(PayPalClient):
         # NOTE: When a subscription has been paid using auto debit, it triggers the PAYMENT.SALE.COMPLETED webhook.
         # Redirect User here to approve GET https://www.paypal.com/webapps/billing/subscriptions?ba_token={BA-Token-ID}
         return response
-
-    def activate_plan(self):
-        ***REMOVED***
-            used to activate recurring payment plans
-        :return:
-        ***REMOVED***
-        pass
