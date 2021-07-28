@@ -195,6 +195,8 @@ class CouponsValidator:
 # noinspection DuplicatedCode
 class Memberships(ndb.Model):
     ***REMOVED***
+        NOTE: Tracks down which user belongs to which plan from which organization_id  and if the user is paid up or unpaid
+        for the month it also captures the payment_method selected for the plan
         # NOTE: plan_id
     ***REMOVED***
     organization_id: str = ndb.StringProperty(validator=setters.set_id)
@@ -244,6 +246,9 @@ class MembershipPlans(ndb.Model):
         another field to relate the two plans may be created...
     ***REMOVED***
     organization_id: str = ndb.StringProperty(validator=setters.set_id)
+    # Service ID will relate the plan to a specific service_id on Services here and on PayPal Products
+    service_id: str = ndb.StringProperty(validator=setters.set_id)
+    # NOTE a single service_id can be found on multiple plans
     plan_id: str = ndb.StringProperty(validator=setters.set_id)
     plan_name: str = ndb.StringProperty(validator=setters.set_string)
     description: str = ndb.StringProperty(validator=setters.set_string)
