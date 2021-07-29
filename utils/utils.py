@@ -1,14 +1,12 @@
 import datetime
-import os
 import random
 import string
 import time
 import typing
-from flask import current_app
 from datetime import date
 from datetime import time as time_class
 from config import config_instance
-char_set = string.ascii_lowercase + string.digits
+char_set = string.ascii_lowercase + string.ascii_uppercase + string.digits
 
 
 # NOTE : Cannot use current_app
@@ -143,4 +141,4 @@ if __name__ == '__main__':
     # print(last_30_days_timestamp)
     # expire_after = datetime.datetime.now() - datetime.timedelta(days=30)
     # print(expire_after.date())
-    pass
+    print(create_id())

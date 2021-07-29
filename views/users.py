@@ -20,8 +20,8 @@ class UserView:
 
     @use_context
     @handle_view_errors
-    def add_user(self, names:  typing.Union[str, None], surname:  typing.Union[str, None],
-                 cell:  typing.Union[str, None], email:  typing.Union[str, None],
+    def add_user(self,   organization_id: typing.Union[str, None], names:  typing.Union[str, None],
+                 surname:  typing.Union[str, None], cell:  typing.Union[str, None], email:  typing.Union[str, None],
                  password:  typing.Union[str, None], uid:  typing.Union[str, None] = None) -> tuple:
         ***REMOVED***
             create new user
@@ -48,7 +48,7 @@ class UserView:
         if (uid is None) or (uid != ""):
             uid = create_id()
         print(uid, names, surname, cell, email, password)
-        user_instance: UserModel = UserModel(uid=uid, names=names, surname=surname, cell=cell, email=email, password=password,
+        user_instance: UserModel = UserModel(organization_id=organization_id, uid=uid, names=names, surname=surname, cell=cell, email=email, password=password,
                                              is_active=True)
         user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
         return jsonify({'status': True,
@@ -58,7 +58,7 @@ class UserView:
 
     @use_context
     @handle_view_errors
-    async def add_user_async(self, names:  typing.Union[str, None], surname:  typing.Union[str, None],
+    async def add_user_async(self, organization_id: typing.Union[str, None],  names:  typing.Union[str, None], surname:  typing.Union[str, None],
                              cell:  typing.Union[str, None], email:  typing.Union[str, None],
                              password:  typing.Union[str, None], uid:  typing.Union[str, None] = None) -> tuple:
         ***REMOVED***
@@ -83,7 +83,7 @@ class UserView:
         if (uid is None) or (uid == ""):
             uid = create_id()
 
-        user_instance: UserModel = UserModel(uid=uid, names=names, surname=surname, cell=cell, email=email, password=password,
+        user_instance: UserModel = UserModel(organization_id=organization_id, uid=uid, names=names, surname=surname, cell=cell, email=email, password=password,
                                              is_active=True)
         user_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
         return jsonify({'status': True,
@@ -93,16 +93,18 @@ class UserView:
 
     @use_context
     @handle_view_errors
-    def update_user(self, uid:  typing.Union[str, None], names:  typing.Union[str, None],
-                    surname:  typing.Union[str, None], cell:  typing.Union[str, None],
-                    email:  typing.Union[str, None], is_admin: bool, is_support: bool) -> tuple:
+    def update_user(self, organization_id: typing.Union[str, None], uid:  typing.Union[str, None],
+                    names:  typing.Union[str, None], surname:  typing.Union[str, None],
+                    cell:  typing.Union[str, None], email:  typing.Union[str, None], is_admin: bool,
+                    is_support: bool) -> tuple:
         ***REMOVED***
             update user details
         ***REMOVED***
         if (uid is None) or (uid == ""):
             return jsonify({'status': False, 'message': 'User ID is required'}), 500
 
-        user_instance: UserModel = UserModel.query(UserModel.uid == uid).get()
+        user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
+                                                   UserModel.uid == uid).get()
         if isinstance(user_instance, UserModel):
             user_instance.names = names
             user_instance.surname = surname
@@ -118,16 +120,18 @@ class UserView:
 
     @use_context
     @handle_view_errors
-    async def update_user_async(self, uid:  typing.Union[str, None], names:  typing.Union[str, None],
-                                surname:  typing.Union[str, None], cell:  typing.Union[str, None],
-                                email:  typing.Union[str, None], is_admin: bool, is_support: bool) -> tuple:
+    async def update_user_async(self, organization_id: typing.Union[str, None], uid:  typing.Union[str, None],
+                                names:  typing.Union[str, None], surname:  typing.Union[str, None],
+                                cell:  typing.Union[str, None], email:  typing.Union[str, None],
+                                is_admin: bool, is_support: bool) -> tuple:
         ***REMOVED***
             update user details
         ***REMOVED***
         if (uid is None) or (uid == ""):
             return jsonify({'status': False, 'message': 'User ID is required'}), 500
 
-        user_instance: UserModel = UserModel.query(UserModel.uid == uid).get_async().get_result()
+        user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
+                                                   UserModel.uid == uid).get_async().get_result()
         if isinstance(user_instance, UserModel):
             user_instance.names = names
             user_instance.surname = surname
@@ -143,27 +147,31 @@ class UserView:
 
     @use_context
     @handle_view_errors
-    def delete_user(self, uid: typing.Union[str, None] = None, email: typing.Union[str, None] = None,
-                    cell:  typing.Union[str, None] = None) -> tuple:
+    def delete_user(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None] = None,
+                    email: typing.Union[str, None] = None, cell:  typing.Union[str, None] = None) -> tuple:
         ***REMOVED***
             given either, uid, email or cell delete user
+            :param organization_id:
             :param uid:
             :param email:
             :param cell:
             :return:
         ***REMOVED***
         if (uid != "") and (uid is not None):
-            user_instance: UserModel = UserModel.query(UserModel.uid == uid).get()
+            user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
+                                                       UserModel.uid == uid).get()
             if isinstance(user_instance, UserModel):
                 user_instance.key.delete()
                 return jsonify({'status': True, 'message': 'successfully deleted user'}), 200
         elif (email != "") and (email is not None):
-            user_instance: UserModel = UserModel.query(UserModel.email == email).get()
+            user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
+                                                       UserModel.email == email).get()
             if isinstance(user_instance, UserModel):
                 user_instance.key.delete()
                 return jsonify({'status': True, 'message': 'successfully deleted user'}), 200
         elif (cell != "") and (cell is not None):
-            user_instance: UserModel = UserModel.query(UserModel.cell == cell).get()
+            user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
+                                                       UserModel.cell == cell).get()
             if isinstance(user_instance, UserModel):
                 # TODO- rather mark user as deleted
                 user_instance.key.delete()
@@ -172,27 +180,31 @@ class UserView:
 
     @use_context
     @handle_view_errors
-    async def delete_user_async(self, uid: typing.Union[str, None] = None, email: typing.Union[str, None] = None,
-                                cell:  typing.Union[str, None] = None) -> tuple:
+    async def delete_user_async(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None] = None,
+                                email: typing.Union[str, None] = None, cell:  typing.Union[str, None] = None) -> tuple:
         ***REMOVED***
             given either, uid, email or cell delete user
+            :param organization_id:
             :param uid:
             :param email:
             :param cell:
             :return:
         ***REMOVED***
         if (uid != "") and (uid is not None):
-            user_instance: UserModel = UserModel.query(UserModel.uid == uid).get_async().get_result()
+            user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
+                                                       UserModel.uid == uid).get_async().get_result()
             if isinstance(user_instance, UserModel):
                 user_instance.key.delete()
                 return jsonify({'status': True, 'message': 'successfully deleted user'}), 200
         elif (email != "") and (email is not None):
-            user_instance: UserModel = UserModel.query(UserModel.email == email).get_async().get_result()
+            user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
+                                                       UserModel.email == email).get_async().get_result()
             if isinstance(user_instance, UserModel):
                 user_instance.key.delete()
                 return jsonify({'status': True, 'message': 'successfully deleted user'}), 200
         elif (cell != "") and (cell is not None):
-            user_instance: UserModel = UserModel.query(UserModel.cell == cell).get_async().get_result()
+            user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
+                                                       UserModel.cell == cell).get_async().get_result()
             if isinstance(user_instance, UserModel):
                 # TODO- rather mark user as deleted
                 user_instance.key.delete()
@@ -202,101 +214,110 @@ class UserView:
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    def get_active_users(self) -> tuple:
+    def get_active_users(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             return a list of all users
         :return:
         ***REMOVED***
-        users_list: typing.List[dict] = [user.to_dict() for user in
-                                         UserModel.query(UserModel.is_active == True).fetch()]
+        users_list: typing.List[dict] = [user.to_dict() for user in UserModel.query(
+            UserModel.organization_id == organization_id, UserModel.is_active == True).fetch()]
         return jsonify({'status': True, 'payload': users_list, 'message': 'successfully retrieved active users'}), 200
 
-    @app_cache.cached(timeout=return_ttl(name='short'))
     @use_context
     @handle_view_errors
-    async def get_active_users_async(self) -> tuple:
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    async def get_active_users_async(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             return a list of all users
         :return:
         ***REMOVED***
-        users_list: typing.List[dict] = [user.to_dict() for user in
-                                         UserModel.query(UserModel.is_active == True).fetch_async().get_result()]
+        users_list: typing.List[dict] = [user.to_dict() for user in UserModel.query(
+            UserModel.organization_id == organization_id, UserModel.is_active == True).fetch_async().get_result()]
+
         return jsonify({'status': True, 'payload': users_list, 'message': 'successfully retrieved active users'}), 200
 
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    def get_in_active_users(self) -> tuple:
+    def get_in_active_users(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             return a list of non active users
         :return:
         ***REMOVED***
-        users_list: typing.List[dict] = [user.to_dict() for user in
-                                         UserModel.query(UserModel.is_active == False).fetch()]
-        return jsonify({'status': True, 'payload': users_list, 'message': 'successfully retrieved active users'}), 200
-
-    @use_context
-    @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    async def get_in_active_users_async(self) -> tuple:
-        ***REMOVED***
-            return a list of non active users
-        :return:
-        ***REMOVED***
-        users_list: typing.List[dict] = [user.to_dict() for user in
-                                         UserModel.query(UserModel.is_active == False).fetch_async().get_result()]
-        return jsonify({'status': True, 'payload': users_list, 'message': 'successfully retrieved active users'}), 200
-
-    @use_context
-    @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    def get_all_users(self) -> tuple:
-        ***REMOVED***
-            get a list of all users
-        :return:
-        ***REMOVED***
-        users_list: typing.List[dict] = [user.to_dict() for user in UserModel.query().fetch()]
+        users_list: typing.List[dict] = [user.to_dict() for user in UserModel.query(
+            UserModel.organization_id == organization_id, UserModel.is_active == False).fetch()]
         message: str = 'successfully retrieved active users'
         return jsonify({'status': True, 'payload': users_list, 'message': message}), 200
 
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    async def get_all_users_async(self) -> tuple:
+    async def get_in_active_users_async(self, organization_id: typing.Union[str, None]) -> tuple:
+        ***REMOVED***
+            return a list of non active users
+        :return:
+        ***REMOVED***
+        users_list: typing.List[dict] = [user.to_dict() for user in UserModel.query(
+            UserModel.organization_id == organization_id, UserModel.is_active == False).fetch_async().get_result()]
+
+        return jsonify({'status': True, 'payload': users_list, 'message': 'successfully retrieved active users'}), 200
+
+    @use_context
+    @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    def get_all_users(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             get a list of all users
         :return:
         ***REMOVED***
-        users_list: typing.List[dict] = [user.to_dict() for user in UserModel.query().fetch_async().get_result()]
+        users_list: typing.List[dict] = [user.to_dict() for user in UserModel.query(
+            UserModel.organization_id == organization_id).fetch()]
         message: str = 'successfully retrieved active users'
         return jsonify({'status': True, 'payload': users_list, 'message': message}), 200
 
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    def get_user(self, uid:  typing.Union[str, None] = None, cell:  typing.Union[str, None] = None,
+    async def get_all_users_async(self, organization_id: typing.Union[str, None]) -> tuple:
+        ***REMOVED***
+            get a list of all users
+        :return:
+        ***REMOVED***
+        users_list: typing.List[dict] = [user.to_dict() for user in UserModel.query(
+            UserModel.organization_id == organization_id).fetch_async().get_result()]
+        message: str = 'successfully retrieved active users'
+        return jsonify({'status': True, 'payload': users_list, 'message': message}), 200
+
+    @use_context
+    @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    def get_user(self, organization_id: typing.Union[str, None], uid:  typing.Union[str, None] = None, cell:  typing.Union[str, None] = None,
                  email:  typing.Union[str, None] = None) -> tuple:
         ***REMOVED***
             return a user either by uid, cell or email
+            :param organization_id:
             :param uid:
             :param cell:
             :param email:
             :return:
         ***REMOVED***
         if (uid is not None) and (uid != ""):
-            user_instance: UserModel = UserModel.query(UserModel.uid == uid).get()
+            user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
+                                                       UserModel.uid == uid).get()
             if isinstance(user_instance, UserModel):
                 message: str = 'successfully retrieved user by uid'
                 return jsonify({'status': True, 'payload': user_instance.to_dict(), 'message': message}), 200
 
         if (cell is not None) and (cell != ""):
-            user_instance: UserModel = UserModel.query(UserModel.cell == cell).get()
+            user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
+                                                       UserModel.cell == cell).get()
             if isinstance(user_instance, UserModel):
                 message: str = 'successfully retrieved user by cell'
                 return jsonify({'status': True, 'payload': user_instance.to_dict(), 'message': message}), 200
 
         if (email is not None) and (email != ""):
-            user_instance: UserModel = UserModel.query(UserModel.email == email).get()
+            user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
+                                                       UserModel.email == email).get()
             if isinstance(user_instance, UserModel):
                 message: str = 'successfully retrieved user by email'
                 return jsonify({'status': True, 'payload': user_instance.to_dict(), 'message': message}), 200
@@ -306,29 +327,33 @@ class UserView:
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    async def get_user_async(self, uid:  typing.Union[str, None] = None, cell:  typing.Union[str, None] = None,
-                             email:  typing.Union[str, None] = None) -> tuple:
+    async def get_user_async(self, organization_id: typing.Union[str, None], uid:  typing.Union[str, None] = None,
+                             cell:  typing.Union[str, None] = None, email:  typing.Union[str, None] = None) -> tuple:
         ***REMOVED***
             return a user either by uid, cell or email
+            :param organization_id:
             :param uid:
             :param cell:
             :param email:
             :return:
         ***REMOVED***
         if (uid is not None) and (uid != ""):
-            user_instance: UserModel = UserModel.query(UserModel.uid == uid).get_async().get_result()
+            user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
+                                                       UserModel.uid == uid).get_async().get_result()
             if isinstance(user_instance, UserModel):
                 message: str = 'successfully retrieved user by uid'
                 return jsonify({'status': True, 'payload': user_instance.to_dict(), 'message': message}), 200
 
         if (cell is not None) and (cell != ""):
-            user_instance: UserModel = UserModel.query(UserModel.cell == cell).get_async().get_result()
+            user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
+                                                       UserModel.cell == cell).get_async().get_result()
             if isinstance(user_instance, UserModel):
                 message: str = 'successfully retrieved user by cell'
                 return jsonify({'status': True, 'payload': user_instance.to_dict(), 'message': message}), 200
 
         if (email is not None) and (email != ""):
-            user_instance: UserModel = UserModel.query(UserModel.email == email).get_async().get_result()
+            user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
+                                                       UserModel.email == email).get_async().get_result()
             if isinstance(user_instance, UserModel):
                 message: str = 'successfully retrieved user by email'
                 return jsonify({'status': True, 'payload': user_instance.to_dict(), 'message': message}), 200
@@ -337,13 +362,16 @@ class UserView:
 
     @use_context
     @handle_view_errors
-    def check_password(self, uid: typing.Union[str, None], password:  typing.Union[str, None]) -> tuple:
+    def check_password(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
+                       password:  typing.Union[str, None]) -> tuple:
+
         if (uid is None) or (uid == ""):
             return jsonify({'status': False, 'message': 'please submit user id'}), 500
         if (password is None) or (password == ""):
             return jsonify({'status': False, 'message': 'please submit password'}), 500
 
-        user_instance: UserModel = UserModel.query(UserModel.uid == uid).get()
+        user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
+                                                   UserModel.uid == uid).get()
         if isinstance(user_instance, UserModel):
             if check_password_hash(password=password, pwhash=user_instance.password) is True:
                 return jsonify({'status': True, 'message': 'passwords match'}), 200
@@ -354,13 +382,14 @@ class UserView:
 
     @use_context
     @handle_view_errors
-    async def check_password_async(self, uid: typing.Union[str, None], password:  typing.Union[str, None]) -> tuple:
+    async def check_password_async(self, organization_id: typing.Union[str, None],uid: typing.Union[str, None], password:  typing.Union[str, None]) -> tuple:
         if (uid is None) or (uid == ""):
             return jsonify({'status': False, 'message': 'please submit user id'}), 500
         if (password is None) or (password == ""):
             return jsonify({'status': False, 'message': 'please submit password'}), 500
 
-        user_instance: UserModel = UserModel.query(UserModel.uid == uid).get_async().get_result()
+        user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
+                                                   UserModel.uid == uid).get_async().get_result()
         if isinstance(user_instance, UserModel):
             if check_password_hash(password=password, pwhash=user_instance.password) is True:
                 return jsonify({'status': True, 'message': 'passwords match'}), 200
@@ -371,10 +400,11 @@ class UserView:
 
     @use_context
     @handle_view_errors
-    def deactivate_user(self, uid: typing.Union[str, None]) -> tuple:
+    def deactivate_user(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None]) -> tuple:
         if (uid is None) or (uid == ""):
             return jsonify({'status': False, 'message': 'please submit user id'}), 500
-        user_instance: UserModel = UserModel.query(UserModel.uid == uid).get()
+        user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
+                                                   UserModel.uid == uid).get()
         if isinstance(user_instance, UserModel):
             user_instance.is_active = False
             user_instance.put()
@@ -384,10 +414,13 @@ class UserView:
 
     @use_context
     @handle_view_errors
-    async def deactivate_user_async(self, uid: typing.Union[str, None]) -> tuple:
+    async def deactivate_user_async(self, organization_id: typing.Union[str, None],
+                                    uid: typing.Union[str, None]) -> tuple:
+
         if (uid is None) or (uid == ""):
             return jsonify({'status': False, 'message': 'please submit user id'}), 500
-        user_instance: UserModel = UserModel.query(UserModel.uid == uid).get_async().get_result()
+        user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
+                                                   UserModel.uid == uid).get_async().get_result()
         if isinstance(user_instance, UserModel):
             user_instance.is_active = False
             user_instance.put_async().get_result()
@@ -397,20 +430,25 @@ class UserView:
 
     @use_context
     @handle_view_errors
-    def login(self, email:   typing.Union[str, None], password: typing.Union[str, None]) -> tuple:
+    def login(self, organization_id: typing.Union[str, None], email:   typing.Union[str, None],
+              password: typing.Union[str, None]) -> tuple:
+
         ***REMOVED***
             this login utility may support client app , not necessary for admin and service to service calls
             Options:
             firebase login, JWT Token
         ***REMOVED***
-        user_model: UserModel = UserModel.query(UserModel.email == email).get()
-        if isinstance(user_model, UserModel):
+        user_model: UserModel = UserModel.query(UserModel.organization_id == organization_id,
+                                                UserModel.email == email).get()
+        print(user_model)
+        if not isinstance(user_model, UserModel):
             return jsonify({"message": "User not found"}), 401
 
         if not user_model.is_active:
             message: str = 'login was not successful user is de-activated please contact admin'
             return jsonify({"message": message}), 403
 
+        print('checking password hashes: {} password: {}'.format(user_model.password, password))
         if check_password_hash(user_model.password, password):
             token = encode_auth_token(uid=user_model.uid)
             return jsonify({'token': token, 'message': "you have successfully logged in"}), 200
@@ -422,7 +460,8 @@ class UserView:
 
     @use_context
     @handle_view_errors
-    def send_recovery_email(self, email: typing.Union[str, None]) -> tuple:
+    def send_recovery_email(self, organization_id: typing.Union[str, None],
+                            email: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             # Use the email sdk to send recovery email and return
             :return:

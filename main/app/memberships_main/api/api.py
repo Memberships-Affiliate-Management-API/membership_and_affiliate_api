@@ -1,7 +1,8 @@
-from flask import Blueprint, jsonify, request, url_for, flash
+from flask import Blueprint, jsonify, request,current_app, url_for, flash
 from database.users import UserModel
 from security.users_authenticator import logged_user
 from views.users import UserView
+
 
 main_api_bp = Blueprint('main_api', __name__)
 
@@ -25,6 +26,7 @@ def auth(current_user: UserModel, path: str) -> tuple:
         users_view_instance: UserView = UserView()
         email: str = json_data.get('email')
         password: str = json_data.get('password')
+        print(email, password)
         return users_view_instance.login(email=email, password=password)
 
     elif path == 'subscribe':
@@ -37,8 +39,10 @@ def auth(current_user: UserModel, path: str) -> tuple:
         print(json_data)
         users_view_instance: UserView = UserView()
         name, surname = names.split(" ")
+        organization_id = current_app.config.get('ORGANIZATION_ID')
         print(name, surname)
-        return users_view_instance.add_user(names=names, surname=surname, cell=cell, email=email, password=password)
+        return users_view_instance.add_user(organization_id=organization_id, names=names, surname=surname, cell=cell,
+                                            email=email, password=password)
 
     elif path == 'send-recovery-email':
         json_data: dict = request.get_json()

@@ -7,6 +7,7 @@ import datetime
 class Config:
     PROJECT = os.environ.get("PROJECT") or config("PROJECT")
     APP_NAME = os.environ.get("APP_NAME") or config("APP_NAME")
+    ORGANIZATION_ID = os.environ.get("ORGANIZATION_ID") or config("ORGANIZATION_ID")
     DEFAULT_ACCESS_RIGHTS = ["visitor", "user", "super_user", "admin"]
     ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL") or config("ADMIN_EMAIL")
     UTC_OFFSET = datetime.timedelta(hours=2)
