@@ -1003,16 +1003,22 @@ class MembershipPlansView(Validators):
 
     @staticmethod
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    def return_all_plans( organization_id: str ) -> tuple:
-        membership_plan_list: typing.List[MembershipPlans] = MembershipPlans.query().fetch()
+    def return_all_plans(organization_id: str) -> tuple:
+
+        membership_plan_list: typing.List[MembershipPlans] = MembershipPlans.query(
+            MembershipPlans.organization_id == organization_id).fetch()
+
         plan_list: typing.List[dict] = [plan.to_dict() for plan in membership_plan_list]
         return jsonify({'status': True, 'payload': plan_list,
                         'message': 'successfully fetched all memberships'}), 200
 
     @staticmethod
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    async def return_all_plans_async() -> tuple:
-        membership_plan_list: typing.List[MembershipPlans] = MembershipPlans.query().fetch_async().get_result()
+    async def return_all_plans_async(organization_id: str) -> tuple:
+
+        membership_plan_list: typing.List[MembershipPlans] = MembershipPlans.query(
+            MembershipPlans.organization_id == organization_id).fetch_async().get_result()
+
         plan_list: typing.List[dict] = [plan.to_dict() for plan in membership_plan_list]
         return jsonify({'status': True, 'payload': plan_list,
                         'message': 'successfully fetched all memberships'}), 200
@@ -1023,10 +1029,12 @@ class AccessRightsView:
         pass
 
     @use_context
-    def get_access_rights(self, plan_id: str) -> typing.Union[None, AccessRights]:
+    def get_access_rights(self, organization_id: str, plan_id: str) -> typing.Union[None, AccessRights]:
         if isinstance(plan_id, str):
             try:
-                access_rights_instance: AccessRights = AccessRights.query(AccessRights.plan_id == plan_id).get()
+                access_rights_instance: AccessRights = AccessRights.query(
+                    AccessRights.organization_id == organization_id, AccessRights.plan_id == plan_id).get()
+
                 if isinstance(access_rights_instance, AccessRights):
                     return access_rights_instance
                 return None
@@ -1039,11 +1047,13 @@ class AccessRightsView:
         return None
 
     @use_context
-    async def get_access_rights_async(self, plan_id: str) -> typing.Union[None, AccessRights]:
+    async def get_access_rights_async(self, organization_id: str, plan_id: str) -> typing.Union[None, AccessRights]:
         if isinstance(plan_id, str):
             try:
                 access_rights_instance: AccessRights = AccessRights.query(
+                    AccessRights.organization_id == organization_id,
                     AccessRights.plan_id == plan_id).get_async().get_result()
+
                 if isinstance(access_rights_instance, AccessRights):
                     return access_rights_instance
                 return None
@@ -1073,7 +1083,12 @@ def get_coupon_data(func):
             expiration_time: typing.Union[int, None] = int(coupon_data['expiration_time'])
         else:
             return jsonify({'status': False, 'message': 'expiration_time is required'}), 500
-        return func(code=code, discount=discount, expiration_time=expiration_time, *args)
+
+        if ("organization_id" in coupon_data) and (coupon_data["organization_id"] != ""):
+            organization_id: typing.Union[str, None] = coupon_data.get("organization_id")
+        else:
+            return jsonify({'status': False, 'message': 'Please specify organization_id'}), 500
+        return func(organization_id=organization_id, code=code, discount=discount, expiration_time=expiration_time, *args)
 
     return wrapper
 
@@ -1086,10 +1101,13 @@ class CouponsView(Validators):
     @get_coupon_data
     @use_context
     @handle_view_errors
-    def add_coupon(self, code: typing.Union[str, None], discount: typing.Union[int, None],
+    def add_coupon(self, organization_id: typing.Union[str, None], code: typing.Union[str, None], discount: typing.Union[int, None],
                    expiration_time: typing.Union[int, None]) -> tuple:
+
         if self.can_add_coupon(code=code, expiration_time=expiration_time, discount=discount) is True:
-            coupons_instance: Coupons = Coupons(code=code, discount=discount, expiration_time=expiration_time)
+            coupons_instance: Coupons = Coupons(organization_id=organization_id, code=code, discount=discount,
+                                                expiration_time=expiration_time)
+
             key = coupons_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             if key is None:
                 message: str = "an error occured while creating coupon"
@@ -1103,10 +1121,13 @@ class CouponsView(Validators):
     @get_coupon_data
     @use_context
     @handle_view_errors
-    async def add_coupon_async(self, code: typing.Union[str, None], discount: typing.Union[int, None],
-                               expiration_time: typing.Union[int, None]) -> tuple:
+    async def add_coupon_async(self, organization_id: typing.Union[str, None], code: typing.Union[str, None],
+                               discount: typing.Union[int, None], expiration_time: typing.Union[int, None]) -> tuple:
+
         if await self.can_add_coupon_async(code=code, expiration_time=expiration_time, discount=discount) is True:
-            coupons_instance: Coupons = Coupons(code=code, discount=discount, expiration_time=expiration_time)
+            coupons_instance: Coupons = Coupons(organization_id=organization_id, code=code,
+                                                discount=discount, expiration_time=expiration_time)
+
             key = coupons_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
             if key is None:
                 message: str = "an error occured while creating coupon"
@@ -1120,9 +1141,10 @@ class CouponsView(Validators):
     @get_coupon_data
     @use_context
     @handle_view_errors
-    def update_coupon(self, code: str, discount: int, expiration_time: int) -> tuple:
+    def update_coupon(self, organization_id: typing.Union[str, None], code: str, discount: int, expiration_time: int) -> tuple:
         if self.can_update_coupon(code=code, expiration_time=expiration_time, discount=discount) is True:
-            coupon_instance: Coupons = Coupons.query(Coupons.code == code).get()
+            coupon_instance: Coupons = Coupons.query(Coupons.organization_id == organization_id,
+                                                     Coupons.code == code).get()
             coupon_instance.discount = discount
             coupon_instance.expiration_time = expiration_time
             key = coupon_instance.put(retries=self._max_retries, timeout=self._max_timeout)
@@ -1138,9 +1160,13 @@ class CouponsView(Validators):
     @get_coupon_data
     @use_context
     @handle_view_errors
-    async def update_coupon_async(self, code: str, discount: int, expiration_time: int) -> tuple:
+    async def update_coupon_async(self, organization_id: typing.Union[str, None], code: str, discount: int,
+                                  expiration_time: int) -> tuple:
+
         if await self.can_update_coupon_async(code=code, expiration_time=expiration_time, discount=discount) is True:
-            coupon_instance: Coupons = Coupons.query(Coupons.code == code).get_async().get_result()
+            coupon_instance: Coupons = Coupons.query(
+                Coupons.organization_id == organization_id, Coupons.code == code).get_async().get_result()
+
             coupon_instance.discount = discount
             coupon_instance.expiration_time = expiration_time
             key = coupon_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
@@ -1155,14 +1181,17 @@ class CouponsView(Validators):
 
     @use_context
     @handle_view_errors
-    def cancel_coupon(self, coupon_data: dict) -> tuple:
+    def cancel_coupon(self, organization_id: typing.Union[str, None], coupon_data: dict) -> tuple:
+
         if "code" in coupon_data and coupon_data['code'] != "":
             code: str = coupon_data['code']
         else:
             message: str = "Coupon Code is required"
             return jsonify({'status': False, 'message': message}), 500
 
-        coupon_instance: Coupons = Coupons.query(Coupons.code == code).get()
+        coupon_instance: Coupons = Coupons.query(Coupons.organization_id == organization_id,
+                                                 Coupons.code == code).get()
+
         if isinstance(coupon_instance, Coupons):
             coupon_instance.is_valid = False
             key = coupon_instance.put(retries=self._max_retries, timeout=self._max_timeout)
@@ -1175,13 +1204,17 @@ class CouponsView(Validators):
 
     @use_context
     @handle_view_errors
-    async def cancel_coupon_async(self, coupon_data: dict) -> tuple:
+    async def cancel_coupon_async(self, organization_id: typing.Union[str, None], coupon_data: dict) -> tuple:
+
         if ("code" in coupon_data) and (coupon_data['code'] != ""):
             code: str = coupon_data['code']
         else:
             message: str = "Coupon Code is required"
             return jsonify({'status': False, 'message': message}), 500
-        coupon_instance: Coupons = Coupons.query(Coupons.code == code).get_async().get_result()
+
+        coupon_instance: Coupons = Coupons.query( Coupons.organization_id == organization_id,
+                                                  Coupons.code == code).get_async().get_result()
+
         if isinstance(coupon_instance, Coupons):
             coupon_instance.is_valid = False
             key = coupon_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
@@ -1194,13 +1227,16 @@ class CouponsView(Validators):
 
     @use_context
     @handle_view_errors
-    async def cancel_coupon_async(self, coupon_data: dict) -> tuple:
+    async def cancel_coupon_async(self, organization_id: typing.Union[str, None], coupon_data: dict) -> tuple:
         if ("code" in coupon_data) and (coupon_data['code'] != ""):
             code: str = coupon_data['code']
         else:
             message: str = "Coupon Code is required"
             return jsonify({'status': False, 'message': message}), 500
-        coupon_instance: Coupons = Coupons.query(Coupons.code == code).get_async().get_result()
+
+        coupon_instance: Coupons = Coupons.query(Coupons.organization_id == organization_id,
+                                                 Coupons.code == code).get_async().get_result()
+
         if isinstance(coupon_instance, Coupons):
             coupon_instance.is_valid = False
             key = coupon_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
@@ -1214,8 +1250,10 @@ class CouponsView(Validators):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    def get_all_coupons(self) -> tuple:
-        coupons_list: typing.List[Coupons] = Coupons.query().fetch()
+    def get_all_coupons(self, organization_id: typing.Union[str, None]) -> tuple:
+
+        coupons_list: typing.List[Coupons] = Coupons.query(Coupons.organization_id == organization_id).fetch()
+
         payload: typing.List[dict] = [coupon.to_dict() for coupon in coupons_list]
         message: str = "coupons successfully created"
         return jsonify({'status': True, 'payload': payload, 'message': message}), 200
@@ -1223,45 +1261,56 @@ class CouponsView(Validators):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    async def get_all_coupons_async(self) -> tuple:
-        coupons_list: typing.List[Coupons] = Coupons.query().fetch_async().get_result()
-        payload: typing.List[dict] = [coupon.to_dict() for coupon in coupons_list]
-        message: str = "coupons successfully created"
-        return jsonify({'status': True, 'payload': payload, 'message': message}), 200
-
-    @use_context
-    @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    def get_valid_coupons(self) -> tuple:
-        coupons_list: typing.List[Coupons] = Coupons.query(Coupons.is_valid == True).fetch()
-        payload: typing.List[dict] = [coupon.to_dict() for coupon in coupons_list]
-        message: str = "coupons successfully created"
-        return jsonify({'status': True, 'payload': payload, 'message': message}), 200
-
-    @use_context
-    @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    async def get_valid_coupons_async(self) -> tuple:
-        coupons_list: typing.List[Coupons] = Coupons.query(Coupons.is_valid == True).fetch_async().get_result()
-        payload: typing.List[dict] = [coupon.to_dict() for coupon in coupons_list]
-        message: str = "coupons successfully created"
-        return jsonify({'status': True, 'payload': payload, 'message': message}), 200
-
-    @use_context
-    @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    def get_expired_coupons(self) -> tuple:
-        coupons_list: typing.List[Coupons] = Coupons.query(Coupons.expiration_time < timestamp()).fetch()
-        payload: typing.List[dict] = [coupon.to_dict() for coupon in coupons_list]
-        message: str = "coupons successfully created"
-        return jsonify({'status': True, 'payload': payload, 'message': message}), 200
-
-    @use_context
-    @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    async def get_expired_coupons_async(self) -> tuple:
+    async def get_all_coupons_async(self, organization_id: typing.Union[str, None]) -> tuple:
         coupons_list: typing.List[Coupons] = Coupons.query(
+            Coupons.organization_id == organization_id).fetch_async().get_result()
+
+        payload: typing.List[dict] = [coupon.to_dict() for coupon in coupons_list]
+        message: str = "coupons successfully created"
+        return jsonify({'status': True, 'payload': payload, 'message': message}), 200
+
+    @use_context
+    @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    def get_valid_coupons(self, organization_id: typing.Union[str, None]) -> tuple:
+
+        coupons_list: typing.List[Coupons] = Coupons.query(
+            Coupons.organization_id == organization_id, Coupons.is_valid == True).fetch()
+
+        payload: typing.List[dict] = [coupon.to_dict() for coupon in coupons_list]
+        message: str = "coupons successfully created"
+        return jsonify({'status': True, 'payload': payload, 'message': message}), 200
+
+    @use_context
+    @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    async def get_valid_coupons_async(self, organization_id: typing.Union[str, None]) -> tuple:
+        coupons_list: typing.List[Coupons] = Coupons.query(Coupons.organization_id == organization_id,
+                                                           Coupons.is_valid == True).fetch_async().get_result()
+
+        payload: typing.List[dict] = [coupon.to_dict() for coupon in coupons_list]
+        message: str = "coupons successfully created"
+        return jsonify({'status': True, 'payload': payload, 'message': message}), 200
+
+    @use_context
+    @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    def get_expired_coupons(self, organization_id: typing.Union[str, None]) -> tuple:
+        coupons_list: typing.List[Coupons] = Coupons.query(Coupons.organization_id == organization_id,
+                                                           Coupons.expiration_time < timestamp()).fetch()
+
+        payload: typing.List[dict] = [coupon.to_dict() for coupon in coupons_list]
+        message: str = "coupons successfully created"
+        return jsonify({'status': True, 'payload': payload, 'message': message}), 200
+
+    @use_context
+    @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    async def get_expired_coupons_async(self, organization_id : typing.Union[str, None]) -> tuple:
+        coupons_list: typing.List[Coupons] = Coupons.query(
+            Coupons.organization_id == organization_id,
             Coupons.expiration_time < timestamp()).fetch_async().get_result()
+
         payload: typing.List[dict] = [coupon.to_dict() for coupon in coupons_list]
         message: str = "coupons successfully created"
         return jsonify({'status': True, 'payload': payload, 'message': message}), 200
@@ -1274,7 +1323,15 @@ class CouponsView(Validators):
             code: str = coupon_data['code']
         else:
             return jsonify({'status': False, 'message': 'coupon is required'}), 500
-        coupon_instance: Coupons = Coupons.query(Coupons.code == code).get()
+
+        if ('organization_id' in coupon_data) and (coupon_data['organization_id']) != "":
+            organization_id: typing.Union[str, None] = coupon_data['organization_id']
+        else:
+            return jsonify({'status': False, 'message': 'organization_id is required'}), 500
+
+        coupon_instance: Coupons = Coupons.query(Coupons.organization_id == organization_id,
+                                                 Coupons.code == code).get()
+
         if isinstance(coupon_instance, Coupons):
             message: str = "Coupon has been found"
             return jsonify({'status': True, 'message': message, 'payload': coupon_instance.to_dict()}), 200
@@ -1290,7 +1347,15 @@ class CouponsView(Validators):
             code: str = coupon_data['code']
         else:
             return jsonify({'status': False, 'message': 'coupon is required'}), 500
-        coupon_instance: Coupons = Coupons.query(Coupons.code == code).get_async().get_result()
+
+        if ('organization_id' in coupon_data) and (coupon_data['organization_id']) != "":
+            organization_id: typing.Union[str, None] = coupon_data['organization_id']
+        else:
+            return jsonify({'status': False, 'message': 'organization_id is required'}), 500
+
+        coupon_instance: Coupons = Coupons.query(Coupons.organization_id == organization_id,
+                                                 Coupons.code == code).get_async().get_result()
+
         if isinstance(coupon_instance, Coupons):
             message: str = "Coupon has been found"
             return jsonify({'status': True, 'message': message, 'payload': coupon_instance.to_dict()}), 200

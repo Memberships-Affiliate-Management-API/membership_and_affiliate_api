@@ -396,6 +396,7 @@ class AccessRights(ndb.Model):
         #  the route should accept route and uid and then respond with True or False
         # of all the routes he or she can access
     ***REMOVED***
+    organization_id: str = ndb.StringProperty(validators=setters.set_id)
     plan_id: str = ndb.StringProperty(validator=setters.set_id)
     access_rights_list: typing.List[str] = ndb.StringProperty(repeated=True)  # a list containing the rights of users
 
