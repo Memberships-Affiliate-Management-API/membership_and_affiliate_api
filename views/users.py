@@ -440,7 +440,7 @@ class UserView:
         ***REMOVED***
         user_model: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                 UserModel.email == email).get()
-        print(user_model)
+
         if not isinstance(user_model, UserModel):
             return jsonify({"message": "User not found"}), 401
 
