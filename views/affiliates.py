@@ -29,6 +29,7 @@ class Validator(ValidAffiliate, ValidRecruit, ValidEarnings):
         return not already_registered
 
 
+# noinspection DuplicatedCode
 class AffiliatesView(Validator):
     ***REMOVED***
         Register new affiliates using this class
@@ -46,10 +47,13 @@ class AffiliatesView(Validator):
             Register new affiliate
         ***REMOVED***
         uid: typing.Union[None, str] = affiliate_data.get('uid')
+        organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
+
         if (uid is None) or (uid == ""):
             return jsonify({'status': False, 'message': 'user id cannot be Null'}), 500
         if self.can_register_affiliate(uid=uid) is True:
-            affiliate_instance: Affiliates = Affiliates(affiliate_id=create_id(), uid=uid)
+            affiliate_instance: Affiliates = Affiliates(organization_id=organization_id, affiliate_id=create_id(),
+                                                        uid=uid)
             key = affiliate_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             if key is None:
                 message: str = "There was an error creating Affiliate"
@@ -67,9 +71,14 @@ class AffiliatesView(Validator):
             update an existing affiliate
         ***REMOVED***
         affiliate_id: typing.Union[str, None] = affiliate_data.get('affiliate_id')
+        organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
+
         if (affiliate_id is None) or (affiliate_id == ""):
             return jsonify({'status': False, 'message': 'affiliate_id is required'}), 500
-        affiliate_instance: Affiliates = Affiliates.query(Affiliates.affiliate_id == affiliate_id).get()
+
+        affiliate_instance: Affiliates = Affiliates.query(Affiliates.organization_id == organization_id,
+                                                          Affiliates.affiliate_id == affiliate_id).get()
+
         if isinstance(affiliate_instance, Affiliates):
             affiliate_instance.total_recruits += add
             key = affiliate_instance.put(retries=self._max_retries, timeout=self._max_timeout)
@@ -89,9 +98,12 @@ class AffiliatesView(Validator):
             delete affiliate
         ***REMOVED***
         affiliate_id: typing.Union[None, str] = affiliate_data.get('affiliate_id')
+        organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
+
         if (affiliate_id is None) or (affiliate_id == ""):
             return jsonify({'status': False, 'message': 'affiliate_id is required'}), 500
-        affiliate_instance: Affiliates = Affiliates.query(Affiliates.affiliate_id == affiliate_id).get()
+        affiliate_instance: Affiliates = Affiliates.query(Affiliates.organization_id == organization_id,
+                                                          Affiliates.affiliate_id == affiliate_id).get()
         if isinstance(affiliate_instance, Affiliates):
             affiliate_instance.is_active = False
             affiliate_instance.is_deleted = True
@@ -112,11 +124,15 @@ class AffiliatesView(Validator):
             mark a specific affiliate as active or not active
         ***REMOVED***
         affiliate_id: typing.Union[None, str] = affiliate_data.get('affiliate_id')
+        organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
+
         if (affiliate_id is None) or (affiliate_id == ""):
             return jsonify({'status': False, 'message': 'affiliate_id is required'}), 500
         if not isinstance(is_active, bool):
             raise ValueError("is_active is required and can only be a boolean")
-        affiliate_instance: Affiliates = Affiliates.query(Affiliates.affiliate_id == affiliate_id).get()
+        affiliate_instance: Affiliates = Affiliates.query(Affiliates.organization_id == organization_id,
+                                                          Affiliates.affiliate_id == affiliate_id).get()
+
         if isinstance(affiliate_instance, Affiliates):
             affiliate_instance.is_active = is_active
             key = affiliate_instance.put(retries=self._max_retries, timeout=self._max_timeout)
@@ -138,13 +154,16 @@ class AffiliatesView(Validator):
         ***REMOVED***
         affiliate_id: typing.Union[None, str] = affiliate_data.get('affiliate_id')
         uid: typing.Union[None, str] = affiliate_data.get('uid')
+        organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
 
         if (uid is None) and (affiliate_id is None):
             return jsonify({'status': False, 'message': 'uid or affiliate_id is required to fetch affiliate'}), 500
         if uid is not None:
-            affiliate_instance: Affiliates = Affiliates.query(Affiliates.uid == uid).get()
+            affiliate_instance: Affiliates = Affiliates.query(Affiliates.organization_id == organization_id,
+                                                              Affiliates.uid == uid).get()
         else:
-            affiliate_instance: Affiliates = Affiliates.query(Affiliates.affiliate_id == affiliate_id).get()
+            affiliate_instance: Affiliates = Affiliates.query(Affiliates.organization_id == organization_id,
+                                                              Affiliates.affiliate_id == affiliate_id).get()
 
         if isinstance(affiliate_instance, Affiliates):
             return jsonify({'status': True,
@@ -156,11 +175,12 @@ class AffiliatesView(Validator):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    def get_all_affiliates(self) -> tuple:
+    def get_all_affiliates(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             return all affiliates
         ***REMOVED***
-        affiliates_list: typing.List[Affiliates] = Affiliates.query().fetch()
+        affiliates_list: typing.List[Affiliates] = Affiliates.query(
+            Affiliates.organization_id == organization_id).fetch()
         payload: typing.List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
         message: str = "Successfully returned all affiliates"
         return jsonify({'status': True,
@@ -170,11 +190,12 @@ class AffiliatesView(Validator):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    def get_active_affiliates(self) -> tuple:
+    def get_active_affiliates(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             return affiliates who are not deleted and are active
         ***REMOVED***
         affiliates_list: typing.List[Affiliates] = Affiliates.query(
+            Affiliates.organization_id == organization_id,
             Affiliates.is_active == True, Affiliates.is_deleted == False).fetch()
         payload: typing.List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
         return jsonify({'status': True, 'message': 'successfully returned all affiliates',
@@ -183,27 +204,30 @@ class AffiliatesView(Validator):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    def get_in_active_affiliates(self) -> tuple:
+    def get_in_active_affiliates(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             return affiliates who are not active
         ***REMOVED***
-        affiliates_list: typing.List[Affiliates] = Affiliates.query(Affiliates.is_active == False,
-                                                                    Affiliates.is_deleted == False).fetch()
+        affiliates_list: typing.List[Affiliates] = Affiliates.query(
+            Affiliates.organization_id == organization_id, Affiliates.is_active == False,
+            Affiliates.is_deleted == False).fetch()
+
         payload: typing.List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
         message: str = "successfully returned all affiliates"
         return jsonify({'status': True,
                         'message': message,
                         'payload': payload}), 200
 
-
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    def get_deleted_affiliates(self) -> tuple:
+    def get_deleted_affiliates(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             return affiliates who are not active
         ***REMOVED***
-        affiliates_list: typing.List[Affiliates] = Affiliates.query(Affiliates.is_deleted == True).fetch()
+        affiliates_list: typing.List[Affiliates] = Affiliates.query(
+            Affiliates.organization_id == organization_id,
+            Affiliates.is_deleted == True).fetch()
         payload: typing.List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
         message: str = "Successfully returned deleted affiliates"
         return jsonify({'status': True,
@@ -213,11 +237,14 @@ class AffiliatesView(Validator):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    def get_not_deleted_affiliates(self) -> tuple:
+    def get_not_deleted_affiliates(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             return affiliates who are not active
         ***REMOVED***
-        affiliates_list: typing.List[Affiliates] = Affiliates.query(Affiliates.is_deleted == False).fetch()
+        affiliates_list: typing.List[Affiliates] = Affiliates.query(
+            Affiliates.organization_id == organization_id,
+            Affiliates.is_deleted == False).fetch()
+
         payload: typing.List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
         message: str = "Successfully returned affiliates which are not deleted"
         return jsonify({'status': True,
@@ -243,10 +270,12 @@ class RecruitsView(Validator):
             recruit_data: dict
         ***REMOVED***
         referrer_uid: typing.Union[None, str] = recruit_data.get('referrer_uid')
+        organization_id: typing.Union[str, None] = recruit_data.get('organization_id')
+
         if (referrer_uid is None) or (referrer_uid == ""):
             return jsonify({'status': False, 'message': 'referrer uid is required'}), 200
 
-        recruit_instance: Recruits = Recruits(affiliate_id=create_id(), referrer_uid=referrer_uid)
+        recruit_instance: Recruits = Recruits(organization_id=organization_id, affiliate_id=create_id(), referrer_uid=referrer_uid)
         key = recruit_instance.put(retries=self._max_retries, timeout=self._max_timeout)
         if key is None:
             message: str = "An Error occurred while adding new recruit"
@@ -259,10 +288,14 @@ class RecruitsView(Validator):
     def delete_recruit(self, recruit_data: dict) -> tuple:
 
         affiliate_id: typing.Union[str, None] = recruit_data.get('affiliate_id')
+        organization_id: typing.Union[str, None] = recruit_data.get('organization_id')
+
         if (affiliate_id is None) or (affiliate_id == ""):
             return jsonify({'status': False, 'message': 'affiliate_id is required'}), 500
 
-        recruits_list: typing.List[Recruits] = Recruits.query(Recruits.affiliate_id == affiliate_id).fetch()
+        recruits_list: typing.List[Recruits] = Recruits.query(Recruits.organization_id == organization_id,
+                                                              Recruits.affiliate_id == affiliate_id).fetch()
+
         if isinstance(recruits_list, list) and len(recruits_list) > 0:
             recruits_instance = recruits_list[0]
             recruits_instance.is_deleted = True
@@ -281,13 +314,17 @@ class RecruitsView(Validator):
     @handle_view_errors
     def mark_active(self, recruit_data: dict, is_active: bool) -> tuple:
         affiliate_id: typing.Union[str, None] = recruit_data.get('affiliate_id')
+        organization_id: typing.Union[str, None] = recruit_data.get('organization_id')
+
         if (affiliate_id is None) or (affiliate_id == ""):
             return jsonify({'status': False, 'message': 'affiliate_id is required'}), 500
 
         if not isinstance(is_active, bool):
             return jsonify({'status': False, 'message': 'is_active is required and can only be a boolean'}), 500
 
-        recruits_list: typing.List[Recruits] = Recruits.query(Recruits.affiliate_id == affiliate_id).fetch()
+        recruits_list: typing.List[Recruits] = Recruits.query(Recruits.organization_id == organization_id,
+                                                              Recruits.affiliate_id == affiliate_id).fetch()
+
         if isinstance(recruits_list, list) and (len(recruits_list) > 0):
             recruits_instance: Recruits = recruits_list[0]
             recruits_instance.is_active = is_active
@@ -306,9 +343,14 @@ class RecruitsView(Validator):
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_recruit(self, recruit_data: dict) -> tuple:
         affiliate_id: typing.Union[str, None] = recruit_data.get('affiliate_id')
+        organization_id: typing.Union[str, None] = recruit_data.get('organization_id')
+
         if (affiliate_id is None) or (affiliate_id == ""):
             return jsonify({'status': False, 'message': 'affiliate_id is required'}), 500
-        recruit_instance: Recruits = Recruits.query(Recruits.affiliate_id == affiliate_id).get()
+
+        recruit_instance: Recruits = Recruits.query(Recruits.organization_id == organization_id,
+                                                    Recruits.affiliate_id == affiliate_id).get()
+
         if isinstance(recruit_instance, Recruits):
             message: str = "Successfully retrieved recruit"
             return jsonify({'status': True, 'payload': recruit_instance.to_dict(), 'message': message}), 200
@@ -319,10 +361,14 @@ class RecruitsView(Validator):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    def get_recruits_by_active_status(self, is_active: bool) -> tuple:
+    def get_recruits_by_active_status(self, organization_id: str, is_active: bool) -> tuple:
+
         if not (isinstance(is_active, bool)):
             return jsonify({'status': False, 'message': 'is_active status is required'}), 500
-        recruits_list: typing.List[Recruits] = Recruits.query(Recruits.is_active == is_active).fetch()
+
+        recruits_list: typing.List[Recruits] = Recruits.query(Recruits.organization_id == organization_id,
+                                                              Recruits.is_active == is_active).fetch()
+
         payload: typing.List[dict] = [recruit.to_dict() for recruit in recruits_list]
         message: str = "{} recruits successfully fetched recruits by active status".format(str(len(recruits_list)))
         return jsonify({'status': True, 'message': message, 'payload': payload}), 200
@@ -330,10 +376,14 @@ class RecruitsView(Validator):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    def get_recruits_by_deleted_status(self, is_deleted: bool) -> tuple:
+    def get_recruits_by_deleted_status(self, organization_id: str, is_deleted: bool) -> tuple:
+
         if not (isinstance(is_deleted, bool)):
             return jsonify({'status': False, 'message': 'is_deleted status is required'}), 500
-        recruits_list: typing.List[Recruits] = Recruits.query(Recruits.is_deleted == is_deleted).fetch()
+
+        recruits_list: typing.List[Recruits] = Recruits.query(Recruits.organization_id == organization_id,
+                                                              Recruits.is_deleted == is_deleted).fetch()
+
         payload = [recruit.to_dict() for recruit in recruits_list]
         message: str = "{} recruits successfully fetched recruits by deleted status".format(str(len(recruits_list)))
         return jsonify({'status': True, 'message': message, 'payload': payload}), 200
@@ -343,9 +393,14 @@ class RecruitsView(Validator):
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_recruits_by_affiliate(self, affiliate_data: dict) -> tuple:
         affiliate_id: typing.Union[str, None] = affiliate_data.get('affiliate_id')
+        organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
+
         if (affiliate_id is None) or (affiliate_id == ""):
             return jsonify({'status': False, 'message': 'affiliate_id is required'}), 500
-        recruits_list: typing.List[Recruits] = Recruits.query(Recruits.affiliate_id == affiliate_id).fetch()
+
+        recruits_list: typing.List[Recruits] = Recruits.query(Recruits.organization_id == organization_id,
+                                                              Recruits.affiliate_id == affiliate_id).fetch()
+
         payload: typing.List[dict] = [recruit.to_dict() for recruit in recruits_list]
 
         message: str = "{} recruits successfully fetched recruits by active status".format(str(len(recruits_list)))
@@ -355,14 +410,20 @@ class RecruitsView(Validator):
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_recruits_by_active_affiliate(self, affiliate_data: dict, is_active: bool) -> tuple:
+
         affiliate_id: typing.Union[str, None] = affiliate_data.get('affiliate_id')
+        organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
+
         if (affiliate_id is None) or (affiliate_id == ""):
             return jsonify({'status': False, 'message': 'affiliate_id is required'}), 500
 
         if not (isinstance(is_active, bool)):
             return jsonify({'status': False, 'message': 'is_active status can only be a boolean'}), 500
-        recruits_list: typing.List[Recruits] = Recruits.query(Recruits.affiliate_id == affiliate_id,
+
+        recruits_list: typing.List[Recruits] = Recruits.query(Recruits.organization_id == organization_id,
+                                                              Recruits.affiliate_id == affiliate_id,
                                                               Recruits.is_active == is_active).fetch()
+
         payload: typing.List[dict] = [recruit.to_dict() for recruit in recruits_list]
 
         message: str = "{} recruits successfully fetched affiliate recruits by status".format(str(len(recruits_list)))

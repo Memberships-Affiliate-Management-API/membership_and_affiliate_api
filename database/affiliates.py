@@ -150,7 +150,8 @@ class Recruits(ndb.Model):
     datetime_recruited: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=setters.set_date)
     datetime_updated: datetime = ndb.DateTimeProperty(auto_now=True, validator=setters.set_date)
     is_member: bool = ndb.BooleanProperty(default=False, validator=setters.set_bool)
-    plan_id: str = ndb.StringProperty(validator=setters.set_id)  # Membership plan id allows to get payment fees
+    # TODO - test this first may need to remove plan ID
+    recruiter_plan_id: str = ndb.StringProperty(validator=setters.set_id)  # Membership plan id allows to get payment fees
     is_active: bool = ndb.BooleanProperty(default=True, validator=setters.set_bool)
     is_deleted: bool = ndb.BooleanProperty(default=False, validator=setters.set_bool)
 

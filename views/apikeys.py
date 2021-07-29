@@ -1,4 +1,3 @@
-import functools
 import typing
 from flask import jsonify
 from config.exception_handlers import handle_view_errors
@@ -118,7 +117,7 @@ class APIKeysView(APIKeysValidators):
         api_keys_list: typing.List[APIKeys] = APIKeys.query(APIKeys.organization_id == organization_id).fetch()
         payload: typing.List[dict] = [_key.to_dict() for _key in api_keys_list]
         message: str = 'organization keys returned successfully'
-        return jsonify({'status': True, 'payload': payload, 'message': message }), 200
+        return jsonify({'status': True, 'payload': payload, 'message': message}), 200
 
     @use_context
     @handle_view_errors
@@ -130,5 +129,3 @@ class APIKeysView(APIKeysValidators):
         payload: typing.List[dict] = [_key.to_dict() for _key in api_keys_list]
         message: str = 'organization keys returned successfully'
         return jsonify({'status': True, 'payload': payload, 'message': message}), 200
-
-

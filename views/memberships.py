@@ -216,7 +216,7 @@ class MembershipsView(Validators):
         return self._create_or_update_membership(organization_id=organization_id, uid=uid, plan_id=plan_id,
                                                  plan_start_date=plan_start_date)
 
-    async def update_membership_async(self, organization_id: typing.Union[str, None],uid: typing.Union[str, None],
+    async def update_membership_async(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
                                       plan_id: typing.Union[str, None], plan_start_date: date) -> tuple:
 
         return await self._create_or_update_membership_async(organization_id=organization_id, uid=uid, plan_id=plan_id,
@@ -295,7 +295,7 @@ class MembershipsView(Validators):
     async def change_membership_async(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
                                       origin_plan_id: typing.Union[str, None], dest_plan_id: str) -> tuple:
 
-        membership_instance: Memberships = Memberships.query(Memberships.organization_id==organization_id,
+        membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                              Memberships.uid == uid).get_async().get_result()
 
         if isinstance(membership_instance, Memberships) and (membership_instance.plan_id == origin_plan_id):
@@ -527,7 +527,9 @@ class MembershipsView(Validators):
 
         if isinstance(membership_instance, Memberships):
             plan_id: str = membership_instance.plan_id
-            membership_plan_instance: MembershipPlans = MembershipPlansView().get_plan(plan_id=plan_id)
+            membership_plan_instance: MembershipPlans = MembershipPlansView().get_plan(
+                organization_id=organization_id, plan_id=plan_id)
+
             if membership_plan_instance is None:
                 message: str = 'could not find plan associate with the plan_id'
                 return jsonify({'status': False, 'message': message}), 500
@@ -558,7 +560,9 @@ class MembershipsView(Validators):
 
         if isinstance(membership_instance, Memberships):
             plan_id: str = membership_instance.plan_id
-            membership_plan_instance: MembershipPlans = await MembershipPlansView().get_plan_async(plan_id=plan_id)
+            membership_plan_instance: MembershipPlans = await MembershipPlansView().get_plan_async(
+                organization_id=organization_id, plan_id=plan_id)
+
             if membership_plan_instance is None:
                 message: str = 'could not find plan associate with the plan_id'
                 return jsonify({'status': False, 'message': message}), 500
@@ -1212,7 +1216,7 @@ class CouponsView(Validators):
             message: str = "Coupon Code is required"
             return jsonify({'status': False, 'message': message}), 500
 
-        coupon_instance: Coupons = Coupons.query( Coupons.organization_id == organization_id,
+        coupon_instance: Coupons = Coupons.query(Coupons.organization_id == organization_id,
                                                   Coupons.code == code).get_async().get_result()
 
         if isinstance(coupon_instance, Coupons):
@@ -1306,7 +1310,7 @@ class CouponsView(Validators):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    async def get_expired_coupons_async(self, organization_id : typing.Union[str, None]) -> tuple:
+    async def get_expired_coupons_async(self, organization_id: typing.Union[str, None]) -> tuple:
         coupons_list: typing.List[Coupons] = Coupons.query(
             Coupons.organization_id == organization_id,
             Coupons.expiration_time < timestamp()).fetch_async().get_result()
