@@ -10,12 +10,13 @@ memberships_bp = Blueprint('memberships', __name__)
 
 # TODO - include organization_id for this routes, and refactor the view functions
 
-
-@memberships_bp.route("/api/v1/members/<path:plan_id>", methods=['POST'])
+# NOTE: path is plan_id@organization_id
+@memberships_bp.route("/api/v1/members/<path:path>", methods=['POST'])
 @handle_api_auth
-def get_members(plan_id: str) -> tuple:
+def get_members(path: str) -> tuple:
+    plan_id, organization_id = path.split('@')
     members_instance: MembershipsView = MembershipsView()
-    return members_instance.return_plan_members(plan_id=plan_id)
+    return members_instance.return_plan_members(organization_id=organization_id, plan_id=plan_id)
 
 
 @memberships_bp.route("/api/v1/member", methods=['POST', 'PUT'])
@@ -24,33 +25,39 @@ def create_member() -> tuple:
     ***REMOVED***
         create or update member
     ***REMOVED***
-    try:
-        member_details: dict = request.get_json()
-        if ("uid" in member_details) and (member_details["uid"] != ""):
-            uid: str = member_details.get("uid")
-        else:
-            message: str = "uid is required"
-            return jsonify({"status": False, "message": message}), 500
-        if ("plan_id" in member_details) and (member_details["plan_id"] != ""):
-            plan_id: str = member_details.get("plan_id")
-        else:
-            message: str = "plan_id is required"
-            return jsonify({"status": False, "message": message}), 500
+    member_details: dict = request.get_json()
+    if ("uid" in member_details) and (member_details["uid"] != ""):
+        uid: str = member_details.get("uid")
+    else:
+        message: str = "uid is required"
+        return jsonify({"status": False, "message": message}), 500
 
-        if ("plan_start_date" in member_details) and (member_details["plan_start_date"] != ""):
-            plan_start_date: date = date_string_to_date(member_details.get("plan_start_date"))
-        else:
-            plan_start_date: date = datetime.now().date()
-    except ValueError as e:
-        raise InputError(str(e))
+    if ("organization_id" in member_details) and (member_details["organization_id"] != ""):
+        organization_id: typing.Union[str, None] = member_details.get("organization_id")
+    else:
+        message: str = "organization_id is required"
+        return jsonify({"status": False, "message": message}), 500
+
+    if ("plan_id" in member_details) and (member_details["plan_id"] != ""):
+        plan_id: str = member_details.get("plan_id")
+    else:
+        message: str = "plan_id is required"
+        return jsonify({"status": False, "message": message}), 500
+
+    if ("plan_start_date" in member_details) and (member_details["plan_start_date"] != ""):
+        plan_start_date: date = date_string_to_date(member_details.get("plan_start_date"))
+    else:
+        plan_start_date: date = datetime.now().date()
 
     members_view_instance: MembershipsView = MembershipsView()
-    return members_view_instance.add_membership(uid=uid, plan_id=plan_id, plan_start_date=plan_start_date)
+    return members_view_instance.add_membership(organization_id=organization_id, uid=uid, plan_id=plan_id,
+                                                plan_start_date=plan_start_date)
 
 
-@memberships_bp.route("/api/v1/member/status/<path:uid>", methods=['GET', 'PUT'])
+# NOTE: path is <uid@organization_id>
+@memberships_bp.route("/api/v1/member/status/<path:path>", methods=['GET', 'PUT'])
 @handle_api_auth
-def get_update_status(uid: str) -> tuple:
+def get_update_status(path: str) -> tuple:
     ***REMOVED***
         plan_id for the status to get or update
     ***REMOVED***
@@ -61,27 +68,34 @@ def get_update_status(uid: str) -> tuple:
         else:
             message: str = "status is required and should be paid or unpaid"
             return jsonify({'status': True, 'message': message}), 500
+        uid, organization_id = path.split("@")
         membership_view_instance: MembershipsView = MembershipsView()
-        return membership_view_instance.set_membership_status(uid=uid, status=status)
+        return membership_view_instance.set_membership_status(organization_id=organization_id, uid=uid, status=status)
     elif request.method == "GET":
         ***REMOVED***
             return membership record    
         ***REMOVED***
         membership_view_instance: MembershipsView = MembershipsView()
-        return membership_view_instance.is_member_off(uid=uid)
+        uid, organization_id = path.split("@")
+        return membership_view_instance.is_member_off(organization_id=organization_id, uid=uid)
 
 
-@memberships_bp.route("/api/v1/members/<path:plan_id>/status/<path:status>", methods=["GET"])
+# NOTE: path is <plan_id@organization_id>
+@memberships_bp.route("/api/v1/members/<path:path>/status/<path:status>", methods=["GET"])
 @handle_api_auth
-def get_plan_members_by_payment_status(plan_id: str, status: str) -> tuple:
+def get_plan_members_by_payment_status(path: str, status: str) -> tuple:
+    plan_id, organization_id = path.split("@")
     if (plan_id != "") and (status != ""):
         membership_view_instance: MembershipsView = MembershipsView()
-        return membership_view_instance.return_plan_members_by_payment_status(plan_id=plan_id, status=status)
+        return membership_view_instance.return_plan_members_by_payment_status(organization_id=organization_id,
+                                                                              plan_id=plan_id, status=status)
 
 
-@memberships_bp.route("/api/v1/membership/plan/<path:plan_id>")
+# NOTE: path is <plan_id@organization_id>
+@memberships_bp.route("/api/v1/membership/plan/<path:path>")
 @handle_api_auth
-def change_membership_plan(plan_id: str) -> tuple:
+def change_membership_plan(path: str) -> tuple:
+    plan_id, organization_id = path.split("@")
     if plan_id != "":
         json_data: dict = request.get_json()
         if ("uid" in json_data) and (json_data['uid'] != ""):
@@ -95,7 +109,9 @@ def change_membership_plan(plan_id: str) -> tuple:
             return jsonify({"status": False, "message": "destination plan id is required"}), 500
 
         member_ship_instance_view: MembershipsView = MembershipsView()
-        return member_ship_instance_view.change_membership(uid=uid, origin_plan_id=plan_id, dest_plan_id=dest_plan_id)
+        return member_ship_instance_view.change_membership(organization_id=organization_id,
+                                                           uid=uid, origin_plan_id=plan_id,
+                                                           dest_plan_id=dest_plan_id)
 
 
 @memberships_bp.route('/api/v1/membership-plan', methods=["POST"])
@@ -105,10 +121,11 @@ def create_membership_plan() -> tuple:
     return member_ship_instance_view.add_plan(membership_plan_data=membership_plan_data)
 
 
-@memberships_bp.route('/api/v1/membership-plans', methods=["GET"])
-def get_membership_plans() -> tuple:
+# NOTE path equal organization_id
+@memberships_bp.route('/api/v1/membership-plans/<path:path>', methods=["GET"])
+def get_membership_plans(path: str) -> tuple:
     member_ship_instance_view: MembershipPlansView = MembershipPlansView()
-    return member_ship_instance_view.return_all_plans()
+    return member_ship_instance_view.return_all_plans(organization_id=path)
 
 
 @memberships_bp.route('/api/v1/update-membership-plan', methods=["POST"])
@@ -155,33 +172,44 @@ def update_membership_plan() -> tuple:
     else:
         return jsonify({'status': False, 'message': 'is_active is required'}), 500
 
-    return member_ship_instance_view.update_plan(plan_id=plan_id, plan_name=plan_name, description=description,
-                                                 term_payment=term_payment, registration_amount=registration_amount,
-                                                 schedule_day=schedule_day, schedule_term=schedule_term,
-                                                 currency=currency, is_active=is_active)
+    if ("organization_id" in membership_plan) and (membership_plan["organization_id"] != ""):
+        organization_id: typing.Union[str, None] = membership_plan.get("organization_id")
+    else:
+        return jsonify({'status': False, 'message': 'organization_id is required'}), 500
+
+    return member_ship_instance_view.update_plan(organization_id=organization_id, plan_id=plan_id, plan_name=plan_name,
+                                                 description=description, term_payment=term_payment,
+                                                 registration_amount=registration_amount, schedule_day=schedule_day,
+                                                 schedule_term=schedule_term, currency=currency, is_active=is_active)
 
 
-@memberships_bp.route('/api/v1/is-member-off/<path:uid>', methods=["GET"])
-def is_member_off(uid: str) -> tuple:
+# NOTE: path is <uid@organization_id>
+@memberships_bp.route('/api/v1/is-member-off/<path:path>', methods=["GET"])
+def is_member_off(path: str) -> tuple:
     ***REMOVED***
         for a specific user returns membership
     ***REMOVED***
+    uid, organization_id = path.split("@")
     membership_instance: MembershipsView = MembershipsView()
-    return membership_instance.is_member_off(uid=uid)
+    return membership_instance.is_member_off(organization_id=organization_id, uid=uid)
 
 
-@memberships_bp.route('/api/v1/memberships-payment-amount/<path:uid>', methods=["GET"])
-def payment_amount(uid: str) -> tuple:
+# NOTE: path is <uid@organization_id>
+@memberships_bp.route('/api/v1/memberships-payment-amount/<path:path>', methods=["GET"])
+def payment_amount(path: str) -> tuple:
     ***REMOVED***
         for a specific member return payment amounts
     ***REMOVED***
+    uid, organization_id = path.split("@")
     membership_instance: MembershipsView = MembershipsView()
-    return membership_instance.payment_amount(uid=uid)
+    return membership_instance.payment_amount(organization_id=organization_id, uid=uid)
 
 
-@memberships_bp.route('/api/v1/memberships-set-payment-status/<path:uid>/<path:status>', methods=["GET"])
-def set_payment_status(uid: str, status: str) -> tuple:
+# NOTE: path is <uid@organization_id>
+@memberships_bp.route('/api/v1/memberships-set-payment-status/<path:path>/<path:status>', methods=["GET"])
+def set_payment_status(path: str, status: str) -> tuple:
+    uid, organization_id = path.split("@")
     membership_instance: MembershipsView = MembershipsView()
-    return membership_instance.set_payment_status(uid=uid, status=status)
+    return membership_instance.set_payment_status(organization_id=organization_id, uid=uid, status=status)
 
 
