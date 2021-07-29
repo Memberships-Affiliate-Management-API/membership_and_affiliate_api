@@ -28,5 +28,3 @@ def wallet() -> tuple:
     else:
         return jsonify({'status': False, 'message': 'Unable to process this request please check your parameters'}), 500
 
-
-
