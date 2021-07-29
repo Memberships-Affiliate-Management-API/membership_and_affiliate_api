@@ -1,6 +1,8 @@
+import typing
 from flask import Blueprint, request
 from security.api_authenticator import handle_api_auth
 from views.affiliates import AffiliatesView, RecruitsView
+
 affiliates_bp = Blueprint('affiliates', __name__)
 
 
@@ -15,15 +17,20 @@ def affiliate(path: str) -> tuple:
     if path == "get":
         return affiliate_view_instance.get_affiliate(affiliate_data=affiliate_data)
     elif path == "get-all":
-        return affiliate_view_instance.get_all_affiliates()
+        organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
+        return affiliate_view_instance.get_all_affiliates(organization_id=organization_id)
     elif path == "get-active":
-        return affiliate_view_instance.get_active_affiliates()
+        organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
+        return affiliate_view_instance.get_active_affiliates(organization_id=organization_id)
     elif path == "get-not-active":
-        return affiliate_view_instance.get_in_active_affiliates()
+        organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
+        return affiliate_view_instance.get_in_active_affiliates(organization_id=organization_id)
     elif path == "get-deleted":
-        return affiliate_view_instance.get_deleted_affiliates()
+        organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
+        return affiliate_view_instance.get_deleted_affiliates(organization_id=organization_id)
     elif path == "get-not-deleted":
-        return affiliate_view_instance.get_not_deleted_affiliates()
+        organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
+        return affiliate_view_instance.get_not_deleted_affiliates(organization_id=organization_id)
     elif path == "register":
         return affiliate_view_instance.register_affiliate(affiliate_data=affiliate_data)
     elif path == "inc-recruits":
