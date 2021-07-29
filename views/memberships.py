@@ -845,7 +845,7 @@ class MembershipPlansView(Validators):
             membership_plans_instance: MembershipPlans = MembershipPlans.query(
                 MembershipPlans.organization_id == organization_id,
                 MembershipPlans.plan_id == plan_id).get_async().get_result()
-            
+
             if isinstance(membership_plans_instance, MembershipPlans):
                 curr_term_payment: AmountMixin = AmountMixin(amount=term_payment, currency=currency)
                 curr_registration_amount: AmountMixin = AmountMixin(amount=registration_amount,
@@ -873,8 +873,12 @@ class MembershipPlansView(Validators):
 
     @use_context
     @handle_view_errors
-    def set_is_active(self, plan_id: typing.Union[str, None], is_active: bool) -> tuple:
-        membership_plans_instance: MembershipPlans = MembershipPlans.query(MembershipPlans.plan_id == plan_id).get()
+    def set_is_active(self, organization_id: typing.Union[str, None], plan_id: typing.Union[str, None],
+                      is_active: bool) -> tuple:
+
+        membership_plans_instance: MembershipPlans = MembershipPlans.query(
+            MembershipPlans.organization_id == organization_id, MembershipPlans.plan_id == plan_id).get()
+
         if isinstance(membership_plans_instance, MembershipPlans):
             membership_plans_instance.is_active = is_active
             key = membership_plans_instance.put(retries=self._max_retries, timeout=self._max_timeout)
@@ -890,9 +894,13 @@ class MembershipPlansView(Validators):
 
     @use_context
     @handle_view_errors
-    async def set_is_active_async(self, plan_id: typing.Union[str, None], is_active: bool) -> tuple:
+    async def set_is_active_async(self, organization_id: typing.Union[str, None], plan_id: typing.Union[str, None],
+                                  is_active: bool) -> tuple:
+
         membership_plans_instance: MembershipPlans = MembershipPlans.query(
+            MembershipPlans.organization_id == organization_id,
             MembershipPlans.plan_id == plan_id).get_async().get_result()
+
         if isinstance(membership_plans_instance, MembershipPlans):
             membership_plans_instance.is_active = is_active
             key = membership_plans_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
@@ -908,9 +916,11 @@ class MembershipPlansView(Validators):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    def return_plans_by_schedule_term(self, schedule_term: str) -> tuple:
+    def return_plans_by_schedule_term(self, organization_id: typing.Union[str, None], schedule_term: str) -> tuple:
+
         membership_plan_list: typing.List[MembershipPlans] = MembershipPlans.query(
-            MembershipPlans.schedule_term == schedule_term).fetch()
+            MembershipPlans.organization_id == organization_id, MembershipPlans.schedule_term == schedule_term).fetch()
+
         payload: typing.List[dict] = [membership.to_dict() for membership in membership_plan_list]
         return jsonify({'status': False, 'payload': payload,
                         'message': 'successfully retrieved monthly plans'}), 200
@@ -918,22 +928,28 @@ class MembershipPlansView(Validators):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    async def return_plans_by_schedule_term_async(self, schedule_term: str) -> tuple:
+    async def return_plans_by_schedule_term_async(self, organization_id: typing.Union[str, None],
+                                                  schedule_term: str) -> tuple:
+
         membership_plan_list: typing.List[MembershipPlans] = MembershipPlans.query(
+            MembershipPlans.organization_id == organization_id,
             MembershipPlans.schedule_term == schedule_term).fetch_async().get_result()
+
         payload: typing.List[dict] = [membership.to_dict() for membership in membership_plan_list]
+
         return jsonify({'status': False, 'payload': payload,
                         'message': 'successfully retrieved monthly plans'}), 200
 
     @staticmethod
-    def get_plan(plan_id: str) -> typing.Union[None, MembershipPlans]:
+    def get_plan(organization_id: str,  plan_id: str) -> typing.Union[None, MembershipPlans]:
         ***REMOVED***
             this utility will be used by other views to obtain information about membershipPlans
         ***REMOVED***
         if isinstance(plan_id, str):
             try:
                 membership_plan_instance: MembershipPlans = MembershipPlans.query(
-                    MembershipPlans.plan_id == plan_id).get()
+                    Memberships.organization_id == organization_id, MembershipPlans.plan_id == plan_id).get()
+
                 if isinstance(membership_plan_instance, MembershipPlans):
                     return membership_plan_instance
                 else:
@@ -947,14 +963,16 @@ class MembershipPlansView(Validators):
         return None
 
     @staticmethod
-    async def get_plan_async(plan_id: str) -> typing.Union[None, MembershipPlans]:
+    async def get_plan_async(organization_id: str, plan_id: str) -> typing.Union[None, MembershipPlans]:
         ***REMOVED***
             this utility will be used by other views to obtain information about membershipPlans
         ***REMOVED***
         if isinstance(plan_id, str):
             try:
                 membership_plan_instance: MembershipPlans = MembershipPlans.query(
+                    MembershipPlans.organization_id == organization_id,
                     MembershipPlans.plan_id == plan_id).get_async().get_result()
+
                 if isinstance(membership_plan_instance, MembershipPlans):
                     return membership_plan_instance
                 else:
@@ -968,16 +986,16 @@ class MembershipPlansView(Validators):
         return None
 
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    def return_plan(self, plan_id: str) -> tuple:
-        plan_instance = self.get_plan(plan_id=plan_id)
+    def return_plan(self, organization_id: str,  plan_id: str) -> tuple:
+        plan_instance = self.get_plan(organization_id=organization_id,  plan_id=plan_id)
         if plan_instance is not None:
             message: str = "successfully fetched plan"
             return jsonify({'status': True, 'payload': plan_instance.to_dict(), 'message': message}), 200
         return jsonify({'status': False, 'message': 'Unable to get plan'}), 500
 
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    async def return_plan_async(self, plan_id: str) -> tuple:
-        plan_instance = await self.get_plan_async(plan_id=plan_id)
+    async def return_plan_async(self, organization_id: str, plan_id: str) -> tuple:
+        plan_instance = await self.get_plan_async(organization_id=organization_id, plan_id=plan_id)
         if plan_instance is not None:
             message: str = "successfully fetched plan"
             return jsonify({'status': True, 'payload': plan_instance.to_dict(), 'message': message}), 200
@@ -985,7 +1003,7 @@ class MembershipPlansView(Validators):
 
     @staticmethod
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    def return_all_plans() -> tuple:
+    def return_all_plans( organization_id: str ) -> tuple:
         membership_plan_list: typing.List[MembershipPlans] = MembershipPlans.query().fetch()
         plan_list: typing.List[dict] = [plan.to_dict() for plan in membership_plan_list]
         return jsonify({'status': True, 'payload': plan_list,
