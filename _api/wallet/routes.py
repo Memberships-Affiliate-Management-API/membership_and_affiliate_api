@@ -3,21 +3,30 @@ from views.wallet import WalletView
 wallet_bp = Blueprint("wallet", __name__)
 
 
-# TODO - include organization_id for this routes, and refactor the view functions
-
-
 @wallet_bp.route('/api/v1/wallet', methods=["GET", "POST", "DELETE", "PUT"])
 def wallet() -> tuple:
     wallet_instance: WalletView = WalletView()
 
     if request.method == "GET":
         json_data: dict = request.get_json()
-        return wallet_instance.get_wallet(uid=json_data['uid'])
+
+        organization_id: str = json_data.get('organization_id')
+        uid: str = json_data.get('uid')
+
+        return wallet_instance.get_wallet(organization_id=organization_id, uid=uid)
+
     elif request.method == "POST":
         json_data: dict = request.get_json()
-        return wallet_instance.create_wallet(uid=json_data['uid'],
-                                             currency=json_data['currency'],
-                                             paypal_address=json_data['paypal_address'])
+
+        uid: str = json_data.get('uid')
+        organization_id: str = json_data.get('organization_id')
+        currency: str = json_data.get('currency')
+        paypal_address: str = json_data.get('paypal_address')
+
+        return wallet_instance.create_wallet(organization_id=organization_id,
+                                             uid=uid,
+                                             currency=currency,
+                                             paypal_address=paypal_address)
     elif request.method == "PUT":
         json_data: dict = request.get_json()
         return wallet_instance.update_wallet(wallet_data=json_data)

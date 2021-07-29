@@ -28,12 +28,11 @@ class WalletValidator:
 
 class WalletModel(ndb.Model):
     ***REMOVED***
-        NOTE: when a wallet belongs to an organization only the organization_id
-        will be filled in. in-case of user Wallets user_organization_id will
-        contain the organization_id of the organization this user belongs to.
+        NOTE: when a wallet belongs to an organization is_org_wallet will be true, else
+        False. organization_id indicates the user organization or the organization the wallet belongs to/
     ***REMOVED***
     organization_id: str = ndb.StringProperty(validator=setters.set_id)
-    user_organization_id: str = ndb.StringProperty(validator=setters.set_id)
+    is_org_wallet: bool = ndb.BooleanProperty(default=False, validator=setters.set_bool)
     uid: str = ndb.StringProperty(validator=setters.set_id)
     available_funds: AmountMixin = ndb.StructuredProperty(AmountMixin)
     time_created: datetime = ndb.DateTimeProperty(auto_now_add=True)

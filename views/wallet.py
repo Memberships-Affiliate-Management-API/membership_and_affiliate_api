@@ -96,8 +96,10 @@ class WalletView(Validator):
 
     @use_context
     @handle_view_errors
-    def create_wallet(self, uid: typing.Union[str, None], currency: typing.Union[str, None],
-                      paypal_address: typing.Union[str, None]) -> tuple:
+    def create_wallet(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
+                      currency: typing.Union[str, None], paypal_address: typing.Union[str, None],
+                      is_org_wallet: bool = False) -> tuple:
+
         # TODO - refactor the create wallet to include organization_id and also
         #   to include is_organization account in-case the wallet belongs to an organization
         if self.can_add_wallet(uid=uid) is True:
@@ -108,6 +110,8 @@ class WalletView(Validator):
             wallet_instance.uid = uid
             wallet_instance.available_funds = amount_instance
             wallet_instance.paypal_address = paypal_address
+            wallet_instance.organization_id = organization_id
+            wallet_instance.is_org_wallet = is_org_wallet
             key = wallet_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             if key is None:
                 raise DataServiceError(status=500, description="An Error occurred creating Wallet")
@@ -117,8 +121,8 @@ class WalletView(Validator):
 
     @use_context
     @handle_view_errors
-    async def create_wallet_async(self, uid: typing.Union[str, None], currency: typing.Union[str, None],
-                                  paypal_address: typing.Union[str, None]) -> tuple:
+    async def create_wallet_async(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None], currency: typing.Union[str, None],
+                                  paypal_address: typing.Union[str, None], is_org_wallet: bool = False) -> tuple:
         if await self.can_add_wallet_async(uid=uid) is True:
             wallet_instance: WalletModel = WalletModel()
             amount_instance: AmountMixin = AmountMixin()
@@ -127,6 +131,9 @@ class WalletView(Validator):
             wallet_instance.uid = uid
             wallet_instance.available_funds = amount_instance
             wallet_instance.paypal_address = paypal_address
+            wallet_instance.organization_id = organization_id
+            wallet_instance.is_org_wallet = is_org_wallet
+
             key = wallet_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
             if key is None:
                 raise DataServiceError(status=500, description="An Error occurred creating Wallet")
@@ -137,18 +144,22 @@ class WalletView(Validator):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    def get_wallet(self, uid: typing.Union[str, None]) -> tuple:
+    def get_wallet(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None]) -> tuple:
         if not(self.is_uid_none(uid=uid)):
-            wallet_instance: WalletModel = WalletModel.query(WalletModel.uid == uid).get()
+            wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
+                                                             WalletModel.uid == uid).get()
+
             return jsonify({'status': True, 'payload': wallet_instance.to_dict(), 'message': 'wallet found'}), 200
         return jsonify({'status': False, 'message': 'uid cannot be None'}), 500
 
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    async def get_wallet_async(self, uid: typing.Union[str, None]) -> tuple:
+    async def get_wallet_async(self, organization_id: typing.Union[str, None],  uid: typing.Union[str, None]) -> tuple:
         if not(self.is_uid_none(uid=uid)):
-            wallet_instance: WalletModel = WalletModel.query(WalletModel.uid == uid).get_async().get_result()
+            wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
+                                                             WalletModel.uid == uid).get_async().get_result()
+
             return jsonify({'status': True, 'payload': wallet_instance.to_dict(), 'message': 'wallet found'}), 200
         return jsonify({'status': False, 'message': 'uid cannot be None'}), 500
 
@@ -157,14 +168,17 @@ class WalletView(Validator):
     def update_wallet(self, wallet_data: dict) -> tuple:
 
         uid: typing.Union[str, None] = wallet_data.get("uid")
+        organization_id: typing.Union[str, None] = wallet_data.get('organization_id')
         available_funds: typing.Union[int, None] = wallet_data.get("available_funds")
         currency: typing.Union[str, None] = wallet_data.get('currency')
         paypal_address: typing.Union[str, None] = wallet_data.get("paypal_address")
 
+        # TODO update can update wallet to take into account Org Account Roles
         if self.can_update_wallet(uid=uid) is True:
-            wall_instance: WalletModel = WalletModel.query(WalletModel.uid == uid).get()
+            wall_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
+                                                           WalletModel.uid == uid).get()
+
             # No need to test for wallet availability as can update returned True
-            wall_instance.uid = uid
             amount_instance: AmountMixin = AmountMixin(amount=available_funds, currency=currency)
             wall_instance.available_funds = amount_instance
             wall_instance.paypal_address = paypal_address
@@ -181,14 +195,17 @@ class WalletView(Validator):
     async def update_wallet_async(self, wallet_data: dict) -> tuple:
 
         uid: typing.Union[str, None] = wallet_data.get("uid")
+        organization_id: typing.Union[str, None] = wallet_data.get('organization_id')
         available_funds: typing.Union[int, None] = wallet_data.get("available_funds")
         currency: typing.Union[str, None] = wallet_data.get('currency')
         paypal_address: typing.Union[str, None] = wallet_data.get("paypal_address")
 
         if await self.can_update_wallet_async(uid=uid) is True:
-            wall_instance: WalletModel = WalletModel.query(WalletModel.uid == uid).get_async().get_result()
+            wall_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
+                                                           WalletModel.uid == uid).get_async().get_result()
+
             # No need to test for wallet availability as can update returned True
-            wall_instance.uid = uid
+
             amount_instance: AmountMixin = AmountMixin(amount=available_funds, currency=currency)
             wall_instance.available_funds = amount_instance
             wall_instance.paypal_address = paypal_address
@@ -204,9 +221,12 @@ class WalletView(Validator):
     @handle_view_errors
     def reset_wallet(self, wallet_data: dict) -> tuple:
         uid: typing.Union[str, None] = wallet_data.get('uid')
+        organization_id: typing.Union[str, None] = wallet_data.get('organization_id')
         currency: typing.Union[str, None] = wallet_data.get('currency')
         if self.can_reset_wallet(uid=uid) is True:
-            wallet_instance: WalletModel = WalletModel.query(WalletModel.uid == uid).get()
+            wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
+                                                             WalletModel.uid == uid).get()
+
             amount_instance: AmountMixin = AmountMixin(amount=0, currency=currency)
             wallet_instance.available_funds = amount_instance
             key = wallet_instance.put(retries=self._max_retries, timeout=self._max_timeout)
@@ -222,9 +242,12 @@ class WalletView(Validator):
     @handle_view_errors
     async def reset_wallet_async(self, wallet_data: dict) -> tuple:
         uid: typing.Union[str, None] = wallet_data.get('uid')
+        organization_id: typing.Union[str, None] = wallet_data.get('organization_id')
         currency: typing.Union[str, None] = wallet_data.get('currency')
         if await self.can_reset_wallet_async(uid=uid) is True:
-            wallet_instance: WalletModel = WalletModel.query(WalletModel.uid == uid).get_async().get_result()
+            wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
+                                                             WalletModel.uid == uid).get_async().get_result()
+
             amount_instance: AmountMixin = AmountMixin(amount=0, currency=currency)
             wallet_instance.available_funds = amount_instance
             key = wallet_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
@@ -238,8 +261,8 @@ class WalletView(Validator):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    def return_all_wallets(self) -> tuple:
-        wallet_list: typing.List[WalletModel] = WalletModel.query().fetch()
+    def return_all_wallets(self, organization_id: typing.Union[str, None]) -> tuple:
+        wallet_list: typing.List[WalletModel] = WalletModel.query(WalletModel.organization_id == organization_id).fetch()
         payload: typing.List[dict] = [wallet.to_dict() for wallet in wallet_list]
         return jsonify({'status': True,
                         'payload': payload,
@@ -248,8 +271,11 @@ class WalletView(Validator):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    async def return_all_wallets_async(self) -> tuple:
-        wallet_list: typing.List[WalletModel] = WalletModel.query().fetch_async().get_result()
+    async def return_all_wallets_async(self, organization_id: typing.Union[str, None]) -> tuple:
+
+        wallet_list: typing.List[WalletModel] = WalletModel.query(
+            WalletModel.organization_id == organization_id).fetch_async().get_result()
+
         payload: typing.List[dict] = [wallet.to_dict() for wallet in wallet_list]
         return jsonify({'status': True,
                         'payload': payload,
@@ -257,31 +283,43 @@ class WalletView(Validator):
 
     @use_context
     @handle_view_errors
-    def return_wallets_by_balance(self, lower_bound: int, higher_bound: int) -> tuple:
+    def return_wallets_by_balance(self, organization_id: typing.Union[str, None],
+                                  lower_bound: int, higher_bound: int) -> tuple:
+
         # if either lower_bound and higher_bound are not int then exit
         if not(isinstance(lower_bound, int) or isinstance(higher_bound, int)):
             return jsonify({'status': False, 'message': "specify lower bound and higher bound"}), 500
-        wallet_list: typing.List[WalletModel] = WalletModel.query(WalletModel.available_funds > lower_bound,
+        wallet_list: typing.List[WalletModel] = WalletModel.query(WalletModel.organization_id == organization_id,
+                                                                  WalletModel.available_funds > lower_bound,
                                                                   WalletModel.available_funds < higher_bound).fetch()
+
         payload: typing.List[dict] = [wallet.to_dict() for wallet in wallet_list]
         return jsonify({'status': True, 'payload': payload, 'message': 'wallets returned'}), 200
 
     @use_context
     @handle_view_errors
-    async def return_wallets_by_balance_async(self, lower_bound: int, higher_bound: int) -> tuple:
+    async def return_wallets_by_balance_async(self, organization_id: typing.Union[str, None],
+                                              lower_bound: int, higher_bound: int) -> tuple:
+
         # if either lower_bound and higher_bound are not int then exit
         if not(isinstance(lower_bound, int) or isinstance(higher_bound, int)):
             return jsonify({'status': False, 'message': "specify lower bound and higher bound"}), 500
-        wallet_list: typing.List[WalletModel] = WalletModel.query(WalletModel.available_funds > lower_bound,
-                                                                  WalletModel.available_funds < higher_bound).fetch_async().get_result()
+        wallet_list: typing.List[WalletModel] = WalletModel.query(
+            WalletModel.organization_id == organization_id, WalletModel.available_funds > lower_bound,
+            WalletModel.available_funds < higher_bound).fetch_async().get_result()
+
         payload: typing.List[dict] = [wallet.to_dict() for wallet in wallet_list]
         return jsonify({'status': True, 'payload': payload, 'message': 'wallets returned'}), 200
 
     @use_context
     @handle_view_errors
-    def wallet_transact(self, uid: str, add: int = None, sub: int = None) -> tuple:
+    def wallet_transact(self, organization_id: typing.Union[str, None], uid: str,
+                        add: int = None, sub: int = None) -> tuple:
+        # TODO: update can update wallet to take into account organization_id
         if self.can_update_wallet(uid=uid) is True:
-            wallet_instance: WalletModel = WalletModel.query(WalletModel.uid == uid).get()
+            wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
+                                                             WalletModel.uid == uid).get()
+
             if isinstance(wallet_instance, WalletModel):
                 if add is not None:
                     wallet_instance.available_funds.amount += add
@@ -299,9 +337,13 @@ class WalletView(Validator):
 
     @use_context
     @handle_view_errors
-    async def wallet_transact_async(self, uid: str, add: int = None, sub: int = None) -> tuple:
+    async def wallet_transact_async(self, organization_id: typing.Union[str, None], uid: str,
+                                    add: int = None, sub: int = None) -> tuple:
+
         if await self.can_update_wallet_async(uid=uid) is True:
-            wallet_instance: WalletModel = WalletModel.query(WalletModel.uid == uid).get_async().get_result()
+            wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
+                                                             WalletModel.uid == uid).get_async().get_result()
+
             if isinstance(wallet_instance, WalletModel):
                 if isinstance(add, int):
                     wallet_instance.available_funds.amount += add
@@ -319,7 +361,7 @@ class WalletView(Validator):
 
     @use_context
     @handle_view_errors
-    def wallet_withdraw_funds(self, uid: str, amount: int) -> tuple:
+    def wallet_withdraw_funds(self,organization_id: typing.Union[str, None], uid: str, amount: int) -> tuple:
         ***REMOVED***
             organization must contain settings for funds withdrawals
             i.e from which paypal account may the withdrawal occur
