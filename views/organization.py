@@ -10,7 +10,8 @@ from config.use_context import use_context
 from database.mixins import AmountMixin
 from database.organization import Organization, OrgValidators
 # TODO finish up organization  view
-from utils.utils import create_id
+from main import app_cache
+from utils.utils import create_id, return_ttl, can_cache
 
 
 class OrganizationView(OrgValidators):
@@ -82,7 +83,7 @@ class OrganizationView(OrgValidators):
                 return jsonify({'status': False, 'message': message}), 500
 
             message: str = "Successfully created Organization"
-            return jsonify({'status': True, 'message': message}), 200
+            return jsonify({'status': True, 'payload': organization_instance.to_dict(), 'message': message}), 200
 
         message: str = "Unable to create organization"
         return jsonify({'status': False, 'message': message}), 500
@@ -112,12 +113,44 @@ class OrganizationView(OrgValidators):
                     message: str = "An Unspecified Error has occurred"
                     return jsonify({'status': False, 'message': message}), 500
                 message: str = "Successfully updated organization"
-                return jsonify({'status': True, 'message': message}), 200
+                return jsonify({'status': True, 'payload': org_instance.to_dict(),  'message': message}), 200
             message: str = "Unable to update Organization"
             return jsonify({'status': False, 'message': message}), 500
 
         message: str = "You are not allowed to edit that organization please contact administrator"
-        return jsonify({'status': False, 'message': message}), 200
+        return jsonify({'status': False, 'message': message}), 500
+
+    @use_context
+    @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    def get_organization(self, uid: typing.Union[str, None], organization_id: typing.Union[str, None]) -> tuple:
+        ***REMOVED***
+            function used to return the details of user organization,
+
+            :param uid: required:  user id of the user requesting organization details
+            :param organization_id: required: the id of the organization to return
+        :return: response object and status code, response contains ,
+        response json {'status': True, 'payload': '{Organization}', 'message' : 'success'}, 200
+        ***REMOVED***
+        # TODO- check if user has proper rights to access organization details
+        organization_instance: Organization = Organization.query(Organization.organization_id == organization_id).get()
+        if isinstance(organization_instance, Organization):
+            message: str = 'successfully fetched organization'
+            return jsonify({'status': True, 'payload': organization_instance.to_dict(), 'message': message}), 200
+        message: str = "Unable to retrieve organization"
+        return jsonify({'status': False, 'message': message}), 500
+
+    @use_context
+    @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    def _return_all_organizations(self) -> tuple:
+        ***REMOVED***
+            _private function to retrieve all organization details used by system and Application Administrator
+        :return: a list containing all organization details
+        ***REMOVED***
+        organizations_list: typing.List[dict] = [org.to_dict() for org in Organization.query().fetch()]
+        message: str = 'successfully retrieved organizations'
+        return jsonify({'status': True, 'payload': organizations_list, 'message': message}), 200
 
     @use_context
     @handle_view_errors
@@ -147,11 +180,11 @@ class OrganizationView(OrgValidators):
             key: typing.Union[str, None] = organization_instance.put(retries=self._max_retries,
                                                                      timeout=self._max_timeout)
             if key is None:
-                message: str = "An Unspecified error occured while adding to or subtract from affiliate count"
+                message: str = "An Unspecified error occurred while adding to or subtract from affiliate count"
                 raise DataServiceError(status=500, description=message)
 
             message: str = "Successfully updated affiliate count"
-            return jsonify({'status': False, 'message': message}), 200
+            return jsonify({'status': False, 'payload': organization_instance.to_dict(), 'message': message}), 200
         message: str = "You are not authorized to perform this operation"
         return jsonify({'status': False, 'message': message}), 500
 
@@ -192,7 +225,7 @@ class OrganizationView(OrgValidators):
                 raise DataServiceError(status=500, description=message)
 
             message: str = "Successfully updated total paid amount on Organization"
-            return jsonify({'status': True, 'message': message}), 200
+            return jsonify({'status': True, 'payload': organization_instance.to_dict(), 'message': message}), 200
 
         message: str = "Organization does not exist"
         return jsonify({'status': False, 'message': message}), 500
@@ -221,7 +254,7 @@ class OrganizationView(OrgValidators):
                 raise InputError(status=500, description="Please Enter either the amount to add or subtract")
 
             message: str = "Successfully updated total members on organization"
-            return jsonify({'status': True, 'message': message}), 200
+            return jsonify({'status': True, 'payload': organization_instance.to_dict(), 'message': message}), 200
         message: str = "Unable to update organization"
         return jsonify({'status': True, 'message': message}), 500
 
@@ -249,9 +282,9 @@ class OrganizationView(OrgValidators):
                 raise InputError(status=500, description="Please enter either the amount to add or subtract")
 
             message: str = "Successfully updated projected_membership_payments"
-            return jsonify({'status': True, 'message': message}), 200
+            return jsonify({'status': True, 'payload': organization_instance.to_dict(), 'message': message}), 200
 
-        message: str = "Unable to update projected_membership_payments"
+        message: str = 'Unable to update projected_membership_payments'
         return jsonify({'status': False, 'message': message}), 500
 
     @use_context
@@ -278,7 +311,7 @@ class OrganizationView(OrgValidators):
                 raise InputError(status=500, description="Please enter either the amount to add or subtract")
 
             message: str = "Successfully updated total_membership_payments"
-            return jsonify({'status': True, 'message': message}), 200
+            return jsonify({'status': True, 'payload': organization_instance.to_dict(), 'message': message}), 200
+
         message: str = "Unable to update total membership payments"
         return jsonify({'status': False, 'message': message}), 500
-
