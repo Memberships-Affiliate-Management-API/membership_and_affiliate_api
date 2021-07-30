@@ -289,7 +289,13 @@ class RecruitsView(Validator):
     @use_context
     @handle_view_errors
     def delete_recruit(self, recruit_data: dict) -> tuple:
+        ***REMOVED***
+            affiliate_id: is the id of the recruit, of which the record must be removed as a recruit
 
+        :param recruit_data:
+        :return: tuple as response
+        ***REMOVED***
+        # Note: affiliate_id of the recruit
         affiliate_id: typing.Union[str, None] = recruit_data.get('affiliate_id')
         organization_id: typing.Union[str, None] = recruit_data.get('organization_id')
 
@@ -301,8 +307,10 @@ class RecruitsView(Validator):
 
         if isinstance(recruits_list, list) and len(recruits_list) > 0:
             recruits_instance = recruits_list[0]
+            # Soft Deleting Recruit
             recruits_instance.is_deleted = True
             recruits_instance.is_active = False
+            # TODO- update stats and organization Class - Consider doing this from an API
             key = recruits_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             if key is None:
                 message: str = "An Error occurred while deleting recruit"
