@@ -5,6 +5,7 @@ enables users to add , update and delete organizations account
 import typing
 from flask import current_app, jsonify
 from config.exception_handlers import handle_view_errors
+from config.exceptions import InputError, DataServiceError
 from config.use_context import use_context
 from database.mixins import AmountMixin
 from database.organization import Organization, OrgAccounts, OrgValidators
@@ -96,6 +97,69 @@ class OrganizationView(OrgValidators):
         message: str = "You are not allowed to edit that organization please contact administrator"
         return jsonify({'status': False, 'message': message}), 200
 
+    @use_context
+    @handle_view_errors
+    def affiliate_count(self, organization_id: typing.Union[str, None], add: typing.Union[int, None] = None,
+                        sub: typing.Union[int, None] = None) -> tuple:
+        ***REMOVED***
 
-    def affiliate_count(self, organization_id: typing.Union[str, None], add: int = None, sub: int = None) -> tuple:
-        pass
+        :param organization_id:
+        :param add: Optional
+        :param sub: Optional
+        :return:
+        ***REMOVED***
+
+        organization_instance: Organization = Organization.query(Organization.organization_id == organization_id).get()
+        if isinstance(organization_instance, Organization):
+            if isinstance(sub, int):
+                organization_instance.total_affiliates -= sub
+            elif isinstance(add, int):
+                organization_instance.total_affiliates += add
+            else:
+                raise InputError(status=500, description="Please either enter the amount to subtract or add")
+
+            key: typing.Union[str, None] = organization_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+            if key is None:
+                message: str = "An Unspecified error occured while adding to or subtract from affiliate count"
+                raise DataServiceError(status=500, description=message)
+
+            message: str = "Successfully updated affiliate count"
+            return jsonify({'status': False, 'message': message}), 200
+        message: str = "You are not authorized to perform this operation"
+        return jsonify({'status': False, 'message': message}), 500
+
+    @use_context
+    @handle_view_errors
+    def total_paid(self, organization_id: typing.Union[str, None],
+                   add_amount: typing.Union[AmountMixin, None] = None,
+                   sub_amount: typing.Union[AmountMixin, None] = None) -> tuple:
+        ***REMOVED***
+                Supply either add_amount or sub_amount but not both
+        :param organization_id:
+        :param add_amount: Optional
+        :param sub_amount: Optional
+        :return:
+        ***REMOVED***
+
+        organization_instance: Organization = Organization.query(Organization.organization_id == organization_id).get()
+
+        if isinstance(organization_instance, Organization):
+            if isinstance(add_amount, AmountMixin):
+                organization_instance.total_paid += add_amount
+            elif isinstance(sub_amount, AmountMixin):
+                organization_instance.total_paid -= add_amount
+            else:
+                raise InputError(status=500, description="Please enter either the amount to add or subtract")
+
+            key: typing.Union[str, None] = organization_instance.put(retries=self._max_retries,
+                                                                     timeout=self._max_timeout)
+
+            if key is None:
+                message: str = 'for some reason we are unable to add to total_amount'
+                raise DataServiceError(status=500, description=message)
+
+            message: str = "Successfully updated total paid amount on Organization"
+            return jsonify({'status': True, 'message': message}), 200
+
+        message: str = "Organization does not exist"
+        return jsonify({'status': False, 'message': message}), 500
