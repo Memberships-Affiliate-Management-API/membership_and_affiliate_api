@@ -27,23 +27,26 @@ class OrganizationView(OrgValidators):
     def can_create_organization(self, uid: typing.Union[str, None],
                                 organization_name: typing.Union[str, None]) -> bool:
         ***REMOVED***
-            check if user has registered, and is a paying user... or created an account.
+            NOTE: check if user has registered, and is a paying user... or created an account.
+            # Note: also Insures that the user does not have an organization already.
         :param uid: user id of the user performing the action
         :param organization_name: the name of the organization to of which we should check if we can create
         :return: a boolean indicating if we can create the organization
         ***REMOVED***
+        # TODO - complete can create organization account
         pass
 
-    def can_update_organization(self, uid: typing.Union[str, None], organization_id: typing.Union[str, None]):
+    def can_update_organization(self, uid: typing.Union[str, None], organization_id: typing.Union[str, None]) -> bool:
         ***REMOVED***
             check if user has administrator rights on organization and if organization exist
             :param uid: the user performing this action
             :param organization_id: the organization_id of the organization to be updated
         :return: returns a response , status code tuple
         ***REMOVED***
+        # TODO - complete can_update_organization organization account
         pass
 
-    def create_org_id(self) -> str:
+    def _create_org_id(self) -> str:
         ***REMOVED***
             create a valid organization_id if theres a conflict it creates another one and checks again if there is no
             conflict it returns the organization_id
@@ -52,8 +55,18 @@ class OrganizationView(OrgValidators):
         organization_id: str = create_id()
         org_instance: Organization = Organization.query(Organization.organization_id == organization_id).get()
         if isinstance(org_instance, Organization):
-            self.create_org_id()
+            # NOTE: Calling the function again to create a new key the present key is being used
+            self._create_org_id()
         return organization_id
+
+    def _create_org_wallet(self, organization_id: typing.Union[str, None]) -> str:
+        ***REMOVED***
+            _private function to facilitate the create of organizational wallet
+            :param organization_id: id of the organization to create organization wallet
+            :return: the wallet key of the created organization wallet
+        ***REMOVED***
+        # TODO this function must call the wallet API to create organization wallet
+        pass
 
     @use_context
     @handle_view_errors
@@ -66,9 +79,15 @@ class OrganizationView(OrgValidators):
             :param description: the description of the organization to be created
         :return: tuple containing response object and status code
         ***REMOVED***
+        # Note: insures that a valid organization id is created
+        organization_id: str = self._create_org_id()
+        # TODO- this function needs to be completed
+        wallet_id: str = self._create_org_wallet(organization_id=organization_id)
+
         if self.can_create_organization(uid, organization_name) is True:
             organization_instance: Organization = Organization(owner_uid=uid,
-                                                               organization_id=self.create_org_id(),
+                                                               organization_id=organization_id,
+                                                               wallet_id=wallet_id,
                                                                organization_name=organization_name,
                                                                description=description,
                                                                total_affiliates=0,

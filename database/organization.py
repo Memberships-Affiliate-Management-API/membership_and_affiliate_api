@@ -1,4 +1,5 @@
 import typing
+from datetime import datetime
 from google.cloud import ndb
 from config.exception_handlers import handle_store_errors
 from config.exceptions import InputError
@@ -27,10 +28,13 @@ class Organization(ndb.Model):
         class contains information on organizations registered to use our API, this class enables users to
         be registered for under a specific organization as Users, Affiliates, Recruits, and or Memberships on
         Specific Plans, once a user creates an account the first step is to create an organization, and then start
-        using the API
+        using the API.
+
+        NOTE: Once an Organization is created its wallet must also be created and its key be stored here.
     ***REMOVED***
     owner_uid: str = ndb.StringProperty(validator=setters.set_id)
     organization_id: str = ndb.StringProperty(validator=setters.set_id)
+    wallet_id: str = ndb.StringProperty(validator=setters.set_string)
     organization_name: str = ndb.StringProperty(validator=setters.set_string)
     description: str = ndb.StringProperty(validator=setters.set_string)
     total_affiliates: int = ndb.IntegerProperty(validator=setters.set_number)
@@ -97,6 +101,11 @@ class AuthUserValidators:
 
 
 class AuthorizedUsers(ndb.Model):
+    ***REMOVED***
+        details of the users authorized to update organization details and other data structures for this organization
+        the roles are admin, super user, and support.
+        if active is set to false the user role is suspended
+    ***REMOVED***
     organization_id: str = ndb.StringProperty(validator=setters.set_id)
     uid: str = ndb.StringProperty(validator=setters.set_id)
     role: str = ndb.StringProperty(validator=setters.set_string)
@@ -133,6 +142,8 @@ class OrgAccounts(ndb.Model):
         # to the Organization Upon successful collection
         # NOTE: Funds must be available in wallet in order to be withdrawn to
         # NOTE: the organization PayPal account
+
+        # organizational Wallets in Wallets class can be indicated as such see Wallet Class
     ***REMOVED***
     organization_id: str = ndb.StringProperty(validator=setters.set_id)
     paypal_email: str = ndb.StringProperty(validator=setters.set_email)
@@ -163,10 +174,16 @@ class PaymentResults(ndb.Model):
         # NOTE: this are payments from Organization Wallets to Organization PayPal Accounts
         for every payment which is approved by admin, retain the result of the
         payment here
+
+        Mainly this class is updated by the system through cron jobs and users can read its details
+
     ***REMOVED***
     organization_id: str = ndb.StringProperty(validator=setters.set_id)
     transaction_id: str = ndb.StringProperty(validator=setters.set_id)
     payment_result: str = ndb.StringProperty(validator=setters.set_string)
+    time_created: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=setters.set_datetime)
+    last_updated: datetime = ndb.DateTimeProperty(auto_now=True, validator=setters.set_datetime)
+
 
     def __str__(self) -> str:
         return "<PaymentResults : PaymentResults {} ".format(self.payment_result)
