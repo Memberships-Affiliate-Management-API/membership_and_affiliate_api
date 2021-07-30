@@ -10,7 +10,7 @@ from database.mixins import AmountMixin
 from database.users import UserValidators as UserValid
 from database.memberships import MembershipValidators as MemberValid
 from database.memberships import CouponsValidator as CouponValid
-from utils.utils import create_id, end_of_month, return_ttl, timestamp, can_cache
+from utils.utils import create_id, return_ttl, timestamp, can_cache
 from main import app_cache
 from config.exception_handlers import handle_view_errors
 from config.use_context import use_context
@@ -18,16 +18,19 @@ from config.use_context import use_context
 
 # TODO Create Test Cases for Memberships & Documentations
 class Validators(UserValid, PlanValid, MemberValid, CouponValid):
-
+    ***REMOVED***
+        validators for membership views
+    ***REMOVED***
     def __init__(self):
         super(Validators, self).__init__()
         self._max_retries = current_app.config.get('DATASTORE_RETRIES')
         self._max_timeout = current_app.config.get('DATASTORE_TIMEOUT')
 
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    def can_add_member(self, uid: typing.Union[str, None], plan_id: typing.Union[str, None], start_date: date) -> bool:
-        user_valid: typing.Union[None, bool] = self.is_user_valid(uid=uid)
-        plan_exist: typing.Union[None, bool] = self.plan_exist(plan_id=plan_id)
+    def can_add_member(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
+                       plan_id: typing.Union[str, None], start_date: date) -> bool:
+        user_valid: typing.Union[None, bool] = self.is_user_valid(organization_id=organization_id, uid=uid)
+        plan_exist: typing.Union[None, bool] = self.plan_exist(organization_id=organization_id, plan_id=plan_id)
         date_valid: typing.Union[None, bool] = self.start_date_valid(start_date=start_date)
 
         if isinstance(user_valid, bool) and isinstance(plan_exist, bool) and isinstance(date_valid, bool):
@@ -37,10 +40,10 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         raise DataServiceError(status=500, description=message)
 
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    async def can_add_member_async(self, uid: typing.Union[str, None], plan_id: typing.Union[str, None],
+    async def can_add_member_async(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None], plan_id: typing.Union[str, None],
                                    start_date: date) -> bool:
-        user_valid: typing.Union[None, bool] = await self.is_user_valid_async(uid=uid)
-        plan_exist: typing.Union[None, bool] = await self.plan_exist_async(plan_id=plan_id)
+        user_valid: typing.Union[None, bool] = await self.is_user_valid_async(organization_id=organization_id, uid=uid)
+        plan_exist: typing.Union[None, bool] = await self.plan_exist_async(organization_id=organization_id, plan_id=plan_id)
         date_valid: typing.Union[None, bool] = await self.start_date_valid_async(start_date=start_date)
 
         if isinstance(user_valid, bool) and isinstance(plan_exist, bool) and isinstance(date_valid, bool):
@@ -50,43 +53,56 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         raise DataServiceError(status=500, description=message)
 
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    def can_add_plan(self, plan_name: typing.Union[str, None]) -> bool:
-        name_exist: typing.Union[None, bool] = self.plan_name_exist(plan_name)
+    def can_add_plan(self, organization_id: typing.Union[str, None], plan_name: typing.Union[str, None]) -> bool:
+        name_exist: typing.Union[None, bool] = self.plan_name_exist(organization_id=organization_id, plan_name=plan_name)
         if isinstance(name_exist, bool):
             return not name_exist
         message: str = "Unable to verify input data, due to database error, please try again later"
         raise DataServiceError(status=500, description=message)
 
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    async def can_add_plan_async(self, plan_name: typing.Union[str, None]) -> bool:
-        name_exist: typing.Union[None, bool] = await self.plan_name_exist_async(plan_name)
+    async def can_add_plan_async(self, organization_id: typing.Union[str, None],
+                                 plan_name: typing.Union[str, None]) -> bool:
+        name_exist: typing.Union[None, bool] = await self.plan_name_exist_async(
+            organization_id=organization_id, plan_name=plan_name)
+
         if isinstance(name_exist, bool):
             return not name_exist
         message: str = "Unable to verify input data, due to database error, please try again later"
         raise DataServiceError(status=500, description=message)
 
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    def can_update_plan(self, plan_id: typing.Union[str, None], plan_name: typing.Union[str, None]) -> bool:
-        plan_exist: typing.Union[None, bool] = self.plan_exist(plan_id=plan_id)
-        plan_name_exist: typing.Union[None, bool] = self.plan_name_exist(plan_name=plan_name)
+    def can_update_plan(self, organization_id: typing.Union[str, None],
+                        plan_id: typing.Union[str, None], plan_name: typing.Union[str, None]) -> bool:
+        plan_exist: typing.Union[None, bool] = self.plan_exist(organization_id=organization_id, plan_id=plan_id)
+        plan_name_exist: typing.Union[None, bool] = self.plan_name_exist(
+            organization_id=organization_id, plan_name=plan_name)
+
         if isinstance(plan_exist, bool) and isinstance(plan_name_exist, bool):
             return plan_exist and plan_name_exist
         message: str = "Unable to verify input data, due to database error, please try again later"
         raise DataServiceError(status=500, description=message)
 
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    async def can_update_plan_async(self, plan_id: typing.Union[str, None], plan_name: typing.Union[str, None]) -> bool:
-        plan_exist: typing.Union[None, bool] = await self.plan_exist_async(plan_id=plan_id)
-        plan_name_exist: typing.Union[None, bool] = await self.plan_name_exist_async(plan_name=plan_name)
+    async def can_update_plan_async(self, organization_id: typing.Union[str, None],
+                                    plan_id: typing.Union[str, None], plan_name: typing.Union[str, None]) -> bool:
+
+        plan_exist: typing.Union[None, bool] = await self.plan_exist_async(
+            organization_id=organization_id, plan_id=plan_id)
+
+        plan_name_exist: typing.Union[None, bool] = await self.plan_name_exist_async(
+            organization_id=organization_id, plan_name=plan_name)
+
         if isinstance(plan_exist, bool) and isinstance(plan_name_exist, bool):
             return plan_exist and plan_name_exist
         message: str = "Unable to verify input data, due to database error, please try again later"
         raise DataServiceError(status=500, description=message)
 
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    def can_add_coupon(self, code: typing.Union[str, None], expiration_time: typing.Union[int, None],
+    def can_add_coupon(self, organization_id: typing.Union[str, None], code: typing.Union[str, None], expiration_time: typing.Union[int, None],
                        discount: typing.Union[int, None]) -> bool:
-        coupon_exist: typing.Union[None, bool] = self.coupon_exist(code=code)
+
+        coupon_exist: typing.Union[None, bool] = self.coupon_exist(organization_id=organization_id, code=code)
         expiration_valid: typing.Union[None, bool] = self.expiration_valid(expiration_time=expiration_time)
         discount_valid: typing.Union[None, bool] = self.discount_valid(discount_valid=discount)
 
@@ -96,9 +112,11 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         raise DataServiceError(status=500, description=message)
 
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    async def can_add_coupon_async(self, code: typing.Union[str, None], expiration_time: typing.Union[int, None],
+    async def can_add_coupon_async(self, organization_id: typing.Union[str, None], code: typing.Union[str, None], expiration_time: typing.Union[int, None],
                                    discount: typing.Union[int, None]) -> bool:
-        coupon_exist: typing.Union[None, bool] = await self.coupon_exist_async(code=code)
+        coupon_exist: typing.Union[None, bool] = await self.coupon_exist_async(organization_id=organization_id,
+                                                                               code=code)
+
         expiration_valid: typing.Union[None, bool] = await self.expiration_valid_async(expiration_time=expiration_time)
         discount_valid: typing.Union[None, bool] = await self.discount_valid_async(discount_valid=discount)
 
@@ -108,9 +126,10 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         raise DataServiceError(status=500, description=message)
 
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    def can_update_coupon(self, code: typing.Union[str, None], expiration_time: typing.Union[int, None],
+    def can_update_coupon(self, organization_id: typing.Union[str, None], code: typing.Union[str, None], expiration_time: typing.Union[int, None],
                           discount: typing.Union[int, None]) -> bool:
-        coupon_exist: typing.Union[None, bool] = self.coupon_exist(code=code)
+
+        coupon_exist: typing.Union[None, bool] = self.coupon_exist(organization_id=organization_id, code=code)
         expiration_valid: typing.Union[None, bool] = self.expiration_valid(expiration_time=expiration_time)
         discount_valid: typing.Union[None, bool] = self.discount_valid(discount_valid=discount)
 
@@ -120,9 +139,11 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         raise DataServiceError(status=500, description=message)
 
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    async def can_update_coupon_async(self, code: typing.Union[str, None], expiration_time: typing.Union[int, None],
+    async def can_update_coupon_async(self, organization_id: typing.Union[str, None], code: typing.Union[str, None], expiration_time: typing.Union[int, None],
                                       discount: typing.Union[int, None]) -> bool:
-        coupon_exist: typing.Union[None, bool] = await self.coupon_exist_async(code=code)
+
+        coupon_exist: typing.Union[None, bool] = await self.coupon_exist_async(organization_id=organization_id,
+                                                                               code=code)
         expiration_valid: typing.Union[None, bool] = await self.expiration_valid_async(expiration_time=expiration_time)
         discount_valid: typing.Union[None, bool] = await self.discount_valid_async(discount_valid=discount)
 
@@ -143,8 +164,9 @@ class MembershipsView(Validators):
     def _create_or_update_membership(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
                                      plan_id: typing.Union[str, None], plan_start_date: date) -> tuple:
 
-        # TODO update can_add_member to include organization_id
-        if self.can_add_member(uid=uid, plan_id=plan_id, start_date=plan_start_date) is True:
+        if await self.can_add_member_async(organization_id=organization_id, uid=uid, plan_id=plan_id,
+                                           start_date=plan_start_date) is True:
+
             # can use get to simplify this and make transactions faster
             membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                                  Memberships.uid == uid).get()
@@ -174,7 +196,9 @@ class MembershipsView(Validators):
                                                  plan_start_date: date) -> tuple:
 
         # TODO update can_add_member_async to include organization_id
-        if await self.can_add_member_async(uid=uid, plan_id=plan_id, start_date=plan_start_date) is True:
+        if await self.can_add_member_async(organization_id=organization_id, uid=uid, plan_id=plan_id,
+                                           start_date=plan_start_date) is True:
+
             # can use get to simplify this and make transactions faster
             membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                                  Memberships.uid == uid).get_async().get_result()
@@ -272,7 +296,8 @@ class MembershipsView(Validators):
                                                              Memberships.uid == uid).get()
 
         if isinstance(membership_instance, Memberships) and (membership_instance.plan_id == origin_plan_id):
-            if self.plan_exist(plan_id=dest_plan_id) is True:
+
+            if self.plan_exist(organization_id=organization_id, plan_id=dest_plan_id) is True:
                 membership_instance.plan_id = dest_plan_id
                 key = membership_instance.put(retries=self._max_retries,
                                               timeout=self._max_timeout)
@@ -299,7 +324,7 @@ class MembershipsView(Validators):
                                                              Memberships.uid == uid).get_async().get_result()
 
         if isinstance(membership_instance, Memberships) and (membership_instance.plan_id == origin_plan_id):
-            if self.plan_exist(plan_id=dest_plan_id) is True:
+            if await self.plan_exist_async(organization_id=organization_id, plan_id=dest_plan_id) is True:
                 membership_instance.plan_id = dest_plan_id
                 key = membership_instance.put_async(retries=self._max_retries,
                                                     timeout=self._max_timeout).get_result()
@@ -521,7 +546,7 @@ class MembershipsView(Validators):
         ***REMOVED***
             for a specific user return payment amount
         ***REMOVED***
-
+        # TODO this function has to be secured
         membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                              Memberships.uid == uid).get()
 
@@ -636,6 +661,8 @@ class MembershipPlansView(Validators):
     def __init__(self):
         super(MembershipPlansView, self).__init__()
 
+    # TODO - add Membership Plans Validators
+
     @use_context
     @handle_view_errors
     def add_plan(self, membership_plan_data: dict) -> tuple:
@@ -689,7 +716,7 @@ class MembershipPlansView(Validators):
 
         is_active = True
 
-        if self.can_add_plan(plan_name=plan_name) is True:
+        if self.can_add_plan(organization_id=organization_id, plan_name=plan_name) is True:
             total_members: int = 0
             # Creating Amount Mixins to represent real currency
             curr_term_payment: AmountMixin = AmountMixin(amount=term_payment, currency=currency)
@@ -769,7 +796,7 @@ class MembershipPlansView(Validators):
 
         is_active = True
 
-        if await self.can_add_plan_async(plan_name=plan_name) is True:
+        if await self.can_add_plan_async(organization_id=organization_id, plan_name=plan_name) is True:
             total_members: int = 0
             # Creating Amount Mixins to represent real currency
             curr_term_payment: AmountMixin = AmountMixin(amount=term_payment, currency=currency)
@@ -804,8 +831,7 @@ class MembershipPlansView(Validators):
                     schedule_day: int, schedule_term: str, term_payment: int, registration_amount: int,
                     currency: str, is_active: bool) -> tuple:
 
-        # TODO - insure that can_update_plan takes into consideration organization_id
-        if self.can_update_plan(plan_id=plan_id, plan_name=plan_name) is True:
+        if self.can_update_plan(organization_id=organization_id, plan_id=plan_id, plan_name=plan_name) is True:
 
             membership_plans_instance: MembershipPlans = MembershipPlans.query(
                 MembershipPlans.organization_id == organization_id, MembershipPlans.plan_id == plan_id).get()
@@ -844,8 +870,7 @@ class MembershipPlansView(Validators):
                                 description: str, schedule_day: int, schedule_term: str, term_payment: int,
                                 registration_amount: int, currency: str, is_active: bool) -> tuple:
 
-        # TODO update can_update_plan_async to include organization_id
-        if await self.can_update_plan_async(plan_id=plan_id, plan_name=plan_name) is True:
+        if await self.can_update_plan_async(organization_id=organization_id, plan_id=plan_id, plan_name=plan_name) is True:
             membership_plans_instance: MembershipPlans = MembershipPlans.query(
                 MembershipPlans.organization_id == organization_id,
                 MembershipPlans.plan_id == plan_id).get_async().get_result()
@@ -1108,7 +1133,9 @@ class CouponsView(Validators):
     def add_coupon(self, organization_id: typing.Union[str, None], code: typing.Union[str, None], discount: typing.Union[int, None],
                    expiration_time: typing.Union[int, None]) -> tuple:
 
-        if self.can_add_coupon(code=code, expiration_time=expiration_time, discount=discount) is True:
+        if self.can_add_coupon(organization_id=organization_id, code=code, expiration_time=expiration_time,
+                               discount=discount) is True:
+
             coupons_instance: Coupons = Coupons(organization_id=organization_id, code=code, discount=discount,
                                                 expiration_time=expiration_time)
 
@@ -1128,7 +1155,7 @@ class CouponsView(Validators):
     async def add_coupon_async(self, organization_id: typing.Union[str, None], code: typing.Union[str, None],
                                discount: typing.Union[int, None], expiration_time: typing.Union[int, None]) -> tuple:
 
-        if await self.can_add_coupon_async(code=code, expiration_time=expiration_time, discount=discount) is True:
+        if await self.can_add_coupon_async(organization_id=organization_id, code=code, expiration_time=expiration_time, discount=discount) is True:
             coupons_instance: Coupons = Coupons(organization_id=organization_id, code=code,
                                                 discount=discount, expiration_time=expiration_time)
 
@@ -1167,7 +1194,9 @@ class CouponsView(Validators):
     async def update_coupon_async(self, organization_id: typing.Union[str, None], code: str, discount: int,
                                   expiration_time: int) -> tuple:
 
-        if await self.can_update_coupon_async(code=code, expiration_time=expiration_time, discount=discount) is True:
+        if await self.can_update_coupon_async(organization_id=organization_id, code=code,
+                                              expiration_time=expiration_time, discount=discount) is True:
+
             coupon_instance: Coupons = Coupons.query(
                 Coupons.organization_id == organization_id, Coupons.code == code).get_async().get_result()
 
@@ -1217,7 +1246,7 @@ class CouponsView(Validators):
             return jsonify({'status': False, 'message': message}), 500
 
         coupon_instance: Coupons = Coupons.query(Coupons.organization_id == organization_id,
-                                                  Coupons.code == code).get_async().get_result()
+                                                 Coupons.code == code).get_async().get_result()
 
         if isinstance(coupon_instance, Coupons):
             coupon_instance.is_valid = False

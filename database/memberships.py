@@ -33,7 +33,7 @@ class MembershipValidators:
 class PlanValidators:
 
     @staticmethod
-    def plan_exist(plan_id: str) -> typing.Union[None, bool]:
+    def plan_exist(organization_id: str, plan_id: str) -> typing.Union[None, bool]:
         ***REMOVED***
             return True or False
             return None if Error
@@ -44,7 +44,8 @@ class PlanValidators:
         if plan_id == "":
             return False
         try:
-            plan_instance: MembershipPlans = MembershipPlans.query(MembershipPlans.plan_id == plan_id).get()
+            plan_instance: MembershipPlans = MembershipPlans.query(MembershipPlans.organization_id==organization_id,
+                                                                   MembershipPlans.plan_id == plan_id).get()
             if isinstance(plan_instance, MembershipPlans):
                 return True
         except ConnectionRefusedError:
@@ -56,7 +57,7 @@ class PlanValidators:
         return False
 
     @staticmethod
-    async def plan_exist_async(plan_id: str) -> typing.Union[None, bool]:
+    async def plan_exist_async(organization_id: str, plan_id: str) -> typing.Union[None, bool]:
         ***REMOVED***
             return True or False
             return None if Error
@@ -68,7 +69,9 @@ class PlanValidators:
             return False
         try:
             plan_instance: MembershipPlans = MembershipPlans.query(
+                MembershipPlans.organization_id == organization_id,
                 MembershipPlans.plan_id == plan_id).get_async().get_result()
+
             if isinstance(plan_instance, MembershipPlans):
                 return True
         except ConnectionRefusedError:
@@ -80,7 +83,7 @@ class PlanValidators:
         return False
 
     @staticmethod
-    def plan_name_exist(plan_name: str) -> typing.Union[None, bool]:
+    def plan_name_exist(organization_id: str, plan_name: str) -> typing.Union[None, bool]:
         ***REMOVED***
             returns True or False if plan exist or dont exist
             returns None if an error occurred
@@ -91,7 +94,8 @@ class PlanValidators:
         if plan_name == "":
             return False
         try:
-            plan_instance: MembershipPlans = MembershipPlans.query(MembershipPlans.plan_name == plan_name).get()
+            plan_instance: MembershipPlans = MembershipPlans.query(MembershipPlans.organization_id == organization_id,
+                                                                   MembershipPlans.plan_name == plan_name).get()
             if isinstance(plan_instance, MembershipPlans):
                 return True
         except ConnectionRefusedError:
@@ -101,7 +105,7 @@ class PlanValidators:
         return False
 
     @staticmethod
-    async def plan_name_exist_async(plan_name: str) -> typing.Union[None, bool]:
+    async def plan_name_exist_async(organization_id: str, plan_name: str) -> typing.Union[None, bool]:
         ***REMOVED***
             returns True or False if plan exist or dont exist
             returns None if an error occurred
@@ -113,7 +117,9 @@ class PlanValidators:
             return False
         try:
             plan_instance: MembershipPlans = MembershipPlans.query(
+                MembershipPlans.organization_id == organization_id,
                 MembershipPlans.plan_name == plan_name).get_async().get_result()
+
             if isinstance(plan_instance, MembershipPlans):
                 return True
         except ConnectionRefusedError:
@@ -128,13 +134,15 @@ class CouponsValidator:
         pass
 
     @staticmethod
-    def coupon_exist(code: str) -> typing.Union[None, bool]:
+    def coupon_exist(organization_id: str, code: str) -> typing.Union[None, bool]:
         if not (isinstance(code, str)):
             return False
         if code == "":
             return False
         try:
-            coupons_instance: Coupons = Coupons.query(Coupons.code == code).get()
+            coupons_instance: Coupons = Coupons.query(Coupons.organization_id == organization_id,
+                                                      Coupons.code == code).get()
+
             if isinstance(coupons_instance, Coupons):
                 return True
             return False
@@ -144,13 +152,15 @@ class CouponsValidator:
             return None
 
     @staticmethod
-    async def coupon_exist_async(code: str) -> typing.Union[None, bool]:
+    async def coupon_exist_async(organization_id: str, code: str) -> typing.Union[None, bool]:
         if not (isinstance(code, str)):
             return False
         if code == "":
             return False
         try:
-            coupons_instance: Coupons = Coupons.query(Coupons.code == code).get_async().get_result()
+            coupons_instance: Coupons = Coupons.query(
+                Coupons.organization_id==organization_id, Coupons.code == code).get_async().get_result()
+
             if isinstance(coupons_instance, Coupons):
                 return True
             return False

@@ -21,8 +21,9 @@ class Validator(ValidAffiliate, ValidRecruit, ValidEarnings):
 
     # noinspection PyTypeChecker
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    def can_register_affiliate(self, uid: str) -> bool:
-        already_registered: typing.Union[bool, None] = self.user_already_registered(uid=uid)
+    def can_register_affiliate(self, organization_id: str, uid: str) -> bool:
+        already_registered: typing.Union[bool, None] = self.user_already_registered(
+            organization_id=organization_id, uid=uid)
         if not isinstance(already_registered, bool):
             raise ValueError("invalid user id")
         print("User Already Registered: {}".format(already_registered))
@@ -51,7 +52,7 @@ class AffiliatesView(Validator):
 
         if (uid is None) or (uid == ""):
             return jsonify({'status': False, 'message': 'user id cannot be Null'}), 500
-        if self.can_register_affiliate(uid=uid) is True:
+        if self.can_register_affiliate(organization_id=organization_id, uid=uid) is True:
             affiliate_instance: Affiliates = Affiliates(organization_id=organization_id, affiliate_id=create_id(),
                                                         uid=uid)
             key = affiliate_instance.put(retries=self._max_retries, timeout=self._max_timeout)
@@ -262,6 +263,8 @@ class RecruitsView(Validator):
         super(RecruitsView, self).__init__()
         self._max_retries = current_app.config.get('DATASTORE_RETRIES')
         self._max_timeout = current_app.config.get('DATASTORE_TIMEOUT')
+
+    # TODO validate Recruits
 
     @use_context
     @handle_view_errors

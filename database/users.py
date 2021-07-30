@@ -11,20 +11,23 @@ class UserValidators:
 
     @staticmethod
     @handle_store_errors
-    def is_user_valid(uid: str) -> typing.Union[None, bool]:
+    def is_user_valid(organization_id: str, uid: str) -> typing.Union[None, bool]:
         if not(isinstance(uid, str)) or (uid == ""):
             return False
-        user_instance: UserModel = UserModel.query(UserModel.uid == uid).get()
+        user_instance: UserModel = UserModel.query(
+            UserModel.organization_id == organization_id, UserModel.uid == uid).get()
+
         if isinstance(user_instance, UserModel):
             return user_instance.is_active
         return False
 
     @staticmethod
     @handle_store_errors
-    async def is_user_valid_async(uid: str) -> typing.Union[None, bool]:
+    async def is_user_valid_async(organization_id: str, uid: str) -> typing.Union[None, bool]:
         if not(isinstance(uid, str)) or (uid == ""):
             return False
-        user_instance: UserModel = UserModel.query(UserModel.uid == uid).get_async().get_result()
+        user_instance: UserModel = UserModel.query(
+            UserModel.organization_id == organization_id, UserModel.uid == uid).get_async().get_result()
         if isinstance(user_instance, UserModel):
             return user_instance.is_active
         return False

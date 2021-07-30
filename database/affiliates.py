@@ -27,11 +27,15 @@ class AffiliatesValidators:
             return None
 
     @staticmethod
-    def user_already_registered(uid: typing.Union[str, None]) -> typing.Union[None, bool]:
+    def user_already_registered(organization_id: typing.Union[str, None], 
+                                uid: typing.Union[str, None]) -> typing.Union[None, bool]:
+
         if not(isinstance(uid, str)) or (uid == ""):
             raise ValueError("UID cannot be Null, and should be a string")
         try:
-            affiliate_instance: Affiliates = Affiliates.query(Affiliates.uid == uid).get()
+            affiliate_instance: Affiliates = Affiliates.query(Affiliates.organization_id == organization_id,
+                                                              Affiliates.uid == uid).get()
+
             if isinstance(affiliate_instance, Affiliates):
                 return True
             return False
