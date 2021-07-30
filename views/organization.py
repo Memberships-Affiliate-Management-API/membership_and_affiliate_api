@@ -10,10 +10,9 @@ from config.use_context import use_context
 from database.mixins import AmountMixin
 from database.organization import Organization, OrgAccounts, OrgValidators
 
-
 # TODO finish up organization  view
 from main import app_cache
-from utils.utils import create_id, return_ttl, can_cache
+from utils.utils import create_id
 
 
 class OrganizationView(OrgValidators):
@@ -100,8 +99,8 @@ class OrganizationView(OrgValidators):
 
     @use_context
     @handle_view_errors
-    def affiliate_count(self, organization_id: typing.Union[str, None], add: typing.Union[int, None] = None,
-                        sub: typing.Union[int, None] = None) -> tuple:
+    def update_affiliate_count(self, organization_id: typing.Union[str, None], add: typing.Union[int, None] = None,
+                               sub: typing.Union[int, None] = None) -> tuple:
         ***REMOVED***
             Affiliate Count takes either an amount to add to subtract from affiliate not both
             :param organization_id:
@@ -119,7 +118,8 @@ class OrganizationView(OrgValidators):
             else:
                 raise InputError(status=500, description="Please either enter the amount to subtract or add")
 
-            key: typing.Union[str, None] = organization_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+            key: typing.Union[str, None] = organization_instance.put(retries=self._max_retries,
+                                                                     timeout=self._max_timeout)
             if key is None:
                 message: str = "An Unspecified error occured while adding to or subtract from affiliate count"
                 raise DataServiceError(status=500, description=message)
@@ -131,9 +131,9 @@ class OrganizationView(OrgValidators):
 
     @use_context
     @handle_view_errors
-    def total_paid(self, organization_id: typing.Union[str, None],
-                   add_amount: typing.Union[AmountMixin, None] = None,
-                   sub_amount: typing.Union[AmountMixin, None] = None) -> tuple:
+    def update_total_paid(self, organization_id: typing.Union[str, None],
+                          add_amount: typing.Union[AmountMixin, None] = None,
+                          sub_amount: typing.Union[AmountMixin, None] = None) -> tuple:
         ***REMOVED***
                 Supply either add_amount or sub_amount but not both
         :param organization_id:
@@ -167,11 +167,11 @@ class OrganizationView(OrgValidators):
 
     @use_context
     @handle_view_errors
-    def total_members(self, organization_id: typing.Union[str, None], add: typing.Union[int, None] = None,
-                      sub: typing.Union[int, None] = None) -> tuple:
+    def update_total_members(self, organization_id: typing.Union[str, None], add: typing.Union[int, None] = None,
+                             sub: typing.Union[int, None] = None) -> tuple:
         ***REMOVED***
             supply either the amount to add to total members or the amount to subtract
-            :param organization_id: 
+            :param organization_id:
             :param add:
             :param sub:
             :return:
@@ -191,6 +191,61 @@ class OrganizationView(OrgValidators):
         message: str = "Unable to update organization"
         return jsonify({'status': True, 'message': message}), 500
 
+    @use_context
+    @handle_view_errors
+    def update_projected_membership_payments(self, organization_id: typing.Union[str, None],
+                                             add_payment: typing.Union[str, None] = None,
+                                             sub_payment: typing.Union[str, None] = None) -> tuple:
 
+        ***REMOVED***
+            to update projected_membership_payments supply either the amount to add or subtract but not both
+        :param organization_id:
+        :param add_payment: Optional
+        :param sub_payment: Optional
+        :return: tuple
+        ***REMOVED***
+        organization_instance: Organization = Organization.query(Organization.organization_id == organization_id).get()
+
+        if isinstance(organization_instance, Organization):
+            if isinstance(add_payment, AmountMixin):
+                organization_instance.projected_membership_payments += add_payment
+            elif isinstance(sub_payment, AmountMixin):
+                organization_instance.projected_membership_payments -= sub_payment
+            else:
+                raise InputError(status=500, description="Please enter either the amount to add or subtract")
+
+            message: str = "Successfully updated projected_membership_payments"
+            return jsonify({'status': True, 'message': message}), 200
+
+        message: str = "Unable to update projected_membership_payments"
+        return jsonify({'status': False, 'message': message}), 500
+
+    @use_context
+    @handle_view_errors
+    def update_total_membership_payments(self, organization_id: typing.Union[str, None],
+                                         sub_total_membership_payment: typing.Union[AmountMixin, None] = None,
+                                         add_total_membership_amount: typing.Union[AmountMixin, None] = None) -> tuple:
+        ***REMOVED***
+            update overall total_membership_payments for organization, supply either the amount to add or subsctract
+            but not both
+        :param organization_id:
+        :param sub_total_membership_payment:
+        :param add_total_membership_amount:
+        :return:
+        ***REMOVED***
+        organization_instance: Organization = Organization.query(Organization.organization_id == organization_id).get()
+
+        if isinstance(organization_instance, Organization):
+            if isinstance(sub_total_membership_payment, AmountMixin):
+                organization_instance.total_membership_payments += sub_total_membership_payment
+            elif isinstance(add_total_membership_amount, AmountMixin):
+                organization_instance.total_membership_payments += add_total_membership_amount
+            else:
+                raise InputError(status=500, description="Please enter either the amount to add or subtract")
+
+            message: str = "Successfully updated total_membership_payments"
+            return jsonify({'status': True, 'message': message}), 200
+        message: str = "Unable to update total membership payments"
+        return jsonify({'status': False, 'message': message}), 500
 
 
