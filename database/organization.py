@@ -23,6 +23,12 @@ class OrgValidators:
 
 
 class Organization(ndb.Model):
+    ***REMOVED***
+        class contains information on organizations registered to use our API, this class enables users to
+        be registered for under a specific organization as Users, Affiliates, Recruits, and or Memberships on
+        Specific Plans, once a user creates an account the first step is to create an organization, and then start
+        using the API
+    ***REMOVED***
     owner_uid: str = ndb.StringProperty(validator=setters.set_id)
     organization_id: str = ndb.StringProperty(validator=setters.set_id)
     organization_name: str = ndb.StringProperty(validator=setters.set_string)
