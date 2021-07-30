@@ -14,7 +14,7 @@ default_timeout: int = 60 * 60 * 6
 def create_app(config_class=config_instance):
     app = Flask(__name__, static_folder="app/resources/static", template_folder="app/resources/templates")
     app.config.from_object(config_class)
-    print(config_class)
+
     app_cache.init_app(app=app, config=config_class.cache_dict())
 
     from _api.affiliates.routes import affiliates_bp

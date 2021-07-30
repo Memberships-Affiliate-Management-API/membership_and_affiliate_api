@@ -10,6 +10,10 @@ from config.use_context import use_context
 
 
 class Validator(WalletValidator):
+    ***REMOVED***
+        Wallet Validators
+        TODO- improve the validators to validate all aspects of wallet transactions
+    ***REMOVED***
 
     def __init__(self):
         super(Validator, self).__init__()
@@ -34,8 +38,7 @@ class Validator(WalletValidator):
             wallet_exist: typing.Union[bool, None] = self.wallet_exist(organization_id=organization_id, uid=uid)
             if isinstance(wallet_exist, bool):
                 return not wallet_exist
-            raise DataServiceError(status=500, description='Unable to verify wallet data')
-        return False
+        raise DataServiceError(status=500, description='Unable to verify wallet data')
 
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def can_add_wallet_async(self, organization_id: typing.Union[str, None], uid: typing.Union[None, str] = None) -> bool:
@@ -45,8 +48,7 @@ class Validator(WalletValidator):
 
             if isinstance(wallet_exist, bool):
                 return not wallet_exist
-            raise DataServiceError(status=500, description='Unable to verify wallet data')
-        return False
+        raise DataServiceError(status=500, description='Unable to verify wallet data')
 
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def can_update_wallet(self, organization_id: typing.Union[str, None], uid: typing.Union[None, str] = None) -> bool:
@@ -54,8 +56,7 @@ class Validator(WalletValidator):
             wallet_exist: typing.Union[bool, None] = self.wallet_exist(organization_id=organization_id, uid=uid)
             if isinstance(wallet_exist, bool):
                 return wallet_exist
-            raise DataServiceError(status=500, description='Unable to verify wallet data')
-        return False
+        raise DataServiceError(status=500, description='Unable to verify wallet data')
 
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def can_update_wallet_async(self, organization_id: typing.Union[str, None],
@@ -67,8 +68,7 @@ class Validator(WalletValidator):
 
             if isinstance(wallet_exist, bool):
                 return wallet_exist
-            raise DataServiceError(status=500, description='Unable to verify wallet data')
-        return False
+        raise DataServiceError(status=500, description='Unable to verify wallet data')
 
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def can_reset_wallet(self, organization_id: typing.Union[str, None], uid: typing.Union[None, str]) -> bool:
@@ -76,8 +76,7 @@ class Validator(WalletValidator):
             wallet_exist: typing.Union[bool, None] = self.wallet_exist(organization_id=organization_id, uid=uid)
             if isinstance(wallet_exist, bool):
                 return wallet_exist
-            raise DataServiceError(status=500, description='Unable to verify wallet data')
-        return False
+        raise DataServiceError(status=500, description='Unable to verify wallet data')
 
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def can_reset_wallet_async(self, organization_id: typing.Union[str, None], uid: typing.Union[None, str]) -> bool:
@@ -87,8 +86,7 @@ class Validator(WalletValidator):
 
             if isinstance(wallet_exist, bool):
                 return wallet_exist
-            raise DataServiceError(status=500, description='Unable to verify wallet data')
-        return False
+        raise DataServiceError(status=500, description='Unable to verify wallet data')
 
 
 # noinspection DuplicatedCode

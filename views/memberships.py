@@ -165,7 +165,7 @@ class MembershipsView(Validators):
                                      plan_id: typing.Union[str, None], plan_start_date: date) -> tuple:
 
         if self.can_add_member(organization_id=organization_id, uid=uid, plan_id=plan_id,
-                                           start_date=plan_start_date) is True:
+                               start_date=plan_start_date) is True:
 
             # can use get to simplify this and make transactions faster
             membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,

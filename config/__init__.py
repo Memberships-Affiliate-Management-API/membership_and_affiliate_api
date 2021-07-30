@@ -33,6 +33,21 @@ class Config:
             self.IS_PRODUCTION = False
             # TODO - set Cache to MEM_CACHE and then setup the server URI, applicable on version 2
 
+    def __str__(self) -> str:
+        return '''PROJECT: {}, APP_NAME: {}, ORGANIZATION_ID: {}, DEFAULT_ACCESS_RIGHTS: {}, ADMIN_EMAIL: {}, 
+        UTC_OFFSET: {}, PUBSUB_VERIFICATION_TOKEN: {}, DATASTORE_TIMEOUT: {}, DATASTORE_RETRIES: {}, CURRENCY: {},
+        PAYPAL_CLIENT_ID: {}, PAYPAL_CLIENT_SECRET: {}, PAYPAL_CLIENT_ID_SAND: {} , PAYPAL_CLIENT_SECRET_SAND: {},
+        IS_PRODUCTION: {}, SECRET_KEY: {}, DEBUG: {}, CACHE_TYPE: {}, CACHE_DEFAULT_TIMEOUT: {}, 
+        MEM_CACHE_SERVER_URI: {}'''.format(
+            self.PROJECT, self.APP_NAME, self.ORGANIZATION_ID, self.DEFAULT_ACCESS_RIGHTS, self.ADMIN_EMAIL,
+            self.UTC_OFFSET, self.PUBSUB_VERIFICATION_TOKEN, self.DATASTORE_TIMEOUT, self.DATASTORE_RETRIES,
+            self.CURRENCY, self.PAYPAL_CLIENT_ID, self.PAYPAL_CLIENT_SECRET, self.PAYPAL_CLIENT_ID_SAND,
+            self.PAYPAL_CLIENT_SECRET_SAND, self.IS_PRODUCTION, self.SECRET_KEY, self.DEBUG, self.CACHE_TYPE,
+            self.CACHE_DEFAULT_TIMEOUT, self.MEM_CACHE_SERVER_URI)
+
+    def __repr__(self) -> str:
+        return self.__str__()
+
     def cache_dict(self) -> dict:
         ***REMOVED***
             Consider converting the cache to MEM_CACHE Type or Redis
