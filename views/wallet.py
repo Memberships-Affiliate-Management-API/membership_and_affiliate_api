@@ -1,11 +1,10 @@
-import functools
 import typing
 from flask import jsonify, current_app
 from config.exceptions import DataServiceError
 from main import app_cache
 from database.mixins import AmountMixin
 from database.wallet import WalletModel, WalletValidator
-from utils.utils import return_ttl, end_of_month, can_cache
+from utils.utils import return_ttl, can_cache
 from config.exception_handlers import handle_view_errors
 from config.use_context import use_context
 
@@ -30,54 +29,62 @@ class Validator(WalletValidator):
         return False
 
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    def can_add_wallet(self, uid: typing.Union[None, str] = None) -> bool:
+    def can_add_wallet(self, organization_id: typing.Union[str, None], uid: typing.Union[None, str] = None) -> bool:
         if not(self.is_uid_none(uid=uid)):
-            wallet_exist: typing.Union[bool, None] = self.wallet_exist(uid=uid)
+            wallet_exist: typing.Union[bool, None] = self.wallet_exist(organization_id=organization_id, uid=uid)
             if isinstance(wallet_exist, bool):
                 return not wallet_exist
             raise DataServiceError(status=500, description='Unable to verify wallet data')
         return False
 
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    async def can_add_wallet_async(self, uid: typing.Union[None, str] = None) -> bool:
+    async def can_add_wallet_async(self, organization_id: typing.Union[str, None], uid: typing.Union[None, str] = None) -> bool:
         if not(self.is_uid_none(uid=uid)):
-            wallet_exist: typing.Union[bool, None] = await self.wallet_exist_async(uid=uid)
+            wallet_exist: typing.Union[bool, None] = await self.wallet_exist_async(
+                organization_id=organization_id, uid=uid)
+
             if isinstance(wallet_exist, bool):
                 return not wallet_exist
             raise DataServiceError(status=500, description='Unable to verify wallet data')
         return False
 
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    def can_update_wallet(self, uid: typing.Union[None, str] = None) -> bool:
+    def can_update_wallet(self, organization_id: typing.Union[str, None], uid: typing.Union[None, str] = None) -> bool:
         if not(self.is_uid_none(uid=uid)):
-            wallet_exist: typing.Union[bool, None] = self.wallet_exist(uid=uid)
+            wallet_exist: typing.Union[bool, None] = self.wallet_exist(organization_id=organization_id, uid=uid)
             if isinstance(wallet_exist, bool):
                 return wallet_exist
             raise DataServiceError(status=500, description='Unable to verify wallet data')
         return False
 
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    async def can_update_wallet_async(self, uid: typing.Union[None, str] = None) -> bool:
+    async def can_update_wallet_async(self, organization_id: typing.Union[str, None],
+                                      uid: typing.Union[None, str] = None) -> bool:
+
         if not(self.is_uid_none(uid=uid)):
-            wallet_exist: typing.Union[bool, None] = await self.wallet_exist_async(uid=uid)
+            wallet_exist: typing.Union[bool, None] = await self.wallet_exist_async(
+                organization_id=organization_id, uid=uid)
+
             if isinstance(wallet_exist, bool):
                 return wallet_exist
             raise DataServiceError(status=500, description='Unable to verify wallet data')
         return False
 
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    def can_reset_wallet(self, uid: typing.Union[None, str]) -> bool:
+    def can_reset_wallet(self, organization_id: typing.Union[str, None], uid: typing.Union[None, str]) -> bool:
         if not(self.is_uid_none(uid=uid)):
-            wallet_exist: typing.Union[bool, None] = self.wallet_exist(uid=uid)
+            wallet_exist: typing.Union[bool, None] = self.wallet_exist(organization_id=organization_id, uid=uid)
             if isinstance(wallet_exist, bool):
                 return wallet_exist
             raise DataServiceError(status=500, description='Unable to verify wallet data')
         return False
 
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    async def can_reset_wallet_async(self, uid: typing.Union[None, str]) -> bool:
+    async def can_reset_wallet_async(self, organization_id: typing.Union[str, None], uid: typing.Union[None, str]) -> bool:
         if not(self.is_uid_none(uid=uid)):
-            wallet_exist: typing.Union[bool, None] = await self.wallet_exist_async(uid=uid)
+            wallet_exist: typing.Union[bool, None] = await self.wallet_exist_async(organization_id=organization_id,
+                                                                                   uid=uid)
+
             if isinstance(wallet_exist, bool):
                 return wallet_exist
             raise DataServiceError(status=500, description='Unable to verify wallet data')
@@ -100,9 +107,7 @@ class WalletView(Validator):
                       currency: typing.Union[str, None], paypal_address: typing.Union[str, None],
                       is_org_wallet: bool = False) -> tuple:
 
-        # TODO - refactor the create wallet to include organization_id and also
-        #   to include is_organization account in-case the wallet belongs to an organization
-        if self.can_add_wallet(uid=uid) is True:
+        if self.can_add_wallet(organization_id=organization_id, uid=uid) is True:
             wallet_instance: WalletModel = WalletModel()
             amount_instance: AmountMixin = AmountMixin()
             amount_instance.amount = 0
@@ -123,7 +128,7 @@ class WalletView(Validator):
     @handle_view_errors
     async def create_wallet_async(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None], currency: typing.Union[str, None],
                                   paypal_address: typing.Union[str, None], is_org_wallet: bool = False) -> tuple:
-        if await self.can_add_wallet_async(uid=uid) is True:
+        if await self.can_add_wallet_async(organization_id=organization_id, uid=uid) is True:
             wallet_instance: WalletModel = WalletModel()
             amount_instance: AmountMixin = AmountMixin()
             amount_instance.amount = 0
@@ -174,7 +179,7 @@ class WalletView(Validator):
         paypal_address: typing.Union[str, None] = wallet_data.get("paypal_address")
 
         # TODO update can update wallet to take into account Org Account Roles
-        if self.can_update_wallet(uid=uid) is True:
+        if self.can_update_wallet(organization_id=organization_id, uid=uid) is True:
             wall_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
                                                            WalletModel.uid == uid).get()
 
@@ -200,7 +205,7 @@ class WalletView(Validator):
         currency: typing.Union[str, None] = wallet_data.get('currency')
         paypal_address: typing.Union[str, None] = wallet_data.get("paypal_address")
 
-        if await self.can_update_wallet_async(uid=uid) is True:
+        if await self.can_update_wallet_async(organization_id=organization_id, uid=uid) is True:
             wall_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
                                                            WalletModel.uid == uid).get_async().get_result()
 
@@ -223,7 +228,7 @@ class WalletView(Validator):
         uid: typing.Union[str, None] = wallet_data.get('uid')
         organization_id: typing.Union[str, None] = wallet_data.get('organization_id')
         currency: typing.Union[str, None] = wallet_data.get('currency')
-        if self.can_reset_wallet(uid=uid) is True:
+        if self.can_reset_wallet(organization_id=organization_id, uid=uid) is True:
             wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
                                                              WalletModel.uid == uid).get()
 
@@ -244,7 +249,7 @@ class WalletView(Validator):
         uid: typing.Union[str, None] = wallet_data.get('uid')
         organization_id: typing.Union[str, None] = wallet_data.get('organization_id')
         currency: typing.Union[str, None] = wallet_data.get('currency')
-        if await self.can_reset_wallet_async(uid=uid) is True:
+        if await self.can_reset_wallet_async(organization_id=organization_id, uid=uid) is True:
             wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
                                                              WalletModel.uid == uid).get_async().get_result()
 
@@ -315,8 +320,8 @@ class WalletView(Validator):
     @handle_view_errors
     def wallet_transact(self, organization_id: typing.Union[str, None], uid: str,
                         add: int = None, sub: int = None) -> tuple:
-        # TODO: update can update wallet to take into account organization_id
-        if self.can_update_wallet(uid=uid) is True:
+
+        if self.can_update_wallet(organization_id=organization_id, uid=uid) is True:
             wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
                                                              WalletModel.uid == uid).get()
 
@@ -340,7 +345,7 @@ class WalletView(Validator):
     async def wallet_transact_async(self, organization_id: typing.Union[str, None], uid: str,
                                     add: int = None, sub: int = None) -> tuple:
 
-        if await self.can_update_wallet_async(uid=uid) is True:
+        if await self.can_update_wallet_async(organization_id=organization_id, uid=uid) is True:
             wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
                                                              WalletModel.uid == uid).get_async().get_result()
 
@@ -361,7 +366,7 @@ class WalletView(Validator):
 
     @use_context
     @handle_view_errors
-    def wallet_withdraw_funds(self,organization_id: typing.Union[str, None], uid: str, amount: int) -> tuple:
+    def wallet_withdraw_funds(self, organization_id: typing.Union[str, None], uid: str, amount: int) -> tuple:
         ***REMOVED***
             organization must contain settings for funds withdrawals
             i.e from which paypal account may the withdrawal occur
@@ -372,6 +377,7 @@ class WalletView(Validator):
             await admin approvals,
             cron job must run and process all approved withdrawals
             cron job must retain all the results of the transactions and save on the database
+        :param organization_id:
         :param uid:
         :param amount:
         :return:

@@ -164,7 +164,7 @@ class MembershipsView(Validators):
     def _create_or_update_membership(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
                                      plan_id: typing.Union[str, None], plan_start_date: date) -> tuple:
 
-        if await self.can_add_member_async(organization_id=organization_id, uid=uid, plan_id=plan_id,
+        if self.can_add_member(organization_id=organization_id, uid=uid, plan_id=plan_id,
                                            start_date=plan_start_date) is True:
 
             # can use get to simplify this and make transactions faster
