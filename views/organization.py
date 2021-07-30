@@ -12,7 +12,8 @@ from database.organization import Organization, OrgAccounts, OrgValidators
 
 
 # TODO finish up organization  view
-from utils.utils import create_id
+from main import app_cache
+from utils.utils import create_id, return_ttl, can_cache
 
 
 class OrganizationView(OrgValidators):
@@ -102,11 +103,11 @@ class OrganizationView(OrgValidators):
     def affiliate_count(self, organization_id: typing.Union[str, None], add: typing.Union[int, None] = None,
                         sub: typing.Union[int, None] = None) -> tuple:
         ***REMOVED***
-
-        :param organization_id:
-        :param add: Optional
-        :param sub: Optional
-        :return:
+            Affiliate Count takes either an amount to add to subtract from affiliate not both
+            :param organization_id:
+            :param add: Optional
+            :param sub: Optional
+            :return:
         ***REMOVED***
 
         organization_instance: Organization = Organization.query(Organization.organization_id == organization_id).get()
@@ -163,3 +164,33 @@ class OrganizationView(OrgValidators):
 
         message: str = "Organization does not exist"
         return jsonify({'status': False, 'message': message}), 500
+
+    @use_context
+    @handle_view_errors
+    def total_members(self, organization_id: typing.Union[str, None], add: typing.Union[int, None] = None,
+                      sub: typing.Union[int, None] = None) -> tuple:
+        ***REMOVED***
+            supply either the amount to add to total members or the amount to subtract
+            :param organization_id: 
+            :param add:
+            :param sub:
+            :return:
+        ***REMOVED***
+        organization_instance: Organization = Organization.query(Organization.organization_id == organization_id).get()
+
+        if isinstance(organization_instance, Organization):
+            if isinstance(sub, int):
+                organization_instance.total_members += add
+            elif isinstance(add, int):
+                organization_instance.total_members -= sub
+            else:
+                raise InputError(status=500, description="Please Enter either the amount to add or subtract")
+
+            message: str = "Successfully updated total members on organization"
+            return jsonify({'status': True, 'message': message}), 200
+        message: str = "Unable to update organization"
+        return jsonify({'status': True, 'message': message}), 500
+
+
+
+
