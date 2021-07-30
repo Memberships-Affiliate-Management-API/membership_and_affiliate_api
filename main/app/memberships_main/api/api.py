@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request,current_app, url_for, flash
+from flask import Blueprint, jsonify, request, current_app, url_for, flash
 from database.users import UserModel
 from security.users_authenticator import logged_user
 from views.users import UserView

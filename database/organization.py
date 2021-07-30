@@ -1,3 +1,10 @@
+***REMOVED***
+    ndb. Database Class to handle Organizational Data related
+    to Memberships & Affiliates Management API , the Models will saves
+    the data to GCP DataStore.
+
+    Also Contain all validator classes related to Organizational Classes
+***REMOVED***
 import typing
 from datetime import datetime
 from google.cloud import ndb
@@ -8,6 +15,9 @@ from database.setters import setters
 
 
 class OrgValidators:
+    ***REMOVED***
+        Main Class for Validators related to Organization
+    ***REMOVED***
     def __init__(self) -> None:
         pass
 
@@ -65,6 +75,9 @@ class Organization(ndb.Model):
 
 
 class AuthUserValidators:
+    ***REMOVED***
+        Used to validate users and input data for those accessing the Users View / API
+    ***REMOVED***
     def __init__(self) -> None:
         pass
 
