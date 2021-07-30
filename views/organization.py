@@ -31,6 +31,15 @@ class OrganizationView(OrgValidators):
         ***REMOVED***
         pass
 
+    def can_update_organization(self, uid: typing.Union[str, None], organization_id: typing.Union[str, None]):
+        ***REMOVED***
+            check if user has administrator rights on organization and if organization exist
+        :param uid:
+        :param organization_id:
+        :return:
+        ***REMOVED***
+        pass
+
     def create_org_id(self) -> str:
         organization_id: str = create_id()
         org_instance: Organization = Organization.query(Organization.organization_id == organization_id).get()
@@ -63,3 +72,30 @@ class OrganizationView(OrgValidators):
 
         message: str = "Unable to create organization"
         return jsonify({'status': False, 'message': message}), 500
+
+    @use_context
+    @handle_view_errors
+    def update_organization(self, uid: typing.Union[str, None], organization_id: typing.Union[str, None],
+                            organization_name: typing.Union[str, None], description: typing.Union[str, None]) -> tuple:
+
+        if self.can_update_organization(uid=uid, organization_id=organization_id) is True:
+
+            org_instance: Organization = Organization.query(Organization.organization_id == organization_id).get()
+            if isinstance(org_instance, Organization):
+                org_instance.organization_name = organization_name
+                org_instance.description = description
+                key = org_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+                if key is None:
+                    message: str = "An Unspecified Error has occurred"
+                    return jsonify({'status': False, 'message': message}), 500
+                message: str = "Successfully updated organization"
+                return jsonify({'status': True, 'message': message}), 200
+            message: str = "Unable to update Organization"
+            return jsonify({'status': False, 'message': message}), 500
+
+        message: str = "You are not allowed to edit that organization please contact administrator"
+        return jsonify({'status': False, 'message': message}), 200
+
+
+    def affiliate_count(self, organization_id: typing.Union[str, None], add: int = None, sub: int = None) -> tuple:
+        pass
