@@ -26,6 +26,7 @@ class Organization(ndb.Model):
     owner_uid: str = ndb.StringProperty(validator=setters.set_id)
     organization_id: str = ndb.StringProperty(validator=setters.set_id)
     organization_name: str = ndb.StringProperty(validator=setters.set_string)
+    description: str = ndb.StringProperty(validator=setters.set_string)
     total_affiliates: int = ndb.IntegerProperty(validator=setters.set_number)
     total_paid: AmountMixin = ndb.StructuredProperty(AmountMixin)
     total_members: int = ndb.IntegerProperty(validator=setters.set_number)

@@ -1,10 +1,12 @@
 from google.cloud import ndb
+
+from config import config_instance
 from database.setters import setters
 
 
 class AmountMixin(ndb.Model):
     amount: int = ndb.IntegerProperty(default=0, validator=setters.set_value_amount)
-    currency: str = ndb.StringProperty(validator=setters.set_currency)
+    currency: str = ndb.StringProperty(default=config_instance.CURRENCY, validator=setters.set_currency)
 
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
