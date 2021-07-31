@@ -848,49 +848,48 @@ def plan_data_wrapper(func):
 
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        membership_plan_data = kwargs.get('membership_plan_data')
+        membership_plan_data: typing.Union[dict, None] = kwargs.get('membership_plan_data')
         if not bool(membership_plan_data):
             message: str = "Input is required"
             raise InputError(status=422, description=message)
 
         plan_name: typing.Union[str, None] = membership_plan_data.get('plan_name')
-        if not bool(plan_name.strip()):
+        if not isinstance(plan_name, str) or not bool(plan_name.strip()):
             message: str = "plan name is required"
             raise InputError(status=422, description=message)
 
         description: typing.Union[str, None] = membership_plan_data.get('description')
-        if not bool(description.strip()):
+        if not isinstance(description, str) or not bool(description.strip()):
             message: str = "description is required"
             raise InputError(status=422, description=message)
-
-        schedule_day: typing.Union[int, None] = membership_plan_data.get('schedule_day')
+        # Note if scheduled day is not supplied it will be zero or None
+        schedule_day: typing.Union[int, None] = int(membership_plan_data.get('schedule_day') or 0)
         # NOTE: if schedule_day is None or Zero then this is an Error
         if not bool(schedule_day):
             message: str = "schedule_day is required and cannot be zero or Null"
             raise InputError(status=422, description=message)
 
         schedule_term: typing.Union[str, None] = membership_plan_data.get('schedule_term')
-        if not bool(schedule_term.strip()):
+        if not isinstance(schedule_term, str) or not bool(schedule_term.strip()):
             message: str = "schedule term is required"
             raise InputError(status=422, description=message)
 
         # int(None) avoiding this
         term_payment: int = int(membership_plan_data.get('term_payment') or 0)
-
         registration_amount: int = int(membership_plan_data.get('registration_amount') or 0)
 
         currency: typing.Union[str, None] = membership_plan_data.get('currency')
-        if not bool(currency.strip()):
+        if not isinstance(currency, str) or not bool(currency.strip()):
             message: str = "currency is required"
             raise InputError(status=422, description=message)
 
         organization_id: typing.Union[str, None] = membership_plan_data.get('organization_id')
-        if not bool(organization_id.strip()):
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization is required"
             raise InputError(status=422, description=message)
 
         service_id: typing.Union[str, None] = membership_plan_data.get('service_id')
-        if not bool(service_id.strip()):
+        if not isinstance(service_id, str) or not bool(service_id.strip()):
             message: str = "service or product must be created first before payment plans are created"
             raise InputError(status=error_codes.input_error_code, description=message)
 
@@ -1398,27 +1397,32 @@ def get_coupon_data(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         coupon_data: typing.Union[dict, None] = kwargs.get('coupon_data')
+        # either its dict in which case it may contain our data and we will find out below
+        # or coupon_data is Null in which case it will raise an InputError
         if not bool(coupon_data):
             message: str = "Input is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
         code: typing.Union[str, None] = coupon_data.get('code')
-        if not bool(code):
+        if not isinstance(code, str) or not bool(code.strip()):
             message: str = "coupon code is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        discount: typing.Union[int, None] = int(coupon_data.get('discount'))
+        # Note: this means discount will be zero if not supplied or discount is zero
+        # either zero is an error
+        discount: typing.Union[int, None] = int(coupon_data.get('discount') or 0)
         if not bool(discount):
-            message: str = "discount is required"
+            message: str = "discount is required and cannot be Zero"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        expiration_time: typing.Union[int, None] = int(coupon_data['expiration_time'])
+        # Note: This effectively means if expiration_time is not submitted it will equal zero
+        expiration_time: typing.Union[int, None] = int(coupon_data.get('expiration_time') or 0)
         if not bool(expiration_time):
-            message: str = "expiration_time is required"
+            message: str = "Expiration time cannot be Null or Zero"
             raise InputError(status=error_codes.input_error_code, description=message)
 
         organization_id: typing.Union[str, None] = coupon_data.get("organization_id")
-        if not bool(organization_id):
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "Please specify organization_id"
             raise InputError(status=error_codes.input_error_code, description=message)
 
@@ -1569,10 +1573,13 @@ class CouponsView(Validators):
         ***REMOVED***
         code: typing.Union[str, None] = coupon_data.get("code")
         organization_id: typing.Union[str, None] = coupon_data.get('organization_id')
-        if not bool(code):
-            return jsonify({'status': False, 'message': 'coupon is required'}), 500
-        if not bool(organization_id):
-            return jsonify({'status': False, 'message': 'organization id is required'}), 500
+        if not isinstance(code, str) or not bool(code.strip()):
+            message: str = "coupon code is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         coupon_instance: Coupons = Coupons.query(Coupons.organization_id == organization_id,
                                                  Coupons.code == code).get()
@@ -1580,6 +1587,7 @@ class CouponsView(Validators):
         if isinstance(coupon_instance, Coupons):
             coupon_instance.is_valid = False
             key = coupon_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+
             if not bool(key):
                 message: str = "Unable to cancel coupon"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
@@ -1597,10 +1605,14 @@ class CouponsView(Validators):
         ***REMOVED***
         code: typing.Union[str, None] = coupon_data.get("code")
         organization_id: typing.Union[str, None] = coupon_data.get('organization_id')
-        if not bool(code):
-            return jsonify({'status': False, 'message': 'coupon code is required'}), 500
-        if not bool(organization_id):
-            return jsonify({'status': False, 'message': 'organization_id is required'}), 500
+
+        if not isinstance(code, str) or not bool(code.strip()):
+            message: str = "coupon code is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         coupon_instance: Coupons = Coupons.query(Coupons.organization_id == organization_id,
                                                  Coupons.code == code).get_async().get_result()
