@@ -5,21 +5,25 @@ from werkzeug.exceptions import HTTPException
 class ErrorCodes:
     ***REMOVED***
         definitions of error codes, for errors that can be raised in Memberships & Affiliates Management API
+        this is incase requests are not completed successfully
     ***REMOVED***
     def __init__(self) -> None:
-        self.input_error_code = 422
-        self.data_service_error_code = 512
-        self.un_auth_error_code = 401
-        self.request_error_code = 404
-        self.remote_data_error = 406
-        self.environment_error_code = 506
+        self.input_error_code: int = 422
+        self.data_service_error_code: int = 512
+        self.un_auth_error_code: int = 401
+        self.request_error_code: int = 404
+        self.remote_data_error: int = 406
+        self.environment_error_code: int = 506
 
 
 class StatusCodes:
+    ***REMOVED***
+        a list of status codes to be returned when request was successfully completed
+    ***REMOVED***
     def __init__(self):
-        self.data_not_found_code = 204
-        self.successfully_updated_code = 201
-        self.status_ok_code = 200
+        self.data_not_found_code: int = 204
+        self.successfully_updated_code: int = 201
+        self.status_ok_code: int = 200
 
 
 error_codes: ErrorCodes = ErrorCodes()

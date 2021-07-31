@@ -1518,6 +1518,18 @@ class CouponsView(Validators):
             :param expiration_time: up-datable value indicates the time the coupon code will expire
             :return:  updated coupon
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(code, str) or not bool(code.strip()):
+            message: str = "code is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(expiration_time, int):
+            message: str = "expiration_time is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         if self.can_update_coupon(code=code, expiration_time=expiration_time, discount=discount) is True:
             coupon_instance: Coupons = Coupons.query(Coupons.organization_id == organization_id,
                                                      Coupons.code == code).get()
@@ -1530,16 +1542,18 @@ class CouponsView(Validators):
                 message: str = "Error updating coupon"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-            return jsonify({'status': True, 'message': 'successfully updated coupon'}), 200
-        else:
-            message: str = "Unable to update coupon code"
-            return jsonify({'status': False, 'message': message}), 500
+            return jsonify({'status': True,
+                            'payload': coupon_instance.to_dict(),
+                            'message': 'successfully updated coupon'}), status_codes.successfully_updated_code
+
+        message: str = "You are not authorized to update coupon codes"
+        return jsonify({'status': False, 'message': message}), error_codes.un_auth_error_code
 
     @get_coupon_data
     @use_context
     @handle_view_errors
     async def update_coupon_async(self, organization_id: typing.Union[str, None], code: str, discount: int,
-                                  expiration_time: int) -> tuple:
+                                  expiration_time: typing.Union[int, None] = None) -> tuple:
         ***REMOVED***
             update coupons asynchronously
             :param organization_id:
@@ -1548,6 +1562,18 @@ class CouponsView(Validators):
             :param expiration_time: up-datable value for coupons
             :return:  updated coupon
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(code, str) or not bool(code.strip()):
+            message: str = "code is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(expiration_time, int) or expiration_time < timestamp():
+            message: str = "expiration_time is required and can only be a timestamp greater than now"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         if await self.can_update_coupon_async(organization_id=organization_id, code=code,
                                               expiration_time=expiration_time, discount=discount) is True:
 
@@ -1559,13 +1585,15 @@ class CouponsView(Validators):
             coupon_instance.expiration_time = expiration_time
             key = coupon_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
             if not bool(key):
-                message: str = "Error updating coupon"
+                message: str = "Database Error: Error updating coupon"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-            return jsonify({'status': True, 'message': 'successfully updated coupon'}), 200
-        else:
-            message: str = "Unable to update coupon code"
-            return jsonify({'status': False, 'message': message}), 500
+            return jsonify({'status': True,
+                            'payload': coupon_instance.to_dict(),
+                            'message': 'successfully updated coupon'}), status_codes.status_ok_code
+
+        message: str = "You are not authorized to update coupon codes"
+        return jsonify({'status': False, 'message': message}), error_codes.un_auth_error_code
 
     @use_context
     @handle_view_errors
@@ -1595,9 +1623,13 @@ class CouponsView(Validators):
             if not bool(key):
                 message: str = "Unable to cancel coupon"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
-            return jsonify({'status': True, 'message': 'successfully cancelled coupon code'}), 200
 
-        return jsonify({'status': False, 'message': 'unable to cancel coupon code'}), 500
+            return jsonify({'status': True,
+                            'payload': coupon_instance.to_dict(),
+                            'message': 'successfully cancelled coupon code'}), status_codes.successfully_updated_code
+
+        message: str = "coupon not found: unable to cancel coupon code"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -1627,9 +1659,12 @@ class CouponsView(Validators):
             if not bool(key):
                 message: str = "Unable to cancel coupon"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
-            return jsonify({'status': True, 'message': 'successfully cancelled coupon code'}), 200
+            return jsonify({'status': True,
+                            'payload': coupon_instance.to_dict(),
+                            'message': 'successfully cancelled coupon code'}), status_codes.successfully_updated_code
 
-        return jsonify({'status': False, 'message': 'unable to cancel coupon code'}), 500
+        message: str = "coupon not found: unable to cancel coupon code"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -1640,107 +1675,192 @@ class CouponsView(Validators):
         :param organization_id:
         :return:
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         coupons_list: typing.List[Coupons] = Coupons.query(Coupons.organization_id == organization_id).fetch()
 
         payload: typing.List[dict] = [coupon.to_dict() for coupon in coupons_list]
-        message: str = "coupons successfully created"
-        return jsonify({'status': True, 'payload': payload, 'message': message}), 200
+        if len(payload) > 0:
+            message: str = "coupons successfully created"
+            return jsonify({'status': True, 'payload': payload, 'message': message}), status_codes.status_ok_code
+
+        message: str = "coupons not found"
+        return jsonify({'status': True, 'payload': payload, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def get_all_coupons_async(self, organization_id: typing.Union[str, None]) -> tuple:
+        ***REMOVED***
+            retrieve all coupons
+        :param organization_id:
+        :return:
+        ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         coupons_list: typing.List[Coupons] = Coupons.query(
             Coupons.organization_id == organization_id).fetch_async().get_result()
-
         payload: typing.List[dict] = [coupon.to_dict() for coupon in coupons_list]
-        message: str = "coupons successfully created"
-        return jsonify({'status': True, 'payload': payload, 'message': message}), 200
+        if len(payload) > 0:
+            message: str = "coupons successfully retrieved"
+            return jsonify({'status': True, 'payload': payload, 'message': message}), status_codes.status_ok_code
+
+        message: str = "coupons not found"
+        return jsonify({'status': True, 'payload': payload, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_valid_coupons(self, organization_id: typing.Union[str, None]) -> tuple:
+        ***REMOVED***
+            returns a list of expired coupon codes
+        :param organization_id:
+        :return:
+        ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         coupons_list: typing.List[Coupons] = Coupons.query(
             Coupons.organization_id == organization_id, Coupons.is_valid == True).fetch()
-
         payload: typing.List[dict] = [coupon.to_dict() for coupon in coupons_list]
-        message: str = "coupons successfully created"
-        return jsonify({'status': True, 'payload': payload, 'message': message}), 200
+
+        if len(payload) > 0:
+            message: str = "valid successfully retrieved"
+            return jsonify({'status': True, 'payload': payload, 'message': message}), status_codes.status_ok_code
+
+        message: str = "valid coupon codes not found"
+        return jsonify({'status': True, 'payload': payload, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def get_valid_coupons_async(self, organization_id: typing.Union[str, None]) -> tuple:
+        ***REMOVED***
+            returns a list of valid coupon codes
+        :param organization_id:
+        :return:
+        ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         coupons_list: typing.List[Coupons] = Coupons.query(Coupons.organization_id == organization_id,
                                                            Coupons.is_valid == True).fetch_async().get_result()
 
         payload: typing.List[dict] = [coupon.to_dict() for coupon in coupons_list]
-        message: str = "coupons successfully created"
-        return jsonify({'status': True, 'payload': payload, 'message': message}), 200
+        if len(payload) > 0:
+            message: str = "coupons successfully retrieved"
+            return jsonify({'status': True, 'payload': payload, 'message': message}), status_codes.status_ok_code
+
+        message: str = "coupons not found"
+        return jsonify({'status': True, 'payload': payload, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_expired_coupons(self, organization_id: typing.Union[str, None]) -> tuple:
+        ***REMOVED***
+            returns a list of expired coupon codes
+        :param organization_id:
+        :return:
+        ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         coupons_list: typing.List[Coupons] = Coupons.query(Coupons.organization_id == organization_id,
                                                            Coupons.expiration_time < timestamp()).fetch()
 
         payload: typing.List[dict] = [coupon.to_dict() for coupon in coupons_list]
-        message: str = "coupons successfully created"
-        return jsonify({'status': True, 'payload': payload, 'message': message}), 200
+        if len(payload) > 0:
+            message: str = "expired coupons successfully retrieved"
+            return jsonify({'status': True, 'payload': payload, 'message': message}), status_codes.status_ok_code
+
+        message: str = "expired coupons not found"
+        return jsonify({'status': True, 'payload': payload, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def get_expired_coupons_async(self, organization_id: typing.Union[str, None]) -> tuple:
+        ***REMOVED***
+            returns a list of expired coupon codes
+        :param organization_id:
+        :return:
+        ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         coupons_list: typing.List[Coupons] = Coupons.query(
             Coupons.organization_id == organization_id,
             Coupons.expiration_time < timestamp()).fetch_async().get_result()
 
         payload: typing.List[dict] = [coupon.to_dict() for coupon in coupons_list]
-        message: str = "coupons successfully created"
-        return jsonify({'status': True, 'payload': payload, 'message': message}), 200
+        if len(payload) > 0:
+            message: str = "successfully fetched expired coupon codes"
+            return jsonify({'status': True, 'payload': payload, 'message': message}), status_codes.status_ok_code
+        message: str = "expired coupons not found"
+        return jsonify({'status': True, 'payload': payload, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_coupon(self, coupon_data: dict) -> tuple:
+        ***REMOVED***
+            returns coupon code data required parameters are organization_id and coupon_id
+        :param coupon_data: dict containing code and organization_id as required parameters
+        :return: coupon_data
+        ***REMOVED***
         code: typing.Union[str, None] = coupon_data.get("code")
-        if not bool(code):
-            return jsonify({'status': False, 'message': 'coupon is required'}), 500
+
+        if not isinstance(code, str) or not bool(code.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         organization_id: typing.Union[str, None] = coupon_data.get('organization_id')
-        if not bool(organization_id):
-            return jsonify({'status': False, 'message': 'organization_id is required'}), 500
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         coupon_instance: Coupons = Coupons.query(Coupons.organization_id == organization_id,
                                                  Coupons.code == code).get()
 
         if isinstance(coupon_instance, Coupons):
             message: str = "Coupon has been found"
-            return jsonify({'status': True, 'message': message, 'payload': coupon_instance.to_dict()}), 200
+            return jsonify({'status': True, 'message': message,
+                            'payload': coupon_instance.to_dict()}), status_codes.status_ok_code
 
-        message: str = "Invalid Coupon Code"
-        return jsonify({'status': True, 'message': message}), 500
+        message: str = "Invalid Coupon Code - Or Coupon not found"
+        return jsonify({'status': True, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def get_coupon_async(self, coupon_data: dict) -> tuple:
         code: typing.Union[str, None] = coupon_data.get("code")
+
         if not bool(code):
-            return jsonify({'status': False, 'message': 'coupon is required'}), 500
+            message: str = "Coupon Code is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         organization_id: typing.Union[str, None] = coupon_data.get('organization_id')
-        if not bool(organization_id):
-            return jsonify({'status': False, 'message': 'organization_id is required'}), 500
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = 'organization_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         coupon_instance: Coupons = Coupons.query(Coupons.organization_id == organization_id,
                                                  Coupons.code == code).get_async().get_result()
 
         if isinstance(coupon_instance, Coupons):
-            message: str = "Coupon has been found"
-            return jsonify({'status': True, 'message': message, 'payload': coupon_instance.to_dict()}), 200
-        message: str = "Invalid Coupon Code"
-        return jsonify({'status': True, 'message': message}), 500
+            message: str = "Coupon found"
+            return jsonify({'status': True,
+                            'message': message, 'payload': coupon_instance.to_dict()}), status_codes.status_ok_code
+
+        message: str = "Invalid Coupon Code - Or Coupon Code not found"
+        return jsonify({'status': True, 'message': message}), status_codes.data_not_found_code
