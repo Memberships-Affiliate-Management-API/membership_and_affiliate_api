@@ -326,15 +326,15 @@ class MembershipsView(Validators):
         :return:
         ***REMOVED***
 
-        if not bool(organization_id.strip()):
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "Organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        if not bool(uid.strip()):
+        if not isinstance(uid, str) or not bool(uid.strip()):
             message: str = "uid is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        if not bool(status.strip()):
+        if not isinstance(status, str) or not bool(status.strip()):
             message: str = "status is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
@@ -364,19 +364,19 @@ class MembershipsView(Validators):
         :param dest_plan_id:
         :return:
         ***REMOVED***
-        if not bool(organization_id):
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        if not bool(uid):
+        if not isinstance(uid, str) or not bool(uid.strip()):
             message: str = "user id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        if not bool(origin_plan_id):
+        if not isinstance(origin_plan_id, str) or not bool(origin_plan_id.strip()):
             message: str = "origin_plan_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        if not bool(dest_plan_id):
+        if not isinstance(dest_plan_id, str) or not bool(dest_plan_id.strip()):
             message: str = "dest_plan_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
@@ -408,19 +408,19 @@ class MembershipsView(Validators):
     async def change_membership_async(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
                                       origin_plan_id: typing.Union[str, None], dest_plan_id: str) -> tuple:
 
-        if not bool(organization_id):
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        if not bool(uid):
+        if not isinstance(uid, str) or not bool(uid.strip()):
             message: str = "user id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        if not bool(origin_plan_id):
+        if not isinstance(origin_plan_id, str) or not bool(origin_plan_id.strip()):
             message: str = "origin_plan_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        if not bool(dest_plan_id):
+        if not isinstance(dest_plan_id, str) or not bool(dest_plan_id.strip()):
             message: str = "dest_plan_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
@@ -481,15 +481,15 @@ class MembershipsView(Validators):
         :param status:
         :return:
         ***REMOVED***
-        if not bool(organization_id.strip()):
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "Organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        if not bool(plan_id.strip()):
+        if not isinstance(plan_id, str) or not bool(plan_id.strip()):
             message: str = "plan_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        if not bool(status.strip()):
+        if not isinstance(status, str) or not bool(status.strip()):
             message: str = "status is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
@@ -520,15 +520,15 @@ class MembershipsView(Validators):
         :param status:
         :return:
         ***REMOVED***
-        if not bool(organization_id.strip()):
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "Organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        if not bool(plan_id.strip()):
+        if not isinstance(plan_id, str) or not bool(plan_id.strip()):
             message: str = "plan_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        if not bool(status.strip()):
+        if not isinstance(status, str) or not bool(status.strip()):
             message: str = "status is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
@@ -555,15 +555,13 @@ class MembershipsView(Validators):
         :param status: payment status
         :return:
         ***REMOVED***
-        if not bool(organization_id.strip()):
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "Organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-
-        if not bool(status.strip()):
+        if not isinstance(status, str) or not bool(status.strip()):
             message: str = "status is required"
             raise InputError(status=error_codes.input_error_code, description=message)
-
 
         membership_list: typing.List[Memberships] = Memberships.query(Memberships.organization_id == organization_id,
                                                                       Memberships.status == status).fetch()
@@ -587,15 +585,13 @@ class MembershipsView(Validators):
         :param status: payment status
         :return:
         ***REMOVED***
-        if not bool(organization_id.strip()):
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "Organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-
-        if not bool(status.strip()):
+        if not isinstance(status, str) or not bool(status.strip()):
             message: str = "status is required"
             raise InputError(status=error_codes.input_error_code, description=message)
-
 
         membership_list: typing.List[Memberships] = Memberships.query(
             Memberships.organization_id == organization_id, Memberships.status == status).fetch_async().get_result()
@@ -616,8 +612,14 @@ class MembershipsView(Validators):
         ***REMOVED***
             return all members of a plan
         ***REMOVED***
-        if not isinstance(plan_id, str) or (not bool(plan_id)):
-            return jsonify({'status': False, 'message': 'plan_id is required'}), 500
+        if not isinstance(plan_id, str) or not bool(plan_id.strip()):
+            message: str = "plan_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         membership_list: typing.List[Memberships] = Memberships.query(Memberships.organization_id == organization_id,
                                                                       Memberships.plan_id == plan_id).fetch()
 
@@ -626,7 +628,7 @@ class MembershipsView(Validators):
             message: str = 'successfully fetched members'
             return jsonify({'status': True, 'payload': response_data, 'message': message}), 200
         else:
-            message: str = "Unable to find members of plan {}"
+            message: str = "Unable to find members of plan"
             return jsonify({'status': False, 'message': message}), 500
 
     @use_context
@@ -637,8 +639,9 @@ class MembershipsView(Validators):
         ***REMOVED***
             return all members of a plan
         ***REMOVED***
-        if not isinstance(plan_id, str) or (not bool(plan_id)):
-            return jsonify({'status': False, 'message': 'plan_id is required'}), 500
+        if not isinstance(plan_id, str) or not bool(plan_id.strip()):
+            message: str = "plan_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         membership_list: typing.List[Memberships] = Memberships.query(
             Memberships.organization_id == organization_id, Memberships.plan_id == plan_id).fetch_async().get_result()
@@ -659,8 +662,9 @@ class MembershipsView(Validators):
         ***REMOVED***
             return all members of a plan
         ***REMOVED***
-        if not isinstance(plan_id, str) or (not bool(plan_id)):
-            return jsonify({'status': False, 'message': 'plan_id is required'}), 500
+        if not isinstance(plan_id, str) or not bool(plan_id.strip()):
+            message: str = "plan_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         membership_list: typing.List[Memberships] = Memberships.query(
             Memberships.organization_id == organization_id, Memberships.plan_id == plan_id).fetch_async().get_result()
@@ -680,6 +684,14 @@ class MembershipsView(Validators):
         ***REMOVED***
             returns user membership details
         ***REMOVED***
+        if not isinstance(organization_id, str) or bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(uid, str) or not bool(uid.strip()):
+            message: str = "uid is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         member_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                          Memberships.uid == uid).get()
 
