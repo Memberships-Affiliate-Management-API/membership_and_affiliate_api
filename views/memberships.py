@@ -3,7 +3,7 @@ import typing
 from google.api_core.exceptions import RetryError, Aborted
 from flask import jsonify, current_app
 from datetime import datetime, date
-from config.exceptions import DataServiceError, InputError, error_codes
+from config.exceptions import DataServiceError, InputError, error_codes, status_codes, UnAuthenticatedError
 from database.memberships import MembershipPlans, AccessRights, Memberships, Coupons
 from database.memberships import PlanValidators as PlanValid
 from database.mixins import AmountMixin
@@ -157,7 +157,7 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
 
         if isinstance(coupon_exist, bool) and isinstance(expiration_valid, bool) and isinstance(discount_valid, bool):
             return coupon_exist and expiration_valid and discount_valid
-        message: str = "Unable to verify input data"
+        message: str = "Unable to verify input data - could be due to database access errors - contact your admin"
         raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
 
@@ -201,11 +201,10 @@ class MembershipsView(Validators):
                 message: str = "Unable to save membership instance to database, please try again"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
             return jsonify({'status': True, 'message': 'successfully updated membership',
-                            'payload': membership_instance.to_dict()}), 200
+                            'payload': membership_instance.to_dict()}), status_codes.successfully_updated_code
 
-        message: str = ***REMOVED***Unable to create or update memberships this may be 
-        due to errors in database connections or duplicate data***REMOVED***
-        return jsonify({'status': False, 'message': message}), 500
+        message: str = ***REMOVED***You are not authorized to perform this action consider contacting your admin***REMOVED***
+        raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
     @use_context
     @handle_view_errors
@@ -348,9 +347,10 @@ class MembershipsView(Validators):
                 message: str = "Unable to save membership instance to database, please try again"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
             message: str = "Successfully update membership status"
-            return jsonify({'status': True, 'payload': membership_instance.to_dict(), 'message': message}), 200
+            return jsonify({'status': True, 'payload': membership_instance.to_dict(),
+                            'message': message}), status_codes.successfully_updated_code
         message: str = "Memberships record not found"
-        return jsonify({'status': True, 'payload': membership_instance.to_dict(), 'message': message}), 200
+        return jsonify({'status': True, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -399,9 +399,9 @@ class MembershipsView(Validators):
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
         else:
             message: str = "Unable to change membership, cannot find original membership record"
-            return jsonify({'status': False, 'message': message}), 500
+            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
         return jsonify({'status': True, 'message': 'successfully updated membership',
-                        'payload': membership_instance.to_dict()}), 200
+                        'payload': membership_instance.to_dict()}), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
@@ -443,9 +443,9 @@ class MembershipsView(Validators):
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
         else:
             message: str = "Unable to change membership, cannot find original membership record"
-            return jsonify({'status': False, 'message': message}), 500
+            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
         return jsonify({'status': True, 'message': 'successfully updated membership',
-                        'payload': membership_instance.to_dict()}), 200
+                        'payload': membership_instance.to_dict()}), status_codes.successfully_updated_code
 
     # noinspection PyUnusedLocal
     @use_context
@@ -455,7 +455,7 @@ class MembershipsView(Validators):
         ***REMOVED***
             just send a request to the email service to send emails
         ***REMOVED***
-        return "Ok", 200
+        return "Ok", status_codes.status_ok_code
 
     # noinspection PyUnusedLocal
     @use_context
@@ -466,7 +466,7 @@ class MembershipsView(Validators):
             just send a request to the email service to send emails
         ***REMOVED***
         # TODO- complete this and add email sending capability
-        return "Ok", 200
+        return "Ok", status_codes.status_ok_code
 
     @use_context
     @handle_view_errors
@@ -500,10 +500,10 @@ class MembershipsView(Validators):
         if isinstance(membership_list, list) and len(membership_list) > 0:
             response_data: typing.List[dict] = [member.to_dict() for member in membership_list]
             message: str = 'successfully fetched members'
-            return jsonify({'status': True, 'payload': response_data, 'message': message}), 200
+            return jsonify({'status': True, 'payload': response_data, 'message': message}), status_codes.status_ok_code
         else:
             message: str = "Unable to find plan members whose payment status is {}".format(status)
-            return jsonify({'status': False, 'message': message}), 500
+            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -539,10 +539,10 @@ class MembershipsView(Validators):
         if isinstance(membership_list, list) and len(membership_list) > 0:
             response_data: typing.List[dict] = [member.to_dict() for member in membership_list]
             message: str = 'successfully fetched members'
-            return jsonify({'status': True, 'payload': response_data, 'message': message}), 200
+            return jsonify({'status': True, 'payload': response_data, 'message': message}), status_codes.status_ok_code
         else:
             message: str = "Unable to find plan members whose payment status is {}".format(status)
-            return jsonify({'status': False, 'message': message}), 500
+            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -569,10 +569,10 @@ class MembershipsView(Validators):
         if isinstance(membership_list, list) and len(membership_list) > 0:
             response_data: typing.List[dict] = [member.to_dict() for member in membership_list]
             message: str = 'successfully fetched members'
-            return jsonify({'status': True, 'payload': response_data, 'message': message}), 200
+            return jsonify({'status': True, 'payload': response_data, 'message': message}), status_codes.status_ok_code
         else:
             message: str = "Unable to find plan members whose payment status is {}".format(status)
-            return jsonify({'status': False, 'message': message}), 500
+            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -599,10 +599,10 @@ class MembershipsView(Validators):
         if isinstance(membership_list, list) and len(membership_list) > 0:
             response_data: typing.List[dict] = [member.to_dict() for member in membership_list]
             message: str = 'successfully fetched members'
-            return jsonify({'status': True, 'payload': response_data, 'message': message}), 200
+            return jsonify({'status': True, 'payload': response_data, 'message': message}), status_codes.status_ok_code
         else:
             message: str = "Unable to find plan members whose payment status is {}".format(status)
-            return jsonify({'status': False, 'message': message}), 500
+            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -626,10 +626,10 @@ class MembershipsView(Validators):
         if isinstance(membership_list, list) and len(membership_list) > 0:
             response_data: typing.List[dict] = [member.to_dict() for member in membership_list]
             message: str = 'successfully fetched members'
-            return jsonify({'status': True, 'payload': response_data, 'message': message}), 200
+            return jsonify({'status': True, 'payload': response_data, 'message': message}), status_codes.status_ok_code
         else:
             message: str = "Unable to find members of plan"
-            return jsonify({'status': False, 'message': message}), 500
+            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -649,10 +649,10 @@ class MembershipsView(Validators):
         if isinstance(membership_list, list) and len(membership_list) > 0:
             response_data: typing.List[dict] = [member.to_dict() for member in membership_list]
             message: str = 'successfully fetched members'
-            return jsonify({'status': True, 'payload': response_data, 'message': message}), 200
+            return jsonify({'status': True, 'payload': response_data, 'message': message}), status_codes.status_ok_code
         else:
             message: str = "Unable to find members of plan {}"
-            return jsonify({'status': False, 'message': message}), 500
+            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -672,10 +672,10 @@ class MembershipsView(Validators):
         if isinstance(membership_list, list) and len(membership_list) > 0:
             response_data: typing.List[dict] = [member.to_dict() for member in membership_list]
             message: str = 'successfully fetched members'
-            return jsonify({'status': True, 'payload': response_data, 'message': message}), 200
+            return jsonify({'status': True, 'payload': response_data, 'message': message}), status_codes.status_ok_code
         else:
             message: str = "Unable to find members of plan {}"
-            return jsonify({'status': False, 'message': message}), 500
+            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -697,9 +697,11 @@ class MembershipsView(Validators):
 
         if isinstance(member_instance, Memberships):
             return jsonify(
-                {'status': True, 'payload': member_instance.to_dict(), 'message': 'successfully fetched members'}), 200
+                {'status': True, 'payload': member_instance.to_dict(),
+                 'message': 'successfully fetched members'}), status_codes.status_ok_code
         else:
-            return jsonify({'status': False, 'message': 'user does not have any membership plan'}), 500
+            return jsonify({'status': False,
+                            'message': 'user does not have any membership plan'}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -715,10 +717,11 @@ class MembershipsView(Validators):
 
         if isinstance(member_instance, Memberships):
             return jsonify(
-                {'status': True, 'payload': member_instance.to_dict(), 'message': 'successfully fetched members'}), 200
+                {'status': True, 'payload': member_instance.to_dict(),
+                 'message': 'successfully fetched members'}), status_codes.status_ok_code
         else:
             message: str = 'user does not have any membership plan'
-            return jsonify({'status': False, 'message': message}), 500
+            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -738,7 +741,7 @@ class MembershipsView(Validators):
 
             if not bool(membership_plan_instance):
                 message: str = 'could not find plan associate with the plan_id'
-                return jsonify({'status': False, 'message': message}), 500
+                return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
             if bool(membership_plan_instance.term_payment_amount) and bool(
                     membership_plan_instance.registration_amount):
@@ -746,10 +749,11 @@ class MembershipsView(Validators):
                     'term_payment_amount': membership_plan_instance.term_payment_amount.to_dict(),
                     'registration_amount': membership_plan_instance.registration_amount.to_dict()}
                 message: str = 'successfully returned payment details'
-                return jsonify({'status': True, 'payload': amount_data, 'message': message}), 200
+                return jsonify({'status': True, 'payload': amount_data,
+                                'message': message}), status_codes.status_ok_code
 
         message: str = 'unable to locate membership details'
-        return jsonify({'status': False, 'message': message}), 500
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -771,7 +775,7 @@ class MembershipsView(Validators):
 
             if not bool(membership_plan_instance):
                 message: str = 'could not find plan associate with the plan_id'
-                return jsonify({'status': False, 'message': message}), 500
+                return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
             if bool(membership_plan_instance.term_payment_amount) and bool(
                     membership_plan_instance.registration_amount):
@@ -779,10 +783,10 @@ class MembershipsView(Validators):
                     'term_payment_amount': membership_plan_instance.term_payment_amount.to_dict(),
                     'registration_amount': membership_plan_instance.registration_amount.to_dict()}
                 message: str = 'successfully returned payment details'
-                return jsonify({'status': True, 'payload': amount_data, 'message': message}), 200
+                return jsonify({'status': True, 'payload': amount_data, 'message': message}), status_codes.status_ok_code
 
         message: str = 'unable to locate membership details'
-        return jsonify({'status': False, 'message': message}), 500
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors

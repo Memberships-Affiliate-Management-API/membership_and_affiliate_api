@@ -15,7 +15,15 @@ class ErrorCodes:
         self.environment_error_code = 506
 
 
+class StatusCodes:
+    def __init__(self):
+        self.data_not_found_code = 204
+        self.successfully_updated_code = 201
+        self.status_ok_code = 200
+
+
 error_codes: ErrorCodes = ErrorCodes()
+status_codes: StatusCodes = StatusCodes()
 
 
 class DataServiceError(HTTPException):
