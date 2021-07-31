@@ -15,6 +15,9 @@ from config.use_context import use_context
 # Dont Edit Just Watch can you see this
 
 class Validator(ValidAffiliate, ValidRecruit, ValidEarnings):
+    ***REMOVED***
+        Affiliates View Validators,
+    ***REMOVED***
 
     def __init__(self):
         super(Validator, self).__init__()
@@ -45,7 +48,9 @@ class AffiliatesView(Validator):
     @handle_view_errors
     def register_affiliate(self, affiliate_data: dict) -> tuple:
         ***REMOVED***
-            Register new affiliate
+            Register new affiliate, affiliate_data must contain the uid of the affiliate
+            being recruited and organization_id of the organization recruiting the affiliate.
+
         ***REMOVED***
         uid: typing.Union[None, str] = affiliate_data.get('uid')
         organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
@@ -96,8 +101,15 @@ class AffiliatesView(Validator):
     @handle_view_errors
     def delete_affiliate(self, affiliate_data: dict) -> tuple:
         ***REMOVED***
-            delete affiliate
+            the function soft delete an affiliate record.
+
+            affiliate_id: is the id of the affiliate to be marked as deletedItem
+            organization_id: is the id of the organization from which the affiliate is to be deleted
+
+            :param affiliate_data: dict containing affiliate_id and organization_id
+            :return: tuple containing the record of the deleted affiliate
         ***REMOVED***
+
         affiliate_id: typing.Union[None, str] = affiliate_data.get('affiliate_id')
         organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
 
@@ -122,8 +134,13 @@ class AffiliatesView(Validator):
     @handle_view_errors
     def mark_active(self, affiliate_data: dict, is_active: bool) -> tuple:
         ***REMOVED***
-            mark a specific affiliate as active or not active
+            affiliate_id of the affiliate to be marked as active.
+            this action will not have an effect if the affiliate has been soft-deleted
+        :param affiliate_data: contains affiliate_id and organization_id
+        :param is_active:
+        :return:
         ***REMOVED***
+
         affiliate_id: typing.Union[None, str] = affiliate_data.get('affiliate_id')
         organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
 
@@ -131,10 +148,15 @@ class AffiliatesView(Validator):
             return jsonify({'status': False, 'message': 'affiliate_id is required'}), 500
         if not isinstance(is_active, bool):
             raise ValueError("is_active is required and can only be a boolean")
+
         affiliate_instance: Affiliates = Affiliates.query(Affiliates.organization_id == organization_id,
                                                           Affiliates.affiliate_id == affiliate_id).get()
 
         if isinstance(affiliate_instance, Affiliates):
+            if affiliate_instance.is_deleted and is_active:
+                message: str = "cannot activate an affiliate if the affiliate has been deleted"
+                return jsonify({'status': False, 'message': message}), 200
+
             affiliate_instance.is_active = is_active
             key = affiliate_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             if key is None:
@@ -151,7 +173,9 @@ class AffiliatesView(Validator):
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_affiliate(self, affiliate_data: dict) -> tuple:
         ***REMOVED***
-            with affiliate_id or uid return affiliate
+            obtains a record of one affiliate from the store.
+        :param affiliate_data: contains affiliate_id and organization_id the affiliate must belong to the organization
+        :return: response contain affiliate record
         ***REMOVED***
         affiliate_id: typing.Union[None, str] = affiliate_data.get('affiliate_id')
         uid: typing.Union[None, str] = affiliate_data.get('uid')
@@ -178,7 +202,9 @@ class AffiliatesView(Validator):
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_all_affiliates(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
-            return all affiliates
+            returns a list of all affiliates that belongs to the organization
+            :param organization_id: the organization id to return affiliates off
+            :return: response containing the list of affiliates as payload
         ***REMOVED***
         affiliates_list: typing.List[Affiliates] = Affiliates.query(
             Affiliates.organization_id == organization_id).fetch()
