@@ -55,8 +55,11 @@ class AffiliatesView(Validator):
         uid: typing.Union[None, str] = affiliate_data.get('uid')
         organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
 
-        if (uid is None) or (uid == ""):
+        if not bool(uid.strip()):
             return jsonify({'status': False, 'message': 'user id cannot be Null'}), 500
+        if not bool(organization_id.strip()):
+            return jsonify({'status': False, 'message': 'organization_id cannot Be Null'}), 500
+
         if self.can_register_affiliate(organization_id=organization_id, uid=uid) is True:
             affiliate_instance: Affiliates = Affiliates(organization_id=organization_id, affiliate_id=create_id(),
                                                         uid=uid)
@@ -79,8 +82,11 @@ class AffiliatesView(Validator):
         affiliate_id: typing.Union[str, None] = affiliate_data.get('affiliate_id')
         organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
 
-        if (affiliate_id is None) or (affiliate_id == ""):
+        if not bool(affiliate_id.strip()):
             return jsonify({'status': False, 'message': 'affiliate_id is required'}), 500
+
+        if not bool(organization_id.strip()):
+            return jsonify({'status': False, 'message': 'organization_id is required'}), 500
 
         affiliate_instance: Affiliates = Affiliates.query(Affiliates.organization_id == organization_id,
                                                           Affiliates.affiliate_id == affiliate_id).get()
@@ -88,7 +94,7 @@ class AffiliatesView(Validator):
         if isinstance(affiliate_instance, Affiliates):
             affiliate_instance.total_recruits += add
             key = affiliate_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-            if key is None:
+            if not bool(key):
                 message: str = "Something went wrong while updating affiliate"
                 raise DataServiceError(status=500, description=message)
             return jsonify({'status': True,
@@ -113,15 +119,19 @@ class AffiliatesView(Validator):
         affiliate_id: typing.Union[None, str] = affiliate_data.get('affiliate_id')
         organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
 
-        if (affiliate_id is None) or (affiliate_id == ""):
+        if not bool(organization_id.strip()):
+            return jsonify({'status': False, 'message': 'organization_id cannot be Null'}), 500
+
+        if not bool(affiliate_id.strip()):
             return jsonify({'status': False, 'message': 'affiliate_id is required'}), 500
+
         affiliate_instance: Affiliates = Affiliates.query(Affiliates.organization_id == organization_id,
                                                           Affiliates.affiliate_id == affiliate_id).get()
         if isinstance(affiliate_instance, Affiliates):
             affiliate_instance.is_active = False
             affiliate_instance.is_deleted = True
             key = affiliate_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-            if key is None:
+            if not bool(key):
                 message: str = 'something went wrong while deleting affiliate'
                 raise DataServiceError(status=500, description=message)
             return jsonify({'status': True,
@@ -144,8 +154,11 @@ class AffiliatesView(Validator):
         affiliate_id: typing.Union[None, str] = affiliate_data.get('affiliate_id')
         organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
 
-        if (affiliate_id is None) or (affiliate_id == ""):
+        if not bool(affiliate_id.strip()):
             return jsonify({'status': False, 'message': 'affiliate_id is required'}), 500
+        if not bool(organization_id.strip()):
+            return jsonify({'status': False, 'message': 'organization_id id required'}), 500
+
         if not isinstance(is_active, bool):
             raise ValueError("is_active is required and can only be a boolean")
 
@@ -159,7 +172,7 @@ class AffiliatesView(Validator):
 
             affiliate_instance.is_active = is_active
             key = affiliate_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-            if key is None:
+            if not bool(key):
                 message: str = "An Unknown Error occurred while trying to mark affiliate as in-active"
                 raise DataServiceError(status=500, description=message)
             return jsonify({'status': True, 'message': 'successfully marked affiliate as inactive',
@@ -181,9 +194,13 @@ class AffiliatesView(Validator):
         uid: typing.Union[None, str] = affiliate_data.get('uid')
         organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
 
-        if (uid is None) and (affiliate_id is None):
+        if not bool(affiliate_id):
             return jsonify({'status': False, 'message': 'uid or affiliate_id is required to fetch affiliate'}), 500
-        if uid is not None:
+
+        if not bool(organization_id.strip()):
+            return jsonify({'status': False, 'message': 'organization_id is required'}), 500
+
+        if bool(uid.strip()):
             affiliate_instance: Affiliates = Affiliates.query(Affiliates.organization_id == organization_id,
                                                               Affiliates.uid == uid).get()
         else:
@@ -255,8 +272,11 @@ class AffiliatesView(Validator):
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_deleted_affiliates(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
-            return affiliates who are not active
+            return deleted affiliates by organization_id
+        :param organization_id:
+        :return: response containing the list of affiliates who are deleted
         ***REMOVED***
+
         affiliates_list: typing.List[Affiliates] = Affiliates.query(
             Affiliates.organization_id == organization_id,
             Affiliates.is_deleted == True).fetch()
@@ -271,7 +291,9 @@ class AffiliatesView(Validator):
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_not_deleted_affiliates(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
-            return affiliates who are not active
+            returns a list of affiliates which are not deleted by  ORGANIZATION_ID
+            :param : organization_id: the organization to return deleted affiliates from
+            :return : response containing the list of deleted affiliates
         ***REMOVED***
         affiliates_list: typing.List[Affiliates] = Affiliates.query(
             Affiliates.organization_id == organization_id,
@@ -287,6 +309,7 @@ class AffiliatesView(Validator):
 # noinspection DuplicatedCode
 class RecruitsView(Validator):
     ***REMOVED***
+        View Manager for Recruits
         Used by affiliates to register newly recruited members
     ***REMOVED***
 
@@ -306,12 +329,12 @@ class RecruitsView(Validator):
         referrer_uid: typing.Union[None, str] = recruit_data.get('referrer_uid')
         organization_id: typing.Union[str, None] = recruit_data.get('organization_id')
 
-        if (referrer_uid is None) or (referrer_uid == ""):
+        if not bool(referrer_uid.strip()):
             return jsonify({'status': False, 'message': 'referrer uid is required'}), 200
 
         recruit_instance: Recruits = Recruits(organization_id=organization_id, affiliate_id=create_id(), referrer_uid=referrer_uid)
         key = recruit_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-        if key is None:
+        if not bool(key):
             message: str = "An Error occurred while adding new recruit"
             raise DataServiceError(status=500, description=message)
         return jsonify({'status': True, 'message': 'Successfully created new recruit',
@@ -330,7 +353,7 @@ class RecruitsView(Validator):
         affiliate_id: typing.Union[str, None] = recruit_data.get('affiliate_id')
         organization_id: typing.Union[str, None] = recruit_data.get('organization_id')
 
-        if (affiliate_id is None) or (affiliate_id == ""):
+        if not bool(affiliate_id.strip()):
             return jsonify({'status': False, 'message': 'affiliate_id is required'}), 500
 
         recruits_list: typing.List[Recruits] = Recruits.query(Recruits.organization_id == organization_id,
@@ -358,7 +381,7 @@ class RecruitsView(Validator):
         affiliate_id: typing.Union[str, None] = recruit_data.get('affiliate_id')
         organization_id: typing.Union[str, None] = recruit_data.get('organization_id')
 
-        if (affiliate_id is None) or (affiliate_id == ""):
+        if not bool(affiliate_id.strip()):
             return jsonify({'status': False, 'message': 'affiliate_id is required'}), 500
 
         if not isinstance(is_active, bool):
@@ -371,7 +394,7 @@ class RecruitsView(Validator):
             recruits_instance: Recruits = recruits_list[0]
             recruits_instance.is_active = is_active
             key = recruits_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-            if key is None:
+            if not bool(key):
                 message: str = "An Error occurred while changing recruit active status"
                 raise DataServiceError(status=500, description=message)
             return jsonify({'status': True, 'message': 'Successfully deleted recruit',
@@ -387,7 +410,7 @@ class RecruitsView(Validator):
         affiliate_id: typing.Union[str, None] = recruit_data.get('affiliate_id')
         organization_id: typing.Union[str, None] = recruit_data.get('organization_id')
 
-        if (affiliate_id is None) or (affiliate_id == ""):
+        if not bool(affiliate_id.strip()):
             return jsonify({'status': False, 'message': 'affiliate_id is required'}), 500
 
         recruit_instance: Recruits = Recruits.query(Recruits.organization_id == organization_id,
@@ -437,7 +460,7 @@ class RecruitsView(Validator):
         affiliate_id: typing.Union[str, None] = affiliate_data.get('affiliate_id')
         organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
 
-        if (affiliate_id is None) or (affiliate_id == ""):
+        if not bool(affiliate_id.strip()):
             return jsonify({'status': False, 'message': 'affiliate_id is required'}), 500
 
         recruits_list: typing.List[Recruits] = Recruits.query(Recruits.organization_id == organization_id,
@@ -456,7 +479,7 @@ class RecruitsView(Validator):
         affiliate_id: typing.Union[str, None] = affiliate_data.get('affiliate_id')
         organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
 
-        if (affiliate_id is None) or (affiliate_id == ""):
+        if not bool(affiliate_id.strip()):
             return jsonify({'status': False, 'message': 'affiliate_id is required'}), 500
 
         if not (isinstance(is_active, bool)):
