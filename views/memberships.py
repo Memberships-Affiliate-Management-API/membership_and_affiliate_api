@@ -655,6 +655,53 @@ class MembershipsView(Validators):
                         'payload': membership_instance.to_dict()}), 200
 
 
+def plan_data_wrapper(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        membership_plan_data = kwargs.get('membership_plan_data')
+        if not bool(membership_plan_data):
+            message: str = "Input is required"
+            raise InputError(status=422, description=message)
+
+        plan_name: typing.Union[str, None] = membership_plan_data.get('plan_name')
+        if not bool(plan_name.strip()):
+            message: str = "plan name is required"
+            raise InputError(status=422, description=message)
+
+        description: typing.Union[str, None] = membership_plan_data.get('description')
+        if not bool(description.strip()):
+            message: str = "description is required"
+            raise InputError(status=422, description=message)
+
+        schedule_day: typing.Union[int, None] = membership_plan_data.get('schedule_day')
+        # NOTE: if schedule_day is None or Zero then this is an Error
+        if not bool(schedule_day):
+            message: str = "schedule_day is required and cannot be zero or Null"
+            raise InputError(status=422, description=message)
+
+        schedule_term: typing.Union[str, None] = membership_plan_data.get('schedule_term')
+        if not bool(schedule_term.strip()):
+            return jsonify({'status': False, 'message': 'schedule term is required'}), 500
+
+        # int(None) avoiding this
+        term_payment: int = int(membership_plan_data.get('term_payment') or 0)
+
+        registration_amount: int = int(membership_plan_data.get('registration_amount') or 0)
+
+        currency: typing.Union[str, None] = str(membership_plan_data.get('currency'))
+        if not bool(currency.strip()):
+            return jsonify({'status': False, 'message': 'currency is required'}), 500
+
+        organization_id: typing.Union[str, None] = membership_plan_data.get('organization_id')
+        if not bool(organization_id.strip()):
+            return jsonify({'status': False, 'message': 'organization is required'}), 500
+
+        return func(organization_id=organization_id, plan_name=plan_name, description=description, schedule_day=schedule_day,
+                    schedule_term=schedule_term, term_payment=term_payment, registration_amount=registration_amount,
+                    currency=currency)
+    return wrapper
+
+
 # noinspection DuplicatedCode
 class MembershipPlansView(Validators):
     def __init__(self):
@@ -664,7 +711,9 @@ class MembershipPlansView(Validators):
 
     @use_context
     @handle_view_errors
-    def add_plan(self, membership_plan_data: dict) -> tuple:
+    @plan_data_wrapper
+    def add_plan(self, organization_id: str, plan_name: str, description: str, schedule_day: int,
+                 schedule_term: str, term_payment: int, registration_amount: int, currency: str) -> tuple:
         ***REMOVED***
             checks to see if the plan actually exists and the new plan name wont cause a conflict with
             an existing name
@@ -672,46 +721,6 @@ class MembershipPlansView(Validators):
                  term_payment: int, registration_amount: int, currency: str, is_active: bool) -> tuple:
 
         ***REMOVED***
-
-        if ("plan_name" in membership_plan_data) and (membership_plan_data['plan_name'] != ""):
-            plan_name: typing.Union[str, None] = membership_plan_data.get('plan_name')
-        else:
-            return jsonify({'status': False, 'message': 'plan name is required'}), 500
-
-        if ('description' in membership_plan_data) and (membership_plan_data['description'] != ""):
-            description: typing.Union[str, None] = membership_plan_data.get('description')
-        else:
-            return jsonify({'status': False, 'message': 'description is required'}), 500
-
-        if ('schedule_day' in membership_plan_data) and (membership_plan_data['schedule_day'] != ""):
-            schedule_day: typing.Union[str, None] = membership_plan_data.get('schedule_day')
-        else:
-            return jsonify({'status': False, 'message': 'scheduled day is required'}), 500
-
-        if ('schedule_term' in membership_plan_data) and (membership_plan_data['schedule_term'] != ""):
-            schedule_term: typing.Union[str, None] = membership_plan_data.get('schedule_term')
-        else:
-            return jsonify({'status': False, 'message': 'schedule term is required'}), 500
-
-        if ('term_payment' in membership_plan_data) and (membership_plan_data['term_payment'] != ""):
-            term_payment: int = int(membership_plan_data.get('term_payment'))
-        else:
-            return jsonify({'status': False, 'message': 'term payment is required'}), 500
-
-        if ('registration_amount' in membership_plan_data) and (membership_plan_data['registration_amount'] != ""):
-            registration_amount: int = int(membership_plan_data.get('registration_amount'))
-        else:
-            return jsonify({'status': False, 'message': 'registration amount is required'}), 500
-
-        if ('currency' in membership_plan_data) and (membership_plan_data['currency'] != ""):
-            currency: typing.Union[str, None] = str(membership_plan_data.get('currency'))
-        else:
-            return jsonify({'status': False, 'message': 'currency is required'}), 500
-
-        if ('organization_id' in membership_plan_data) and (membership_plan_data['organization_id'] != ""):
-            organization_id: typing.Union[str, None] = membership_plan_data.get('organization_id')
-        else:
-            return jsonify({'status': False, 'message': 'organization is required'}), 500
 
         is_active = True
 
@@ -745,7 +754,9 @@ class MembershipPlansView(Validators):
 
     @use_context
     @handle_view_errors
-    async def add_plan_async(self, membership_plan_data: dict) -> tuple:
+    @plan_data_wrapper
+    async def add_plan_async(self,  organization_id: str, plan_name: str, description: str, schedule_day: int,
+                             schedule_term: str, term_payment: int, registration_amount: int, currency: str) -> tuple:
         ***REMOVED***
             checks to see if the plan actually exists and the new plan name wont cause a conflict with
             an existing name
@@ -753,46 +764,6 @@ class MembershipPlansView(Validators):
                  term_payment: int, registration_amount: int, currency: str, is_active: bool) -> tuple:
 
         ***REMOVED***
-        if ("plan_name" in membership_plan_data) and (membership_plan_data['plan_name'] != ""):
-            plan_name: typing.Union[str, None] = membership_plan_data.get('plan_name')
-        else:
-            return jsonify({'status': False, 'message': 'plan name is required'}), 500
-
-        if ('description' in membership_plan_data) and (membership_plan_data['description'] != ""):
-            description: typing.Union[str, None] = membership_plan_data.get('description')
-        else:
-            return jsonify({'status': False, 'message': 'description is required'}), 500
-
-        if ('schedule_day' in membership_plan_data) and (membership_plan_data['schedule_day'] != ""):
-            schedule_day: typing.Union[str, None] = membership_plan_data.get('schedule_day')
-        else:
-            return jsonify({'status': False, 'message': 'scheduled day is required'}), 500
-
-        if ('schedule_term' in membership_plan_data) and (membership_plan_data['schedule_term'] != ""):
-            schedule_term: typing.Union[str, None] = membership_plan_data.get('schedule_term')
-        else:
-            return jsonify({'status': False, 'message': 'schedule term is required'}), 500
-
-        if ('term_payment' in membership_plan_data) and (membership_plan_data['term_payment'] != ""):
-            term_payment: int = int(membership_plan_data.get('term_payment'))
-        else:
-            return jsonify({'status': False, 'message': 'term payment is required'}), 500
-
-        if ('registration_amount' in membership_plan_data) and (membership_plan_data['registration_amount'] != ""):
-            registration_amount: int = int(membership_plan_data.get('registration_amount'))
-        else:
-            return jsonify({'status': False, 'message': 'registration amount is required'}), 500
-
-        if ('currency' in membership_plan_data) and (membership_plan_data['currency'] != ""):
-            currency: typing.Union[str, None] = str(membership_plan_data.get('currency'))
-        else:
-            return jsonify({'status': False, 'message': 'currency is required'}), 500
-
-        if ('organization_id' in membership_plan_data) and (membership_plan_data['organization_id'] != ""):
-            organization_id: typing.Union[str, None] = membership_plan_data.get('organization_id')
-        else:
-            return jsonify({'status': False, 'message': 'organization is required'}), 500
-
         is_active = True
 
         if await self.can_add_plan_async(organization_id=organization_id, plan_name=plan_name) is True:
@@ -1177,7 +1148,10 @@ def get_coupon_data(func):
     ***REMOVED***
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        coupon_data: dict = kwargs.get('coupon_data')
+        coupon_data: typing.Union[dict, None] = kwargs.get('coupon_data')
+        if not bool(coupon_data):
+            message: str = "Input is required"
+            raise InputError(status=422, description=message)
 
         code: typing.Union[str, None] = coupon_data.get('code')
         if not bool(code):
