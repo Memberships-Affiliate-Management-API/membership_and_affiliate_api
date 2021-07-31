@@ -10,9 +10,9 @@ class DataServiceError(HTTPException):
     description: str = 'We have a problem connection to the Database'
 
     def __init__(self, status: typing.Union[int, None], description: typing.Union[str, None] = None):
-        if description is not None:
+        if bool(description):
             self.description = description
-        if status is not None:
+        if bool(status):
             self.code = status
 
         super(DataServiceError, self).__init__()
@@ -25,13 +25,13 @@ class DataServiceError(HTTPException):
 
 
 class InputError(Exception):
-    code: int = 513
+    code: int = 422
     description: str = "Unable to process input"
 
     def __init__(self, status: typing.Union[int, None] = None, description: typing.Union[None, str] = None):
-        if description is not None:
+        if bool(description):
             self.description = description
-        if status is not None:
+        if bool(status):
             self.code = status
         super(InputError, self).__init__()
 
@@ -46,10 +46,12 @@ class UnAuthenticatedError(HTTPException):
     code: int = 401
     description: str = "You are not authorized to use this resource"
 
-    def __init__(self, status: typing.Union[int, None] = None, description: typing.Union[None, str] = None):
-        if description is not None:
+    def __init__(self, status: typing.Union[int, None] = None,
+                 description: typing.Union[None, str] = None):
+        if bool(description):
             self.description = description
-        if status is not None:
+
+        if bool(status):
             self.code = status
 
         super(UnAuthenticatedError, self).__init__()
@@ -65,17 +67,19 @@ class RequestError(HTTPException):
     code: int = 404
     description: str = "Request unsuccessful"
 
-    def __init__(self, status: typing.Union[int, None] = None,
-                 description: typing.Union[str, None] = None,
+    def __init__(self, status: typing.Union[int, None] = None, description: typing.Union[str, None] = None,
                  url: typing.Union[str, None] = None):
-        if description is not None:
-            self.description = description
-        if url is not None:
-            self.description = "{} on url: {}".format(description, url)
-        if status is not None:
-            self.code = status
 
         super(RequestError, self).__init__()
+
+        if bool(description):
+            self.description = description
+
+        if bool(url):
+            self.description = "{} on url: {}".format(description, url)
+
+        if bool(status):
+            self.code = status
 
     def __str__(self) -> str:
         return "<RequestError {} Code: {}".format(self.description, str(self.code))
@@ -92,16 +96,25 @@ class RemoteDataError(IOError):
     ***REMOVED***
     code: int = 406
     description: str = 'Error connecting to remote server'
+    url: str = ""
 
     def __init__(self, status: typing.Union[int, None] = 406,
                  description: typing.Union[str, None] = None, url: str = None):
-        if description is not None:
-            self.description = "{} {}".format(description, url)
-            self.code = status
+
         super(RemoteDataError, self).__init__()
 
+        if bool(description):
+            self.description = "{} {}".format(description, url)
+
+        if bool(status):
+            self.code = status
+
+        if bool(url):
+            self.url = url
+
     def __str__(self) -> str:
-        return "<RemoteDataError {} Code: {}".format(self.description, str(self.code))
+        return "<RemoteDataError {} Code: {}, URL: {}".format(self.description, str(self.code),
+                                                              self.url)
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -113,16 +126,25 @@ class EnvironNotSet(Exception):
     ***REMOVED***
     code: int = 506
     description: str = "environment variables not set please inform admin"
+    url: str = ""
 
     def __init__(self, status: typing.Union[int, None] = 406,
                  description: typing.Union[str, None] = None, url: str = None):
-        if description is not None:
-            self.description = "{} {}".format(description, url)
-            self.code = status
+
         super(EnvironNotSet, self).__init__()
 
+        if bool(description) and bool(url):
+            self.description = "{} {}".format(description, url)
+
+        if bool(status):
+            self.code = status
+
+        if bool(url):
+            self.url = url
+
     def __str__(self) -> str:
-        return "<EnvironNotSet {} Code: {}".format(self.description, str(self.code))
+        return "<EnvironNotSet {} Code: {} Url: {}".format(self.description, str(self.code),
+                                                           self.url)
 
     def __repr__(self) -> str:
         return self.__str__()

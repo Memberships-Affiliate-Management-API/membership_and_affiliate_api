@@ -3,7 +3,7 @@ import typing
 from google.api_core.exceptions import RetryError, Aborted
 from flask import jsonify, current_app
 from datetime import datetime, date
-from config.exceptions import DataServiceError
+from config.exceptions import DataServiceError, InputError
 from database.memberships import MembershipPlans, AccessRights, Memberships, Coupons
 from database.memberships import PlanValidators as PlanValid
 from database.mixins import AmountMixin
@@ -1096,26 +1096,36 @@ class AccessRightsView:
 
 # Coupon data wrapper
 def get_coupon_data(func):
+    ***REMOVED***
+            data wrapper designed to gather coupon variables and checks for validity
+        :param func: returns a function populated with the required variables otherwise returns an error indicating the
+                    the problem
+        :return: func
+    ***REMOVED***
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         coupon_data: dict = kwargs.get('coupon_data')
-        if ("code" in coupon_data) and (coupon_data['code'] != ""):
-            code: typing.Union[str, None] = coupon_data.get('code')
-        else:
-            return jsonify({'status': False, 'message': 'coupon code is required'}), 500
-        if ("discount" in coupon_data) and (coupon_data['discount'] != ""):
-            discount: typing.Union[int, None] = int(coupon_data.get('discount'))
-        else:
-            return jsonify({'status': False, 'message': 'discount is required'}), 500
-        if ("expiration_time" in coupon_data) and (coupon_data['expiration_time'] != ""):
-            expiration_time: typing.Union[int, None] = int(coupon_data['expiration_time'])
-        else:
-            return jsonify({'status': False, 'message': 'expiration_time is required'}), 500
 
-        if ("organization_id" in coupon_data) and (coupon_data["organization_id"] != ""):
-            organization_id: typing.Union[str, None] = coupon_data.get("organization_id")
-        else:
-            return jsonify({'status': False, 'message': 'Please specify organization_id'}), 500
+        code: typing.Union[str, None] = coupon_data.get('code')
+        if not bool(code):
+            message: str = "coupon code is required"
+            raise InputError(status=422, description=message)
+
+        discount: typing.Union[int, None] = int(coupon_data.get('discount'))
+        if not bool(discount):
+            message: str = "discount is required"
+            raise InputError(status=422, description=message)
+
+        expiration_time: typing.Union[int, None] = int(coupon_data['expiration_time'])
+        if not bool(expiration_time):
+            message: str = "expiration_time is required"
+            raise InputError(status=422, description=message)
+
+        organization_id: typing.Union[str, None] = coupon_data.get("organization_id")
+        if not bool(organization_id):
+            message: str = "Please specify organization_id"
+            raise InputError(status=422, description=message)
+
         return func(organization_id=organization_id, code=code, discount=discount, expiration_time=expiration_time, *args)
 
     return wrapper
