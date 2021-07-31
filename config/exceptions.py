@@ -21,6 +21,7 @@ class ErrorCodes:
         self.not_acceptable_response_error_code: int = 406
         self.teapot_error_code: int = 418
         self.too_many_requests_error_code: int = 429
+        self.resource_conflict_error_code: int = 429
         self.server_error_code: int = 500
         self.not_implemented_error_code: int = 501
         self.server_overload_error_code: int = 503
