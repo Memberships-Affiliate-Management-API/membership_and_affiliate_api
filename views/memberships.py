@@ -656,6 +656,13 @@ class MembershipsView(Validators):
 
 
 def plan_data_wrapper(func):
+    ***REMOVED***
+        wraps add plan in order to check validity of the input data,
+        throws InputError in-case of an error in Input
+    :param func:
+    :return: func with correct variables
+
+    ***REMOVED***
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         membership_plan_data = kwargs.get('membership_plan_data')
@@ -681,24 +688,32 @@ def plan_data_wrapper(func):
 
         schedule_term: typing.Union[str, None] = membership_plan_data.get('schedule_term')
         if not bool(schedule_term.strip()):
-            return jsonify({'status': False, 'message': 'schedule term is required'}), 500
+            message: str = "schedule term is required"
+            raise InputError(status=422, description=message)
 
         # int(None) avoiding this
         term_payment: int = int(membership_plan_data.get('term_payment') or 0)
 
         registration_amount: int = int(membership_plan_data.get('registration_amount') or 0)
 
-        currency: typing.Union[str, None] = str(membership_plan_data.get('currency'))
+        currency: typing.Union[str, None] = membership_plan_data.get('currency')
         if not bool(currency.strip()):
-            return jsonify({'status': False, 'message': 'currency is required'}), 500
+            message: str = "currency is required"
+            raise InputError(status=422, description=message)
 
         organization_id: typing.Union[str, None] = membership_plan_data.get('organization_id')
         if not bool(organization_id.strip()):
-            return jsonify({'status': False, 'message': 'organization is required'}), 500
+            message: str = "organization is required"
+            raise InputError(status=422, description=message)
 
-        return func(organization_id=organization_id, plan_name=plan_name, description=description, schedule_day=schedule_day,
+        service_id: typing.Union[str, None] = membership_plan_data.get('service_id')
+        if not bool(service_id.strip()):
+            message: str = "service or product must be created first before payment plans are created"
+            raise InputError(status=422, description=message)
+
+        return func(organization_id=organization_id,service_id=service_id, plan_name=plan_name, description=description, schedule_day=schedule_day,
                     schedule_term=schedule_term, term_payment=term_payment, registration_amount=registration_amount,
-                    currency=currency)
+                    currency=currency, *args)
     return wrapper
 
 
@@ -709,10 +724,28 @@ class MembershipPlansView(Validators):
 
     # TODO - add Membership Plans Validators
 
+    @staticmethod
+    def create_plan_in_paypal_services(organization_id: str, service_id: str, plan_name: str, description: str,
+                                       schedule_day: int, schedule_term: str, term_payment: int,
+                                       registration_amount: int, currency: str) -> typing.Union[str, None]:
+        ***REMOVED***
+            creates this plan in paypal services first
+        :param organization_id:
+        :param plan_name:
+        :param description:
+        :param schedule_day:
+        :param schedule_term:
+        :param term_payment:
+        :param registration_amount:
+        :param currency:
+        :return: a string representing payment plan_id or None
+        ***REMOVED***
+        pass
+
     @use_context
     @handle_view_errors
     @plan_data_wrapper
-    def add_plan(self, organization_id: str, plan_name: str, description: str, schedule_day: int,
+    def add_plan(self, organization_id: str, service_id: str, plan_name: str, description: str, schedule_day: int,
                  schedule_term: str, term_payment: int, registration_amount: int, currency: str) -> tuple:
         ***REMOVED***
             checks to see if the plan actually exists and the new plan name wont cause a conflict with
@@ -723,6 +756,16 @@ class MembershipPlansView(Validators):
         ***REMOVED***
 
         is_active = True
+        # Note: Creating the payment plan in PayPal Services Note: this means the product for the
+        #  payment plan is already created
+
+        plan_id: typing.Union[str, None] = self.create_plan_in_paypal_services(
+            organization_id=organization_id, service_id=service_id, plan_name=plan_name, description=description, schedule_day=schedule_day,
+            schedule_term=schedule_term, term_payment=term_payment, registration_amount=registration_amount,
+            currency=currency)
+        if not bool(plan_id):
+            message: str = "Unable to create Payment Plan check your service_id or inform admin"
+            raise InputError(status=422, description=message)
 
         if self.can_add_plan(organization_id=organization_id, plan_name=plan_name) is True:
             total_members: int = 0
@@ -731,7 +774,8 @@ class MembershipPlansView(Validators):
             curr_registration_amount: AmountMixin = AmountMixin(amount=registration_amount, currency=currency)
             # IF one of the values is not defined then this will throw an error
             plan_instance: MembershipPlans = MembershipPlans(organization_id=organization_id,
-                                                             plan_id=create_id(),
+                                                             service_id=service_id,
+                                                             plan_id=plan_id,
                                                              plan_name=plan_name,
                                                              description=description,
                                                              total_members=total_members,
@@ -755,7 +799,7 @@ class MembershipPlansView(Validators):
     @use_context
     @handle_view_errors
     @plan_data_wrapper
-    async def add_plan_async(self,  organization_id: str, plan_name: str, description: str, schedule_day: int,
+    async def add_plan_async(self,  organization_id: str, service_id: str, plan_name: str, description: str, schedule_day: int,
                              schedule_term: str, term_payment: int, registration_amount: int, currency: str) -> tuple:
         ***REMOVED***
             checks to see if the plan actually exists and the new plan name wont cause a conflict with
@@ -764,16 +808,30 @@ class MembershipPlansView(Validators):
                  term_payment: int, registration_amount: int, currency: str, is_active: bool) -> tuple:
 
         ***REMOVED***
-        is_active = True
 
-        if await self.can_add_plan_async(organization_id=organization_id, plan_name=plan_name) is True:
+        is_active = True
+        # Note: Creating the payment plan in PayPal Services Note: this means the product for the
+        #  payment plan is already created
+
+        plan_id: typing.Union[str, None] = self.create_plan_in_paypal_services(
+            organization_id=organization_id, service_id=service_id, plan_name=plan_name, description=description,
+            schedule_day=schedule_day,
+            schedule_term=schedule_term, term_payment=term_payment, registration_amount=registration_amount,
+            currency=currency)
+
+        if not bool(plan_id):
+            message: str = "Unable to create Payment Plan check your service_id or inform admin"
+            raise InputError(status=422, description=message)
+
+        if self.can_add_plan_async(organization_id=organization_id, plan_name=plan_name) is True:
             total_members: int = 0
             # Creating Amount Mixins to represent real currency
             curr_term_payment: AmountMixin = AmountMixin(amount=term_payment, currency=currency)
             curr_registration_amount: AmountMixin = AmountMixin(amount=registration_amount, currency=currency)
             # IF one of the values is not defined then this will throw an error
             plan_instance: MembershipPlans = MembershipPlans(organization_id=organization_id,
-                                                             plan_id=create_id(),
+                                                             service_id=service_id,
+                                                             plan_id=plan_id,
                                                              plan_name=plan_name,
                                                              description=description,
                                                              total_members=total_members,
