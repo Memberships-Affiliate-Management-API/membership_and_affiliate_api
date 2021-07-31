@@ -868,6 +868,21 @@ class MembershipPlansView(Validators):
     async def update_plan_async(self, organization_id: typing.Union[str, None], plan_id: str, plan_name: str,
                                 description: str, schedule_day: int, schedule_term: str, term_payment: int,
                                 registration_amount: int, currency: str, is_active: bool) -> tuple:
+        ***REMOVED***
+                # TODO - synchronise the actions of this functions with PayPal MembershipPlans
+                updates a membership plan
+        :param organization_id:
+        :param plan_id:
+        :param plan_name:
+        :param description:
+        :param schedule_day:
+        :param schedule_term:
+        :param term_payment:
+        :param registration_amount:
+        :param currency:
+        :param is_active:
+        :return:
+        ***REMOVED***
 
         if await self.can_update_plan_async(organization_id=organization_id, plan_id=plan_id, plan_name=plan_name) is True:
             membership_plans_instance: MembershipPlans = MembershipPlans.query(
@@ -903,6 +918,14 @@ class MembershipPlansView(Validators):
     @handle_view_errors
     def set_is_active(self, organization_id: typing.Union[str, None], plan_id: typing.Union[str, None],
                       is_active: bool) -> tuple:
+        ***REMOVED***
+            TODO- Synchronize the actions of this function with PayPal through the SDK
+            activate or de-activate a membership plan
+            :param organization_id:
+            :param plan_id:
+            :param is_active: bool indicating weather to activate or de-activate the membership plan.
+            :return:
+        ***REMOVED***
 
         membership_plans_instance: MembershipPlans = MembershipPlans.query(
             MembershipPlans.organization_id == organization_id, MembershipPlans.plan_id == plan_id).get()
@@ -924,6 +947,13 @@ class MembershipPlansView(Validators):
     @handle_view_errors
     async def set_is_active_async(self, organization_id: typing.Union[str, None], plan_id: typing.Union[str, None],
                                   is_active: bool) -> tuple:
+        ***REMOVED***
+            activate or de-activate a membership plan
+            :param organization_id:
+            :param plan_id:
+            :param is_active: bool indicating weather to activate or de-activate the membership plan.
+            :return:
+        ***REMOVED***
 
         membership_plans_instance: MembershipPlans = MembershipPlans.query(
             MembershipPlans.organization_id == organization_id,
@@ -931,6 +961,7 @@ class MembershipPlansView(Validators):
 
         if isinstance(membership_plans_instance, MembershipPlans):
             membership_plans_instance.is_active = is_active
+            # TODO- this action has to be updated also in PayPal
             key = membership_plans_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
             if not bool(key):
                 message: str = 'for some reason we are unable to create a new plan'
@@ -945,6 +976,12 @@ class MembershipPlansView(Validators):
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def return_plans_by_schedule_term(self, organization_id: typing.Union[str, None], schedule_term: str) -> tuple:
+        ***REMOVED***
+            returns plan schedules - this is a payment schedule for the plan
+        :param organization_id:
+        :param schedule_term:
+        :return:
+        ***REMOVED***
 
         membership_plan_list: typing.List[MembershipPlans] = MembershipPlans.query(
             MembershipPlans.organization_id == organization_id, MembershipPlans.schedule_term == schedule_term).fetch()
@@ -958,6 +995,12 @@ class MembershipPlansView(Validators):
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def return_plans_by_schedule_term_async(self, organization_id: typing.Union[str, None],
                                                   schedule_term: str) -> tuple:
+        ***REMOVED***
+            returns plan schedules - this is a payment schedule for the plan
+        :param organization_id:
+        :param schedule_term:
+        :return:
+        ***REMOVED***
 
         membership_plan_list: typing.List[MembershipPlans] = MembershipPlans.query(
             MembershipPlans.organization_id == organization_id,
@@ -972,6 +1015,9 @@ class MembershipPlansView(Validators):
     def get_plan(organization_id: str,  plan_id: str) -> typing.Union[None, MembershipPlans]:
         ***REMOVED***
             this utility will be used by other views to obtain information about membershipPlans
+        :param organization_id:
+        :param plan_id:
+        :return:
         ***REMOVED***
         if isinstance(plan_id, str):
             try:
@@ -1015,6 +1061,13 @@ class MembershipPlansView(Validators):
 
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def return_plan(self, organization_id: str,  plan_id: str) -> tuple:
+        ***REMOVED***
+            return a specific membership plan
+        :param organization_id:
+        :param plan_id: the id of the plan to return - Note: this plan id is the same as the plan id / product id in PayPal
+        :return: plan details
+        ***REMOVED***
+
         plan_instance = self.get_plan(organization_id=organization_id,  plan_id=plan_id)
         if bool(plan_instance):
             message: str = "successfully fetched plan"
@@ -1023,6 +1076,13 @@ class MembershipPlansView(Validators):
 
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def return_plan_async(self, organization_id: str, plan_id: str) -> tuple:
+        ***REMOVED***
+            return a specific membership plan
+        :param organization_id:
+        :param plan_id: the id of the plan to return - Note: this plan id is the same as the plan id / product id in PayPal
+        :return: plan details
+        ***REMOVED***
+
         plan_instance = await self.get_plan_async(organization_id=organization_id, plan_id=plan_id)
         if bool(plan_instance):
             message: str = "successfully fetched plan"
@@ -1032,6 +1092,11 @@ class MembershipPlansView(Validators):
     @staticmethod
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def return_all_plans(organization_id: str) -> tuple:
+        ***REMOVED***
+            returns all memberships plans, Note that some more details on membership plans are located in PayPal
+            :param organization_id:
+            :return: memberships plans
+        ***REMOVED***
 
         membership_plan_list: typing.List[MembershipPlans] = MembershipPlans.query(
             MembershipPlans.organization_id == organization_id).fetch()
@@ -1043,6 +1108,11 @@ class MembershipPlansView(Validators):
     @staticmethod
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def return_all_plans_async(organization_id: str) -> tuple:
+        ***REMOVED***
+            returns all memberships plans, Note that some more details on membership plans are located in PayPal
+            :param organization_id:
+            :return: memberships plans
+        ***REMOVED***
 
         membership_plan_list: typing.List[MembershipPlans] = MembershipPlans.query(
             MembershipPlans.organization_id == organization_id).fetch_async().get_result()
@@ -1053,6 +1123,9 @@ class MembershipPlansView(Validators):
 
 
 class AccessRightsView:
+    ***REMOVED***
+        manage the view for AccessRights
+    ***REMOVED***
     def __init__(self):
         pass
 
