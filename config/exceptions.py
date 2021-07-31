@@ -2,11 +2,27 @@ import typing
 from werkzeug.exceptions import HTTPException
 
 
+class ErrorCodes:
+    ***REMOVED***
+        definitions of error codes, for errors that can be raised in Memberships & Affiliates Management API
+    ***REMOVED***
+    def __init__(self) -> None:
+        self.input_error_code = 422
+        self.data_service_error_code = 512
+        self.un_auth_error_code = 401
+        self.request_error_code = 404
+        self.remote_data_error = 406
+        self.environment_error_code = 506
+
+
+error_codes: ErrorCodes = ErrorCodes()
+
+
 class DataServiceError(HTTPException):
     ***REMOVED***
         use this error to throw a custom error explaining something is wrong with the datastore
     ***REMOVED***
-    code: int = 512
+    code: int = error_codes.data_service_error_code
     description: str = 'We have a problem connection to the Database'
 
     def __init__(self, status: typing.Union[int, None], description: typing.Union[str, None] = None):
@@ -25,7 +41,7 @@ class DataServiceError(HTTPException):
 
 
 class InputError(Exception):
-    code: int = 422
+    code: int = error_codes.input_error_code
     description: str = "Unable to process input"
 
     def __init__(self, status: typing.Union[int, None] = None, description: typing.Union[None, str] = None):
@@ -43,7 +59,7 @@ class InputError(Exception):
 
 
 class UnAuthenticatedError(HTTPException):
-    code: int = 401
+    code: int = error_codes.un_auth_error_code
     description: str = "You are not authorized to use this resource"
 
     def __init__(self, status: typing.Union[int, None] = None,
@@ -64,7 +80,7 @@ class UnAuthenticatedError(HTTPException):
 
 
 class RequestError(HTTPException):
-    code: int = 404
+    code: int = error_codes.request_error_code
     description: str = "Request unsuccessful"
 
     def __init__(self, status: typing.Union[int, None] = None, description: typing.Union[str, None] = None,
@@ -94,7 +110,7 @@ class RemoteDataError(IOError):
     ***REMOVED***
         Remote data exception
     ***REMOVED***
-    code: int = 406
+    code: int = error_codes.remote_data_error
     description: str = 'Error connecting to remote server'
     url: str = ""
 
@@ -124,7 +140,7 @@ class EnvironNotSet(Exception):
     ***REMOVED***
         raised when environment variables are not set
     ***REMOVED***
-    code: int = 506
+    code: int = error_codes.environment_error_code
     description: str = "environment variables not set please inform admin"
     url: str = ""
 
@@ -148,3 +164,5 @@ class EnvironNotSet(Exception):
 
     def __repr__(self) -> str:
         return self.__str__()
+
+
