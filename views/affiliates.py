@@ -219,7 +219,9 @@ class AffiliatesView(Validator):
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_active_affiliates(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
-            return affiliates who are not deleted and are active
+            returns a list of active affiliates in an organization
+        :param organization_id: the organization id of the organization to return the affiliates
+        :return: response containing the list of active affiliates
         ***REMOVED***
         affiliates_list: typing.List[Affiliates] = Affiliates.query(
             Affiliates.organization_id == organization_id,
@@ -233,7 +235,10 @@ class AffiliatesView(Validator):
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_in_active_affiliates(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
-            return affiliates who are not active
+            returns a list of affiliates who are not active
+
+        :param organization_id: the organization_id of the organization to return affiliates of
+        :return: a response tuple with a payload of in-active affiliates from the organization
         ***REMOVED***
         affiliates_list: typing.List[Affiliates] = Affiliates.query(
             Affiliates.organization_id == organization_id, Affiliates.is_active == False,
