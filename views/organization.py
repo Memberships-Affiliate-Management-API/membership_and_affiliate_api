@@ -5,7 +5,7 @@ organization view
 import typing
 from flask import current_app, jsonify
 from config.exception_handlers import handle_view_errors
-from config.exceptions import InputError, DataServiceError
+from config.exceptions import InputError, DataServiceError, error_codes, status_codes
 from config.use_context import use_context
 from database.mixins import AmountMixin
 from database.organization import Organization, OrgValidators
@@ -84,6 +84,10 @@ class OrganizationView(OrgValidators):
         # TODO- this function needs to be completed
         wallet_id: str = self._create_org_wallet(organization_id=organization_id)
 
+        if not isinstance(description, str) or not bool(description.strip()):
+            message: str = "description is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         if self.can_create_organization(uid, organization_name) is True:
             organization_instance: Organization = Organization(owner_uid=uid,
                                                                organization_id=organization_id,
@@ -91,13 +95,13 @@ class OrganizationView(OrgValidators):
                                                                organization_name=organization_name,
                                                                description=description,
                                                                total_affiliates=0,
-                                                               total_paid=AmountMixin(),
+                                                               total_paid=AmountMixin(amount=0),
                                                                total_members=0,
-                                                               projected_membership_payments=AmountMixin(),
-                                                               total_membership_payments=AmountMixin())
+                                                               projected_membership_payments=AmountMixin(amount=0),
+                                                               total_membership_payments=AmountMixin(amount=0))
 
             key: typing.Union[str, None] = organization_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-            if key is None:
+            if not bool(key):
                 message: str = "An Unspecified Error has occurred creating database"
                 return jsonify({'status': False, 'message': message}), 500
 
@@ -120,6 +124,14 @@ class OrganizationView(OrgValidators):
             :param description: the description the organization will be updated to
         :return: tuple containing response and status code
         ***REMOVED***
+        if not isinstance(description, str) or not bool(description.strip()):
+            message: str = "description is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(organization_name, str) or not bool(organization_name.strip()):
+            message: str = "organization_name is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         # NOTE: returns true if user has sufficient rights to update organization.
         if self.can_update_organization(uid=uid, organization_id=organization_id) is True:
 
@@ -130,14 +142,17 @@ class OrganizationView(OrgValidators):
                 key = org_instance.put(retries=self._max_retries, timeout=self._max_timeout)
                 if key is None:
                     message: str = "An Unspecified Error has occurred"
-                    return jsonify({'status': False, 'message': message}), 500
+                    raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
                 message: str = "Successfully updated organization"
-                return jsonify({'status': True, 'payload': org_instance.to_dict(),  'message': message}), 200
-            message: str = "Unable to update Organization"
-            return jsonify({'status': False, 'message': message}), 500
+                return jsonify({'status': True, 'payload': org_instance.to_dict(),
+                                'message': message}), status_codes.successfully_updated_code
+
+            message: str = "Organization not found: Unable to update Organization"
+            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
         message: str = "You are not allowed to edit that organization please contact administrator"
-        return jsonify({'status': False, 'message': message}), 500
+        return jsonify({'status': False, 'message': message}), error_codes.access_forbidden_error_code
 
     @use_context
     @handle_view_errors
@@ -155,9 +170,12 @@ class OrganizationView(OrgValidators):
         organization_instance: Organization = Organization.query(Organization.organization_id == organization_id).get()
         if isinstance(organization_instance, Organization):
             message: str = 'successfully fetched organization'
-            return jsonify({'status': True, 'payload': organization_instance.to_dict(), 'message': message}), 200
+            return jsonify({'status': True,
+                            'payload': organization_instance.to_dict(),
+                            'message': message}), status_codes.status_ok_code
+
         message: str = "Unable to retrieve organization"
-        return jsonify({'status': False, 'message': message}), 500
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -168,8 +186,13 @@ class OrganizationView(OrgValidators):
         :return: a list containing all organization details
         ***REMOVED***
         organizations_list: typing.List[dict] = [org.to_dict() for org in Organization.query().fetch()]
+        if len(organizations_list) > 0:
+            message: str = 'successfully retrieved organizations'
+            return jsonify({'status': True,
+                            'payload': organizations_list, 'message': message}), status_codes.status_ok_code
+
         message: str = 'successfully retrieved organizations'
-        return jsonify({'status': True, 'payload': organizations_list, 'message': message}), 200
+        return jsonify({'status': True, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -186,6 +209,9 @@ class OrganizationView(OrgValidators):
                 :param sub: Optional amount to subtract, if you want to add pass None to this value and integer to add
             :return: tuple containing response and status code.
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         organization_instance: Organization = Organization.query(Organization.organization_id == organization_id).get()
         if isinstance(organization_instance, Organization):
@@ -198,14 +224,17 @@ class OrganizationView(OrgValidators):
 
             key: typing.Union[str, None] = organization_instance.put(retries=self._max_retries,
                                                                      timeout=self._max_timeout)
-            if key is None:
+            if not bool(key):
                 message: str = "An Unspecified error occurred while adding to or subtract from affiliate count"
-                raise DataServiceError(status=500, description=message)
+                raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
             message: str = "Successfully updated affiliate count"
-            return jsonify({'status': False, 'payload': organization_instance.to_dict(), 'message': message}), 200
-        message: str = "You are not authorized to perform this operation"
-        return jsonify({'status': False, 'message': message}), 500
+            return jsonify({'status': False,
+                            'payload': organization_instance.to_dict(),
+                            'message': message}), status_codes.successfully_updated_code
+
+        message: str = "data not found : cannot update affiliate count"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -225,6 +254,9 @@ class OrganizationView(OrgValidators):
         :return: tuple containing response and status code
 
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         organization_instance: Organization = Organization.query(Organization.organization_id == organization_id).get()
 
@@ -241,13 +273,15 @@ class OrganizationView(OrgValidators):
 
             if key is None:
                 message: str = 'for some reason we are unable to add to total_amount'
-                raise DataServiceError(status=500, description=message)
+                raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
             message: str = "Successfully updated total paid amount on Organization"
-            return jsonify({'status': True, 'payload': organization_instance.to_dict(), 'message': message}), 200
+            return jsonify({'status': True,
+                            'payload': organization_instance.to_dict(),
+                            'message': message}), status_codes.successfully_updated_code
 
-        message: str = "Organization does not exist"
-        return jsonify({'status': False, 'message': message}), 500
+        message: str = "Organization not found: cannot update total_paid"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -262,6 +296,10 @@ class OrganizationView(OrgValidators):
             :param sub: Optional > amount to subtract <int> or else pass None
             :return: tuple containing response code and status
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         organization_instance: Organization = Organization.query(Organization.organization_id == organization_id).get()
 
         if isinstance(organization_instance, Organization):
@@ -270,12 +308,16 @@ class OrganizationView(OrgValidators):
             elif isinstance(add, int):
                 organization_instance.total_members -= sub
             else:
-                raise InputError(status=500, description="Please Enter either the amount to add or subtract")
+                raise InputError(status=error_codes.input_error_code,
+                                 description="Please Enter either the amount to add or subtract")
 
             message: str = "Successfully updated total members on organization"
-            return jsonify({'status': True, 'payload': organization_instance.to_dict(), 'message': message}), 200
+            return jsonify({'status': True,
+                            'payload': organization_instance.to_dict(),
+                            'message': message}), status_codes.successfully_updated_code
+
         message: str = "Unable to update organization"
-        return jsonify({'status': True, 'message': message}), 500
+        return jsonify({'status': True, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -290,6 +332,10 @@ class OrganizationView(OrgValidators):
         :param sub_payment: Optional payment amount to Subtract <AmountMixin>, or Pass None
         :return: tuple
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         organization_instance: Organization = Organization.query(Organization.organization_id == organization_id).get()
 
         if isinstance(organization_instance, Organization):
@@ -301,10 +347,12 @@ class OrganizationView(OrgValidators):
                 raise InputError(status=500, description="Please enter either the amount to add or subtract")
 
             message: str = "Successfully updated projected_membership_payments"
-            return jsonify({'status': True, 'payload': organization_instance.to_dict(), 'message': message}), 200
+            return jsonify({'status': True,
+                            'payload': organization_instance.to_dict(),
+                            'message': message}), status_codes.successfully_updated_code
 
         message: str = 'Unable to update projected_membership_payments'
-        return jsonify({'status': False, 'message': message}), 500
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -319,6 +367,10 @@ class OrganizationView(OrgValidators):
             :param add_total_membership_amount: amount to add
         :return: react a response and status code tuple
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         organization_instance: Organization = Organization.query(Organization.organization_id == organization_id).get()
 
         if isinstance(organization_instance, Organization):
@@ -327,10 +379,14 @@ class OrganizationView(OrgValidators):
             elif isinstance(add_total_membership_amount, AmountMixin):
                 organization_instance.total_membership_payments += add_total_membership_amount
             else:
-                raise InputError(status=500, description="Please enter either the amount to add or subtract")
+                message: str = "Input Error: Please enter either the amount to add or subtract"
+                raise InputError(status=error_codes.input_error_code,
+                                 description=message)
 
             message: str = "Successfully updated total_membership_payments"
-            return jsonify({'status': True, 'payload': organization_instance.to_dict(), 'message': message}), 200
+            return jsonify({'status': True,
+                            'payload': organization_instance.to_dict(),
+                            'message': message}), status_codes.successfully_updated_code
 
-        message: str = "Unable to update total membership payments"
-        return jsonify({'status': False, 'message': message}), 500
+        message: str = "Organization Not Found: Unable to update total membership payments"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
