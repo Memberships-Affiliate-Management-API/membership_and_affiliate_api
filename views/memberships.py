@@ -171,6 +171,15 @@ class MembershipsView(Validators):
     @handle_view_errors
     def _create_or_update_membership(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
                                      plan_id: typing.Union[str, None], plan_start_date: date) -> tuple:
+        ***REMOVED***
+            this merely creates a relationship between a payment plan for a service or product to a client
+
+        :param organization_id: id of the organization the client belongs to
+        :param uid: id of the client who is getting into a payment plan
+        :param plan_id: id the payment plan the client is joining
+        :param plan_start_date: the date the plan will commence sometimes not the same as the date of creation
+        :return:
+        ***REMOVED***
 
         if self.can_add_member(organization_id=organization_id, uid=uid, plan_id=plan_id,
                                start_date=plan_start_date) is True:
@@ -181,7 +190,7 @@ class MembershipsView(Validators):
 
             if not (isinstance(membership_instance, Memberships)):
                 membership_instance: Memberships = Memberships()
-                membership_instance.plan_id = create_id()
+                membership_instance.plan_id = plan_id
                 membership_instance.status = 'Unpaid'
                 membership_instance.date_created = datetime.now()
 
@@ -203,8 +212,16 @@ class MembershipsView(Validators):
     async def _create_or_update_membership_async(self, organization_id: typing.Union[str, None],
                                                  uid: typing.Union[str, None], plan_id: typing.Union[str, None],
                                                  plan_start_date: date) -> tuple:
+        ***REMOVED***
+            this merely creates a relationship between a payment plan for a service or product to a client
 
-        # TODO update can_add_member_async to include organization_id
+        :param organization_id: id of the organization the client belongs to
+        :param uid: id of the client who is getting into a payment plan
+        :param plan_id: id the payment plan the client is joining
+        :param plan_start_date: the date the plan will commence sometimes not the same as the date of creation
+        :return:
+        ***REMOVED***
+
         if await self.can_add_member_async(organization_id=organization_id, uid=uid, plan_id=plan_id,
                                            start_date=plan_start_date) is True:
 
@@ -214,7 +231,7 @@ class MembershipsView(Validators):
 
             if not (isinstance(membership_instance, Memberships)):
                 membership_instance: Memberships = Memberships()
-                membership_instance.plan_id = create_id()
+                membership_instance.plan_id = plan_id
                 membership_instance.status = 'Unpaid'
                 membership_instance.date_created = datetime.now()
 
@@ -234,6 +251,7 @@ class MembershipsView(Validators):
     def add_membership(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
                        plan_id: typing.Union[str, None], plan_start_date: date) -> tuple:
 
+        # TODO - some form of error checking must be conducted here
         return self._create_or_update_membership(organization_id=organization_id, uid=uid, plan_id=plan_id,
                                                  plan_start_date=plan_start_date)
 
@@ -259,6 +277,25 @@ class MembershipsView(Validators):
     @handle_view_errors
     def set_membership_status(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
                               status: typing.Union[str, None]) -> tuple:
+        ***REMOVED***
+            :param organization_id:
+            :param uid:
+            :param status: the membership status to set - note if this is not a valid status the database
+            setter / validator will catch the error
+            :return:
+        ***REMOVED***
+
+        if not bool(organization_id.strip()):
+            message: str = "Organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not bool(uid.strip()):
+            message: str = "uid is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not bool(status.strip()):
+            message: str = "status is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                              Memberships.uid == uid).get()
@@ -281,6 +318,25 @@ class MembershipsView(Validators):
     @handle_view_errors
     async def set_membership_status_async(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
                                           status: typing.Union[str, None]) -> tuple:
+        ***REMOVED***
+            an asynchronous version of set_membership_status
+        :param organization_id:
+        :param uid:
+        :param status:
+        :return:
+        ***REMOVED***
+
+        if not bool(organization_id.strip()):
+            message: str = "Organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not bool(uid.strip()):
+            message: str = "uid is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not bool(status.strip()):
+            message: str = "status is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                              Memberships.uid == uid).get_async().get_result()
@@ -300,6 +356,29 @@ class MembershipsView(Validators):
     @handle_view_errors
     def change_membership(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
                           origin_plan_id: typing.Union[str, None], dest_plan_id: str) -> tuple:
+        ***REMOVED***
+            TODO sync this with paypal payment plans - or maybe this will occur after the changes have taken place
+        :param organization_id:
+        :param uid:
+        :param origin_plan_id:
+        :param dest_plan_id:
+        :return:
+        ***REMOVED***
+        if not bool(organization_id):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not bool(uid):
+            message: str = "user id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not bool(origin_plan_id):
+            message: str = "origin_plan_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not bool(dest_plan_id):
+            message: str = "dest_plan_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                              Memberships.uid == uid).get()
@@ -328,6 +407,22 @@ class MembershipsView(Validators):
     @handle_view_errors
     async def change_membership_async(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
                                       origin_plan_id: typing.Union[str, None], dest_plan_id: str) -> tuple:
+
+        if not bool(organization_id):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not bool(uid):
+            message: str = "user id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not bool(origin_plan_id):
+            message: str = "origin_plan_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not bool(dest_plan_id):
+            message: str = "dest_plan_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                              Memberships.uid == uid).get_async().get_result()
@@ -370,6 +465,7 @@ class MembershipsView(Validators):
         ***REMOVED***
             just send a request to the email service to send emails
         ***REMOVED***
+        # TODO- complete this and add email sending capability
         return "Ok", 200
 
     @use_context
@@ -379,9 +475,24 @@ class MembershipsView(Validators):
                                               plan_id: typing.Union[str, None],
                                               status: typing.Union[str, None]) -> tuple:
         ***REMOVED***
-            for members of this plan_id return members by payment_status
-            payment status should either be paid or unpaid
+            return plan members with a certain status
+        :param organization_id:
+        :param plan_id:
+        :param status:
+        :return:
         ***REMOVED***
+        if not bool(organization_id.strip()):
+            message: str = "Organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not bool(plan_id.strip()):
+            message: str = "plan_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not bool(status.strip()):
+            message: str = "status is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         membership_list: typing.List[Memberships] = Memberships.query(Memberships.organization_id == organization_id,
                                                                       Memberships.plan_id == plan_id,
                                                                       Memberships.status == status).fetch()
@@ -403,7 +514,24 @@ class MembershipsView(Validators):
         ***REMOVED***
             for members of this plan_id return members by payment_status
             payment status should either be paid or unpaid
+
+        :param organization_id:
+        :param plan_id:
+        :param status:
+        :return:
         ***REMOVED***
+        if not bool(organization_id.strip()):
+            message: str = "Organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not bool(plan_id.strip()):
+            message: str = "plan_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not bool(status.strip()):
+            message: str = "status is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         membership_list: typing.List[Memberships] = Memberships.query(
             Memberships.organization_id == organization_id, Memberships.plan_id == plan_id,
             Memberships.status == status).fetch_async().get_result()
@@ -421,6 +549,21 @@ class MembershipsView(Validators):
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def return_members_by_payment_status(self, organization_id: typing.Union[str, None],
                                          status: typing.Union[str, None]) -> tuple:
+        ***REMOVED***
+            return members by payment status
+        :param organization_id:
+        :param status: payment status
+        :return:
+        ***REMOVED***
+        if not bool(organization_id.strip()):
+            message: str = "Organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+
+        if not bool(status.strip()):
+            message: str = "status is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
 
         membership_list: typing.List[Memberships] = Memberships.query(Memberships.organization_id == organization_id,
                                                                       Memberships.status == status).fetch()
@@ -438,6 +581,21 @@ class MembershipsView(Validators):
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def return_members_by_payment_status_async(self, organization_id: typing.Union[str, None],
                                                      status: typing.Union[str, None]) -> tuple:
+        ***REMOVED***
+            async return members by payment status
+        :param organization_id:
+        :param status: payment status
+        :return:
+        ***REMOVED***
+        if not bool(organization_id.strip()):
+            message: str = "Organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+
+        if not bool(status.strip()):
+            message: str = "status is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
 
         membership_list: typing.List[Memberships] = Memberships.query(
             Memberships.organization_id == organization_id, Memberships.status == status).fetch_async().get_result()
