@@ -11,9 +11,23 @@ class ErrorCodes:
         self.input_error_code: int = 422
         self.data_service_error_code: int = 512
         self.un_auth_error_code: int = 401
-        self.request_error_code: int = 404
+        # 404 means our server never found the resource associated with the requested
+        self.request_not_found_error_code: int = 404
         self.remote_data_error: int = 406
         self.environment_error_code: int = 506
+        self.bad_request_error_code: int = 400
+        self.payment_required_error_code: int = 402
+        self.access_forbidden_error_code: int = 403
+        self.not_acceptable_response_error_code: int = 406
+        self.teapot_error_code: int = 418
+        self.too_many_requests_error_code: int = 429
+        self.server_error_code: int = 500
+        self.not_implemented_error_code: int = 501
+        self.server_overload_error_code: int = 503
+        self.server_timed_out_error_code: int = 504
+        self.resource_limit_reached_error_code: int = 508
+        self.authentication_required_error_code: int = 511
+        self.server_is_down_error_code: int = 521
 
 
 class StatusCodes:
@@ -92,7 +106,7 @@ class UnAuthenticatedError(HTTPException):
 
 
 class RequestError(HTTPException):
-    code: int = error_codes.request_error_code
+    code: int = error_codes.request_not_found_error_code
     description: str = "Request unsuccessful"
 
     def __init__(self, status: typing.Union[int, None] = None, description: typing.Union[str, None] = None,

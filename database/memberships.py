@@ -38,11 +38,12 @@ class PlanValidators:
             return True or False
             return None if Error
         ***REMOVED***
-        if not isinstance(plan_id, str):
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             return False
-        plan_id = plan_id.strip()
-        if plan_id == "":
+
+        if not isinstance(plan_id, str) or not bool(plan_id.strip()):
             return False
+
         try:
             plan_instance: MembershipPlans = MembershipPlans.query(MembershipPlans.organization_id==organization_id,
                                                                    MembershipPlans.plan_id == plan_id).get()
@@ -62,10 +63,10 @@ class PlanValidators:
             return True or False
             return None if Error
         ***REMOVED***
-        if not isinstance(plan_id, str):
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             return False
-        plan_id = plan_id.strip()
-        if plan_id == "":
+
+        if not isinstance(plan_id, str) or not bool(plan_id.strip()):
             return False
         try:
             plan_instance: MembershipPlans = MembershipPlans.query(
@@ -88,11 +89,12 @@ class PlanValidators:
             returns True or False if plan exist or dont exist
             returns None if an error occurred
         ***REMOVED***
-        if not isinstance(plan_name, str):
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             return False
-        plan_name = plan_name.strip().lower()
-        if plan_name == "":
+
+        if not isinstance(plan_name, str) or not bool(plan_name.strip()):
             return False
+
         try:
             plan_instance: MembershipPlans = MembershipPlans.query(MembershipPlans.organization_id == organization_id,
                                                                    MembershipPlans.plan_name == plan_name).get()
@@ -110,11 +112,12 @@ class PlanValidators:
             returns True or False if plan exist or dont exist
             returns None if an error occurred
         ***REMOVED***
-        if not isinstance(plan_name, str):
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             return False
-        plan_name = plan_name.strip().lower()
-        if plan_name == "":
+
+        if not isinstance(plan_name, str) or not bool(plan_name.strip()):
             return False
+
         try:
             plan_instance: MembershipPlans = MembershipPlans.query(
                 MembershipPlans.organization_id == organization_id,
@@ -135,9 +138,11 @@ class CouponsValidator:
 
     @staticmethod
     def coupon_exist(organization_id: str, code: str) -> typing.Union[None, bool]:
-        if not (isinstance(code, str)):
+
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             return False
-        if code == "":
+
+        if not isinstance(code, str) or not bool(code.strip()):
             return False
         try:
             coupons_instance: Coupons = Coupons.query(Coupons.organization_id == organization_id,
@@ -153,9 +158,11 @@ class CouponsValidator:
 
     @staticmethod
     async def coupon_exist_async(organization_id: str, code: str) -> typing.Union[None, bool]:
-        if not (isinstance(code, str)):
+
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             return False
-        if code == "":
+
+        if not isinstance(code, str) or not bool(code.strip()):
             return False
         try:
             coupons_instance: Coupons = Coupons.query(
@@ -179,6 +186,7 @@ class CouponsValidator:
 
     @staticmethod
     async def expiration_valid_async(expiration_time: int) -> bool:
+
         if not (isinstance(expiration_time, int)):
             return False
         if expiration_time < get_days(days=1):
