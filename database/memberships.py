@@ -365,7 +365,7 @@ class Coupons(ndb.Model):
     ***REMOVED***
     organization_id: str = ndb.StringProperty(validator=setters.set_id)
     code: str = ndb.StringProperty(validator=setters.set_id)
-    discount: AmountMixin = ndb.StructuredProperty(AmountMixin)
+    discount_percent: int = ndb.IntegerProperty(default=0, validator=setters.set_number)
     is_valid: bool = ndb.BooleanProperty(default=True, validator=setters.set_bool)
     date_created: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=setters.set_datetime)
     expiration_time: int = ndb.IntegerProperty(default=0, validator=setters.set_number)

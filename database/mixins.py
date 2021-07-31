@@ -5,7 +5,7 @@ from database.setters import setters
 
 
 class AmountMixin(ndb.Model):
-    amount: int = ndb.IntegerProperty(default=0, validator=setters.set_value_amount)
+    amount: int = ndb.IntegerProperty(default=None, validator=setters.set_value_amount)
     currency: str = ndb.StringProperty(default=config_instance.CURRENCY, validator=setters.set_currency)
 
     def __eq__(self, other) -> bool:
@@ -40,6 +40,7 @@ class AmountMixin(ndb.Model):
         return self.__str__()
 
     def __bool__(self) -> bool:
+        # if term payment amount is set to even zero bool will return True
         return True if self.amount is not None else False
 
     def __len__(self) -> int:

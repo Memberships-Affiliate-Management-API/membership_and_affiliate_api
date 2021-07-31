@@ -180,7 +180,7 @@ class MembershipsView(Validators):
             membership_instance.uid = uid
             membership_instance.plan_start_date = plan_start_date
             key = membership_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-            if key is None:
+            if not bool(key):
                 message: str = "Unable to save membership instance to database, please try again"
                 raise DataServiceError(status=500, description=message)
             return jsonify({'status': True, 'message': 'successfully updated membership',
@@ -212,7 +212,7 @@ class MembershipsView(Validators):
             membership_instance.uid = uid
             membership_instance.plan_start_date = plan_start_date
             key = membership_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
-            if key is None:
+            if not bool(key):
                 message: str = "Unable to save membership instance to database, please try again"
                 raise DataServiceError(status=500, description=message)
             return jsonify({'status': True, 'message': 'successfully updated membership',
@@ -258,7 +258,7 @@ class MembershipsView(Validators):
             membership_instance.status = status
             key = membership_instance.put(retries=self._max_retries, timeout=self._max_timeout)
 
-            if key is None:
+            if not bool(key):
                 message: str = "Unable to save membership instance to database, please try again"
                 raise DataServiceError(status=500, description=message)
 
@@ -279,7 +279,7 @@ class MembershipsView(Validators):
         if isinstance(membership_instance, Memberships):
             membership_instance.status = status
             key = membership_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
-            if key is None:
+            if not bool(key):
                 message: str = "Unable to save membership instance to database, please try again"
                 raise DataServiceError(status=500, description=message)
             message: str = "Successfully update membership status"
@@ -333,7 +333,8 @@ class MembershipsView(Validators):
                 membership_instance.plan_id = dest_plan_id
                 key = membership_instance.put_async(retries=self._max_retries,
                                                     timeout=self._max_timeout).get_result()
-            if key is None:
+
+            if not(bool(key)):
                 message: str = "Unable to Change Membership, please try again later"
                 raise DataServiceError(status=500, description=message)
         else:
@@ -447,7 +448,7 @@ class MembershipsView(Validators):
         ***REMOVED***
             return all members of a plan
         ***REMOVED***
-        if not isinstance(plan_id, str) or (plan_id == ""):
+        if not isinstance(plan_id, str) or (not bool(plan_id)):
             return jsonify({'status': False, 'message': 'plan_id is required'}), 500
         membership_list: typing.List[Memberships] = Memberships.query(Memberships.organization_id == organization_id,
                                                                       Memberships.plan_id == plan_id).fetch()
@@ -468,7 +469,7 @@ class MembershipsView(Validators):
         ***REMOVED***
             return all members of a plan
         ***REMOVED***
-        if not isinstance(plan_id, str) or (plan_id == ""):
+        if not isinstance(plan_id, str) or (not bool(plan_id)):
             return jsonify({'status': False, 'message': 'plan_id is required'}), 500
 
         membership_list: typing.List[Memberships] = Memberships.query(
@@ -490,7 +491,7 @@ class MembershipsView(Validators):
         ***REMOVED***
             return all members of a plan
         ***REMOVED***
-        if not isinstance(plan_id, str) or (plan_id == ""):
+        if not isinstance(plan_id, str) or (not bool(plan_id)):
             return jsonify({'status': False, 'message': 'plan_id is required'}), 500
 
         membership_list: typing.List[Memberships] = Memberships.query(
@@ -555,12 +556,11 @@ class MembershipsView(Validators):
             membership_plan_instance: MembershipPlans = MembershipPlansView().get_plan(
                 organization_id=organization_id, plan_id=plan_id)
 
-            if membership_plan_instance is None:
+            if not bool(membership_plan_instance):
                 message: str = 'could not find plan associate with the plan_id'
                 return jsonify({'status': False, 'message': message}), 500
 
-            if (membership_plan_instance.term_payment_amount is not None) and (
-                    membership_plan_instance.registration_amount is not None):
+            if bool(membership_plan_instance.term_payment_amount) and bool(membership_plan_instance.registration_amount):
                 amount_data: dict = {
                     'term_payment_amount': membership_plan_instance.term_payment_amount.to_dict(),
                     'registration_amount': membership_plan_instance.registration_amount.to_dict()}
@@ -588,12 +588,11 @@ class MembershipsView(Validators):
             membership_plan_instance: MembershipPlans = await MembershipPlansView().get_plan_async(
                 organization_id=organization_id, plan_id=plan_id)
 
-            if membership_plan_instance is None:
+            if not bool(membership_plan_instance):
                 message: str = 'could not find plan associate with the plan_id'
                 return jsonify({'status': False, 'message': message}), 500
 
-            if (membership_plan_instance.term_payment_amount is not None) and (
-                    membership_plan_instance.registration_amount is not None):
+            if bool(membership_plan_instance.term_payment_amount) and bool(membership_plan_instance.registration_amount):
                 amount_data: dict = {
                     'term_payment_amount': membership_plan_instance.term_payment_amount.to_dict(),
                     'registration_amount': membership_plan_instance.registration_amount.to_dict()}
@@ -618,7 +617,7 @@ class MembershipsView(Validators):
         if isinstance(membership_instance, Memberships):
             membership_instance.status = status
             key = membership_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-            if key is None:
+            if not bool(key):
                 message: str = 'for some reason we are unable to set payment status'
                 return jsonify({'status': False, 'message': message}), 500
         else:
@@ -645,7 +644,7 @@ class MembershipsView(Validators):
         if isinstance(membership_instance, Memberships):
             membership_instance.status = status
             key = membership_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
-            if key is None:
+            if not bool(key):
                 message: str = 'for some reason we are unable to set payment status'
                 raise DataServiceError(status=500, description=message)
         else:
@@ -735,7 +734,7 @@ class MembershipPlansView(Validators):
                                                              date_created=datetime.now().date())
 
             key = plan_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-            if key is None:
+            if not bool(key):
                 message: str = 'for some reason we are unable to create a new plan'
                 raise DataServiceError(status=500, description=message)
         else:
@@ -815,7 +814,7 @@ class MembershipPlansView(Validators):
                                                              date_created=datetime.now().date())
 
             key = plan_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
-            if key is None:
+            if not bool(key):
                 message: str = 'for some reason we are unable to create a new plan'
                 raise DataServiceError(status=500, description=message)
         else:
@@ -850,7 +849,7 @@ class MembershipPlansView(Validators):
 
                 key = membership_plans_instance.put(retries=self._max_retries, timeout=self._max_timeout)
 
-                if key is None:
+                if not bool(key):
                     message: str = 'for some reason we are unable to create a new plan'
                     raise DataServiceError(status=500, description=message)
                 return jsonify({'status': True, 'message': 'successfully created new membership plan',
@@ -888,7 +887,7 @@ class MembershipPlansView(Validators):
                 membership_plans_instance.is_active = is_active
                 key = membership_plans_instance.put_async(
                     retries=self._max_retries, timeout=self._max_timeout).get_result()
-                if key is None:
+                if not bool(key):
                     message: str = 'for some reason we are unable to create a new plan'
                     raise DataServiceError(status=500, description=message)
                 return jsonify({'status': True, 'message': 'successfully created new membership plan',
@@ -911,7 +910,7 @@ class MembershipPlansView(Validators):
         if isinstance(membership_plans_instance, MembershipPlans):
             membership_plans_instance.is_active = is_active
             key = membership_plans_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-            if key is None:
+            if not bool(key):
                 message: str = 'for some reason we are unable to create a new plan'
                 return jsonify({'status': False, 'message': message}), 500
             message: str = 'successfully update membership plan status'
@@ -933,7 +932,7 @@ class MembershipPlansView(Validators):
         if isinstance(membership_plans_instance, MembershipPlans):
             membership_plans_instance.is_active = is_active
             key = membership_plans_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
-            if key is None:
+            if not bool(key):
                 message: str = 'for some reason we are unable to create a new plan'
                 raise DataServiceError(status=500, description=message)
             return jsonify({'status': True, 'message': 'successfully update membership plan status',
@@ -1017,7 +1016,7 @@ class MembershipPlansView(Validators):
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def return_plan(self, organization_id: str,  plan_id: str) -> tuple:
         plan_instance = self.get_plan(organization_id=organization_id,  plan_id=plan_id)
-        if plan_instance is not None:
+        if bool(plan_instance):
             message: str = "successfully fetched plan"
             return jsonify({'status': True, 'payload': plan_instance.to_dict(), 'message': message}), 200
         return jsonify({'status': False, 'message': 'Unable to get plan'}), 500
@@ -1025,7 +1024,7 @@ class MembershipPlansView(Validators):
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def return_plan_async(self, organization_id: str, plan_id: str) -> tuple:
         plan_instance = await self.get_plan_async(organization_id=organization_id, plan_id=plan_id)
-        if plan_instance is not None:
+        if bool(plan_instance):
             message: str = "successfully fetched plan"
             return jsonify({'status': True, 'payload': plan_instance.to_dict(), 'message': message}), 200
         return jsonify({'status': False, 'message': 'Unable to get plan'}), 500
@@ -1124,6 +1123,9 @@ def get_coupon_data(func):
 
 # noinspection DuplicatedCode
 class CouponsView(Validators):
+    ***REMOVED***
+        manages the view instance for organization coupon codes..
+    ***REMOVED***
     def __init__(self):
         super(CouponsView, self).__init__()
 
@@ -1132,6 +1134,14 @@ class CouponsView(Validators):
     @handle_view_errors
     def add_coupon(self, organization_id: typing.Union[str, None], code: typing.Union[str, None], discount: typing.Union[int, None],
                    expiration_time: typing.Union[int, None]) -> tuple:
+        ***REMOVED***
+            creates new coupon
+        :param organization_id: organization id of the org creating the coupon_instance
+        :param code:  coupon code
+        :param discount: discount amount in percent
+        :param expiration_time: timestamp indicating the time the coupon will expire
+        :return: newly minted coupon
+        ***REMOVED***
 
         if self.can_add_coupon(organization_id=organization_id, code=code, expiration_time=expiration_time,
                                discount=discount) is True:
@@ -1140,7 +1150,7 @@ class CouponsView(Validators):
                                                 expiration_time=expiration_time)
 
             key = coupons_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-            if key is None:
+            if not bool(key):
                 message: str = "an error occured while creating coupon"
                 raise DataServiceError(status=500, description=message)
         else:
@@ -1154,13 +1164,21 @@ class CouponsView(Validators):
     @handle_view_errors
     async def add_coupon_async(self, organization_id: typing.Union[str, None], code: typing.Union[str, None],
                                discount: typing.Union[int, None], expiration_time: typing.Union[int, None]) -> tuple:
+        ***REMOVED***
+            creates new coupon
+        :param organization_id: organization id of the org creating the coupon_instance
+        :param code:  coupon code
+        :param discount: discount amount in percent
+        :param expiration_time: timestamp indicating the time the coupon will expire
+        :return: newly minted coupon
+        ***REMOVED***
 
         if await self.can_add_coupon_async(organization_id=organization_id, code=code, expiration_time=expiration_time, discount=discount) is True:
             coupons_instance: Coupons = Coupons(organization_id=organization_id, code=code,
                                                 discount=discount, expiration_time=expiration_time)
 
             key = coupons_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
-            if key is None:
+            if not bool(key):
                 message: str = "an error occured while creating coupon"
                 raise DataServiceError(status=500, description=message)
         else:
@@ -1173,13 +1191,23 @@ class CouponsView(Validators):
     @use_context
     @handle_view_errors
     def update_coupon(self, organization_id: typing.Union[str, None], code: str, discount: int, expiration_time: int) -> tuple:
+        ***REMOVED***
+            update coupons asynchronously
+            :param organization_id:
+            :param code: code relating to the coupon - this field must not be updated - used to locate coupon_instance
+            :param discount: up-datable a percentage indicating how much of the original amount should be discountable
+            :param expiration_time: up-datable value indicates the time the coupon code will expire
+            :return:  updated coupon
+        ***REMOVED***
         if self.can_update_coupon(code=code, expiration_time=expiration_time, discount=discount) is True:
             coupon_instance: Coupons = Coupons.query(Coupons.organization_id == organization_id,
                                                      Coupons.code == code).get()
-            coupon_instance.discount = discount
+            # Discounted amount in percent
+            coupon_instance.discount_percent = discount
+            # timestamp indicating the time the coupon will expire
             coupon_instance.expiration_time = expiration_time
             key = coupon_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-            if key is None:
+            if not bool(key):
                 message: str = "Error updating coupon"
                 raise DataServiceError(status=500, description=message)
 
@@ -1193,17 +1221,25 @@ class CouponsView(Validators):
     @handle_view_errors
     async def update_coupon_async(self, organization_id: typing.Union[str, None], code: str, discount: int,
                                   expiration_time: int) -> tuple:
-
+        ***REMOVED***
+            update coupons asynchronously
+            :param organization_id:
+            :param code: code relating to the coupon - this field must not be updated - used to locate coupon_instance
+            :param discount: up-datable a percentage indicating how much of the original amount should be discountable
+            :param expiration_time: up-datable value for coupons
+            :return:  updated coupon
+        ***REMOVED***
         if await self.can_update_coupon_async(organization_id=organization_id, code=code,
                                               expiration_time=expiration_time, discount=discount) is True:
 
             coupon_instance: Coupons = Coupons.query(
                 Coupons.organization_id == organization_id, Coupons.code == code).get_async().get_result()
 
-            coupon_instance.discount = discount
+            # Discount a percentage indicating how much of the original price should be knocked off
+            coupon_instance.discount_percent = discount
             coupon_instance.expiration_time = expiration_time
             key = coupon_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
-            if key is None:
+            if not bool(key):
                 message: str = "Error updating coupon"
                 raise DataServiceError(status=500, description=message)
 
@@ -1214,13 +1250,18 @@ class CouponsView(Validators):
 
     @use_context
     @handle_view_errors
-    def cancel_coupon(self, organization_id: typing.Union[str, None], coupon_data: dict) -> tuple:
-
-        if "code" in coupon_data and coupon_data['code'] != "":
-            code: str = coupon_data['code']
-        else:
-            message: str = "Coupon Code is required"
-            return jsonify({'status': False, 'message': message}), 500
+    def cancel_coupon(self, coupon_data: dict) -> tuple:
+        ***REMOVED***
+            cancels coupon code require organization_id and coupon_data
+        :param coupon_data: contains coupon code and organization_id
+        :return: cancelled coupon code
+        ***REMOVED***
+        code: typing.Union[str, None] = coupon_data.get("code")
+        organization_id: typing.Union[str, None] = coupon_data.get('organization_id')
+        if not bool(code):
+            return jsonify({'status': False, 'message': 'coupon is required'}), 500
+        if not bool(organization_id):
+            return jsonify({'status': False, 'message': 'organization id is required'}), 500
 
         coupon_instance: Coupons = Coupons.query(Coupons.organization_id == organization_id,
                                                  Coupons.code == code).get()
@@ -1228,7 +1269,7 @@ class CouponsView(Validators):
         if isinstance(coupon_instance, Coupons):
             coupon_instance.is_valid = False
             key = coupon_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-            if key is None:
+            if not bool(key):
                 message: str = "Unable to cancel coupon"
                 raise DataServiceError(status=500, description=message)
             return jsonify({'status': True, 'message': 'successfully cancelled coupon code'}), 200
@@ -1237,35 +1278,18 @@ class CouponsView(Validators):
 
     @use_context
     @handle_view_errors
-    async def cancel_coupon_async(self, organization_id: typing.Union[str, None], coupon_data: dict) -> tuple:
-
-        if ("code" in coupon_data) and (coupon_data['code'] != ""):
-            code: str = coupon_data['code']
-        else:
-            message: str = "Coupon Code is required"
-            return jsonify({'status': False, 'message': message}), 500
-
-        coupon_instance: Coupons = Coupons.query(Coupons.organization_id == organization_id,
-                                                 Coupons.code == code).get_async().get_result()
-
-        if isinstance(coupon_instance, Coupons):
-            coupon_instance.is_valid = False
-            key = coupon_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
-            if key is None:
-                message: str = "Unable to cancel coupon"
-                raise DataServiceError(status=500, description=message)
-            return jsonify({'status': True, 'message': 'successfully cancelled coupon code'}), 200
-
-        return jsonify({'status': False, 'message': 'unable to cancel coupon code'}), 500
-
-    @use_context
-    @handle_view_errors
-    async def cancel_coupon_async(self, organization_id: typing.Union[str, None], coupon_data: dict) -> tuple:
-        if ("code" in coupon_data) and (coupon_data['code'] != ""):
-            code: str = coupon_data['code']
-        else:
-            message: str = "Coupon Code is required"
-            return jsonify({'status': False, 'message': message}), 500
+    async def cancel_coupon_async(self, coupon_data: dict) -> tuple:
+        ***REMOVED***
+            cancels coupon code
+        :param coupon_data: contains coupon code and organization_id
+        :return:
+        ***REMOVED***
+        code: typing.Union[str, None] = coupon_data.get("code")
+        organization_id: typing.Union[str, None] = coupon_data.get('organization_id')
+        if not bool(code):
+            return jsonify({'status': False, 'message': 'coupon code is required'}), 500
+        if not bool(organization_id):
+            return jsonify({'status': False, 'message': 'organization_id is required'}), 500
 
         coupon_instance: Coupons = Coupons.query(Coupons.organization_id == organization_id,
                                                  Coupons.code == code).get_async().get_result()
@@ -1273,7 +1297,7 @@ class CouponsView(Validators):
         if isinstance(coupon_instance, Coupons):
             coupon_instance.is_valid = False
             key = coupon_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
-            if key is None:
+            if not bool(key):
                 message: str = "Unable to cancel coupon"
                 raise DataServiceError(status=500, description=message)
             return jsonify({'status': True, 'message': 'successfully cancelled coupon code'}), 200
@@ -1284,6 +1308,11 @@ class CouponsView(Validators):
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_all_coupons(self, organization_id: typing.Union[str, None]) -> tuple:
+        ***REMOVED***
+            returns a list of all coupons
+        :param organization_id:
+        :return:
+        ***REMOVED***
 
         coupons_list: typing.List[Coupons] = Coupons.query(Coupons.organization_id == organization_id).fetch()
 
@@ -1352,14 +1381,11 @@ class CouponsView(Validators):
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_coupon(self, coupon_data: dict) -> tuple:
-        if 'code' in coupon_data and coupon_data['code'] != "":
-            code: str = coupon_data['code']
-        else:
+        code: typing.Union[str, None] = coupon_data.get("code")
+        if not bool(code):
             return jsonify({'status': False, 'message': 'coupon is required'}), 500
-
-        if ('organization_id' in coupon_data) and (coupon_data['organization_id']) != "":
-            organization_id: typing.Union[str, None] = coupon_data['organization_id']
-        else:
+        organization_id: typing.Union[str, None] = coupon_data.get('organization_id')
+        if not bool(organization_id):
             return jsonify({'status': False, 'message': 'organization_id is required'}), 500
 
         coupon_instance: Coupons = Coupons.query(Coupons.organization_id == organization_id,
@@ -1376,14 +1402,11 @@ class CouponsView(Validators):
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def get_coupon_async(self, coupon_data: dict) -> tuple:
-        if ('code' in coupon_data) and (coupon_data['code'] != ""):
-            code: str = coupon_data['code']
-        else:
+        code: typing.Union[str, None] = coupon_data.get("code")
+        if not bool(code):
             return jsonify({'status': False, 'message': 'coupon is required'}), 500
-
-        if ('organization_id' in coupon_data) and (coupon_data['organization_id']) != "":
-            organization_id: typing.Union[str, None] = coupon_data['organization_id']
-        else:
+        organization_id: typing.Union[str, None] = coupon_data.get('organization_id')
+        if not bool(organization_id):
             return jsonify({'status': False, 'message': 'organization_id is required'}), 500
 
         coupon_instance: Coupons = Coupons.query(Coupons.organization_id == organization_id,

@@ -44,7 +44,10 @@ class APIKeysView(APIKeysValidators):
                 3. check if domain is valid
                 4. check if users plan allows api_key creation
                 5. create api_key secret combination
-            :return:
+            :param domain: the domain which will be attached to the API Keys
+            :param uid: the user creating the API keys
+            :param organization_id: the organization under which the API key will be created
+            :return: response containing the API Key and Secret Combination
         ***REMOVED***
         org_exist = self.organization_exist(organization_id=organization_id)
         can_create_key = self.user_can_create_key(uid=uid, organization_id=organization_id)
@@ -59,7 +62,7 @@ class APIKeysView(APIKeysValidators):
                                                 domain=domain,
                                                 is_active=True)
             key = api_key_instance.put()
-            if key is None:
+            if not bool(key):
                 message: str = "database error: unable to create api_key"
                 raise DataServiceError(status=500, description=message)
             message: str = "successfully created api_key secret_token combo"
@@ -80,7 +83,7 @@ class APIKeysView(APIKeysValidators):
         if isinstance(api_key_instance, APIKeys):
             api_key_instance.is_active = False
             key = api_key_instance.put()
-            if key is None:
+            if not bool(key):
                 message: str = "database error: unable to deactivate_key"
                 raise DataServiceError(status=500, description=message)
             message: str = "successfully deactivated api_key"
@@ -101,7 +104,7 @@ class APIKeysView(APIKeysValidators):
         if isinstance(api_key_instance, APIKeys):
             api_key_instance.is_active = True
             key = api_key_instance.put()
-            if key is None:
+            if not bool(key):
                 message: str = "database error: unable to activate_key"
                 raise DataServiceError(status=500, description=message)
             message: str = "successfully activated api_key"
