@@ -26,9 +26,17 @@ class UserView:
                  surname:  typing.Union[str, None], cell:  typing.Union[str, None], email:  typing.Union[str, None],
                  password:  typing.Union[str, None], uid:  typing.Union[str, None] = None) -> tuple:
         ***REMOVED***
-            create new user
+                creates a new user record, the user must already be logged in and have a valid uid
+            :param organization_id:
+            :param names:
+            :param surname:
+            :param cell:
+            :param email:
+            :param password:
+            :param uid:
+            :return: returns user record
         ***REMOVED***
-
+        # TODO - can_add_user check must be done here
         if not isinstance(uid, str) or not bool(uid.strip()):
             user_instance: UserModel = UserModel.query(UserModel.uid == uid).get()
             if isinstance(user_instance, UserModel):
@@ -65,7 +73,15 @@ class UserView:
                              cell:  typing.Union[str, None], email:  typing.Union[str, None],
                              password:  typing.Union[str, None], uid:  typing.Union[str, None] = None) -> tuple:
         ***REMOVED***
-            create new user
+            creates a new user asynchronously - all parameters are required
+        :param organization_id:
+        :param names:
+        :param surname:
+        :param cell:
+        :param email:
+        :param password:
+        :param uid:
+        :return:
         ***REMOVED***
         if not isinstance(uid, str) or not bool(uid.strip()):
             user_instance: UserModel = UserModel.query(UserModel.uid == uid).get_async().get_result()
@@ -103,8 +119,18 @@ class UserView:
                     cell:  typing.Union[str, None], email:  typing.Union[str, None], is_admin: bool,
                     is_support: bool) -> tuple:
         ***REMOVED***
-            update user details
+                update user details all fields are required
+        :param organization_id:
+        :param uid:
+        :param names:
+        :param surname:
+        :param cell:
+        :param email:
+        :param is_admin:
+        :param is_support:
+        :return:
         ***REMOVED***
+
         if not isinstance(uid, str) or not bool(uid.strip()):
             message: str = "User ID is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -132,7 +158,16 @@ class UserView:
                                 cell:  typing.Union[str, None], email:  typing.Union[str, None],
                                 is_admin: bool, is_support: bool) -> tuple:
         ***REMOVED***
-            update user details
+            update user details asynchronously
+        :param organization_id:
+        :param uid:
+        :param names:
+        :param surname:
+        :param cell:
+        :param email:
+        :param is_admin:
+        :param is_support:
+        :return:
         ***REMOVED***
         if not isinstance(uid, str) or not bool(uid.strip()):
             message: str = "User ID is required"
