@@ -2,7 +2,7 @@ import typing
 from flask import jsonify, current_app
 from werkzeug.security import check_password_hash
 
-from config.exceptions import error_codes, status_codes, InputError, UnAuthenticatedError
+from config.exceptions import error_codes, status_codes, InputError, UnAuthenticatedError, DataServiceError
 from main import app_cache
 from database.users import UserModel
 from security.users_authenticator import encode_auth_token
@@ -61,7 +61,11 @@ class UserView:
 
         user_instance: UserModel = UserModel(organization_id=organization_id, uid=uid, names=names, surname=surname, cell=cell, email=email, password=password,
                                              is_active=True)
-        user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+        key = user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+        if not bool(key):
+            message: str = "Unable to save database"
+            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
         return jsonify({'status': True,
                         "message": "Successfully created new user",
                         "payload": user_instance.to_dict()
@@ -106,7 +110,11 @@ class UserView:
 
         user_instance: UserModel = UserModel(organization_id=organization_id, uid=uid, names=names, surname=surname, cell=cell, email=email, password=password,
                                              is_active=True)
-        user_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
+        key = user_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
+        if not bool(key):
+            message: str = "Unable to save user database"
+            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
         return jsonify({'status': True,
                         "message": "Successfully created new user",
                         "payload": user_instance.to_dict()
@@ -144,7 +152,11 @@ class UserView:
             user_instance.email = email
             user_instance.is_admin = is_admin
             user_instance.is_support = is_support
-            user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+            key = user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+            if not bool(key):
+                message: str = "Unable to save user database"
+                raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
             return jsonify({'status': True, 'message': 'successfully updated user details',
                             'payload': user_instance.to_dict()}), status_codes.successfully_updated_code
 
@@ -182,7 +194,11 @@ class UserView:
             user_instance.email = email
             user_instance.is_admin = is_admin
             user_instance.is_support = is_support
-            user_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
+            key = user_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
+            if not bool(key):
+                message: str = "Unable to save user database"
+                raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
             return jsonify({'status': True, 'message': 'successfully updated user details',
                             'payload': user_instance.to_dict()}), status_codes.successfully_updated_code
         else:
@@ -289,7 +305,8 @@ class UserView:
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def get_active_users_async(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
-            return a list of all users
+            get active users list
+        :param organization_id:
         :return:
         ***REMOVED***
         users_list: typing.List[dict] = [user.to_dict() for user in UserModel.query(
@@ -299,6 +316,7 @@ class UserView:
             return jsonify({'status': True,
                             'payload': users_list,
                             'message': 'successfully retrieved active users'}), status_codes.status_ok_code
+
         message: str = "Unable to find users list"
         return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
@@ -307,7 +325,8 @@ class UserView:
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_in_active_users(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
-            return a list of non active users
+            get in-active  list
+        :param organization_id:
         :return:
         ***REMOVED***
         users_list: typing.List[dict] = [user.to_dict() for user in UserModel.query(
@@ -327,6 +346,7 @@ class UserView:
     async def get_in_active_users_async(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             return a list of non active users
+        :param organization_id:
         :return:
         ***REMOVED***
         users_list: typing.List[dict] = [user.to_dict() for user in UserModel.query(
@@ -346,6 +366,7 @@ class UserView:
     def get_all_users(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             get a list of all users
+        :param organization_id:
         :return:
         ***REMOVED***
         users_list: typing.List[dict] = [user.to_dict() for user in UserModel.query(
@@ -365,6 +386,7 @@ class UserView:
     async def get_all_users_async(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             get a list of all users
+        :param organization_id:
         :return:
         ***REMOVED***
         users_list: typing.List[dict] = [user.to_dict() for user in UserModel.query(
@@ -467,6 +489,13 @@ class UserView:
     @handle_view_errors
     def check_password(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
                        password:  typing.Union[str, None]) -> tuple:
+        ***REMOVED***
+            check password
+        :param organization_id:
+        :param uid:
+        :param password:
+        :return:
+        ***REMOVED***
 
         if not isinstance(uid, str) or not bool(uid.strip()):
             message: str = "user Id is required"
@@ -489,7 +518,15 @@ class UserView:
 
     @use_context
     @handle_view_errors
-    async def check_password_async(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None], password:  typing.Union[str, None]) -> tuple:
+    async def check_password_async(self, organization_id: typing.Union[str, None],
+                                   uid: typing.Union[str, None], password:  typing.Union[str, None]) -> tuple:
+        ***REMOVED***
+            check password asynchronously
+        :param organization_id:
+        :param uid:
+        :param password:
+        :return:
+        ***REMOVED***
         if not isinstance(uid, str) or not bool(uid.strip()):
             message: str = "uid is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -512,6 +549,12 @@ class UserView:
     @use_context
     @handle_view_errors
     def deactivate_user(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None]) -> tuple:
+        ***REMOVED***
+            de-activate user
+        :param organization_id:
+        :param uid:
+        :return:
+        ***REMOVED***
         if not isinstance(uid, str) or not bool(uid.strip()):
             message: str = "UserID is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -529,6 +572,12 @@ class UserView:
     @handle_view_errors
     async def deactivate_user_async(self, organization_id: typing.Union[str, None],
                                     uid: typing.Union[str, None]) -> tuple:
+        ***REMOVED***
+            deactivate_user_async given uid and organization_id
+        :param organization_id:
+        :param uid:
+        :return:
+        ***REMOVED***
 
         if not isinstance(uid, str) or not bool(uid.strip()):
             message: str = "uid is required"
@@ -547,11 +596,15 @@ class UserView:
     @handle_view_errors
     def login(self, organization_id: typing.Union[str, None], email:   typing.Union[str, None],
               password: typing.Union[str, None]) -> tuple:
-
         ***REMOVED***
             this login utility may support client app , not necessary for admin and service to service calls
             Options:
             firebase login, JWT Token
+
+        :param organization_id:
+        :param email:
+        :param password:
+        :return:
         ***REMOVED***
         user_model: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                 UserModel.email == email).get()
@@ -581,7 +634,9 @@ class UserView:
                             email: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             # Use the email sdk to send recovery email and return
-            :return:
+        :param organization_id:
+        :param email:
+        :return:
         ***REMOVED***
         # TODO: complete this by actually sending recovery email
         return jsonify({'status': False, 'message': 'Unable to send recovery email please try again later'}), 500
