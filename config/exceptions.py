@@ -68,6 +68,9 @@ class DataServiceError(HTTPException):
 
 
 class InputError(Exception):
+    ***REMOVED***
+        an error to throw when there is bad data on the Input
+    ***REMOVED***
     code: int = error_codes.input_error_code
     description: str = "Unable to process input"
 
@@ -86,6 +89,9 @@ class InputError(Exception):
 
 
 class UnAuthenticatedError(HTTPException):
+    ***REMOVED***
+        in-case of an authentication error throw this error
+    ***REMOVED***
     code: int = error_codes.un_auth_error_code
     description: str = "You are not authorized to use this resource"
 
@@ -107,6 +113,9 @@ class UnAuthenticatedError(HTTPException):
 
 
 class RequestError(HTTPException):
+    ***REMOVED***
+        errors related to requests on local servers
+    ***REMOVED***
     code: int = error_codes.request_not_found_error_code
     description: str = "Request unsuccessful"
 

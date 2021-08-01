@@ -1,6 +1,8 @@
 import typing
 from flask import jsonify, current_app
 from werkzeug.security import check_password_hash
+
+from config.exceptions import error_codes, status_codes, InputError, UnAuthenticatedError
 from main import app_cache
 from database.users import UserModel
 from security.users_authenticator import encode_auth_token
@@ -26,28 +28,29 @@ class UserView:
         ***REMOVED***
             create new user
         ***REMOVED***
-        # TODO - refactor this code
-        if (uid is not None) and (uid != ""):
+
+        if not isinstance(uid, str) or not bool(uid.strip()):
             user_instance: UserModel = UserModel.query(UserModel.uid == uid).get()
             if isinstance(user_instance, UserModel):
-                return jsonify({'status': False, 'message': 'user already exists'}), 500
+                return jsonify({'status': False,
+                                'message': 'user already exists'}), error_codes.resource_conflict_error_code
 
         user_instance: UserModel = UserModel.query(UserModel.email == email).get()
         if isinstance(user_instance, UserModel):
             # NOTE: Email already attached to an existing user
             message: str = '''the email you submitted is already attached to an account please 
             login again or reset your password'''
-            return jsonify({'status': False, 'message': message}), 500
+            return jsonify({'status': False, 'message': message}), error_codes.resource_conflict_error_code
 
         user_instance: UserModel = UserModel.query(UserModel.cell == cell).get()
         if isinstance(user_instance, UserModel):
             message: str = '''the cell you submitted is already attached to an account please login again or 
             reset your password'''
-            return jsonify({'status': False, 'message': message}), 500
+            return jsonify({'status': False, 'message': message}), error_codes.resource_conflict_error_code
 
-        if (uid is None) or (uid != ""):
+        if not isinstance(uid, str) or not bool(uid.strip()):
             uid = create_id()
-        print(uid, names, surname, cell, email, password)
+
         user_instance: UserModel = UserModel(organization_id=organization_id, uid=uid, names=names, surname=surname, cell=cell, email=email, password=password,
                                              is_active=True)
         user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
@@ -64,21 +67,23 @@ class UserView:
         ***REMOVED***
             create new user
         ***REMOVED***
-        if (uid is not None) and (uid != ""):
+        if not isinstance(uid, str) or not bool(uid.strip()):
             user_instance: UserModel = UserModel.query(UserModel.uid == uid).get_async().get_result()
             if isinstance(user_instance, UserModel):
-                return jsonify({'status': False, 'message': 'user already exists'}), 500
+                return jsonify({'status': False,
+                                'message': 'user already exists'}), error_codes.resource_conflict_error_code
+
         user_instance: UserModel = UserModel.query(UserModel.email == email).get_async().get_result()
         if isinstance(user_instance, UserModel):
             message: str = '''the email you submitted is already attached to an account please login again or 
             reset your password'''
-            return jsonify({'status': False, 'message': message}), 500
+            return jsonify({'status': False, 'message': message}), error_codes.resource_conflict_error_code
 
         user_instance: UserModel = UserModel.query(UserModel.cell == cell).fetch_async().get_result()
         if isinstance(user_instance, UserModel):
             message: str = '''the cell you submitted is already attached to an account please login again 
             or reset your password'''
-            return jsonify({'status': False, 'message': message}), 500
+            return jsonify({'status': False, 'message': message}), error_codes.resource_conflict_error_code
 
         if (uid is None) or (uid == ""):
             uid = create_id()
@@ -89,7 +94,7 @@ class UserView:
         return jsonify({'status': True,
                         "message": "Successfully created new user",
                         "payload": user_instance.to_dict()
-                        }), 200
+                        }), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
@@ -100,8 +105,9 @@ class UserView:
         ***REMOVED***
             update user details
         ***REMOVED***
-        if (uid is None) or (uid == ""):
-            return jsonify({'status': False, 'message': 'User ID is required'}), 500
+        if not isinstance(uid, str) or not bool(uid.strip()):
+            message: str = "User ID is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.uid == uid).get()
@@ -114,9 +120,10 @@ class UserView:
             user_instance.is_support = is_support
             user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             return jsonify({'status': True, 'message': 'successfully updated user details',
-                            'payload': user_instance.to_dict()}), 200
-        else:
-            return jsonify({'status': False, 'message': 'user not found cannot update user details'}), 500
+                            'payload': user_instance.to_dict()}), status_codes.successfully_updated_code
+
+        return jsonify({'status': False,
+                        'message': 'user not found cannot update user details'}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -127,8 +134,9 @@ class UserView:
         ***REMOVED***
             update user details
         ***REMOVED***
-        if (uid is None) or (uid == ""):
-            return jsonify({'status': False, 'message': 'User ID is required'}), 500
+        if not isinstance(uid, str) or not bool(uid.strip()):
+            message: str = "User ID is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.uid == uid).get_async().get_result()
@@ -141,9 +149,10 @@ class UserView:
             user_instance.is_support = is_support
             user_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
             return jsonify({'status': True, 'message': 'successfully updated user details',
-                            'payload': user_instance.to_dict()}), 200
+                            'payload': user_instance.to_dict()}), status_codes.successfully_updated_code
         else:
-            return jsonify({'status': False, 'message': 'user not found cannot update user details'}), 500
+            return jsonify({'status': False,
+                            'message': 'user not found cannot update user details'}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -157,26 +166,32 @@ class UserView:
             :param cell:
             :return:
         ***REMOVED***
-        if (uid != "") and (uid is not None):
+        if isinstance(uid, str) and bool(uid.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.uid == uid).get()
             if isinstance(user_instance, UserModel):
                 user_instance.key.delete()
-                return jsonify({'status': True, 'message': 'successfully deleted user'}), 200
-        elif (email != "") and (email is not None):
+                return jsonify({'status': True,
+                                'message': 'successfully deleted user'}), status_codes.successfully_updated_code
+
+        elif isinstance(email, str) and bool(email.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.email == email).get()
             if isinstance(user_instance, UserModel):
                 user_instance.key.delete()
-                return jsonify({'status': True, 'message': 'successfully deleted user'}), 200
-        elif (cell != "") and (cell is not None):
+                return jsonify({'status': True,
+                                'message': 'successfully deleted user'}), status_codes.successfully_updated_code
+
+        elif isinstance(cell, str) and bool(cell.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.cell == cell).get()
             if isinstance(user_instance, UserModel):
                 # TODO- rather mark user as deleted
                 user_instance.key.delete()
-                return jsonify({'status': True, 'message': 'successfully deleted user'}), 200
-        return jsonify({'status': False, 'message': 'user not found'}), 500
+                return jsonify({'status': True,
+                                'message': 'successfully deleted user'}), status_codes.successfully_updated_code
+
+        return jsonify({'status': False, 'message': 'user not found'}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -190,26 +205,32 @@ class UserView:
             :param cell:
             :return:
         ***REMOVED***
-        if (uid != "") and (uid is not None):
+        if isinstance(uid, str) and bool(uid.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.uid == uid).get_async().get_result()
             if isinstance(user_instance, UserModel):
                 user_instance.key.delete()
-                return jsonify({'status': True, 'message': 'successfully deleted user'}), 200
-        elif (email != "") and (email is not None):
+                return jsonify({'status': True,
+                                'message': 'successfully deleted user'}), status_codes.data_not_found_code
+
+        elif isinstance(email, str) and bool(email.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.email == email).get_async().get_result()
             if isinstance(user_instance, UserModel):
                 user_instance.key.delete()
-                return jsonify({'status': True, 'message': 'successfully deleted user'}), 200
-        elif (cell != "") and (cell is not None):
+                return jsonify({'status': True,
+                                'message': 'successfully deleted user'}), status_codes.data_not_found_code
+
+        elif isinstance(cell, str) and bool(cell.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.cell == cell).get_async().get_result()
             if isinstance(user_instance, UserModel):
                 # TODO- rather mark user as deleted
                 user_instance.key.delete()
-                return jsonify({'status': True, 'message': 'successfully deleted user'}), 200
-        return jsonify({'status': False, 'message': 'user not found'}), 500
+                return jsonify({'status': True,
+                                'message': 'successfully deleted user'}), status_codes.data_not_found_code
+
+        return jsonify({'status': False, 'message': 'user not found'}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -221,7 +242,12 @@ class UserView:
         ***REMOVED***
         users_list: typing.List[dict] = [user.to_dict() for user in UserModel.query(
             UserModel.organization_id == organization_id, UserModel.is_active == True).fetch()]
-        return jsonify({'status': True, 'payload': users_list, 'message': 'successfully retrieved active users'}), 200
+
+        if len(users_list) > 0:
+            return jsonify({'status': True, 'payload': users_list,
+                            'message': 'successfully retrieved active users'}), status_codes.status_ok_code
+        message: str = "Unable to find users"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -234,7 +260,12 @@ class UserView:
         users_list: typing.List[dict] = [user.to_dict() for user in UserModel.query(
             UserModel.organization_id == organization_id, UserModel.is_active == True).fetch_async().get_result()]
 
-        return jsonify({'status': True, 'payload': users_list, 'message': 'successfully retrieved active users'}), 200
+        if len(users_list) > 0:
+            return jsonify({'status': True,
+                            'payload': users_list,
+                            'message': 'successfully retrieved active users'}), status_codes.status_ok_code
+        message: str = "Unable to find users list"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -246,8 +277,14 @@ class UserView:
         ***REMOVED***
         users_list: typing.List[dict] = [user.to_dict() for user in UserModel.query(
             UserModel.organization_id == organization_id, UserModel.is_active == False).fetch()]
-        message: str = 'successfully retrieved active users'
-        return jsonify({'status': True, 'payload': users_list, 'message': message}), 200
+
+        if len(users_list) > 0:
+            message: str = 'successfully retrieved active users'
+            return jsonify({'status': True, 'payload': users_list,
+                            'message': message}), status_codes.status_ok_code
+
+        message: str = "Unable to find active users"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -260,7 +297,13 @@ class UserView:
         users_list: typing.List[dict] = [user.to_dict() for user in UserModel.query(
             UserModel.organization_id == organization_id, UserModel.is_active == False).fetch_async().get_result()]
 
-        return jsonify({'status': True, 'payload': users_list, 'message': 'successfully retrieved active users'}), 200
+        if len(users_list) > 0:
+            return jsonify({'status': True,
+                            'payload': users_list,
+                            'message': 'successfully retrieved active users'}), status_codes.status_ok_code
+
+        message: str = "Unable to find active users"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -272,8 +315,14 @@ class UserView:
         ***REMOVED***
         users_list: typing.List[dict] = [user.to_dict() for user in UserModel.query(
             UserModel.organization_id == organization_id).fetch()]
-        message: str = 'successfully retrieved active users'
-        return jsonify({'status': True, 'payload': users_list, 'message': message}), 200
+
+        if len(users_list) > 0:
+            message: str = 'successfully retrieved active users'
+            return jsonify({'status': True,
+                            'payload': users_list, 'message': message}), status_codes.status_ok_code
+
+        message: str = "Unable to retrieve active users"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -285,8 +334,13 @@ class UserView:
         ***REMOVED***
         users_list: typing.List[dict] = [user.to_dict() for user in UserModel.query(
             UserModel.organization_id == organization_id).fetch_async().get_result()]
-        message: str = 'successfully retrieved active users'
-        return jsonify({'status': True, 'payload': users_list, 'message': message}), 200
+
+        if len(users_list) > 0:
+            message: str = 'successfully retrieved active users'
+            return jsonify({'status': True, 'payload': users_list, 'message': message}), 200
+
+        message: str = "Unable to retrieve all users"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -301,28 +355,35 @@ class UserView:
             :param email:
             :return:
         ***REMOVED***
-        if (uid is not None) and (uid != ""):
+        if isinstance(uid, str) and bool(uid.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.uid == uid).get()
             if isinstance(user_instance, UserModel):
                 message: str = 'successfully retrieved user by uid'
-                return jsonify({'status': True, 'payload': user_instance.to_dict(), 'message': message}), 200
+                return jsonify({'status': True,
+                                'payload': user_instance.to_dict(),
+                                'message': message}), status_codes.status_ok_code
 
-        if (cell is not None) and (cell != ""):
+        if isinstance(cell, str) and bool(cell.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.cell == cell).get()
             if isinstance(user_instance, UserModel):
                 message: str = 'successfully retrieved user by cell'
-                return jsonify({'status': True, 'payload': user_instance.to_dict(), 'message': message}), 200
+                return jsonify({'status': True,
+                                'payload': user_instance.to_dict(),
+                                'message': message}), status_codes.status_ok_code
 
-        if (email is not None) and (email != ""):
+        if isinstance(email, str) and bool(email.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.email == email).get()
             if isinstance(user_instance, UserModel):
                 message: str = 'successfully retrieved user by email'
-                return jsonify({'status': True, 'payload': user_instance.to_dict(), 'message': message}), 200
+                return jsonify({'status': True,
+                                'payload': user_instance.to_dict(),
+                                'message': message}), status_codes.status_ok_code
 
-        return jsonify({'status': False, 'message': 'to retrieve a user either submit an email, cell or user id'}), 500
+        message: str = 'to retrieve a user either submit an email, cell or user id'
+        raise InputError(status=error_codes.input_error_code, description=message)
 
     @use_context
     @handle_view_errors
@@ -337,96 +398,115 @@ class UserView:
             :param email:
             :return:
         ***REMOVED***
-        if (uid is not None) and (uid != ""):
+        if isinstance(uid, str) and bool(uid.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.uid == uid).get_async().get_result()
             if isinstance(user_instance, UserModel):
                 message: str = 'successfully retrieved user by uid'
-                return jsonify({'status': True, 'payload': user_instance.to_dict(), 'message': message}), 200
+                return jsonify({'status': True,
+                                'payload': user_instance.to_dict(),
+                                'message': message}), status_codes.status_ok_code
 
-        if (cell is not None) and (cell != ""):
+        if isinstance(cell, str) and bool(cell.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.cell == cell).get_async().get_result()
             if isinstance(user_instance, UserModel):
                 message: str = 'successfully retrieved user by cell'
-                return jsonify({'status': True, 'payload': user_instance.to_dict(), 'message': message}), 200
+                return jsonify({'status': True,
+                                'payload': user_instance.to_dict(),
+                                'message': message}), status_codes.status_ok_code
 
-        if (email is not None) and (email != ""):
+        if isinstance(email, str) and bool(email.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.email == email).get_async().get_result()
             if isinstance(user_instance, UserModel):
                 message: str = 'successfully retrieved user by email'
-                return jsonify({'status': True, 'payload': user_instance.to_dict(), 'message': message}), 200
+                return jsonify({'status': True,
+                                'payload': user_instance.to_dict(),
+                                'message': message}), status_codes.status_ok_code
 
-        return jsonify({'status': False, 'message': 'to retrieve a user either submit an email, cell or user id'}), 500
+        message: str = 'to retrieve a user either submit an email, cell or user id'
+        raise InputError(status=error_codes.input_error_code, description=message)
 
     @use_context
     @handle_view_errors
     def check_password(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
                        password:  typing.Union[str, None]) -> tuple:
 
-        if (uid is None) or (uid == ""):
-            return jsonify({'status': False, 'message': 'please submit user id'}), 500
-        if (password is None) or (password == ""):
-            return jsonify({'status': False, 'message': 'please submit password'}), 500
+        if not isinstance(uid, str) or not bool(uid.strip()):
+            message: str = "user Id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(password, str) or not bool(password.strip()):
+            message: str = "password is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.uid == uid).get()
         if isinstance(user_instance, UserModel):
             if check_password_hash(password=password, pwhash=user_instance.password) is True:
-                return jsonify({'status': True, 'message': 'passwords match'}), 200
-            else:
-                return jsonify({'status': False, 'message': 'passwords do not match'}), 200
+                return jsonify({'status': True, 'message': 'passwords match'}), status_codes.status_ok_code
+
+            return jsonify({'status': False,
+                            'message': 'passwords do not match'}), error_codes.authentication_required_error_code
         else:
-            return jsonify({'status': False, 'message': 'user not found'}), 200
+            return jsonify({'status': False, 'message': 'user not found'}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
-    async def check_password_async(self, organization_id: typing.Union[str, None],uid: typing.Union[str, None], password:  typing.Union[str, None]) -> tuple:
-        if (uid is None) or (uid == ""):
-            return jsonify({'status': False, 'message': 'please submit user id'}), 500
-        if (password is None) or (password == ""):
-            return jsonify({'status': False, 'message': 'please submit password'}), 500
+    async def check_password_async(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None], password:  typing.Union[str, None]) -> tuple:
+        if not isinstance(uid, str) or not bool(uid.strip()):
+            message: str = "uid is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(password, str) or not bool(password.strip()):
+            message: str = "password is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.uid == uid).get_async().get_result()
         if isinstance(user_instance, UserModel):
             if check_password_hash(password=password, pwhash=user_instance.password) is True:
-                return jsonify({'status': True, 'message': 'passwords match'}), 200
-            else:
-                return jsonify({'status': False, 'message': 'passwords do not match'}), 200
+                return jsonify({'status': True, 'message': 'passwords match'}), status_codes.status_ok_code
+
+            return jsonify({'status': False,
+                            'message': 'passwords do not match'}), error_codes.authentication_required_error_code
         else:
-            return jsonify({'status': False, 'message': 'user not found'}), 200
+            return jsonify({'status': False, 'message': 'user not found'}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
     def deactivate_user(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None]) -> tuple:
-        if (uid is None) or (uid == ""):
-            return jsonify({'status': False, 'message': 'please submit user id'}), 500
+        if not isinstance(uid, str) or not bool(uid.strip()):
+            message: str = "UserID is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.uid == uid).get()
         if isinstance(user_instance, UserModel):
             user_instance.is_active = False
             user_instance.put()
-            return jsonify({'status': True, 'message': 'user deactivated'}), 200
-        else:
-            return jsonify({'status': False, 'message': 'user not found'}), 200
+            return jsonify({'status': True, 'message': 'user deactivated'}), status_codes.status_ok_code
+
+        return jsonify({'status': False, 'message': 'user not found'}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
     async def deactivate_user_async(self, organization_id: typing.Union[str, None],
                                     uid: typing.Union[str, None]) -> tuple:
 
-        if (uid is None) or (uid == ""):
-            return jsonify({'status': False, 'message': 'please submit user id'}), 500
+        if not isinstance(uid, str) or not bool(uid.strip()):
+            message: str = "uid is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.uid == uid).get_async().get_result()
         if isinstance(user_instance, UserModel):
             user_instance.is_active = False
             user_instance.put_async().get_result()
-            return jsonify({'status': True, 'message': 'user deactivated'}), 200
-        else:
-            return jsonify({'status': False, 'message': 'user not found'}), 200
+            return jsonify({'status': True, 'message': 'user deactivated'}), status_codes.status_ok_code
+
+        return jsonify({'status': False, 'message': 'user not found'}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -442,21 +522,23 @@ class UserView:
                                                 UserModel.email == email).get()
 
         if not isinstance(user_model, UserModel):
-            return jsonify({"message": "User not found"}), 401
+            message: str = "uid is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         if not user_model.is_active:
-            message: str = 'login was not successful user is de-activated please contact admin'
-            return jsonify({"message": message}), 403
+            message: str = 'User is de-activated please contact admin'
+            raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
         print('checking password hashes: {} password: {}'.format(user_model.password, password))
         if check_password_hash(user_model.password, password):
             token = encode_auth_token(uid=user_model.uid)
-            return jsonify({'token': token, 'message': "you have successfully logged in"}), 200
-        else:
-            message: str = 'login was not successful please check your <strong>email: <code>{}</code> </strong> or ' \
-                           '<strong>password: <code>{}</code></strong>'.format(email, password)
+            return jsonify({'token': token,
+                            'message': "you have successfully logged in"}), status_codes.status_ok_code
 
-            return jsonify({"message": message}), 401
+        message: str = 'login was not successful please check your <strong>email: <code>{}</code> </strong> or ' \
+                       '<strong>password: <code>{}</code></strong>'.format(email, password)
+
+        return jsonify({"message": message}), error_codes.un_auth_error_code
 
     @use_context
     @handle_view_errors
