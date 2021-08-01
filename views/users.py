@@ -3,7 +3,7 @@ from flask import jsonify, current_app
 from werkzeug.security import check_password_hash
 from config.exceptions import error_codes, status_codes, InputError, UnAuthenticatedError, DataServiceError
 from main import app_cache
-from database.users import UserModel
+from database.users import UserModel, UserValidators
 from security.users_authenticator import encode_auth_token
 from utils.utils import create_id, return_ttl, can_cache
 from config.exception_handlers import handle_view_errors
@@ -14,10 +14,24 @@ users_type = typing.List[UserModel]
 
 # TODO create test cases for User View and Documentations
 # noinspection DuplicatedCode
-class UserView:
+class UserView(UserValidators):
     def __init__(self):
         self._max_retries = current_app.config.get('DATASTORE_RETRIES')
         self._max_timeout = current_app.config.get('DATASTORE_TIMEOUT')
+
+    def can_add_user(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
+                     email: typing.Union[str, None], cell: typing.Union[str, None]) -> bool:
+        ***REMOVED***
+            if this returns true the user can be added
+            # TODO - check if user has already logged in to this organization
+            # TODO - check if email and cell are valid
+        :param email: required
+        :param cell: required
+        :param organization_id: required
+        :param uid: required
+        :return: boolean indicate if the user can be added or not
+        ***REMOVED***
+        pass
 
     @use_context
     @handle_view_errors
@@ -35,6 +49,7 @@ class UserView:
             :param uid:
             :return: returns user record
         ***REMOVED***
+
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -62,8 +77,9 @@ class UserView:
         if not isinstance(uid, str) or not bool(uid.strip()):
             uid = create_id()
 
-        user_instance: UserModel = UserModel(organization_id=organization_id, uid=uid, names=names, surname=surname, cell=cell, email=email, password=password,
-                                             is_active=True)
+        user_instance: UserModel = UserModel(organization_id=organization_id, uid=uid, names=names,
+                                             surname=surname, cell=cell, email=email, password=password, is_active=True)
+
         key = user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
         if not bool(key):
             message: str = "Unable to save database"
@@ -72,7 +88,7 @@ class UserView:
         return jsonify({'status': True,
                         "message": "Successfully created new user",
                         "payload": user_instance.to_dict()
-                        }), 200
+                        }), status_codes.status_ok_code
 
     @use_context
     @handle_view_errors
@@ -689,6 +705,7 @@ class UserView:
         if not isinstance(email, str) or not bool(email.strip()):
             message: str = "email is required"
             raise InputError(status=error_codes.input_error_code, description=message)
+
         if not isinstance(password, str) or not bool(password.strip()):
             message: str = "password is required"
             raise InputError(status=error_codes.input_error_code, description=message)

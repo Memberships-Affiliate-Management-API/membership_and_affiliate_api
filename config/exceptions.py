@@ -5,7 +5,7 @@ from werkzeug.exceptions import HTTPException
 class ErrorCodes:
     ***REMOVED***
         definitions of error codes, for errors that can be raised in Memberships & Affiliates Management API
-        this is incase requests are not completed successfully
+        this is in-case requests are not completed successfully
     ***REMOVED***
     def __init__(self) -> None:
         self.input_error_code: int = 422
