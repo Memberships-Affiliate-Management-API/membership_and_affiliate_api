@@ -1,7 +1,6 @@
 import typing
 from flask import jsonify, current_app
 from werkzeug.security import check_password_hash
-
 from config.exceptions import error_codes, status_codes, InputError, UnAuthenticatedError, DataServiceError
 from main import app_cache
 from database.users import UserModel
@@ -36,6 +35,10 @@ class UserView:
             :param uid:
             :return: returns user record
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         # TODO - can_add_user check must be done here
         if not isinstance(uid, str) or not bool(uid.strip()):
             user_instance: UserModel = UserModel.query(UserModel.uid == uid).get()
@@ -87,6 +90,10 @@ class UserView:
         :param uid:
         :return:
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         if not isinstance(uid, str) or not bool(uid.strip()):
             user_instance: UserModel = UserModel.query(UserModel.uid == uid).get_async().get_result()
             if isinstance(user_instance, UserModel):
@@ -105,7 +112,7 @@ class UserView:
             or reset your password'''
             return jsonify({'status': False, 'message': message}), error_codes.resource_conflict_error_code
 
-        if (uid is None) or (uid == ""):
+        if not isinstance(uid, str) or not bool(uid.strip()):
             uid = create_id()
 
         user_instance: UserModel = UserModel(organization_id=organization_id, uid=uid, names=names, surname=surname, cell=cell, email=email, password=password,
@@ -138,6 +145,9 @@ class UserView:
         :param is_support:
         :return:
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         if not isinstance(uid, str) or not bool(uid.strip()):
             message: str = "User ID is required"
@@ -181,6 +191,10 @@ class UserView:
         :param is_support:
         :return:
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         if not isinstance(uid, str) or not bool(uid.strip()):
             message: str = "User ID is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -217,6 +231,10 @@ class UserView:
             :param cell:
             :return:
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         if isinstance(uid, str) and bool(uid.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.uid == uid).get()
@@ -256,6 +274,10 @@ class UserView:
             :param cell:
             :return:
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         if isinstance(uid, str) and bool(uid.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.uid == uid).get_async().get_result()
@@ -291,6 +313,10 @@ class UserView:
             return a list of all users
         :return:
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         users_list: typing.List[dict] = [user.to_dict() for user in UserModel.query(
             UserModel.organization_id == organization_id, UserModel.is_active == True).fetch()]
 
@@ -309,6 +335,10 @@ class UserView:
         :param organization_id:
         :return:
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         users_list: typing.List[dict] = [user.to_dict() for user in UserModel.query(
             UserModel.organization_id == organization_id, UserModel.is_active == True).fetch_async().get_result()]
 
@@ -329,6 +359,10 @@ class UserView:
         :param organization_id:
         :return:
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         users_list: typing.List[dict] = [user.to_dict() for user in UserModel.query(
             UserModel.organization_id == organization_id, UserModel.is_active == False).fetch()]
 
@@ -349,6 +383,10 @@ class UserView:
         :param organization_id:
         :return:
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         users_list: typing.List[dict] = [user.to_dict() for user in UserModel.query(
             UserModel.organization_id == organization_id, UserModel.is_active == False).fetch_async().get_result()]
 
@@ -369,6 +407,10 @@ class UserView:
         :param organization_id:
         :return:
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         users_list: typing.List[dict] = [user.to_dict() for user in UserModel.query(
             UserModel.organization_id == organization_id).fetch()]
 
@@ -389,6 +431,10 @@ class UserView:
         :param organization_id:
         :return:
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         users_list: typing.List[dict] = [user.to_dict() for user in UserModel.query(
             UserModel.organization_id == organization_id).fetch_async().get_result()]
 
@@ -412,6 +458,10 @@ class UserView:
             :param email:
             :return:
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         if isinstance(uid, str) and bool(uid.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.uid == uid).get()
@@ -420,6 +470,8 @@ class UserView:
                 return jsonify({'status': True,
                                 'payload': user_instance.to_dict(),
                                 'message': message}), status_codes.status_ok_code
+            message: str = "Unable to find user with that uid"
+            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
         if isinstance(cell, str) and bool(cell.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
@@ -429,6 +481,8 @@ class UserView:
                 return jsonify({'status': True,
                                 'payload': user_instance.to_dict(),
                                 'message': message}), status_codes.status_ok_code
+            message: str = "Unable to find user with that cell number"
+            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
         if isinstance(email, str) and bool(email.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
@@ -438,6 +492,8 @@ class UserView:
                 return jsonify({'status': True,
                                 'payload': user_instance.to_dict(),
                                 'message': message}), status_codes.status_ok_code
+            message: str = "Unable to find user with that email address"
+            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
         message: str = 'to retrieve a user either submit an email, cell or user id'
         raise InputError(status=error_codes.input_error_code, description=message)
@@ -463,6 +519,8 @@ class UserView:
                 return jsonify({'status': True,
                                 'payload': user_instance.to_dict(),
                                 'message': message}), status_codes.status_ok_code
+            message: str = "Unable to find user with that uid"
+            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
         if isinstance(cell, str) and bool(cell.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
@@ -472,6 +530,8 @@ class UserView:
                 return jsonify({'status': True,
                                 'payload': user_instance.to_dict(),
                                 'message': message}), status_codes.status_ok_code
+            message: str = "Unable to find user with that cell number"
+            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
         if isinstance(email, str) and bool(email.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
@@ -481,6 +541,8 @@ class UserView:
                 return jsonify({'status': True,
                                 'payload': user_instance.to_dict(),
                                 'message': message}), status_codes.status_ok_code
+            message: str = "Unable to find user with that email address"
+            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
         message: str = 'to retrieve a user either submit an email, cell or user id'
         raise InputError(status=error_codes.input_error_code, description=message)
@@ -496,6 +558,9 @@ class UserView:
         :param password:
         :return:
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         if not isinstance(uid, str) or not bool(uid.strip()):
             message: str = "user Id is required"
@@ -527,6 +592,10 @@ class UserView:
         :param password:
         :return:
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         if not isinstance(uid, str) or not bool(uid.strip()):
             message: str = "uid is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -555,6 +624,10 @@ class UserView:
         :param uid:
         :return:
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         if not isinstance(uid, str) or not bool(uid.strip()):
             message: str = "UserID is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -578,6 +651,9 @@ class UserView:
         :param uid:
         :return:
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         if not isinstance(uid, str) or not bool(uid.strip()):
             message: str = "uid is required"
@@ -606,6 +682,17 @@ class UserView:
         :param password:
         :return:
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(email, str) or not bool(email.strip()):
+            message: str = "email is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+        if not isinstance(password, str) or not bool(password.strip()):
+            message: str = "password is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         user_model: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                 UserModel.email == email).get()
 
@@ -617,7 +704,6 @@ class UserView:
             message: str = 'User is de-activated please contact admin'
             raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
-        print('checking password hashes: {} password: {}'.format(user_model.password, password))
         if check_password_hash(user_model.password, password):
             token = encode_auth_token(uid=user_model.uid)
             return jsonify({'token': token,
