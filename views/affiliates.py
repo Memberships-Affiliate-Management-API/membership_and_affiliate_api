@@ -118,6 +118,7 @@ class AffiliatesView(Validator):
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message = 'organization_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
+
         if not isinstance(add, int):
             message: str = "add: amount to update total_recruits is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -151,13 +152,14 @@ class AffiliatesView(Validator):
         ***REMOVED***
 
         affiliate_id: typing.Union[None, str] = affiliate_data.get('affiliate_id')
+        if not isinstance(affiliate_id, str) or not bool(affiliate_id.strip()):
+            message = 'affiliate_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
-
-        if not bool(organization_id.strip()):
-            return jsonify({'status': False, 'message': 'organization_id cannot be Null'}), 500
-
-        if not bool(affiliate_id.strip()):
-            return jsonify({'status': False, 'message': 'affiliate_id is required'}), 500
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message = 'organization_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         affiliate_instance: Affiliates = Affiliates.query(Affiliates.organization_id == organization_id,
                                                           Affiliates.affiliate_id == affiliate_id).get()
@@ -167,12 +169,14 @@ class AffiliatesView(Validator):
             key = affiliate_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             if not bool(key):
                 message: str = 'something went wrong while deleting affiliate'
-                raise DataServiceError(status=500, description=message)
+                raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
             return jsonify({'status': True,
                             'message': 'successfully deleted the affiliate',
-                            'payload': affiliate_instance.to_dict()}), 200
-        else:
-            return jsonify({'status': False, 'message': 'error locating that affiliate'}), 500
+                            'payload': affiliate_instance.to_dict()}), status_codes.successfully_updated_code
+
+        message: str = "Affiliate not found: delete operation cannot be completed"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -184,14 +188,15 @@ class AffiliatesView(Validator):
         :param is_active:
         :return:
         ***REMOVED***
-
         affiliate_id: typing.Union[None, str] = affiliate_data.get('affiliate_id')
-        organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
+        if not isinstance(affiliate_id, str) or not bool(affiliate_id.strip()):
+            message = 'affiliate_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
 
-        if not bool(affiliate_id.strip()):
-            return jsonify({'status': False, 'message': 'affiliate_id is required'}), 500
-        if not bool(organization_id.strip()):
-            return jsonify({'status': False, 'message': 'organization_id id required'}), 500
+        organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message = 'organization_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         if not isinstance(is_active, bool):
             raise ValueError("is_active is required and can only be a boolean")
@@ -201,19 +206,20 @@ class AffiliatesView(Validator):
 
         if isinstance(affiliate_instance, Affiliates):
             if affiliate_instance.is_deleted and is_active:
-                message: str = "cannot activate an affiliate if the affiliate has been deleted"
-                return jsonify({'status': False, 'message': message}), 200
+                message: str = "cannot activate / de-activate an affiliate if the affiliate has been deleted"
+                raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
             affiliate_instance.is_active = is_active
             key = affiliate_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             if not bool(key):
                 message: str = "An Unknown Error occurred while trying to mark affiliate as in-active"
-                raise DataServiceError(status=500, description=message)
+                raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
             return jsonify({'status': True, 'message': 'successfully marked affiliate as inactive',
-                            'payload': affiliate_instance.to_dict()}), 200
-        else:
-            message: str = "Unable to locate affiliate record"
-            return jsonify({'status': False, 'message': message}), 500
+                            'payload': affiliate_instance.to_dict()}), status_codes.successfully_updated_code
+
+        message: str = "Affiliate Not Found: Unable to update record"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
