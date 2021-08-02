@@ -446,78 +446,143 @@ class WalletView(Validator):
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def return_all_wallets(self, organization_id: typing.Union[str, None]) -> tuple:
+        ***REMOVED***
+        given an organization_id return all the organizations wallets
+        :param organization_id:
+        :return:
+        ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
+
         wallet_list: typing.List[WalletModel] = WalletModel.query(WalletModel.organization_id == organization_id).fetch()
         payload: typing.List[dict] = [wallet.to_dict() for wallet in wallet_list]
-        return jsonify({'status': True,
-                        'payload': payload,
-                        'message': 'wallets returned'}), 200
+        if len(payload) > 0:
+            return jsonify({'status': True,
+                            'payload': payload,
+                            'message': 'wallets returned'}), status_codes.status_ok_code
+        return jsonify({'status': False, 'message': 'no wallets found'}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def return_all_wallets_async(self, organization_id: typing.Union[str, None]) -> tuple:
+        ***REMOVED***
+            given an organization_id return all the organizations wallets
+        :param organization_id:
+        :return:
+        ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
         wallet_list: typing.List[WalletModel] = WalletModel.query(
             WalletModel.organization_id == organization_id).fetch_async().get_result()
 
         payload: typing.List[dict] = [wallet.to_dict() for wallet in wallet_list]
-        return jsonify({'status': True,
-                        'payload': payload,
-                        'message': 'wallets returned'}), 200
+        if len(payload) > 0:
+            return jsonify({'status': True,
+                            'payload': payload,
+                            'message': 'wallets returned'}), status_codes.status_ok_code
+        return jsonify({'status': False, 'message': 'wallets not found'}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
     def return_wallets_by_balance(self, organization_id: typing.Union[str, None],
                                   lower_bound: int, higher_bound: int) -> tuple:
+        ***REMOVED***
+            # TODO consider supplying lower_bound and higher_bound as a dict
+            return wallets with balances within lower_bound and higher_bound
+        :param organization_id:
+        :param lower_bound:
+        :param higher_bound:
+        :return:
+        ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
-        # if either lower_bound and higher_bound are not int then exit
-        if not(isinstance(lower_bound, int) or isinstance(higher_bound, int)):
-            return jsonify({'status': False, 'message': "specify lower bound and higher bound"}), 500
+        if not isinstance(lower_bound, int) or not isinstance(higher_bound, int):
+            message: str = "lower_bound and higher_bound are required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         wallet_list: typing.List[WalletModel] = WalletModel.query(WalletModel.organization_id == organization_id,
                                                                   WalletModel.available_funds > lower_bound,
                                                                   WalletModel.available_funds < higher_bound).fetch()
 
         payload: typing.List[dict] = [wallet.to_dict() for wallet in wallet_list]
-        return jsonify({'status': True, 'payload': payload, 'message': 'wallets returned'}), 200
+        return jsonify({'status': True, 'payload': payload, 'message': 'wallets returned'}), status_codes.status_ok_code
 
     @use_context
     @handle_view_errors
     async def return_wallets_by_balance_async(self, organization_id: typing.Union[str, None],
                                               lower_bound: int, higher_bound: int) -> tuple:
+        ***REMOVED***
+            # TODO - consider changing the function name to : return_wallets_by_balance_range_async
+            asynchronous version of return wallets by balance
+        :param organization_id:
+        :param lower_bound:
+        :param higher_bound:
+        :return:
+        ***REMOVED***
 
-        # if either lower_bound and higher_bound are not int then exit
-        if not(isinstance(lower_bound, int) or isinstance(higher_bound, int)):
-            return jsonify({'status': False, 'message': "specify lower bound and higher bound"}), 500
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(lower_bound, int) or not isinstance(higher_bound, int):
+            message: str = "lower_bound and higher_bound are required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         wallet_list: typing.List[WalletModel] = WalletModel.query(
             WalletModel.organization_id == organization_id, WalletModel.available_funds > lower_bound,
             WalletModel.available_funds < higher_bound).fetch_async().get_result()
 
         payload: typing.List[dict] = [wallet.to_dict() for wallet in wallet_list]
-        return jsonify({'status': True, 'payload': payload, 'message': 'wallets returned'}), 200
+        return jsonify({'status': True, 'payload': payload, 'message': 'wallets returned'}), status_codes.status_ok_code
 
     @use_context
     @handle_view_errors
     def wallet_transact(self, organization_id: typing.Union[str, None], uid: str,
                         add: int = None, sub: int = None) -> tuple:
+        ***REMOVED***
+            # TODO -- consider providing an amount to add or substract on a dict
+            perform a transaction on a wallet
+        :param organization_id:
+        :param uid:
+        :param add:
+        :param sub:
+        :return:
+        ***REMOVED***
+        # Raise InputError if any of this are not available
+        self.raise_input_error_if_not_available(organization_id=organization_id, uid=uid)
 
-        if self.can_update_wallet(organization_id=organization_id, uid=uid) is True:
-            wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
-                                                             WalletModel.uid == uid).get()
+        if not (isinstance(sub, int) or isinstance(add, int)):
+            message: str = "sub or add are required"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
-            if isinstance(wallet_instance, WalletModel):
-                if isinstance(sub, int):
-                    wallet_instance.available_funds.amount -= sub
-                if isinstance(add, int):
-                    wallet_instance.available_funds.amount += sub
-                key = wallet_instance.put()
-                if not bool(key):
-                    message: str = "General error updating database"
-                    raise DataServiceError(status=500, description=message)
-                message: str = "Successfully created transaction"
-                return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
-                                'message': message}), 200
-        message: str = "Unable to find wallet"
-        return jsonify({'status': False, 'message': message}), 500
+        if not self.can_update_wallet(organization_id=organization_id, uid=uid):
+            message: str = "You are not authorized to perform a transaction on this wallet"
+            raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
+
+        wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
+                                                         WalletModel.uid == uid).get()
+
+        if isinstance(wallet_instance, WalletModel):
+            if isinstance(sub, int):
+                wallet_instance.available_funds.amount -= sub
+            if isinstance(add, int):
+                wallet_instance.available_funds.amount += sub
+            key = wallet_instance.put()
+            if not bool(key):
+                message: str = "General error updating database"
+                raise DataServiceError(status=500, description=message)
+            message: str = "Successfully created transaction"
+            return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
+                            'message': message}), status_codes.status_ok_code
+
+        message: str = "Unable to find wallet - cannot perform transaction"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
