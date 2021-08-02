@@ -5,8 +5,8 @@ from database.affiliates import AffiliatesValidators as ValidAffiliate
 from database.affiliates import RecruitsValidators as ValidRecruit
 from database.affiliates import EarningsValidators as ValidEarnings
 from database.affiliates import Affiliates, Recruits
-from config.exceptions import DataServiceError
-from utils.utils import create_id, return_ttl, end_of_month, can_cache
+from config.exceptions import DataServiceError, InputError, UnAuthenticatedError, error_codes, status_codes
+from utils.utils import create_id, return_ttl, can_cache
 from config.exception_handlers import handle_view_errors
 from config.use_context import use_context
 
@@ -23,14 +23,37 @@ class Validator(ValidAffiliate, ValidRecruit, ValidEarnings):
         super(Validator, self).__init__()
 
     # noinspection PyTypeChecker
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def can_register_affiliate(self, organization_id: str, uid: str) -> bool:
-        already_registered: typing.Union[bool, None] = self.user_already_registered(
-            organization_id=organization_id, uid=uid)
-        if not isinstance(already_registered, bool):
-            raise ValueError("invalid user id")
-        print("User Already Registered: {}".format(already_registered))
-        return not already_registered
+        ***REMOVED***
+            returns true if user can add an affiliate into this organization
+        :param organization_id:
+        :param uid:
+        :return:
+        ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(uid, str) or not bool(uid.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        # this means the user recruiting this affiliate is already a registered affiliate
+        already_registered: typing.Union[bool, None] = self.recruiter_registered(organization_id=organization_id,
+                                                                                 uid=uid)
+        if isinstance(already_registered, bool):
+            return not already_registered
+        message: str = "Unable to verify input data, due to database error, please try again later"
+        raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
+    def _create_unique_affiliate_id(self) -> str:
+        ***REMOVED***
+            returns an id that does not conflict with any affiliate id
+        :return:
+        ***REMOVED***
+        _id = create_id()
+        affiliate_instance: typing.List[Affiliates] = Affiliates.query(Affiliates.affiliate_id == _id).get()
+        return self._create_unique_affiliate_id() if isinstance(affiliate_instance, Affiliates) else _id
 
 
 # noinspection DuplicatedCode
@@ -51,27 +74,30 @@ class AffiliatesView(Validator):
             Register new affiliate, affiliate_data must contain the uid of the affiliate
             being recruited and organization_id of the organization recruiting the affiliate.
 
+        :param affiliate_data:
+        :return: tuple with registered affiliate
         ***REMOVED***
         uid: typing.Union[None, str] = affiliate_data.get('uid')
         organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
+        # NOTE can register affiliate will check organization_id and uid are valid
+        if not self.can_register_affiliate(organization_id=organization_id, uid=uid):
+            message: str = "You are not authorized to register as an affiliate"
+            raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
+        # NOTE: this creates globally unique Affiliate Key
+        affiliate_id: str = self._create_unique_affiliate_id()
+        # NOTE: other affiliates fields will be auto completed - be defaults
+        affiliate_instance: Affiliates = Affiliates(organization_id=organization_id,
+                                                    affiliate_id=affiliate_id,
+                                                    uid=uid)
 
-        if not bool(uid.strip()):
-            return jsonify({'status': False, 'message': 'user id cannot be Null'}), 500
-        if not bool(organization_id.strip()):
-            return jsonify({'status': False, 'message': 'organization_id cannot Be Null'}), 500
+        key = affiliate_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+        if not bool(key):
+            message: str = "There was an error creating Affiliate"
+            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-        if self.can_register_affiliate(organization_id=organization_id, uid=uid) is True:
-            affiliate_instance: Affiliates = Affiliates(organization_id=organization_id, affiliate_id=create_id(),
-                                                        uid=uid)
-            key = affiliate_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-            if key is None:
-                message: str = "There was an error creating Affiliate"
-                raise DataServiceError(status=500, description=message)
-            return jsonify({'status': True,
-                            'message': 'successfully registered an affiliate',
-                            'payload': affiliate_instance.to_dict()}), 200
-        else:
-            return jsonify({'status': False, 'message': 'User already registered as an Affiliate'}), 500
+        return jsonify({'status': True,
+                        'message': 'successfully registered an affiliate',
+                        'payload': affiliate_instance.to_dict()}), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors

@@ -2,6 +2,8 @@ import typing
 from google.cloud import ndb
 from datetime import date, datetime
 from google.api_core.exceptions import RetryError, Aborted
+
+from config.exception_handlers import handle_store_errors
 from database.mixins import AmountMixin
 from database.setters import setters
 
@@ -11,40 +13,30 @@ class AffiliatesValidators:
         super(AffiliatesValidators, self).__init__()
 
     @staticmethod
+    @handle_store_errors
     def affiliate_exist(affiliate_id: typing.Union[str, None]) -> typing.Union[None, bool]:
-        if not(isinstance(affiliate_id, str)) or (affiliate_id == ""):
-            raise ValueError("Affiliate ID cannot be Null, and Should be a String")
-        try:
-            affiliate_instance: Affiliates = Affiliates.query(Affiliates.affiliate_id == affiliate_id).get()
-            if isinstance(affiliate_instance, Affiliates):
-                return True
-            return False
-        except ConnectionRefusedError:
-            return None
-        except RetryError:
-            return None
-        except Aborted:
-            return None
+        ***REMOVED***
+            returns true
+        :param affiliate_id:
+        :return:
+        ***REMOVED***
+        affiliate_instance: Affiliates = Affiliates.query(Affiliates.affiliate_id == affiliate_id).get()
+        return isinstance(affiliate_instance, Affiliates)
 
     @staticmethod
-    def user_already_registered(organization_id: typing.Union[str, None], 
-                                uid: typing.Union[str, None]) -> typing.Union[None, bool]:
+    @handle_store_errors
+    def recruiter_registered(organization_id: typing.Union[str, None],
+                             uid: typing.Union[str, None]) -> typing.Union[None, bool]:
+        ***REMOVED***
+            returns true or False according to registration status None otherwise
+        :param organization_id:
+        :param uid:
+        :return:
+        ***REMOVED***
+        affiliate_instance: Affiliates = Affiliates.query(Affiliates.organization_id == organization_id,
+                                                          Affiliates.uid == uid).get()
 
-        if not(isinstance(uid, str)) or (uid == ""):
-            raise ValueError("UID cannot be Null, and should be a string")
-        try:
-            affiliate_instance: Affiliates = Affiliates.query(Affiliates.organization_id == organization_id,
-                                                              Affiliates.uid == uid).get()
-
-            if isinstance(affiliate_instance, Affiliates):
-                return True
-            return False
-        except ConnectionRefusedError:
-            return None
-        except RetryError:
-            return None
-        except Aborted:
-            return None
+        return isinstance(affiliate_instance, Affiliates)
 
 
 class RecruitsValidators:
