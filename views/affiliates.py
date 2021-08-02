@@ -301,11 +301,15 @@ class AffiliatesView(Validator):
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_active_affiliates(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
-            NOTE: active affiliates is opposite of deleted affiliates
+            NOTE: active affiliates but not deleted
             returns a list of active affiliates in an organization
         :param organization_id: the organization id of the organization to return the affiliates
         :return: response containing the list of active affiliates
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message = 'organization_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         affiliates_list: typing.List[Affiliates] = Affiliates.query(
             Affiliates.organization_id == organization_id,
             Affiliates.is_active == True, Affiliates.is_deleted == False).fetch()
@@ -316,27 +320,35 @@ class AffiliatesView(Validator):
 
         # Note failed to find active affiliates
         message: str = "Unable to find active affiliates"
-        return jsonify({'status': True, 'message': message}), status_codes.data_not_found_code
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_in_active_affiliates(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
-            returns a list of affiliates who are not active
+            returns a list of affiliates who are not active - but not deleted
 
         :param organization_id: the organization_id of the organization to return affiliates of
         :return: a response tuple with a payload of in-active affiliates from the organization
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message = 'organization_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         affiliates_list: typing.List[Affiliates] = Affiliates.query(
             Affiliates.organization_id == organization_id, Affiliates.is_active == False,
             Affiliates.is_deleted == False).fetch()
 
         payload: typing.List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
-        message: str = "successfully returned all affiliates"
-        return jsonify({'status': True,
-                        'message': message,
-                        'payload': payload}), 200
+        if len(payload) > 0:
+            message: str = "successfully returned all affiliates"
+            return jsonify({'status': True,
+                            'message': message,
+                            'payload': payload}), status_codes.status_ok_code
+
+        message: str = "Unable to find affiliates who are in-active"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -347,34 +359,50 @@ class AffiliatesView(Validator):
         :param organization_id:
         :return: response containing the list of affiliates who are deleted
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message = 'organization_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         affiliates_list: typing.List[Affiliates] = Affiliates.query(
             Affiliates.organization_id == organization_id,
             Affiliates.is_deleted == True).fetch()
+
         payload: typing.List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
-        message: str = "Successfully returned deleted affiliates"
-        return jsonify({'status': True,
-                        'message': message,
-                        'payload': payload}), 200
+        if len(payload) > 0:
+
+            message: str = "Successfully returned deleted affiliates"
+            return jsonify({'status': True,
+                            'message': message,
+                            'payload': payload}), status_codes.status_ok_code
+        message: str = "Unable to find deleted affiliates"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_not_deleted_affiliates(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
+            # NOTE: this function may be redundant
             returns a list of affiliates which are not deleted by  ORGANIZATION_ID
             :param : organization_id: the organization to return deleted affiliates from
             :return : response containing the list of deleted affiliates
         ***REMOVED***
-        affiliates_list: typing.List[Affiliates] = Affiliates.query(
-            Affiliates.organization_id == organization_id,
-            Affiliates.is_deleted == False).fetch()
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message = 'organization_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        affiliates_list: typing.List[Affiliates] = Affiliates.query(Affiliates.organization_id == organization_id,
+                                                                    Affiliates.is_deleted == False).fetch()
 
         payload: typing.List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
-        message: str = "Successfully returned affiliates which are not deleted"
-        return jsonify({'status': True,
-                        'message': message,
-                        'payload': payload}), 200
+        if len(payload) > 0:
+            message: str = "Successfully returned affiliates which are not deleted"
+            return jsonify({'status': True,
+                            'message': message,
+                            'payload': payload}), status_codes.status_ok_code
+
+        message: str = "Unable to locate not deleted affiliates"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
 
 # noinspection DuplicatedCode
