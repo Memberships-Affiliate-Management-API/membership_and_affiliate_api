@@ -579,7 +579,7 @@ class WalletView(Validator):
                 raise DataServiceError(status=500, description=message)
             message: str = "Successfully created transaction"
             return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
-                            'message': message}), status_codes.status_ok_code
+                            'message': message}), status_codes.successfully_updated_code
 
         message: str = "Unable to find wallet - cannot perform transaction"
         return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
@@ -588,25 +588,43 @@ class WalletView(Validator):
     @handle_view_errors
     async def wallet_transact_async(self, organization_id: typing.Union[str, None], uid: str,
                                     add: int = None, sub: int = None) -> tuple:
+        ***REMOVED***
+            asynchronous version of wallet_transact
+        :param organization_id:
+        :param uid:
+        :param add:
+        :param sub:
+        :return:
+        ***REMOVED***
+        # Raise InputError if any of this are not available
+        self.raise_input_error_if_not_available(organization_id=organization_id, uid=uid)
 
-        if await self.can_update_wallet_async(organization_id=organization_id, uid=uid) is True:
-            wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
-                                                             WalletModel.uid == uid).get_async().get_result()
+        if not (isinstance(sub, int) or isinstance(add, int)):
+            message: str = "sub or add are required"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
-            if isinstance(wallet_instance, WalletModel):
-                if isinstance(add, int):
-                    wallet_instance.available_funds.amount += add
-                if isinstance(sub, int):
-                    wallet_instance.available_funds.amount -= sub
-                key = wallet_instance.put_async().get_result()
-                if key is None:
-                    message: str = "General error updating database"
-                    raise DataServiceError(status=500, description=message)
-                message: str = "Successfully created transaction"
-                return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
-                                'message': message}), 200
-        message: str = "Unable to find wallet"
-        return jsonify({'status': False, 'message': message}), 500
+        if not self.can_update_wallet_async(organization_id=organization_id, uid=uid):
+            message: str = "You are not authorized to perform a transaction on this wallet"
+            raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
+
+        wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
+                                                         WalletModel.uid == uid).get_async().get_result()
+
+        if isinstance(wallet_instance, WalletModel):
+            if isinstance(sub, int):
+                wallet_instance.available_funds.amount -= sub
+            if isinstance(add, int):
+                wallet_instance.available_funds.amount += add
+            key = wallet_instance.put_async().get_result()
+            if not bool(key):
+                message: str = "General error updating database"
+                raise DataServiceError(status=500, description=message)
+            message: str = "Successfully created transaction"
+            return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
+                            'message': message}), status_codes.successfully_updated_code
+
+        message: str = "Unable to find wallet - cannot perform transaction"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
