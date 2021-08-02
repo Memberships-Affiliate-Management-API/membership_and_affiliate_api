@@ -560,49 +560,82 @@ class RecruitsView(Validator):
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_recruits_by_active_status(self, organization_id: str, is_active: bool) -> tuple:
+        ***REMOVED***
+            get recruit by active status
+        :param organization_id:
+        :param is_active:
+        :return:
+        ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = 'organization_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         if not (isinstance(is_active, bool)):
-            return jsonify({'status': False, 'message': 'is_active status is required'}), 500
+            message: str = 'is_active status is required and its boolean'
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         recruits_list: typing.List[Recruits] = Recruits.query(Recruits.organization_id == organization_id,
                                                               Recruits.is_active == is_active).fetch()
 
         payload: typing.List[dict] = [recruit.to_dict() for recruit in recruits_list]
         message: str = "{} recruits successfully fetched recruits by active status".format(str(len(recruits_list)))
-        return jsonify({'status': True, 'message': message, 'payload': payload}), 200
+        return jsonify({'status': True, 'message': message, 'payload': payload}), status_codes.status_ok_code
 
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_recruits_by_deleted_status(self, organization_id: str, is_deleted: bool) -> tuple:
+        ***REMOVED***
+            get_recruits_by_deleted_status
+        :param organization_id:
+        :param is_deleted:
+        :return:
+        ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = 'organization_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         if not (isinstance(is_deleted, bool)):
-            return jsonify({'status': False, 'message': 'is_deleted status is required'}), 500
+            message: str = 'is_deleted status is required and is boolean'
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         recruits_list: typing.List[Recruits] = Recruits.query(Recruits.organization_id == organization_id,
                                                               Recruits.is_deleted == is_deleted).fetch()
 
         payload = [recruit.to_dict() for recruit in recruits_list]
         message: str = "{} recruits successfully fetched recruits by deleted status".format(str(len(recruits_list)))
-        return jsonify({'status': True, 'message': message, 'payload': payload}), 200
+        return jsonify({'status': True, 'message': message, 'payload': payload}), status_codes.status_ok_code
 
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_recruits_by_affiliate(self, affiliate_data: dict) -> tuple:
-        affiliate_id: typing.Union[str, None] = affiliate_data.get('affiliate_id')
-        organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
+        ***REMOVED***
+            return recruits belonging to a certain affiliate
+        :param affiliate_data:
+        :return:
+        ***REMOVED***
 
-        if not bool(affiliate_id.strip()):
-            return jsonify({'status': False, 'message': 'affiliate_id is required'}), 500
+        affiliate_id: typing.Union[str, None] = affiliate_data.get('affiliate_id')
+        if not isinstance(affiliate_id, str) or not bool(affiliate_id.strip()):
+            message: str = 'affiliate_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = 'organization_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         recruits_list: typing.List[Recruits] = Recruits.query(Recruits.organization_id == organization_id,
                                                               Recruits.affiliate_id == affiliate_id).fetch()
 
         payload: typing.List[dict] = [recruit.to_dict() for recruit in recruits_list]
+        if len(payload) > 0:
+            message: str = "{} recruits successfully fetched recruits by active status".format(str(len(recruits_list)))
+            return jsonify({'status': True, 'message': message, 'payload': payload}), status_codes.status_ok_code
 
-        message: str = "{} recruits successfully fetched recruits by active status".format(str(len(recruits_list)))
-        return jsonify({'status': True, 'message': message, 'payload': payload}), 200
+        message: str = "affiliate recruits not found"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
