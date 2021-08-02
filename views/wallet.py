@@ -36,6 +36,23 @@ class Validator(WalletValidator):
             return True
         return False
 
+    @staticmethod
+    def raise_input_error_if_not_available(organization_id: str, uid: str) -> None:
+        ***REMOVED***
+            raise an error if organization_id or uid is not present
+        :param organization_id:
+        :param uid:
+        :return:
+        ***REMOVED***
+
+        if not isinstance(uid, str) or not bool(uid.strip()):
+            message: str = "uid is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def can_add_wallet(self, organization_id: typing.Union[str, None], uid: typing.Union[None, str] = None) -> bool:
         ***REMOVED***
@@ -44,10 +61,8 @@ class Validator(WalletValidator):
             :param uid:
             :return:
         ***REMOVED***
-
-        if self.is_uid_none(uid=uid):
-            message: str = "uid is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
+        # NOTE this will raise input error if either or this
+        self.raise_input_error_if_not_available(organization_id=organization_id, uid=uid)
 
         wallet_exist: typing.Union[bool, None] = self.wallet_exist(organization_id=organization_id, uid=uid)
         if isinstance(wallet_exist, bool):
@@ -64,9 +79,7 @@ class Validator(WalletValidator):
         :return:
         ***REMOVED***
 
-        if self.is_uid_none(uid=uid):
-            message: str = "uid is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
+        self.raise_input_error_if_not_available(organization_id=organization_id, uid=uid)
 
         wallet_exist: typing.Union[bool, None] = await self.wallet_exist_async(organization_id=organization_id, uid=uid)
 
@@ -82,9 +95,7 @@ class Validator(WalletValidator):
         :param uid:
         :return:
         ***REMOVED***
-        if self.is_uid_none(uid=uid):
-            message: str = "uid is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
+        self.raise_input_error_if_not_available(organization_id=organization_id, uid=uid)
 
         wallet_exist: typing.Union[bool, None] = self.wallet_exist(organization_id=organization_id, uid=uid)
         if isinstance(wallet_exist, bool):
@@ -100,10 +111,7 @@ class Validator(WalletValidator):
         :param uid:
         :return:
         ***REMOVED***
-
-        if self.is_uid_none_async(uid=uid):
-            message: str = "uid is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
+        self.raise_input_error_if_not_available(organization_id=organization_id, uid=uid)
 
         wallet_exist: typing.Union[bool, None] = await self.wallet_exist_async(organization_id=organization_id, uid=uid)
         if isinstance(wallet_exist, bool):
@@ -114,13 +122,11 @@ class Validator(WalletValidator):
     def can_reset_wallet(self, organization_id: typing.Union[str, None], uid: typing.Union[None, str]) -> bool:
         ***REMOVED***
             checks if user can reset wallet
-        :param organization_id:
-        :param uid:
+        :param organization_id: required
+        :param uid: required
         :return:
         ***REMOVED***
-        if self.is_uid_none(uid=uid):
-            message: str = "uid is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
+        self.raise_input_error_if_not_available(organization_id=organization_id, uid=uid)
 
         wallet_exist: typing.Union[bool, None] = self.wallet_exist(organization_id=organization_id, uid=uid)
         if isinstance(wallet_exist, bool):
@@ -136,9 +142,7 @@ class Validator(WalletValidator):
         :param uid:
         :return:
         ***REMOVED***
-        if self.is_uid_none_async(uid=uid):
-            message: str = "uid is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
+        self.raise_input_error_if_not_available(organization_id=organization_id, uid=uid)
 
         wallet_exist: typing.Union[bool, None] = await self.wallet_exist_async(organization_id=organization_id, uid=uid)
 
@@ -170,11 +174,12 @@ class WalletView(Validator):
         :param is_org_wallet:
         :return:
         ***REMOVED***
-
+        # NOTE: no need to check if organization_id and uid are available
         if not self.can_add_wallet(organization_id=organization_id, uid=uid):
             message: str = "You are not authorized to create a new Wallet"
             raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
+        # Creating new Wallet
         wallet_instance: WalletModel = WalletModel()
         amount_instance: AmountMixin = AmountMixin()
         amount_instance.amount = 0
@@ -195,7 +200,17 @@ class WalletView(Validator):
     @handle_view_errors
     async def create_wallet_async(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None], currency: typing.Union[str, None],
                                   paypal_address: typing.Union[str, None], is_org_wallet: bool = False) -> tuple:
+        ***REMOVED***
+            asynchronous version of create_wallet
+        :param organization_id:
+        :param uid:
+        :param currency:
+        :param paypal_address:
+        :param is_org_wallet:
+        :return:
+        ***REMOVED***
 
+        # NOTE: no need to check if organization_id and uid are available
         if not await self.can_add_wallet_async(organization_id=organization_id, uid=uid):
             message: str = "You are not authorized to create a new Wallet"
             raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
@@ -212,58 +227,100 @@ class WalletView(Validator):
 
         key = wallet_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
         if not bool(key):
-            raise DataServiceError(status=500, description="An Error occurred creating Wallet")
+            raise DataServiceError(status=error_codes.data_service_error_code,
+                                   description="An Error occurred creating Wallet")
+
         return jsonify({'status': True, 'message': 'successfully created wallet',
-                        'payload': wallet_instance.to_dict()}), 200
+                        'payload': wallet_instance.to_dict()}), status_codes.status_ok_code
 
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_wallet(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None]) -> tuple:
-        if not(self.is_uid_none(uid=uid)):
-            wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
-                                                             WalletModel.uid == uid).get()
+        ***REMOVED***
+            # TODO - may need to update cache or find a way to update cache when there are updates
+            # this could mean that the old method of having a separate cache for every module may be useful here
 
-            return jsonify({'status': True, 'payload': wallet_instance.to_dict(), 'message': 'wallet found'}), 200
-        return jsonify({'status': False, 'message': 'uid cannot be None'}), 500
+            returns a specific wallet from database
+        :param organization_id:
+        :param uid:
+        :return:
+        ***REMOVED***
+        self.raise_input_error_if_not_available(organization_id=organization_id, uid=uid)
+
+        wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
+                                                         WalletModel.uid == uid).get()
+
+        return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
+                        'message': 'wallet found'}), status_codes.status_ok_code
 
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def get_wallet_async(self, organization_id: typing.Union[str, None],  uid: typing.Union[str, None]) -> tuple:
-        if not(self.is_uid_none(uid=uid)):
-            wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
-                                                             WalletModel.uid == uid).get_async().get_result()
+        ***REMOVED***
+            get_wallet_async an asynchronous version of get_wallet
+        :param organization_id:
+        :param uid:
+        :return:
+        ***REMOVED***
+        self.raise_input_error_if_not_available(organization_id=organization_id, uid=uid)
 
-            return jsonify({'status': True, 'payload': wallet_instance.to_dict(), 'message': 'wallet found'}), 200
-        return jsonify({'status': False, 'message': 'uid cannot be None'}), 500
+        wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
+                                                         WalletModel.uid == uid).get_async().get_result()
+
+        return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
+                        'message': 'wallet found'}), 200
 
     @use_context
     @handle_view_errors
     def update_wallet(self, wallet_data: dict) -> tuple:
+        ***REMOVED***
+            lets user or system update wallet
+        :param wallet_data:
+        :return:
+        ***REMOVED***
 
         uid: typing.Union[str, None] = wallet_data.get("uid")
         organization_id: typing.Union[str, None] = wallet_data.get('organization_id')
-        available_funds: typing.Union[int, None] = wallet_data.get("available_funds")
+        # NOTE checking if organization_id or uid is present
+        self.raise_input_error_if_not_available(organization_id=organization_id, uid=uid)
+
+        available_funds: typing.Union[int, None] = int(wallet_data.get("available_funds", 0))
+
+        if not isinstance(available_funds, int):
+            message: str = "available_funds is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         currency: typing.Union[str, None] = wallet_data.get('currency')
+        if not isinstance(currency, str) or not bool(currency.strip()):
+            message: str = "currency symbol is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         paypal_address: typing.Union[str, None] = wallet_data.get("paypal_address")
+        if not isinstance(paypal_address, str) or not bool(paypal_address.strip()):
+            message: str = "paypal_address is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         # TODO update can update wallet to take into account Org Account Roles
-        if self.can_update_wallet(organization_id=organization_id, uid=uid) is True:
-            wall_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
-                                                           WalletModel.uid == uid).get()
+        if not self.can_update_wallet(organization_id=organization_id, uid=uid):
+            message: str = "You are not authorized to update this Wallet"
+            raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
-            # No need to test for wallet availability as can update returned True
-            amount_instance: AmountMixin = AmountMixin(amount=available_funds, currency=currency)
-            wall_instance.available_funds = amount_instance
-            wall_instance.paypal_address = paypal_address
-            key = wall_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-            if not bool(key):
-                message: str = "An Error occurred updating Wallet"
-                raise DataServiceError(status=500, description=message)
-            return jsonify({'status': True, 'payload': wall_instance.to_dict(),
-                            'message': 'successfully updated wallet'}), 200
-        return jsonify({'status': False, 'message': 'Unable to update wallet'}), 500
+        wall_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
+                                                       WalletModel.uid == uid).get()
+
+        # No need to test for wallet availability as can update returned True
+        amount_instance: AmountMixin = AmountMixin(amount=available_funds, currency=currency)
+        wall_instance.available_funds = amount_instance
+        wall_instance.paypal_address = paypal_address
+        key = wall_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+        if not bool(key):
+            message: str = "An Error occurred updating Wallet"
+            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
+        return jsonify({'status': True, 'payload': wall_instance.to_dict(),
+                        'message': 'successfully updated wallet'}), status_codes.status_ok_code
 
     @use_context
     @handle_view_errors
