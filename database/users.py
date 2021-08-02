@@ -12,8 +12,9 @@ class UserValidators:
     @staticmethod
     @handle_store_errors
     def is_user_valid(organization_id: str, uid: str) -> typing.Union[None, bool]:
-        if not(isinstance(uid, str)) or (uid == ""):
+        if not isinstance(uid, str) or not bool(uid.strip()):
             return False
+
         user_instance: UserModel = UserModel.query(
             UserModel.organization_id == organization_id, UserModel.uid == uid).get()
 
@@ -24,7 +25,7 @@ class UserValidators:
     @staticmethod
     @handle_store_errors
     async def is_user_valid_async(organization_id: str, uid: str) -> typing.Union[None, bool]:
-        if not(isinstance(uid, str)) or (uid == ""):
+        if not(isinstance(uid, str)) or not bool(uid.strip()):
             return False
         user_instance: UserModel = UserModel.query(
             UserModel.organization_id == organization_id, UserModel.uid == uid).get_async().get_result()

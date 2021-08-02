@@ -25,10 +25,10 @@ class UserView(UserValidators):
             if this returns true the user can be added
             # TODO - check if user has already logged in to this organization
             # TODO - check if email and cell are valid
-        :param email: required
-        :param cell: required
-        :param organization_id: required
-        :param uid: required
+        :param email: required - check if the user of this email has already logged in
+        :param cell: required - check if the cell number related to this user is not already registered for another user
+        :param organization_id: required - check if user has loggged into this organization
+        :param uid: required - check if user id is attached to this email and organization_id
         :return: boolean indicate if the user can be added or not
         ***REMOVED***
         pass
@@ -348,8 +348,9 @@ class UserView(UserValidators):
     async def get_active_users_async(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             get active users list
-        :param organization_id:
-        :return:
+
+            :param organization_id:
+            :return:
         ***REMOVED***
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
