@@ -116,7 +116,7 @@ class AffiliatesView(Validator):
             raise InputError(status=error_codes.input_error_code, description=message)
 
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            message = 'organization_id is required'
+            message: str = 'organization_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
 
         if not isinstance(add, int):
@@ -153,12 +153,12 @@ class AffiliatesView(Validator):
 
         affiliate_id: typing.Union[None, str] = affiliate_data.get('affiliate_id')
         if not isinstance(affiliate_id, str) or not bool(affiliate_id.strip()):
-            message = 'affiliate_id is required'
+            message: str = 'affiliate_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
 
         organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            message = 'organization_id is required'
+            message: str = 'organization_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
 
         affiliate_instance: Affiliates = Affiliates.query(Affiliates.organization_id == organization_id,
@@ -190,12 +190,12 @@ class AffiliatesView(Validator):
         ***REMOVED***
         affiliate_id: typing.Union[None, str] = affiliate_data.get('affiliate_id')
         if not isinstance(affiliate_id, str) or not bool(affiliate_id.strip()):
-            message = 'affiliate_id is required'
+            message: str = 'affiliate_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
 
         organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            message = 'organization_id is required'
+            message: str = 'organization_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
 
         if not isinstance(is_active, bool):
@@ -233,7 +233,7 @@ class AffiliatesView(Validator):
         ***REMOVED***
         organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            message = 'organization_id is required'
+            message: str = 'organization_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
 
         affiliate_id: typing.Union[None, str] = affiliate_data.get('affiliate_id')
@@ -255,7 +255,7 @@ class AffiliatesView(Validator):
 
         # if we are here and still dont have a valid input set to true then we have a problem with input data
         if not valid_input:
-            message = "affiliate_id or uid is required to get affiliate record"
+            message: str = "affiliate_id or uid is required to get affiliate record"
             raise InputError(status=error_codes.input_error_code, description=message)
 
         # Note checking if we have valid data and then return to user
@@ -279,7 +279,7 @@ class AffiliatesView(Validator):
         ***REMOVED***
 
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            message = 'organization_id is required'
+            message: str = 'organization_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
 
         affiliates_list: typing.List[Affiliates] = Affiliates.query(
@@ -307,7 +307,7 @@ class AffiliatesView(Validator):
         :return: response containing the list of active affiliates
         ***REMOVED***
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            message = 'organization_id is required'
+            message: str = 'organization_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
 
         affiliates_list: typing.List[Affiliates] = Affiliates.query(
@@ -333,7 +333,7 @@ class AffiliatesView(Validator):
         :return: a response tuple with a payload of in-active affiliates from the organization
         ***REMOVED***
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            message = 'organization_id is required'
+            message: str = 'organization_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
 
         affiliates_list: typing.List[Affiliates] = Affiliates.query(
@@ -360,7 +360,7 @@ class AffiliatesView(Validator):
         :return: response containing the list of affiliates who are deleted
         ***REMOVED***
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            message = 'organization_id is required'
+            message: str = 'organization_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
 
         affiliates_list: typing.List[Affiliates] = Affiliates.query(
@@ -388,7 +388,7 @@ class AffiliatesView(Validator):
             :return : response containing the list of deleted affiliates
         ***REMOVED***
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            message = 'organization_id is required'
+            message: str = 'organization_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
 
         affiliates_list: typing.List[Affiliates] = Affiliates.query(Affiliates.organization_id == organization_id,
@@ -426,7 +426,13 @@ class RecruitsView(Validator):
             recruit_data: dict
         ***REMOVED***
         referrer_uid: typing.Union[None, str] = recruit_data.get('referrer_uid')
+        if not isinstance(referrer_uid, str) or not bool(referrer_uid.strip()):
+            message: str = 'referrer_uid is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         organization_id: typing.Union[str, None] = recruit_data.get('organization_id')
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = 'organization_id is required'
 
         if not bool(referrer_uid.strip()):
             return jsonify({'status': False, 'message': 'referrer uid is required'}), 200
