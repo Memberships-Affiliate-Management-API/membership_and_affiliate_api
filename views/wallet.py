@@ -407,26 +407,40 @@ class WalletView(Validator):
         return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
                         'message': 'wallet is rest'}), status_codes.successfully_updated_code
 
-
     @use_context
     @handle_view_errors
     async def reset_wallet_async(self, wallet_data: dict) -> tuple:
+        ***REMOVED***
+            asynchronous version of reset wallet
+        :param wallet_data:
+        :return:
+        ***REMOVED***
+
         uid: typing.Union[str, None] = wallet_data.get('uid')
         organization_id: typing.Union[str, None] = wallet_data.get('organization_id')
-        currency: typing.Union[str, None] = wallet_data.get('currency')
-        if await self.can_reset_wallet_async(organization_id=organization_id, uid=uid) is True:
-            wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
-                                                             WalletModel.uid == uid).get_async().get_result()
+        self.raise_input_error_if_not_available(organization_id=organization_id, uid=uid)
 
-            amount_instance: AmountMixin = AmountMixin(amount=0, currency=currency)
-            wallet_instance.available_funds = amount_instance
-            key = wallet_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
-            if not bool(key):
-                message: str = "Database error while resetting wallet"
-                raise DataServiceError(status=500, description=message)
-            return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
-                            'message': 'wallet is rest'}), 200
-        return jsonify({'status': False, 'message': 'Unable to reset wallet'}), 500
+        currency: typing.Union[str, None] = wallet_data.get('currency')
+        if not isinstance(currency, str) or not bool(currency.strip()):
+            message: str = "currency is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not await self.can_reset_wallet_async(organization_id=organization_id, uid=uid):
+            message: str = "You are not authorized to reset this wallet"
+            raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
+
+        wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
+                                                         WalletModel.uid == uid).get_async().get_result()
+
+        amount_instance: AmountMixin = AmountMixin(amount=0, currency=currency)
+        wallet_instance.available_funds = amount_instance
+        key = wallet_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
+        if not bool(key):
+            message: str = "Database error while resetting wallet"
+            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
+        return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
+                        'message': 'wallet is rest'}), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
