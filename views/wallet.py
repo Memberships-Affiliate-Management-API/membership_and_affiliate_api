@@ -76,41 +76,75 @@ class Validator(WalletValidator):
 
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def can_update_wallet(self, organization_id: typing.Union[str, None], uid: typing.Union[None, str] = None) -> bool:
-        if not(self.is_uid_none(uid=uid)):
-            wallet_exist: typing.Union[bool, None] = self.wallet_exist(organization_id=organization_id, uid=uid)
-            if isinstance(wallet_exist, bool):
-                return wallet_exist
+        ***REMOVED***
+            checks if user can update wallet
+        :param organization_id:
+        :param uid:
+        :return:
+        ***REMOVED***
+        if self.is_uid_none(uid=uid):
+            message: str = "uid is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        wallet_exist: typing.Union[bool, None] = self.wallet_exist(organization_id=organization_id, uid=uid)
+        if isinstance(wallet_exist, bool):
+            return wallet_exist
         raise DataServiceError(status=500, description='Unable to verify wallet data')
 
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def can_update_wallet_async(self, organization_id: typing.Union[str, None],
                                       uid: typing.Union[None, str] = None) -> bool:
+        ***REMOVED***
+            asynchronous version of can_update_wallet
+        :param organization_id:
+        :param uid:
+        :return:
+        ***REMOVED***
 
-        if not(self.is_uid_none(uid=uid)):
-            wallet_exist: typing.Union[bool, None] = await self.wallet_exist_async(
-                organization_id=organization_id, uid=uid)
+        if self.is_uid_none_async(uid=uid):
+            message: str = "uid is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
-            if isinstance(wallet_exist, bool):
-                return wallet_exist
-        raise DataServiceError(status=500, description='Unable to verify wallet data')
+        wallet_exist: typing.Union[bool, None] = await self.wallet_exist_async(organization_id=organization_id, uid=uid)
+        if isinstance(wallet_exist, bool):
+            return wallet_exist
+        raise DataServiceError(status=error_codes.data_service_error_code, description='Unable to verify wallet data')
 
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def can_reset_wallet(self, organization_id: typing.Union[str, None], uid: typing.Union[None, str]) -> bool:
-        if not(self.is_uid_none(uid=uid)):
-            wallet_exist: typing.Union[bool, None] = self.wallet_exist(organization_id=organization_id, uid=uid)
-            if isinstance(wallet_exist, bool):
-                return wallet_exist
-        raise DataServiceError(status=500, description='Unable to verify wallet data')
+        ***REMOVED***
+            checks if user can reset wallet
+        :param organization_id:
+        :param uid:
+        :return:
+        ***REMOVED***
+        if self.is_uid_none(uid=uid):
+            message: str = "uid is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        wallet_exist: typing.Union[bool, None] = self.wallet_exist(organization_id=organization_id, uid=uid)
+        if isinstance(wallet_exist, bool):
+            return wallet_exist
+        raise DataServiceError(status=error_codes.data_service_error_code, description='Unable to verify wallet data')
 
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    async def can_reset_wallet_async(self, organization_id: typing.Union[str, None], uid: typing.Union[None, str]) -> bool:
-        if not(self.is_uid_none(uid=uid)):
-            wallet_exist: typing.Union[bool, None] = await self.wallet_exist_async(organization_id=organization_id,
-                                                                                   uid=uid)
+    async def can_reset_wallet_async(self, organization_id: typing.Union[str, None],
+                                     uid: typing.Union[None, str]) -> bool:
+        ***REMOVED***
+            asynchronous version of can_reset_wallet
+        :param organization_id:
+        :param uid:
+        :return:
+        ***REMOVED***
+        if self.is_uid_none_async(uid=uid):
+            message: str = "uid is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
-            if isinstance(wallet_exist, bool):
-                return wallet_exist
-        raise DataServiceError(status=500, description='Unable to verify wallet data')
+        wallet_exist: typing.Union[bool, None] = await self.wallet_exist_async(organization_id=organization_id, uid=uid)
+
+        if isinstance(wallet_exist, bool):
+            return wallet_exist
+        raise DataServiceError(status=error_codes.data_service_error_code, description='Unable to verify wallet data')
 
 
 # noinspection DuplicatedCode
