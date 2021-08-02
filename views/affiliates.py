@@ -103,16 +103,24 @@ class AffiliatesView(Validator):
     @handle_view_errors
     def total_recruits(self, affiliate_data: dict, add: int = 0) -> tuple:
         ***REMOVED***
-            update an existing affiliate
+            given an existing affiliate update total recruits field in the affiliate record
+        :param affiliate_data:
+        :param add:
+        :return:
         ***REMOVED***
         affiliate_id: typing.Union[str, None] = affiliate_data.get('affiliate_id')
         organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
 
-        if not bool(affiliate_id.strip()):
-            return jsonify({'status': False, 'message': 'affiliate_id is required'}), 500
+        if not isinstance(affiliate_id, str) or not bool(affiliate_id.strip()):
+            message = 'affiliate_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
 
-        if not bool(organization_id.strip()):
-            return jsonify({'status': False, 'message': 'organization_id is required'}), 500
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message = 'organization_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
+        if not isinstance(add, int):
+            message: str = "add: amount to update total_recruits is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         affiliate_instance: Affiliates = Affiliates.query(Affiliates.organization_id == organization_id,
                                                           Affiliates.affiliate_id == affiliate_id).get()
@@ -125,9 +133,9 @@ class AffiliatesView(Validator):
                 raise DataServiceError(status=500, description=message)
             return jsonify({'status': True,
                             'message': 'successfully incremented total recruits',
-                            'payload': affiliate_instance.to_dict()}), 200
+                            'payload': affiliate_instance.to_dict()}), status_codes.successfully_updated_code
         else:
-            return jsonify({'status': False, 'message': 'Failed to locate affiliate'}), 500
+            return jsonify({'status': False, 'message': 'Failed to locate affiliate'}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
