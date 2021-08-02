@@ -529,21 +529,32 @@ class RecruitsView(Validator):
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_recruit(self, recruit_data: dict) -> tuple:
+        ***REMOVED***
+            given affiliate_id return recruit organization_id has to be valid
+        :param recruit_data:
+        :return:
+        ***REMOVED***
         affiliate_id: typing.Union[str, None] = recruit_data.get('affiliate_id')
-        organization_id: typing.Union[str, None] = recruit_data.get('organization_id')
+        if not isinstance(affiliate_id, str) or not bool(affiliate_id.strip()):
+            message: str = 'affiliate_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
 
-        if not bool(affiliate_id.strip()):
-            return jsonify({'status': False, 'message': 'affiliate_id is required'}), 500
+        organization_id: typing.Union[str, None] = recruit_data.get('organization_id')
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = 'organization_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         recruit_instance: Recruits = Recruits.query(Recruits.organization_id == organization_id,
                                                     Recruits.affiliate_id == affiliate_id).get()
 
         if isinstance(recruit_instance, Recruits):
             message: str = "Successfully retrieved recruit"
-            return jsonify({'status': True, 'payload': recruit_instance.to_dict(), 'message': message}), 200
-        else:
-            message: str = "Recruit does not exist"
-            return jsonify({'status': False, 'message': message}), 500
+            return jsonify({'status': True,
+                            'payload': recruit_instance.to_dict(),
+                            'message': message}), status_codes.successfully_updated_code
+
+        message: str = "Recruit does not exist"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
