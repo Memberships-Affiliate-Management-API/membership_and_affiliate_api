@@ -1,6 +1,6 @@
 import typing
 from flask import jsonify, current_app
-from config.exceptions import DataServiceError
+from config.exceptions import DataServiceError, UnAuthenticatedError, status_codes, error_codes, InputError
 from main import app_cache
 from database.mixins import AmountMixin
 from database.wallet import WalletModel, WalletValidator
@@ -21,34 +21,58 @@ class Validator(WalletValidator):
         self._max_timeout = current_app.config.get('DATASTORE_TIMEOUT')
 
     @staticmethod
-    def is_uid_none(uid: typing.Union[None, str]) -> bool:
-        if (uid is None) or (uid == ''):
+    def is_uid_none(uid: typing.Union[str, None]) -> bool:
+        ***REMOVED***
+            :param uid:
+            :return:
+        ***REMOVED***
+        if not isinstance(uid, str) or not bool(uid.strip()):
             return True
         return False
 
     @staticmethod
     async def is_uid_none_async(uid: typing.Union[None, str]) -> bool:
-        if (uid is None) or (uid == ''):
+        if not isinstance(uid, str) or not bool(uid.strip()):
             return True
         return False
 
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def can_add_wallet(self, organization_id: typing.Union[str, None], uid: typing.Union[None, str] = None) -> bool:
-        if not(self.is_uid_none(uid=uid)):
-            wallet_exist: typing.Union[bool, None] = self.wallet_exist(organization_id=organization_id, uid=uid)
-            if isinstance(wallet_exist, bool):
-                return not wallet_exist
-        raise DataServiceError(status=500, description='Unable to verify wallet data')
+        ***REMOVED***
+                can add wallet
+            :param organization_id:
+            :param uid:
+            :return:
+        ***REMOVED***
+
+        if self.is_uid_none(uid=uid):
+            message: str = "uid is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        wallet_exist: typing.Union[bool, None] = self.wallet_exist(organization_id=organization_id, uid=uid)
+        if isinstance(wallet_exist, bool):
+            return not wallet_exist
+        raise DataServiceError(status=error_codes.data_service_error_code, description='Unable to verify wallet data')
 
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
-    async def can_add_wallet_async(self, organization_id: typing.Union[str, None], uid: typing.Union[None, str] = None) -> bool:
-        if not(self.is_uid_none(uid=uid)):
-            wallet_exist: typing.Union[bool, None] = await self.wallet_exist_async(
-                organization_id=organization_id, uid=uid)
+    async def can_add_wallet_async(self, organization_id: typing.Union[str, None],
+                                   uid: typing.Union[None, str] = None) -> bool:
+        ***REMOVED***
+            testing if user can add a wallet
+        :param organization_id:
+        :param uid:
+        :return:
+        ***REMOVED***
 
-            if isinstance(wallet_exist, bool):
-                return not wallet_exist
-        raise DataServiceError(status=500, description='Unable to verify wallet data')
+        if self.is_uid_none(uid=uid):
+            message: str = "uid is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        wallet_exist: typing.Union[bool, None] = await self.wallet_exist_async(organization_id=organization_id, uid=uid)
+
+        if isinstance(wallet_exist, bool):
+            return not wallet_exist
+        raise DataServiceError(status=error_codes.data_service_error_code, description='Unable to verify wallet data')
 
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def can_update_wallet(self, organization_id: typing.Union[str, None], uid: typing.Union[None, str] = None) -> bool:
@@ -93,7 +117,6 @@ class Validator(WalletValidator):
 class WalletView(Validator):
     ***REMOVED***
         view functions for the wallet
-        # TODO -  Refactor Wallet View and improve functionality
     ***REMOVED***
 
     def __init__(self):
@@ -104,45 +127,60 @@ class WalletView(Validator):
     def create_wallet(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
                       currency: typing.Union[str, None], paypal_address: typing.Union[str, None],
                       is_org_wallet: bool = False) -> tuple:
+        ***REMOVED***
+                enables the system/user to create new wallet for a user
+        :param organization_id:
+        :param uid:
+        :param currency:
+        :param paypal_address:
+        :param is_org_wallet:
+        :return:
+        ***REMOVED***
 
-        if self.can_add_wallet(organization_id=organization_id, uid=uid) is True:
-            wallet_instance: WalletModel = WalletModel()
-            amount_instance: AmountMixin = AmountMixin()
-            amount_instance.amount = 0
-            amount_instance.currency = currency
-            wallet_instance.uid = uid
-            wallet_instance.available_funds = amount_instance
-            wallet_instance.paypal_address = paypal_address
-            wallet_instance.organization_id = organization_id
-            wallet_instance.is_org_wallet = is_org_wallet
-            key = wallet_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-            if key is None:
-                raise DataServiceError(status=500, description="An Error occurred creating Wallet")
-            return jsonify({'status': True, 'message': 'successfully created wallet',
-                            'payload': wallet_instance.to_dict()}), 200
-        return jsonify({'status': False, 'message': 'Unable to create wallet'}), 500
+        if not self.can_add_wallet(organization_id=organization_id, uid=uid):
+            message: str = "You are not authorized to create a new Wallet"
+            raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
+
+        wallet_instance: WalletModel = WalletModel()
+        amount_instance: AmountMixin = AmountMixin()
+        amount_instance.amount = 0
+        amount_instance.currency = currency
+        wallet_instance.uid = uid
+        wallet_instance.available_funds = amount_instance
+        wallet_instance.paypal_address = paypal_address
+        wallet_instance.organization_id = organization_id
+        wallet_instance.is_org_wallet = is_org_wallet
+        key = wallet_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+        if not bool(key):
+            raise DataServiceError(status=500, description="An Error occurred creating Wallet")
+
+        return jsonify({'status': True, 'message': 'successfully created wallet',
+                        'payload': wallet_instance.to_dict()}), status_codes.status_ok_code
 
     @use_context
     @handle_view_errors
     async def create_wallet_async(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None], currency: typing.Union[str, None],
                                   paypal_address: typing.Union[str, None], is_org_wallet: bool = False) -> tuple:
-        if await self.can_add_wallet_async(organization_id=organization_id, uid=uid) is True:
-            wallet_instance: WalletModel = WalletModel()
-            amount_instance: AmountMixin = AmountMixin()
-            amount_instance.amount = 0
-            amount_instance.currency = currency
-            wallet_instance.uid = uid
-            wallet_instance.available_funds = amount_instance
-            wallet_instance.paypal_address = paypal_address
-            wallet_instance.organization_id = organization_id
-            wallet_instance.is_org_wallet = is_org_wallet
 
-            key = wallet_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
-            if key is None:
-                raise DataServiceError(status=500, description="An Error occurred creating Wallet")
-            return jsonify({'status': True, 'message': 'successfully created wallet',
-                            'payload': wallet_instance.to_dict()}), 200
-        return jsonify({'status': False, 'message': 'Unable to create wallet'}), 500
+        if not await self.can_add_wallet_async(organization_id=organization_id, uid=uid):
+            message: str = "You are not authorized to create a new Wallet"
+            raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
+
+        wallet_instance: WalletModel = WalletModel()
+        amount_instance: AmountMixin = AmountMixin()
+        amount_instance.amount = 0
+        amount_instance.currency = currency
+        wallet_instance.uid = uid
+        wallet_instance.available_funds = amount_instance
+        wallet_instance.paypal_address = paypal_address
+        wallet_instance.organization_id = organization_id
+        wallet_instance.is_org_wallet = is_org_wallet
+
+        key = wallet_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
+        if not bool(key):
+            raise DataServiceError(status=500, description="An Error occurred creating Wallet")
+        return jsonify({'status': True, 'message': 'successfully created wallet',
+                        'payload': wallet_instance.to_dict()}), 200
 
     @use_context
     @handle_view_errors
@@ -186,7 +224,7 @@ class WalletView(Validator):
             wall_instance.available_funds = amount_instance
             wall_instance.paypal_address = paypal_address
             key = wall_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-            if key is None:
+            if not bool(key):
                 message: str = "An Error occurred updating Wallet"
                 raise DataServiceError(status=500, description=message)
             return jsonify({'status': True, 'payload': wall_instance.to_dict(),
@@ -213,7 +251,7 @@ class WalletView(Validator):
             wall_instance.available_funds = amount_instance
             wall_instance.paypal_address = paypal_address
             key = wall_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
-            if key is None:
+            if not bool(key):
                 message: str = "Database error while updating wallet"
                 raise DataServiceError(status=500, description=message)
             return jsonify({'status': True, 'payload': wall_instance.to_dict(),
@@ -254,7 +292,7 @@ class WalletView(Validator):
             amount_instance: AmountMixin = AmountMixin(amount=0, currency=currency)
             wallet_instance.available_funds = amount_instance
             key = wallet_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
-            if key is None:
+            if not bool(key):
                 message: str = "Database error while resetting wallet"
                 raise DataServiceError(status=500, description=message)
             return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
@@ -324,12 +362,12 @@ class WalletView(Validator):
                                                              WalletModel.uid == uid).get()
 
             if isinstance(wallet_instance, WalletModel):
-                if add is not None:
-                    wallet_instance.available_funds.amount += add
-                if sub is not None:
+                if isinstance(sub, int):
                     wallet_instance.available_funds.amount -= sub
+                if isinstance(add, int):
+                    wallet_instance.available_funds.amount += sub
                 key = wallet_instance.put()
-                if key is None:
+                if not bool(key):
                     message: str = "General error updating database"
                     raise DataServiceError(status=500, description=message)
                 message: str = "Successfully created transaction"
