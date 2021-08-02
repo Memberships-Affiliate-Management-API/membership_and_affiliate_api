@@ -226,33 +226,46 @@ class AffiliatesView(Validator):
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_affiliate(self, affiliate_data: dict) -> tuple:
         ***REMOVED***
-            obtains a record of one affiliate from the store.
+            obtains a record of one affiliate from the store. given either uid or affiliate_id, organization_id
+            must be valid
         :param affiliate_data: contains affiliate_id and organization_id the affiliate must belong to the organization
         :return: response contain affiliate record
         ***REMOVED***
-        affiliate_id: typing.Union[None, str] = affiliate_data.get('affiliate_id')
-        uid: typing.Union[None, str] = affiliate_data.get('uid')
         organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message = 'organization_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
 
-        if not bool(affiliate_id):
-            return jsonify({'status': False, 'message': 'uid or affiliate_id is required to fetch affiliate'}), 500
+        affiliate_id: typing.Union[None, str] = affiliate_data.get('affiliate_id')
 
-        if not bool(organization_id.strip()):
-            return jsonify({'status': False, 'message': 'organization_id is required'}), 500
+        # Initializing affiliate_instance to None in order to allow testing for valid data
+        affiliate_instance: typing.Union[Affiliates, None] = None
+        valid_input: bool = False
+        # NOTE this means if affiliate_id is valid
+        if isinstance(affiliate_id, str) and bool(affiliate_id.strip()):
+            valid_input = True
+            affiliate_instance = Affiliates.query(Affiliates.organization_id == organization_id,
+                                                  Affiliates.affiliate_id == affiliate_id).get()
 
-        if bool(uid.strip()):
-            affiliate_instance: Affiliates = Affiliates.query(Affiliates.organization_id == organization_id,
-                                                              Affiliates.uid == uid).get()
-        else:
-            affiliate_instance: Affiliates = Affiliates.query(Affiliates.organization_id == organization_id,
-                                                              Affiliates.affiliate_id == affiliate_id).get()
+        uid: typing.Union[None, str] = affiliate_data.get('uid')
+        if isinstance(uid, str) and bool(uid.strip()):
+            valid_input = True
+            affiliate_instance = Affiliates.query(Affiliates.organization_id == organization_id,
+                                                  Affiliates.uid == uid).get()
 
+        # if we are here and still dont have a valid input set to true then we have a problem with input data
+        if not valid_input:
+            message = "affiliate_id or uid is required to get affiliate record"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        # Note checking if we have valid data and then return to user
         if isinstance(affiliate_instance, Affiliates):
             return jsonify({'status': True,
                             'message': 'successfully obtained affiliate data',
-                            'payload': affiliate_instance.to_dict()}), 200
-        else:
-            return jsonify({'status': False, 'message': 'unable to locate affiliate'}), 500
+                            'payload': affiliate_instance.to_dict()}), status_codes.status_ok_code
+
+        message: str = 'Affiliate Not Found: unable to locate affiliate'
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -372,7 +385,8 @@ class RecruitsView(Validator):
         if not bool(referrer_uid.strip()):
             return jsonify({'status': False, 'message': 'referrer uid is required'}), 200
 
-        recruit_instance: Recruits = Recruits(organization_id=organization_id, affiliate_id=create_id(), referrer_uid=referrer_uid)
+        recruit_instance: Recruits = Recruits(organization_id=organization_id, affiliate_id=create_id(),
+                                              referrer_uid=referrer_uid)
         key = recruit_instance.put(retries=self._max_retries, timeout=self._max_timeout)
         if not bool(key):
             message: str = "An Error occurred while adding new recruit"
