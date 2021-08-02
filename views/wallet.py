@@ -194,7 +194,7 @@ class WalletView(Validator):
             raise DataServiceError(status=500, description="An Error occurred creating Wallet")
 
         return jsonify({'status': True, 'message': 'successfully created wallet',
-                        'payload': wallet_instance.to_dict()}), status_codes.status_ok_code
+                        'payload': wallet_instance.to_dict()}), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
@@ -231,7 +231,7 @@ class WalletView(Validator):
                                    description="An Error occurred creating Wallet")
 
         return jsonify({'status': True, 'message': 'successfully created wallet',
-                        'payload': wallet_instance.to_dict()}), status_codes.status_ok_code
+                        'payload': wallet_instance.to_dict()}), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
@@ -270,7 +270,7 @@ class WalletView(Validator):
                                                          WalletModel.uid == uid).get_async().get_result()
 
         return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
-                        'message': 'wallet found'}), 200
+                        'message': 'wallet found'}), status_codes.status_ok_code
 
     @use_context
     @handle_view_errors
@@ -286,6 +286,7 @@ class WalletView(Validator):
         # NOTE checking if organization_id or uid is present
         self.raise_input_error_if_not_available(organization_id=organization_id, uid=uid)
 
+        # TODO - consider using Sentinel as an indicator of something went wrong
         available_funds: typing.Union[int, None] = int(wallet_data.get("available_funds", 0))
 
         if not isinstance(available_funds, int):
@@ -320,55 +321,92 @@ class WalletView(Validator):
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
         return jsonify({'status': True, 'payload': wall_instance.to_dict(),
-                        'message': 'successfully updated wallet'}), status_codes.status_ok_code
+                        'message': 'successfully updated wallet'}), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
     async def update_wallet_async(self, wallet_data: dict) -> tuple:
+        ***REMOVED***
+            can update wallet asynchronous version of
+        :param wallet_data:
+        :return:
+        ***REMOVED***
 
         uid: typing.Union[str, None] = wallet_data.get("uid")
         organization_id: typing.Union[str, None] = wallet_data.get('organization_id')
-        available_funds: typing.Union[int, None] = wallet_data.get("available_funds")
+        # NOTE checking if organization_id or uid is present
+        self.raise_input_error_if_not_available(organization_id=organization_id, uid=uid)
+
+        available_funds: typing.Union[int, None] = int(wallet_data.get("available_funds", 0))
+
+        if not isinstance(available_funds, int):
+            message: str = "available_funds is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         currency: typing.Union[str, None] = wallet_data.get('currency')
+        if not isinstance(currency, str) or not bool(currency.strip()):
+            message: str = "currency symbol is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         paypal_address: typing.Union[str, None] = wallet_data.get("paypal_address")
+        if not isinstance(paypal_address, str) or not bool(paypal_address.strip()):
+            message: str = "paypal_address is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
-        if await self.can_update_wallet_async(organization_id=organization_id, uid=uid) is True:
-            wall_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
-                                                           WalletModel.uid == uid).get_async().get_result()
+        # TODO update can update wallet to take into account Org Account Roles
+        if not self.can_update_wallet_async(organization_id=organization_id, uid=uid):
+            message: str = "You are not authorized to update this Wallet"
+            raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
-            # No need to test for wallet availability as can update returned True
+        wall_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
+                                                       WalletModel.uid == uid).get_async().get_result()
 
-            amount_instance: AmountMixin = AmountMixin(amount=available_funds, currency=currency)
-            wall_instance.available_funds = amount_instance
-            wall_instance.paypal_address = paypal_address
-            key = wall_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
-            if not bool(key):
-                message: str = "Database error while updating wallet"
-                raise DataServiceError(status=500, description=message)
-            return jsonify({'status': True, 'payload': wall_instance.to_dict(),
-                            'message': 'successfully updated wallet'}), 200
-        return jsonify({'status': False, 'message': 'Unable to update wallet'}), 500
+        # No need to test for wallet availability as can update returned True
+
+        amount_instance: AmountMixin = AmountMixin(amount=available_funds, currency=currency)
+        wall_instance.available_funds = amount_instance
+        wall_instance.paypal_address = paypal_address
+        key = wall_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
+        if not bool(key):
+            message: str = "Database error while updating wallet"
+            raise DataServiceError(status=500, description=message)
+        return jsonify({'status': True, 'payload': wall_instance.to_dict(),
+                        'message': 'successfully updated wallet'}), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
     def reset_wallet(self, wallet_data: dict) -> tuple:
+        ***REMOVED***
+
+        :param wallet_data:
+        :return:
+        ***REMOVED***
         uid: typing.Union[str, None] = wallet_data.get('uid')
         organization_id: typing.Union[str, None] = wallet_data.get('organization_id')
+        self.raise_input_error_if_not_available(organization_id=organization_id, uid=uid)
+
         currency: typing.Union[str, None] = wallet_data.get('currency')
+        if not isinstance(currency, str) or not bool(currency.strip()):
+            message: str = "currency is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         if self.can_reset_wallet(organization_id=organization_id, uid=uid) is True:
-            wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
-                                                             WalletModel.uid == uid).get()
+            message: str = "You are not authorized to reset this wallet"
+            raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
-            amount_instance: AmountMixin = AmountMixin(amount=0, currency=currency)
-            wallet_instance.available_funds = amount_instance
-            key = wallet_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-            if key is None:
-                message: str = "Database error while updating wallet"
-                raise DataServiceError(status=500, description=message)
+        wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
+                                                         WalletModel.uid == uid).get()
 
-            return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
-                            'message': 'wallet is rest'}), 200
-        return jsonify({'status': False, 'message': 'Unable to reset wallet'}), 500
+        amount_instance: AmountMixin = AmountMixin(amount=0, currency=currency)
+        wallet_instance.available_funds = amount_instance
+        key = wallet_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+        if not bool(key):
+            message: str = "Database error while updating wallet"
+            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
+        return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
+                        'message': 'wallet is rest'}), status_codes.successfully_updated_code
+
 
     @use_context
     @handle_view_errors
