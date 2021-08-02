@@ -24,7 +24,7 @@ class OrgValidators:
     @staticmethod
     @handle_store_errors
     def is_organization_exist(organization_id: typing.Union[str, None]) -> typing.Union[None, bool]:
-        if not (isinstance(organization_id, str)):
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             raise InputError(status=500, description="organization_id cannot be null")
 
         organization_instance: Organization = Organization.query(Organization.organization_id == organization_id).get()

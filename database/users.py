@@ -1,6 +1,7 @@
 import typing
 from google.cloud import ndb
 from config.exception_handlers import handle_store_errors
+from config.exceptions import InputError, error_codes
 from database.mixins import AddressMixin
 from utils.utils import timestamp
 from database.setters import setters
@@ -13,25 +14,72 @@ class UserValidators:
     @handle_store_errors
     def is_user_valid(organization_id: str, uid: str) -> typing.Union[None, bool]:
         if not isinstance(uid, str) or not bool(uid.strip()):
-            return False
+            message: str = "uid cannot be Null"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         user_instance: UserModel = UserModel.query(
             UserModel.organization_id == organization_id, UserModel.uid == uid).get()
 
-        if isinstance(user_instance, UserModel):
-            return user_instance.is_active
-        return False
+        return user_instance.is_active if isinstance(user_instance, UserModel) else False
 
     @staticmethod
     @handle_store_errors
     async def is_user_valid_async(organization_id: str, uid: str) -> typing.Union[None, bool]:
         if not(isinstance(uid, str)) or not bool(uid.strip()):
-            return False
+            message: str = "uid cannot be Null"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id cannot be Null"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         user_instance: UserModel = UserModel.query(
             UserModel.organization_id == organization_id, UserModel.uid == uid).get_async().get_result()
-        if isinstance(user_instance, UserModel):
-            return user_instance.is_active
-        return False
+
+        return user_instance.is_active if isinstance(user_instance, UserModel) else False
+
+    @staticmethod
+    @handle_store_errors
+    def is_email_available(organization_id: str, email: str) -> typing.Union[None, bool]:
+        ***REMOVED***
+            return False if email is not available True otherwise
+        :param organization_id:
+        :param email:
+        :return:
+        ***REMOVED***
+        if not isinstance(email, str) or not bool(email.strip()):
+            message: str = "Email cannot be Null"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id cannot be Null"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
+                                                   UserModel.email == email).get()
+        return isinstance(user_instance, UserModel)
+
+    @staticmethod
+    @handle_store_errors
+    def is_cell_available(organization_id: str, cell: str) -> typing.Union[None, bool]:
+        ***REMOVED***
+
+        :param organization_id:
+        :param cell:
+        :return:
+        ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id cannot be Null"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(cell, str) or not bool(cell.strip()):
+            message: str = "cell cannot be Null"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
+                                                   UserModel.cell == cell).get()
+
+        return isinstance(user_instance, UserModel)
 
 
 class UserModel(ndb.Model):

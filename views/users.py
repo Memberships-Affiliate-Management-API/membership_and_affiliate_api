@@ -2,6 +2,7 @@ import typing
 from flask import jsonify, current_app
 from werkzeug.security import check_password_hash
 from config.exceptions import error_codes, status_codes, InputError, UnAuthenticatedError, DataServiceError
+from database.organization import OrgValidators
 from main import app_cache
 from database.users import UserModel, UserValidators
 from security.users_authenticator import encode_auth_token
@@ -12,26 +13,63 @@ from config.use_context import use_context
 users_type = typing.List[UserModel]
 
 
-# TODO create test cases for User View and Documentations
-# noinspection DuplicatedCode
-class UserView(UserValidators):
+class Validators(UserValidators, OrgValidators):
+    ***REMOVED***
+        User Validators
+    ***REMOVED***
     def __init__(self):
+        super(Validators, self).__init__()
         self._max_retries = current_app.config.get('DATASTORE_RETRIES')
         self._max_timeout = current_app.config.get('DATASTORE_TIMEOUT')
+
+    @staticmethod
+    def check_required(organization_id: typing.Union[str, None], uid: typing.Union[str, None],
+                       email: typing.Union[str, None], cell: typing.Union[str, None]) -> None:
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(uid, str) or not bool(uid.strip()):
+            message: str = "uid is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(email, str) or not bool(email.strip()):
+            message: str = "email is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(cell, str) or not bool(cell.strip()):
+            message: str = "cell is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
     def can_add_user(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
                      email: typing.Union[str, None], cell: typing.Union[str, None]) -> bool:
         ***REMOVED***
             if this returns true the user can be added
-            # TODO - check if user has already logged in to this organization
-            # TODO - check if email and cell are valid
-        :param email: required - check if the user of this email has already logged in
-        :param cell: required - check if the cell number related to this user is not already registered for another user
-        :param organization_id: required - check if user has loggged into this organization
-        :param uid: required - check if user id is attached to this email and organization_id
-        :return: boolean indicate if the user can be added or not
+
+            :param email: required - check if email is available to be used on this organization
+            :param cell: required - check if the cell number related to this user is not already registered for another user
+            :param organization_id: required - check if user has logged into this organization
+            :param uid: required - check if user id is attached to this email and organization_id
+            :return: boolean indicate if the user can be added or not
         ***REMOVED***
-        pass
+        is_organization_exist: typing.Union[bool, None] = self.is_organization_exist(organization_id=organization_id)
+        is_user_valid: typing.Union[bool, None] = self.is_user_valid(organization_id=organization_id, uid=uid)
+        is_email_valid: typing.Union[bool, None] = self.is_email_available(organization_id=organization_id, email=email)
+        is_cell_available: typing.Union[bool, None] = self.is_cell_available(organization_id=organization_id, cell=cell)
+
+        if isinstance(is_organization_exist, bool) and isinstance(is_user_valid, bool) and \
+                isinstance(is_email_valid, bool) and isinstance(is_cell_available, bool):
+            return is_organization_exist and is_user_valid and is_email_valid and is_cell_available
+
+        message: str = "Database Error: unable to check the validity of your input due to database errors try again later"
+        raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
+
+# TODO create test cases for User View and Documentations
+# noinspection DuplicatedCode
+class UserView(Validators):
+    def __init__(self):
+        super(UserView, self).__init__()
 
     @use_context
     @handle_view_errors
@@ -49,17 +87,17 @@ class UserView(UserValidators):
             :param uid:
             :return: returns user record
         ***REMOVED***
+        # Check if all required values are present if not throw inputError and exit
+        self.check_required(organization_id=organization_id, uid=uid, email=email, cell=cell)
 
-        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            message: str = "organization_id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
+        if not self.can_add_user(organization_id=organization_id, uid=uid, email=email, cell=cell):
+            message: str = "You are not authorized to create a user record in this organization"
+            raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
-        # TODO - can_add_user check must be done here
-        if not isinstance(uid, str) or not bool(uid.strip()):
-            user_instance: UserModel = UserModel.query(UserModel.uid == uid).get()
-            if isinstance(user_instance, UserModel):
-                return jsonify({'status': False,
-                                'message': 'user already exists'}), error_codes.resource_conflict_error_code
+        user_instance: UserModel = UserModel.query(UserModel.uid == uid).get()
+        if isinstance(user_instance, UserModel):
+            return jsonify({'status': False,
+                            'message': 'user already exists'}), error_codes.resource_conflict_error_code
 
         user_instance: UserModel = UserModel.query(UserModel.email == email).get()
         if isinstance(user_instance, UserModel):
