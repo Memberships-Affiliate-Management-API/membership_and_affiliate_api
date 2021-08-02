@@ -275,20 +275,33 @@ class AffiliatesView(Validator):
             returns a list of all affiliates that belongs to the organization
             :param organization_id: the organization id to return affiliates off
             :return: response containing the list of affiliates as payload
+            status code ${status_codes.status_ok_code}
         ***REMOVED***
+
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message = 'organization_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         affiliates_list: typing.List[Affiliates] = Affiliates.query(
             Affiliates.organization_id == organization_id).fetch()
+
         payload: typing.List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
-        message: str = "Successfully returned all affiliates"
-        return jsonify({'status': True,
-                        'message': message,
-                        'payload': payload}), 200
+
+        if len(payload) > 0:
+            message: str = "Successfully returned all affiliates"
+            return jsonify({'status': True,
+                            'message': message,
+                            'payload': payload}), status_codes.status_ok_code
+
+        message: str = "There are no affiliate records in this organization"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_active_affiliates(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
+            NOTE: active affiliates is opposite of deleted affiliates
             returns a list of active affiliates in an organization
         :param organization_id: the organization id of the organization to return the affiliates
         :return: response containing the list of active affiliates
@@ -297,8 +310,13 @@ class AffiliatesView(Validator):
             Affiliates.organization_id == organization_id,
             Affiliates.is_active == True, Affiliates.is_deleted == False).fetch()
         payload: typing.List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
-        return jsonify({'status': True, 'message': 'successfully returned all affiliates',
-                        'payload': payload}), 200
+        if len(payload) > 0:
+            return jsonify({'status': True, 'message': 'successfully returned all affiliates',
+                            'payload': payload}), status_codes.status_ok_code
+
+        # Note failed to find active affiliates
+        message: str = "Unable to find active affiliates"
+        return jsonify({'status': True, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
