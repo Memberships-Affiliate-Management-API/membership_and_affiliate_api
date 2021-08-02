@@ -25,6 +25,7 @@ class Validators(UserValidators, OrgValidators):
     @staticmethod
     def check_required(organization_id: typing.Union[str, None], uid: typing.Union[str, None],
                        email: typing.Union[str, None], cell: typing.Union[str, None]) -> None:
+
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -144,15 +145,19 @@ class UserView(Validators):
         :param uid:
         :return:
         ***REMOVED***
-        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            message: str = "organization_id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
+        # Check if all required values are present if not throw inputError and exit
+        # TODO- use async version
+        self.check_required(organization_id=organization_id, uid=uid, email=email, cell=cell)
 
-        if not isinstance(uid, str) or not bool(uid.strip()):
-            user_instance: UserModel = UserModel.query(UserModel.uid == uid).get_async().get_result()
-            if isinstance(user_instance, UserModel):
-                return jsonify({'status': False,
-                                'message': 'user already exists'}), error_codes.resource_conflict_error_code
+        # TODO- use async version
+        if not self.can_add_user(organization_id=organization_id, uid=uid, email=email, cell=cell):
+            message: str = "You are not authorized to create a user record in this organization"
+            raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
+
+        user_instance: UserModel = UserModel.query(UserModel.uid == uid).get_async().get_result()
+        if isinstance(user_instance, UserModel):
+            return jsonify({'status': False,
+                            'message': 'user already exists'}), error_codes.resource_conflict_error_code
 
         user_instance: UserModel = UserModel.query(UserModel.email == email).get_async().get_result()
         if isinstance(user_instance, UserModel):
