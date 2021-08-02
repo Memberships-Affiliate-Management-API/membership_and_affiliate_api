@@ -139,6 +139,7 @@ class Affiliates(ndb.Model):
 class Recruits(ndb.Model):
     ***REMOVED***
         class used to track recruited affiliates
+        TODO- label each field and how its used
     ***REMOVED***
     organization_id: str = ndb.StringProperty(validator=setters.set_id)
     affiliate_id: str = ndb.StringProperty(validator=setters.set_id)

@@ -423,7 +423,9 @@ class RecruitsView(Validator):
     @handle_view_errors
     def add_recruit(self, recruit_data: dict) -> tuple:
         ***REMOVED***
-            recruit_data: dict
+            given referrer_uid , and organization_id, add new recruit
+        :param recruit_data:
+        :return:
         ***REMOVED***
         referrer_uid: typing.Union[None, str] = recruit_data.get('referrer_uid')
         if not isinstance(referrer_uid, str) or not bool(referrer_uid.strip()):
@@ -433,18 +435,19 @@ class RecruitsView(Validator):
         organization_id: typing.Union[str, None] = recruit_data.get('organization_id')
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
 
-        if not bool(referrer_uid.strip()):
-            return jsonify({'status': False, 'message': 'referrer uid is required'}), 200
-
-        recruit_instance: Recruits = Recruits(organization_id=organization_id, affiliate_id=create_id(),
+        affiliate_id = self._create_unique_affiliate_id()
+        recruit_instance: Recruits = Recruits(organization_id=organization_id, affiliate_id=affiliate_id,
                                               referrer_uid=referrer_uid)
+
         key = recruit_instance.put(retries=self._max_retries, timeout=self._max_timeout)
         if not bool(key):
             message: str = "An Error occurred while adding new recruit"
-            raise DataServiceError(status=500, description=message)
+            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
         return jsonify({'status': True, 'message': 'Successfully created new recruit',
-                        'payload': recruit_instance.to_dict()}), 200
+                        'payload': recruit_instance.to_dict()}), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
@@ -457,29 +460,32 @@ class RecruitsView(Validator):
         ***REMOVED***
         # Note: affiliate_id of the recruit
         affiliate_id: typing.Union[str, None] = recruit_data.get('affiliate_id')
+        if not isinstance(affiliate_id, str) or not bool(affiliate_id.strip()):
+            message: str = 'affiliate_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         organization_id: typing.Union[str, None] = recruit_data.get('organization_id')
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = 'organization_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
+        
+        recruit_instance: Recruits = Recruits.query(Recruits.organization_id == organization_id,
+                                                    Recruits.affiliate_id == affiliate_id).get()
 
-        if not bool(affiliate_id.strip()):
-            return jsonify({'status': False, 'message': 'affiliate_id is required'}), 500
-
-        recruits_list: typing.List[Recruits] = Recruits.query(Recruits.organization_id == organization_id,
-                                                              Recruits.affiliate_id == affiliate_id).fetch()
-
-        if isinstance(recruits_list, list) and len(recruits_list) > 0:
-            recruits_instance = recruits_list[0]
+        if isinstance(recruit_instance, Recruits):
             # Soft Deleting Recruit
-            recruits_instance.is_deleted = True
-            recruits_instance.is_active = False
+            recruit_instance.is_deleted = True
+            recruit_instance.is_active = False
             # TODO- update stats and organization Class - Consider doing this from an API
-            key = recruits_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-            if key is None:
+            key = recruit_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+            if not bool(key):
                 message: str = "An Error occurred while deleting recruit"
                 raise DataServiceError(status=500, description=message)
             return jsonify({'status': True, 'message': 'Successfully deleted recruit',
-                            'payload': recruits_instance.to_dict()}), 200
-        else:
-            message: str = "Recruit does not exist"
-            return jsonify({'status': False, 'message': message}), 500
+                            'payload': recruit_instance.to_dict()}), status_codes.successfully_updated_code
+
+        message: str = "Recruit does not exist: Cannot Delete"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
