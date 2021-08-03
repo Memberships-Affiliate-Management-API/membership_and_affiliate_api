@@ -12,24 +12,9 @@ users_bp = Blueprint("users", __name__)
 
 def get_kwargs(user_data: dict) -> tuple:
     uid: typing.Union[str, None] = user_data.get("uid")
-    if not isinstance(uid, str) or not bool(uid.strip()):
-        message: str = "uid is required"
-        raise InputError(status=error_codes.input_error_code, description=message)
-
     email: typing.Union[str, None] = user_data.get("email")
-    if not isinstance(email, str) or not bool(uid.strip()):
-        message: str = "email is required"
-        raise InputError(status=error_codes.input_error_code, description=message)
     cell: typing.Union[str, None] = user_data.get("cell")
-    if not isinstance(cell, str) or not bool(cell.strip()):
-        message: str = "cell is required"
-        raise InputError(status=error_codes.input_error_code, description=message)
-
     organization_id: typing.Union[str, None] = user_data.get("organization_id")
-    if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-        message: str = "organization_id is required"
-        raise InputError(status=error_codes.input_error_code, description=message)
-
     return organization_id, uid, email, cell
 
 
@@ -42,6 +27,7 @@ def create_user() -> tuple:
     ***REMOVED***
     # created new user
     user_data: dict = request.get_json()
+
     users_view_instance: UserView = UserView()
     names: str = user_data.get("names")
     surname: str = user_data.get("surname")
@@ -49,8 +35,11 @@ def create_user() -> tuple:
     email: str = user_data.get("email")
     password: str = user_data.get("password")
     uid: str = user_data.get("uid")
-    return users_view_instance.add_user(names=names, surname=surname, cell=cell,
-                                        email=email, password=password, uid=uid)
+    organization_id: str = user_data.get("organization_id")
+
+    # Add User View will perform error checking
+    return users_view_instance.add_user(organization_id=organization_id, uid=uid, names=names, surname=surname,
+                                        cell=cell, email=email, password=password)
 
 
 # NOTE: use "<uid>@<organization_id>" as path to obtain user
@@ -155,22 +144,10 @@ def login() -> tuple:
     # TODO- clients for users login handle it here the procedure is not clear
     user_view_instance: UserView = UserView()
     user_data: dict = request.get_json()
-
-    if ("email" in user_data) and (user_data["email"] != ""):
-        email: typing.Union[str, None] = user_data.get("email")
-    else:
-        return jsonify({"status": False,  "message": "email is required"}), 500
-
-    if ("password" in user_data) and (user_data["password"] != ""):
-        password: typing.Union[str, None] = user_data.get("password")
-    else:
-        return jsonify({"status": False, "message": "password is required"}), 500
-
-    if ("organization_id" in user_data) and (user_data["organization_id"] != ""):
-        organization_id: typing.Union[str, None] = user_data.get("organization_id")
-    else:
-        return jsonify({"status": False, "message": "an organization to login into is needed"}), 500
-
+    email: typing.Union[str, None] = user_data.get("email")
+    password: typing.Union[str, None] = user_data.get("password")
+    organization_id: typing.Union[str, None] = user_data.get("organization_id")
+    # Note error checking will be performed on View
     return user_view_instance.login(organization_id=organization_id, email=email, password=password)
 
 
@@ -190,35 +167,12 @@ def register() -> tuple:
     user_view_instance: UserView = UserView()
     user_data: dict = request.get_json()
 
-    if ("email" in user_data) and (user_data["email"] != ""):
-        email: str = user_data.get("email")
-    else:
-        return jsonify({"status": False, "message": "Email is required"}), 500
-
-    if ("cell" in user_data) and (user_data["cell"] != ""):
-        cell: str = user_data.get("cell")
-    else:
-        return jsonify({"status": False, "message": "Cell is Required"})
-
-    if ("password" in user_data) and (user_data["password"] != ""):
-        password: str = user_data.get("password")
-    else:
-        return jsonify({"status": False, "message": "Password is required"}), 500
-
-    if ("names" in user_data) and (user_data["names"] != ""):
-        names: str = user_data.get("names")
-    else:
-        return jsonify({"status": False, "message": "Names is required"}), 500
-
-    if ("surname" in user_data) and (user_data["surname"] != ""):
-        surname: str = user_data.get("surname")
-    else:
-        return jsonify({"status": False, "message": "Surname is required"}), 500
-
-    if ("organization_id" in user_data) and (user_data["organization_id"] != ""):
-        organization_id: typing.Union[str, None] = user_data.get("organization_id")
-    else:
-        return jsonify({"status": False, "message": "Organization is required"}), 500
+    email: str = user_data.get("email")
+    cell: str = user_data.get("cell")
+    password: str = user_data.get("password")
+    names: str = user_data.get("names")
+    surname: str = user_data.get("surname")
+    organization_id: typing.Union[str, None] = user_data.get("organization_id")
 
     return user_view_instance.add_user(organization_id=organization_id, names=names, surname=surname, cell=cell,
                                        email=email, password=password)
