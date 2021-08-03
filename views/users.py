@@ -29,10 +29,6 @@ class Validators(UserValidators, OrgValidators):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        if not isinstance(uid, str) or not bool(uid.strip()):
-            message: str = "uid is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
         if not isinstance(email, str) or not bool(email.strip()):
             message: str = "email is required"
             raise InputError(status=error_codes.input_error_code, description=message)
