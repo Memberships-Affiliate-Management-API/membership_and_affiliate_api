@@ -57,7 +57,7 @@ class UserValidators:
 
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.email == email).get()
-        return isinstance(user_instance, UserModel)
+        return not isinstance(user_instance, UserModel)
 
     @staticmethod
     @handle_store_errors
@@ -79,7 +79,7 @@ class UserValidators:
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.cell == cell).get()
 
-        return isinstance(user_instance, UserModel)
+        return not isinstance(user_instance, UserModel)
 
 
 class UserModel(ndb.Model):

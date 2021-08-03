@@ -107,7 +107,7 @@ class UserView(Validators):
         if not bool(key):
             message: str = "Unable to save database"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
-
+        print("User Instance: {}".format(user_instance))
         return jsonify({'status': True,
                         "message": "Successfully created new user",
                         "payload": user_instance.to_dict()
