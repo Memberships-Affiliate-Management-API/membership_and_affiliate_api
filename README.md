@@ -39,7 +39,7 @@
 
 ####Links
 - _RapidAPI_ 
-- _Platform Home_
+- _Platform Home_ [https://memberships-affiliates-man-api.herokuapp.com/](https://memberships-affiliates-man-api.herokuapp.com/)
 
 ####Author
 
