@@ -1,5 +1,4 @@
 from google.cloud import ndb
-
 from config import config_instance
 from database.setters import setters
 

@@ -9,7 +9,7 @@ import typing
 from datetime import datetime
 from google.cloud import ndb
 from config.exception_handlers import handle_store_errors
-from config.exceptions import InputError
+from config.exceptions import InputError, error_codes
 from database.mixins import AmountMixin
 from database.setters import setters
 
@@ -25,7 +25,8 @@ class OrgValidators:
     @handle_store_errors
     def is_organization_exist(organization_id: typing.Union[str, None]) -> typing.Union[None, bool]:
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            raise InputError(status=500, description="organization_id cannot be null")
+            message: str = "organization_id cannot be Null"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         organization_instance: Organization = Organization.query(Organization.organization_id == organization_id).get()
         if isinstance(organization_instance, Organization):
@@ -85,10 +86,13 @@ class AuthUserValidators:
     @handle_store_errors
     def user_is_member_of_org(uid: typing.Union[str, None],
                               organization_id: typing.Union[str, None]) -> typing.Union[None, bool]:
-        if not (isinstance(uid, str)):
-            raise InputError(status=500, description="uid cannot be Null")
-        if not (isinstance(organization_id, str)):
-            raise InputError(status=500, description="organization_id cannot be Null")
+        if not isinstance(uid, str) or not bool(uid.strip()):
+            message: str = "uid cannot be Null"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id cannot be Null"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         auth_users_list: typing.List[AuthorizedUsers] = AuthorizedUsers.query(AuthorizedUsers.uid == uid).fetch()
         for user_instance in auth_users_list:

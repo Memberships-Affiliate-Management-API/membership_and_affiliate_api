@@ -172,7 +172,7 @@ class WalletView(Validator):
         :param currency:
         :param paypal_address:
         :param is_org_wallet:
-        :return:
+        :return: tuple with created wallet_instance
         ***REMOVED***
         # NOTE: no need to check if organization_id and uid are available
         if not self.can_add_wallet(organization_id=organization_id, uid=uid):
