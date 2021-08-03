@@ -6,7 +6,7 @@ google-api-core
 google-auth
 google-cloud
 google-cloud-core
-google-cloud-datastore
+google-cloud-datastore>=1.15.3,<2.0
 google-cloud-ndb==1.8.0
 google-cloud-pubsub
 google-cloud-tasks
