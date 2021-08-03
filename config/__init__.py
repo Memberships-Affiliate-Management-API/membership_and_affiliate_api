@@ -25,7 +25,7 @@ class Config:
     CACHE_TYPE: str = "simple"
     CACHE_DEFAULT_TIMEOUT: int = 60 * 60 * 6
     MEM_CACHE_SERVER_URI: str = ""
-    GOOGLE_APPLICATION_CREDENTIALS: str = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
+    GOOGLE_APPLICATION_CREDENTIALS: str = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS") or config("GOOGLE_APPLICATION_CREDENTIALS")
 
     def __init__(self) -> None:
         # TODO : set config IS_PRODUCTION Automatically here, may use any of several ways, consider setting DEBUG Also
@@ -39,12 +39,12 @@ class Config:
         UTC_OFFSET: {}, PUBSUB_VERIFICATION_TOKEN: {}, DATASTORE_TIMEOUT: {}, DATASTORE_RETRIES: {}, CURRENCY: {},
         PAYPAL_CLIENT_ID: {}, PAYPAL_CLIENT_SECRET: {}, PAYPAL_CLIENT_ID_SAND: {} , PAYPAL_CLIENT_SECRET_SAND: {},
         IS_PRODUCTION: {}, SECRET_KEY: {}, DEBUG: {}, CACHE_TYPE: {}, CACHE_DEFAULT_TIMEOUT: {}, 
-        MEM_CACHE_SERVER_URI: {}'''.format(
+        MEM_CACHE_SERVER_URI: {} GOOGLE_APPLICATION_CREDENTIALS: {}'''.format(
             self.PROJECT, self.APP_NAME, self.ORGANIZATION_ID, self.DEFAULT_ACCESS_RIGHTS, self.ADMIN_EMAIL,
             self.UTC_OFFSET, self.PUBSUB_VERIFICATION_TOKEN, self.DATASTORE_TIMEOUT, self.DATASTORE_RETRIES,
             self.CURRENCY, self.PAYPAL_CLIENT_ID, self.PAYPAL_CLIENT_SECRET, self.PAYPAL_CLIENT_ID_SAND,
             self.PAYPAL_CLIENT_SECRET_SAND, self.IS_PRODUCTION, self.SECRET_KEY, self.DEBUG, self.CACHE_TYPE,
-            self.CACHE_DEFAULT_TIMEOUT, self.MEM_CACHE_SERVER_URI)
+            self.CACHE_DEFAULT_TIMEOUT, self.MEM_CACHE_SERVER_URI, self.GOOGLE_APPLICATION_CREDENTIALS)
 
     def __repr__(self) -> str:
         return self.__str__()

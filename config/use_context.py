@@ -10,6 +10,7 @@ from utils.utils import is_development, is_heroku
 import os
 
 if is_development():
+    # NOTE: Local development service key is saved on local drive
     credential_path = "C:\\gcp_credentials\\affiliates.json"
     os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credential_path
 
@@ -22,15 +23,14 @@ def use_context(func):
             app.app_context().push()
         else:
             app = current_app
-        print(config_instance)
-        app_credentials = json.loads(config_instance.GOOGLE_APPLICATION_CREDENTIALS)
 
-        print("APP CREDENTIALS: {}".format(app_credentials))
-        credentials = service_account.Credentials.from_service_account_info(app_credentials)
         if is_heroku():
-            client = ndb.Client(namespace="main", project=app.config.get('PROJECT'),
-                                credentials=credentials)
+            # NOTE: hosted in Heroku service key should be saved as environment variable in heroku
+            app_credentials = json.loads(config_instance.GOOGLE_APPLICATION_CREDENTIALS)
+            credentials = service_account.Credentials.from_service_account_info(app_credentials)
+            client = ndb.Client(namespace="main", project=app.config.get('PROJECT'), credentials=credentials)
         else:
+            # NOTE: could be GCP or another cloud environment
             client = ndb.Client(namespace="main", project=app.config.get('PROJECT'))
         # TODO - setup everything related to cache policy and all else here
         with client.context():
