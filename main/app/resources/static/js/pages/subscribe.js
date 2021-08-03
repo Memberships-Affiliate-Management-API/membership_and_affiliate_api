@@ -27,9 +27,11 @@ self.addEventListener('load', async e => {
         }
         const response = await do_subscribe(names, cell, email, password)
         if (!response.status) {
+            // TODO - insure warnings are printed in obvious format
             document.getElementById('message').innerHTML = `${response.message}`
             return null
         }
+        document.getElementById('message').innerHTML = `${response.message}`
 
     })
 })
