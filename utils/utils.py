@@ -14,7 +14,7 @@ char_set = string.ascii_lowercase + string.ascii_uppercase + string.digits
 def is_development() -> bool: return False if config_instance.IS_PRODUCTION else True
 
 
-def is_heroku() -> bool: return True if os.environ.get("GOOGLE_APPLICATION_CREDENTIALS") else False
+def is_heroku() -> bool: return True if os.environ.get("IS_HEROKU") else False
 
 
 def create_id(size: int = 64, chars: str = char_set) -> str: return ''.join(random.choice(chars) for _ in range(size))
