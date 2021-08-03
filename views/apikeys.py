@@ -192,9 +192,22 @@ class APIKeysView(APIKeysValidators):
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def return_active_organization_keys(self, organization_id: typing.Union[str, None]) -> tuple:
+        ***REMOVED***
+            return_active_organization_keys returns all active organizational keys
+        :param organization_id:
+        :return:
+        ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         api_keys_list: typing.List[APIKeys] = APIKeys.query(APIKeys.organization_id == organization_id,
                                                             APIKeys.is_active == True).fetch()
         payload: typing.List[dict] = [_key.to_dict() for _key in api_keys_list]
-        message: str = 'organization keys returned successfully'
-        return jsonify({'status': True, 'payload': payload, 'message': message}), 200
+
+        if len(payload) > 0:
+            message: str = 'organization api keys returned successfully'
+            return jsonify({'status': True, 'payload': payload, 'message': message}), status_codes.status_ok_code
+
+        message: str = "organization api keys not found"
+        return jsonify({'status': False, 'payload': payload, 'message': message}), status_codes.data_not_found_code
