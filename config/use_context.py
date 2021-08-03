@@ -3,7 +3,7 @@ from flask import current_app
 from main import create_app
 from config import config_instance
 from google.cloud import ndb
-from utils.utils import is_development
+from utils.utils import is_development, is_heroku
 import os
 
 if is_development():
@@ -19,7 +19,11 @@ def use_context(func):
             app.app_context().push()
         else:
             app = current_app
-        client = ndb.Client(namespace="main", project=app.config.get('PROJECT'))
+        if is_heroku():
+            client = ndb.Client(namespace="main", project=app.config.get('PROJECT'),
+                                credentials=os.environ.get('GOOGLE_APPLICATION_CREDENTIALS'))
+        else:
+            client = ndb.Client(namespace="main", project=app.config.get('PROJECT'))
         # TODO - setup everything related to cache policy and all else here
         with client.context():
             return func(*args, **kwargs)
