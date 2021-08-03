@@ -27,7 +27,6 @@ class Config:
     MEM_CACHE_SERVER_URI: str = ""
     GOOGLE_APPLICATION_CREDENTIALS: str = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
 
-
     def __init__(self) -> None:
         # TODO : set config IS_PRODUCTION Automatically here, may use any of several ways, consider setting DEBUG Also
         if "Windows_NT" == os.environ.get("OS"):

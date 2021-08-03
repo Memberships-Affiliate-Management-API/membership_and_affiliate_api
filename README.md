@@ -43,9 +43,9 @@
 
 ####Author
 
-- ***Justice Ndou*** _[https://justice-ndou.site](https://justice-ndou.site)
+- ***Justice Ndou*** _[https://justice-ndou.site](https://justice-ndou.site)_
 - **Email:*** _mobiusndou@gmail.com_
-- **Twitter** _@blueitserver_
+- **Twitter** [@blueitserver](https://twitter.com/blueitserver)
 
 
 

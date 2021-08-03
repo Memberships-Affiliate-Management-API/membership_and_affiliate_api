@@ -1,5 +1,5 @@
 import functools
-from flask import current_app
+from flask import current_app, jsonify
 from main import create_app
 from config import config_instance
 from google.cloud import ndb
@@ -21,7 +21,7 @@ def use_context(func):
             app = current_app
         if is_heroku():
             client = ndb.Client(namespace="main", project=app.config.get('PROJECT'),
-                                credentials=os.environ.get('GOOGLE_APPLICATION_CREDENTIALS'))
+                                credentials=jsonify(os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')))
         else:
             client = ndb.Client(namespace="main", project=app.config.get('PROJECT'))
         # TODO - setup everything related to cache policy and all else here
