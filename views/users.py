@@ -23,8 +23,7 @@ class Validators(UserValidators, OrgValidators):
         self._max_timeout = current_app.config.get('DATASTORE_TIMEOUT')
 
     @staticmethod
-    def check_required(organization_id: typing.Union[str, None], uid: typing.Union[str, None],
-                       email: typing.Union[str, None], cell: typing.Union[str, None]) -> None:
+    def check_required(organization_id: typing.Union[str, None], email: typing.Union[str, None], cell: typing.Union[str, None]) -> None:
 
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
@@ -42,8 +41,8 @@ class Validators(UserValidators, OrgValidators):
             message: str = "cell is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-    def can_add_user(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
-                     email: typing.Union[str, None], cell: typing.Union[str, None]) -> bool:
+    def can_add_user(self, organization_id: typing.Union[str, None], email: typing.Union[str, None],
+                     cell: typing.Union[str, None]) -> bool:
         ***REMOVED***
             if this returns true the user can be added
 
@@ -54,13 +53,13 @@ class Validators(UserValidators, OrgValidators):
             :return: boolean indicate if the user can be added or not
         ***REMOVED***
         is_organization_exist: typing.Union[bool, None] = self.is_organization_exist(organization_id=organization_id)
-        is_user_valid: typing.Union[bool, None] = self.is_user_valid(organization_id=organization_id, uid=uid)
+        # is_user_valid: typing.Union[bool, None] = self.is_user_valid(organization_id=organization_id, uid=uid)
         is_email_valid: typing.Union[bool, None] = self.is_email_available(organization_id=organization_id, email=email)
         is_cell_available: typing.Union[bool, None] = self.is_cell_available(organization_id=organization_id, cell=cell)
 
-        if isinstance(is_organization_exist, bool) and isinstance(is_user_valid, bool) and \
-                isinstance(is_email_valid, bool) and isinstance(is_cell_available, bool):
-            return is_organization_exist and is_user_valid and is_email_valid and is_cell_available
+        if isinstance(is_organization_exist, bool) and isinstance(is_email_valid, bool) and \
+                isinstance(is_cell_available, bool):
+            return is_organization_exist and is_email_valid and is_cell_available
 
         message: str = "Database Error: unable to check the validity of your input due to database errors try again later"
         raise DataServiceError(status=error_codes.data_service_error_code, description=message)
@@ -72,49 +71,38 @@ class UserView(Validators):
     def __init__(self):
         super(UserView, self).__init__()
 
+    def _create_unique_uid(self) -> str:
+        _uid = create_id()
+        user_instance: UserModel = UserModel.query(UserModel.uid == _uid).get()
+        return self._create_unique_uid() if isinstance(user_instance, UserModel) else _uid
+
     @use_context
     @handle_view_errors
     def add_user(self,   organization_id: typing.Union[str, None], names:  typing.Union[str, None],
                  surname:  typing.Union[str, None], cell:  typing.Union[str, None], email:  typing.Union[str, None],
                  password:  typing.Union[str, None], uid:  typing.Union[str, None] = None) -> tuple:
         ***REMOVED***
-                creates a new user record, the user must already be logged in and have a valid uid
+            Register a new User
+                this is called for registering a new user
             :param organization_id:
             :param names:
             :param surname:
             :param cell:
             :param email:
             :param password:
-            :param uid:
+            :param uid: Optional gets to be used if client is using an external Oauth Service
             :return: returns user record
         ***REMOVED***
         # Check if all required values are present if not throw inputError and exit
-        self.check_required(organization_id=organization_id, uid=uid, email=email, cell=cell)
+        self.check_required(organization_id=organization_id, email=email, cell=cell)
 
-        if not self.can_add_user(organization_id=organization_id, uid=uid, email=email, cell=cell):
+        if not self.can_add_user(organization_id=organization_id, email=email, cell=cell):
             message: str = "You are not authorized to create a user record in this organization"
             raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
-        user_instance: UserModel = UserModel.query(UserModel.uid == uid).get()
-        if isinstance(user_instance, UserModel):
-            return jsonify({'status': False,
-                            'message': 'user already exists'}), error_codes.resource_conflict_error_code
-
-        user_instance: UserModel = UserModel.query(UserModel.email == email).get()
-        if isinstance(user_instance, UserModel):
-            # NOTE: Email already attached to an existing user
-            message: str = '''the email you submitted is already attached to an account please 
-            login again or reset your password'''
-            return jsonify({'status': False, 'message': message}), error_codes.resource_conflict_error_code
-
-        user_instance: UserModel = UserModel.query(UserModel.cell == cell).get()
-        if isinstance(user_instance, UserModel):
-            message: str = '''the cell you submitted is already attached to an account please login again or 
-            reset your password'''
-            return jsonify({'status': False, 'message': message}), error_codes.resource_conflict_error_code
-
         if not isinstance(uid, str) or not bool(uid.strip()):
-            uid = create_id()
+            # This is a new user who has not created a uid from another login service - create a unique uid
+            uid = self._create_unique_uid()
 
         user_instance: UserModel = UserModel(organization_id=organization_id, uid=uid, names=names,
                                              surname=surname, cell=cell, email=email, password=password, is_active=True)
