@@ -1,4 +1,6 @@
 import functools
+import json
+
 from flask import current_app, jsonify
 from main import create_app
 from config import config_instance
@@ -20,7 +22,7 @@ def use_context(func):
             app.app_context().push()
         else:
             app = current_app
-        credentials = service_account.Credentials.from_service_account_info(os.environ.get('GOOGLE_APPLICATION_CREDENTIALS'))
+        credentials = service_account.Credentials.from_service_account_info(json.loads(os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')))
         if is_heroku():
             client = ndb.Client(namespace="main", project=app.config.get('PROJECT'),
                                 credentials=credentials)
