@@ -116,12 +116,14 @@ class APIKeysView(APIKeysValidators):
     @handle_view_errors
     def deactivate_key(self, key: typing.Union[str, None]) -> tuple:
         ***REMOVED***
-            # admin only
-            function -
+            # admin only - this will de-activate the API Key rendering it not usable
 
-            :param key:
-            :return:
+            :param key: key to de-activate
+            :return: deleted api-key
         ***REMOVED***
+        if not isinstance(key, str) or not bool(key.strip()):
+            message: str = "key is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         api_key_instance: APIKeys = APIKeys.query(APIKeys.key == key).get()
         if isinstance(api_key_instance, APIKeys):
@@ -129,20 +131,25 @@ class APIKeysView(APIKeysValidators):
             key = api_key_instance.put()
             if not bool(key):
                 message: str = "database error: unable to deactivate_key"
-                raise DataServiceError(status=500, description=message)
+                raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
             message: str = "successfully deactivated api_key"
             return jsonify({'status': True, 'payload': api_key_instance.to_dict(),
-                            'message': message}), 200
-        return jsonify({'status': False, 'message': 'api key not found'}), 500
+                            'message': message}), status_codes.status_ok_code
+
+        return jsonify({'status': False, 'message': 'api key not found'}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
     def activate_key(self, key: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             admin only function
-        :param key:
+        :param key: activate a given api-key
         :return:
         ***REMOVED***
+        if not isinstance(key, str) or not bool(key.strip()):
+            message: str = "key is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         api_key_instance: APIKeys = APIKeys.query(APIKeys.key == key).get()
         if isinstance(api_key_instance, APIKeys):
@@ -150,11 +157,13 @@ class APIKeysView(APIKeysValidators):
             key = api_key_instance.put()
             if not bool(key):
                 message: str = "database error: unable to activate_key"
-                raise DataServiceError(status=500, description=message)
+                raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
             message: str = "successfully activated api_key"
             return jsonify({'status': True, 'payload': api_key_instance.to_dict(),
-                            'message': message}), 200
-        return jsonify({'status': False, 'message': 'api key not found'}), 500
+                            'message': message}), status_codes.successfully_updated_code
+
+        return jsonify({'status': False, 'message': 'api key not found'}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
