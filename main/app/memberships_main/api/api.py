@@ -1,3 +1,5 @@
+import typing
+
 from flask import Blueprint, jsonify, request, current_app, url_for, flash
 from database.users import UserModel
 from security.users_authenticator import logged_user
@@ -60,7 +62,15 @@ def auth(current_user: UserModel, path: str) -> tuple:
 @main_api_bp.route('/api/v1/main/contact', methods=['POST'])
 def contact() -> tuple:
     json_data: dict = request.get_json()
-    # TODO: send contact data to contact format
+    # TODO: send contact data to contact database view
+    names: typing.Union[str, None] = json_data.get('names')
+    email: typing.Union[str, None] = json_data.get('email')
+    cell: typing.Union[str, None] = json_data.get('cell')
+    topic: typing.Union[str, None] = json_data.get('topic')
+    subject: typing.Union[str, None] = json_data.get('subject')
+    body: typing.Union[str, None] = json_data.get('body')
+    organization_id: typing.Union[str, None] = current_app.config.get('ORGANIZATION_ID')
+
     print('Names: {}, Email: {}, Cell: {}, '
           'Topic: {}, Subject: {}, Body: {}'.format(json_data.get('names'), json_data.get('email'),
                                                     json_data.get('cell'), json_data.get('topic'),
