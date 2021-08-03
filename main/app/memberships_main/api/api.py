@@ -26,8 +26,9 @@ def auth(current_user: UserModel, path: str) -> tuple:
         users_view_instance: UserView = UserView()
         email: str = json_data.get('email')
         password: str = json_data.get('password')
+        organization_id = current_app.config.get('ORGANIZATION_ID')
         print(email, password)
-        return users_view_instance.login(email=email, password=password)
+        return users_view_instance.login(organization_id=organization_id, email=email, password=password)
 
     elif path == 'subscribe':
         json_data: dict = request.get_json()
@@ -36,10 +37,11 @@ def auth(current_user: UserModel, path: str) -> tuple:
         cell: str = json_data.get('cell')
         email: str = json_data.get('email')
         password: str = json_data.get('password')
+        organization_id = current_app.config.get('ORGANIZATION_ID')
         print(json_data)
         users_view_instance: UserView = UserView()
         name, surname = names.split(" ")
-        organization_id = current_app.config.get('ORGANIZATION_ID')
+
         print(name, surname)
         return users_view_instance.add_user(organization_id=organization_id, names=names, surname=surname, cell=cell,
                                             email=email, password=password)
@@ -49,8 +51,10 @@ def auth(current_user: UserModel, path: str) -> tuple:
         print("email : {}".format(json_data.get('email')))
         # TODO: pass email address to a function to check its validity and then send a password recovery email
         email = json_data.get('email')
+        # Users here are logging into the main app not clients app
+        organization_id = current_app.config.get('ORGANIZATION_ID')
         users_view_instance: UserView = UserView()
-        return users_view_instance.send_recovery_email(email=email)
+        return users_view_instance.send_recovery_email(organization_id=organization_id, email=email)
 
 
 @main_api_bp.route('/api/v1/main/contact', methods=['POST'])
@@ -61,5 +65,5 @@ def contact() -> tuple:
           'Topic: {}, Subject: {}, Body: {}'.format(json_data.get('names'), json_data.get('email'),
                                                     json_data.get('cell'), json_data.get('topic'),
                                                     json_data.get('subject'), json_data.get('body')))
-
+    # TODO - add contact database view call here
     return jsonify({'status': False, 'message': 'Unable to send request please try again later'}), 200
