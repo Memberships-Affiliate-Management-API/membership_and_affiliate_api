@@ -22,7 +22,9 @@ def use_context(func):
             app.app_context().push()
         else:
             app = current_app
-        app_credentials = json.loads(app.config.get('GOOGLE_APPLICATION_CREDENTIALS'))
+        print(config_instance)
+        app_credentials = json.loads(config_instance.GOOGLE_APPLICATION_CREDENTIALS)
+
         print("APP CREDENTIALS: {}".format(app_credentials))
         credentials = service_account.Credentials.from_service_account_info(app_credentials)
         if is_heroku():
