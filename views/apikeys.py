@@ -1,7 +1,7 @@
 import typing
 from flask import jsonify
 from config.exception_handlers import handle_view_errors
-from config.exceptions import DataServiceError
+from config.exceptions import DataServiceError, status_codes
 from config.use_context import use_context
 from database.organization import OrgValidators, AuthUserValidators
 from database.apikeys import APIKeys
@@ -15,6 +15,11 @@ class APIKeysValidators(OrgValidators, AuthUserValidators):
 
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def organization_exist(self, organization_id: typing.Union[str, None]) -> bool:
+        ***REMOVED***
+            checks if an organization is in existence
+        :param organization_id:
+        :return:
+        ***REMOVED***
         does_organization_exist: typing.Union[bool, None] = self.is_organization_exist(organization_id=organization_id)
         if isinstance(does_organization_exist, bool):
             return does_organization_exist
@@ -22,6 +27,12 @@ class APIKeysValidators(OrgValidators, AuthUserValidators):
 
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def user_can_create_key(self, uid: typing.Union[str, None], organization_id: typing.Union[str, None]) -> bool:
+        ***REMOVED***
+            checks if user can create key
+        :param uid:
+        :param organization_id:
+        :return:
+        ***REMOVED***
         is_member_of_org: typing.Union[bool, None] = self.user_is_member_of_org(uid=uid, organization_id=organization_id)
         user_is_admin: typing.Union[bool, None] = self.org_user_is_admin(uid=uid, organization_id=organization_id)
         if isinstance(is_member_of_org, bool) and isinstance(user_is_admin, bool):
@@ -30,8 +41,21 @@ class APIKeysValidators(OrgValidators, AuthUserValidators):
 
 
 class APIKeysView(APIKeysValidators):
+    ***REMOVED***
+        a view class for APIKeys
+    ***REMOVED***
     def __init__(self):
         super(APIKeysView, self).__init__()
+
+    def _create_unique_api_key(self) -> str:
+        _key = create_id()
+        api_instance: APIKeys = APIKeys.query(APIKeys.api_key == _key).get()
+        return self._create_unique_secret_key() if isinstance(api_instance, APIKeys) else _key
+
+    def _create_unique_secret_key(self) -> str:
+        _secret = create_id()
+        api_instance: APIKeys = APIKeys.query(APIKeys.secret_token == _secret).get()
+        return self._create_unique_secret_key() if isinstance(api_instance, APIKeys) else _secret
 
     @use_context
     @handle_view_errors
@@ -53,8 +77,9 @@ class APIKeysView(APIKeysValidators):
         can_create_key = self.user_can_create_key(uid=uid, organization_id=organization_id)
         if org_exist and can_create_key:
             # create key secret key combo
-            api_key: str = create_id()
-            secret_token: str = create_id()
+            api_key: str = self._create_unique_api_key()
+            secret_token: str = self._create_unique_secret_key()
+
             api_key_instance: APIKeys = APIKeys(organization_id=organization_id,
                                                 api_key=api_key,
                                                 secret_token=secret_token,
@@ -67,16 +92,18 @@ class APIKeysView(APIKeysValidators):
                 raise DataServiceError(status=500, description=message)
             message: str = "successfully created api_key secret_token combo"
             return jsonify({'status': True, 'payload': api_key_instance.to_dict(),
-                            'message': message}), 200
+                            'message': message}), status_codes.successfully_updated_code
         return jsonify({'status': False, 'message': 'User not authorized to create keys'}), 500
 
     @use_context
     @handle_view_errors
     def deactivate_key(self, key: typing.Union[str, None]) -> tuple:
         ***REMOVED***
-            admin only function
-        :param key:
-        :return:
+            # admin only
+            function -
+
+            :param key:
+            :return:
         ***REMOVED***
 
         api_key_instance: APIKeys = APIKeys.query(APIKeys.key == key).get()
