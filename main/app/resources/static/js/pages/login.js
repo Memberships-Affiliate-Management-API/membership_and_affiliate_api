@@ -12,10 +12,7 @@ self.addEventListener('load', async e => {
         const password = document.getElementById('password').value
         const response = await do_login(email, password)
         /** NOTE: flask app will automatically redirect user and display the login successfull message on success**/
-        if (response.status === false){
-            /** if response is false then display message as the user isn't redirected login failed **/
-            document.getElementById('message').innerHTML = `${response.message}`
-        }
+        document.getElementById('message').innerHTML = `${response.message}`
     })
 })
 
