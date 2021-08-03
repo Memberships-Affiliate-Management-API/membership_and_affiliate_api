@@ -40,8 +40,10 @@ def auth(current_user: UserModel, path: str) -> tuple:
         organization_id = current_app.config.get('ORGANIZATION_ID')
         users_view_instance: UserView = UserView()
         name, surname = names.split(" ")
-        return users_view_instance.add_user(organization_id=organization_id, names=names, surname=surname, cell=cell,
-                                            email=email, password=password)
+        response = users_view_instance.add_user(organization_id=organization_id, names=names, surname=surname,
+                                                cell=cell, email=email, password=password)
+        print(response)
+        return response
 
     elif path == 'send-recovery-email':
         json_data: dict = request.get_json()
