@@ -1,7 +1,7 @@
 import typing
-from flask import jsonify
+from flask import jsonify, current_app
 from config.exception_handlers import handle_view_errors
-from config.exceptions import DataServiceError, status_codes
+from config.exceptions import DataServiceError, status_codes, InputError, error_codes, UnAuthenticatedError
 from config.use_context import use_context
 from database.organization import OrgValidators, AuthUserValidators
 from database.apikeys import APIKeys
@@ -12,6 +12,8 @@ from utils.utils import create_id, return_ttl, can_cache
 class APIKeysValidators(OrgValidators, AuthUserValidators):
     def __init__(self):
         super(APIKeysValidators, self).__init__()
+        self._max_retries = current_app.config.get('DATASTORE_RETRIES')
+        self._max_timeout = current_app.config.get('DATASTORE_TIMEOUT')
 
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def organization_exist(self, organization_id: typing.Union[str, None]) -> bool:
@@ -20,6 +22,10 @@ class APIKeysValidators(OrgValidators, AuthUserValidators):
         :param organization_id:
         :return:
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         does_organization_exist: typing.Union[bool, None] = self.is_organization_exist(organization_id=organization_id)
         if isinstance(does_organization_exist, bool):
             return does_organization_exist
@@ -33,6 +39,14 @@ class APIKeysValidators(OrgValidators, AuthUserValidators):
         :param organization_id:
         :return:
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(uid, str) or not bool(uid.strip()):
+            message: str = "uid is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         is_member_of_org: typing.Union[bool, None] = self.user_is_member_of_org(uid=uid, organization_id=organization_id)
         user_is_admin: typing.Union[bool, None] = self.org_user_is_admin(uid=uid, organization_id=organization_id)
         if isinstance(is_member_of_org, bool) and isinstance(user_is_admin, bool):
@@ -73,8 +87,8 @@ class APIKeysView(APIKeysValidators):
             :param organization_id: the organization under which the API key will be created
             :return: response containing the API Key and Secret Combination
         ***REMOVED***
-        org_exist = self.organization_exist(organization_id=organization_id)
-        can_create_key = self.user_can_create_key(uid=uid, organization_id=organization_id)
+        org_exist: bool = self.organization_exist(organization_id=organization_id)
+        can_create_key: bool = self.user_can_create_key(uid=uid, organization_id=organization_id)
         if org_exist and can_create_key:
             # create key secret key combo
             api_key: str = self._create_unique_api_key()
@@ -86,14 +100,17 @@ class APIKeysView(APIKeysValidators):
                                                 assigned_to_uid=uid,
                                                 domain=domain,
                                                 is_active=True)
-            key = api_key_instance.put()
+            key = api_key_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             if not bool(key):
                 message: str = "database error: unable to create api_key"
-                raise DataServiceError(status=500, description=message)
+                raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
             message: str = "successfully created api_key secret_token combo"
             return jsonify({'status': True, 'payload': api_key_instance.to_dict(),
                             'message': message}), status_codes.successfully_updated_code
-        return jsonify({'status': False, 'message': 'User not authorized to create keys'}), 500
+
+        message: str = 'User not authorized to create keys'
+        raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
     @use_context
     @handle_view_errors
