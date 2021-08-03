@@ -1,5 +1,7 @@
 import typing
 from flask import Blueprint, request, jsonify
+
+from config.exceptions import error_codes, InputError
 from security.api_authenticator import handle_api_auth
 from views.users import UserView
 users_bp = Blueprint("users", __name__)
@@ -9,22 +11,24 @@ users_bp = Blueprint("users", __name__)
 
 
 def get_kwargs(user_data: dict) -> tuple:
-    if ("uid" in user_data) and (user_data["uid"] != ""):
-        uid: typing.Union[str, None] = user_data.get("uid")
-    else:
-        uid: typing.Union[str, None] = None
-    if ("email" in user_data) and (user_data["email"] != ""):
-        email: typing.Union[str, None] = user_data.get("email")
-    else:
-        email: typing.Union[str, None] = None
-    if ("cell" in user_data) and (user_data["cell"] != ""):
-        cell: typing.Union[str, None] = user_data.get("cell")
-    else:
-        cell: typing.Union[str, None] = None
-    if ("organization_id" in user_data) and (user_data["organization_id"] != ""):
-        organization_id: typing.Union[str, None] = user_data.get("organization_id")
-    else:
-        pass
+    uid: typing.Union[str, None] = user_data.get("uid")
+    if not isinstance(uid, str) or not bool(uid.strip()):
+        message: str = "uid is required"
+        raise InputError(status=error_codes.input_error_code, description=message)
+
+    email: typing.Union[str, None] = user_data.get("email")
+    if not isinstance(email, str) or not bool(uid.strip()):
+        message: str = "email is required"
+        raise InputError(status=error_codes.input_error_code, description=message)
+    cell: typing.Union[str, None] = user_data.get("cell")
+    if not isinstance(cell, str) or not bool(cell.strip()):
+        message: str = "cell is required"
+        raise InputError(status=error_codes.input_error_code, description=message)
+
+    organization_id: typing.Union[str, None] = user_data.get("organization_id")
+    if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+        message: str = "organization_id is required"
+        raise InputError(status=error_codes.input_error_code, description=message)
 
     return organization_id, uid, email, cell
 
