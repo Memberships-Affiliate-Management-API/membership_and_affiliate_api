@@ -54,7 +54,7 @@ class Config:
             preferably host the cache as a docker instance on Cloud Run
         :return: dict
         ***REMOVED***
-        if not self.IS_PRODUCTION:
+        if not self.IS_PRODUCTION or os.environ.get('IS_HEROKU'):
             return {
                 "CACHE_TYPE": "simple",
                 "CACHE_DEFAULT_TIMEOUT": self.CACHE_DEFAULT_TIMEOUT,
