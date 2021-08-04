@@ -16,6 +16,14 @@ from config.exception_handlers import handle_view_errors
 from config.use_context import use_context
 
 
+class MembershipsEmails:
+    ***REMOVED***
+        methods to send emails related to memberships
+    ***REMOVED***
+    def __init__(self):
+        pass
+
+
 # TODO Create Test Cases for Memberships & Documentations
 class Validators(UserValid, PlanValid, MemberValid, CouponValid):
     ***REMOVED***
@@ -162,7 +170,7 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
 
 
 # noinspection DuplicatedCode
-class MembershipsView(Validators):
+class MembershipsView(Validators, MembershipsEmails):
 
     def __init__(self):
         super(MembershipsView, self).__init__()
@@ -492,9 +500,10 @@ class MembershipsView(Validators):
             message: str = "successfully updated payment method"
             return jsonify({'status': True, 'payload': membership_instance.to_dict(),
                             'message': message}), status_codes.successfully_updated_code
+
         message: str = "Memberships record not found: Unable to update payment method"
         return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
-    
+
     # noinspection PyUnusedLocal
     @use_context
     @handle_view_errors
