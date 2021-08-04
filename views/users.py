@@ -111,7 +111,7 @@ class UserView(Validators):
         return jsonify({'status': True,
                         "message": "Successfully created new user",
                         "payload": user_instance.to_dict()
-                        }), status_codes.status_ok_code
+                        }), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
@@ -131,35 +131,19 @@ class UserView(Validators):
         ***REMOVED***
         # Check if all required values are present if not throw inputError and exit
         # TODO- use async version
-        self.check_required(organization_id=organization_id, uid=uid, email=email, cell=cell)
+        self.check_required(organization_id=organization_id, email=email, cell=cell)
 
         # TODO- use async version
-        if not self.can_add_user(organization_id=organization_id, uid=uid, email=email, cell=cell):
+        if not self.can_add_user(organization_id=organization_id, email=email, cell=cell):
             message: str = "You are not authorized to create a user record in this organization"
             raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
-        user_instance: UserModel = UserModel.query(UserModel.uid == uid).get_async().get_result()
-        if isinstance(user_instance, UserModel):
-            return jsonify({'status': False,
-                            'message': 'user already exists'}), error_codes.resource_conflict_error_code
-
-        user_instance: UserModel = UserModel.query(UserModel.email == email).get_async().get_result()
-        if isinstance(user_instance, UserModel):
-            message: str = '''the email you submitted is already attached to an account please login again or 
-            reset your password'''
-            return jsonify({'status': False, 'message': message}), error_codes.resource_conflict_error_code
-
-        user_instance: UserModel = UserModel.query(UserModel.cell == cell).fetch_async().get_result()
-        if isinstance(user_instance, UserModel):
-            message: str = '''the cell you submitted is already attached to an account please login again 
-            or reset your password'''
-            return jsonify({'status': False, 'message': message}), error_codes.resource_conflict_error_code
-
         if not isinstance(uid, str) or not bool(uid.strip()):
-            uid = create_id()
+            uid = self._create_unique_uid()
 
-        user_instance: UserModel = UserModel(organization_id=organization_id, uid=uid, names=names, surname=surname, cell=cell, email=email, password=password,
-                                             is_active=True)
+        user_instance: UserModel = UserModel(organization_id=organization_id, uid=uid, names=names, surname=surname,
+                                             cell=cell, email=email, password=password, is_active=True)
+
         key = user_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
         if not bool(key):
             message: str = "Unable to save user database"
@@ -198,6 +182,7 @@ class UserView(Validators):
 
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.uid == uid).get()
+
         if isinstance(user_instance, UserModel):
             user_instance.names = names
             user_instance.surname = surname
@@ -261,6 +246,50 @@ class UserView(Validators):
         else:
             return jsonify({'status': False,
                             'message': 'user not found cannot update user details'}), status_codes.data_not_found_code
+
+    @use_context
+    @handle_view_errors
+    def update_user_names(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
+                          names:  typing.Union[str, None], surname: typing.Union[str, None]) -> tuple:
+        ***REMOVED***
+            given organization_id and uid update names
+        :param organization_id: required
+        :param uid: required
+        :param names: optional
+        :param surname: optional
+        :return:
+        ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(uid, str) or not bool(uid.strip()):
+            message: str = "uid is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(names, str) or not bool(names.strip()):
+            message: str = "names is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(surname, str) or not bool(surname.strip()):
+            message: str = "surname is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
+                                                   UserModel.uid == uid).get()
+        if isinstance(user_instance, UserModel):
+            user_instance.names = names
+            user_instance.surname = surname
+            key = user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+            if not bool(key):
+                message: str = "Database Error: unable to update names"
+                raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+            message: str = "Successfully updated user names"
+            return jsonify({'status': True, 'payload': user_instance.to_dict(),
+                            'message': message}), status_codes.successfully_updated_code
+
+        message: str = "User not found: Unable to update names"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors

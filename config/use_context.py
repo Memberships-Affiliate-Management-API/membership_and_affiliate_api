@@ -1,6 +1,5 @@
 import functools
 import json
-
 from flask import current_app, jsonify
 from main import create_app
 from config import config_instance
