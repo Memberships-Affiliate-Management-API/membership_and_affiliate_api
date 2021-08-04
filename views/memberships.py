@@ -13,7 +13,7 @@ from database.memberships import MembershipValidators as MemberValid
 from database.memberships import CouponsValidator as CouponValid
 from utils.utils import return_ttl, timestamp, can_cache, get_payment_methods
 from main import app_cache
-from config.exception_handlers import handle_view_errors
+from config.exception_handlers import handle_view_errors, handle_store_errors
 from config.use_context import use_context
 
 
@@ -1329,8 +1329,12 @@ class MembershipPlansView(Validators):
             MembershipPlans.organization_id == organization_id, MembershipPlans.schedule_term == schedule_term).fetch()
 
         payload: typing.List[dict] = [membership.to_dict() for membership in membership_plan_list]
-        return jsonify({'status': False, 'payload': payload,
-                        'message': 'successfully retrieved monthly plans'}), 200
+        if len(payload) > 0:
+            return jsonify({'status': True, 'payload': payload,
+                            'message': 'successfully retrieved monthly plans'}), status_codes.status_ok_code
+
+        message: str = "Unable to find plans by schedule term"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -1350,10 +1354,15 @@ class MembershipPlansView(Validators):
 
         payload: typing.List[dict] = [membership.to_dict() for membership in membership_plan_list]
 
-        return jsonify({'status': False, 'payload': payload,
-                        'message': 'successfully retrieved monthly plans'}), 200
+        if len(payload) > 0:
+            return jsonify({'status': True, 'payload': payload,
+                            'message': 'successfully retrieved monthly plans'}), status_codes.status_ok_code
+
+        message: str = "Unable to find plans by schedule term"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @staticmethod
+    @handle_store_errors
     def get_plan(organization_id: str, plan_id: str) -> typing.Union[None, MembershipPlans]:
         ***REMOVED***
             this utility will be used by other views to obtain information about membershipPlans
@@ -1361,44 +1370,27 @@ class MembershipPlansView(Validators):
         :param plan_id:
         :return:
         ***REMOVED***
-        if isinstance(plan_id, str):
-            try:
-                membership_plan_instance: MembershipPlans = MembershipPlans.query(
-                    Memberships.organization_id == organization_id, MembershipPlans.plan_id == plan_id).get()
+        if isinstance(plan_id, str) and bool(plan_id.strip()):
+            membership_plan_instance: MembershipPlans = MembershipPlans.query(
+                Memberships.organization_id == organization_id, MembershipPlans.plan_id == plan_id.strip()).get()
 
-                if isinstance(membership_plan_instance, MembershipPlans):
-                    return membership_plan_instance
-                else:
-                    return None
-            except ConnectionRefusedError:
-                return None
-            except RetryError:
-                return None
-            except Aborted:
-                return None
+            if isinstance(membership_plan_instance, MembershipPlans):
+                return membership_plan_instance
         return None
 
     @staticmethod
+    @handle_store_errors
     async def get_plan_async(organization_id: str, plan_id: str) -> typing.Union[None, MembershipPlans]:
         ***REMOVED***
             this utility will be used by other views to obtain information about membershipPlans
         ***REMOVED***
         if isinstance(plan_id, str):
-            try:
-                membership_plan_instance: MembershipPlans = MembershipPlans.query(
-                    MembershipPlans.organization_id == organization_id,
-                    MembershipPlans.plan_id == plan_id).get_async().get_result()
+            membership_plan_instance: MembershipPlans = MembershipPlans.query(
+                MembershipPlans.organization_id == organization_id,
+                MembershipPlans.plan_id == plan_id).get_async().get_result()
 
-                if isinstance(membership_plan_instance, MembershipPlans):
-                    return membership_plan_instance
-                else:
-                    return None
-            except ConnectionRefusedError:
-                return None
-            except RetryError:
-                return None
-            except Aborted:
-                return None
+            if isinstance(membership_plan_instance, MembershipPlans):
+                return membership_plan_instance
         return None
 
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
