@@ -2,6 +2,7 @@ import typing
 from flask import jsonify, current_app
 from werkzeug.security import check_password_hash
 from config.exceptions import error_codes, status_codes, InputError, UnAuthenticatedError, DataServiceError
+from database.mixins import AddressMixin
 from database.organization import OrgValidators
 from main import app_cache
 from database.users import UserModel, UserValidators
@@ -560,7 +561,52 @@ class UserView(Validators):
         :param address_dict:
         :return:
         ***REMOVED***
-        pass
+
+        self.check_org_and_uid(organization_id=organization_id, uid=uid)
+
+        line_1: typing.Union[str, None] = address_dict.get('line_1')
+        if not isinstance(line_1, str) or not bool(line_1.strip()):
+            message: str = "line_1 is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        city: typing.Union[str, None] = address_dict.get('city')
+        if not isinstance(city, str) or not bool(city.strip()):
+            message: str = "city is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        zip_code: typing.Union[str, None] = address_dict.get('zip_code')
+        if not isinstance(zip_code, str) or not bool(zip_code.strip()):
+            message: str = "zip_code is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        province: typing.Union[str, None] = address_dict.get('province')
+        state: typing.Union[str, None] = address_dict.get('state')
+
+        if not isinstance(province, str) and not isinstance(state, str):
+            message: str = "choose either state or province for your country not both"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        country: typing.Union[str, None] = address_dict.get('country')
+        if not isinstance(country, str) or not bool(country.strip()):
+            message: str = "country is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
+                                                   UserModel.uid == uid).get()
+        if isinstance(user_instance, UserModel):
+            address_instance = AddressMixin(organization_id=organization_id, uid=uid, line_1=line_1, city=city,
+                                            zip_code=zip_code, province=province, state=state, country=country)
+            key = address_instance.put()
+            user_instance.address = address_instance
+            key = user_instance.put()
+            if not bool(key):
+                message: str = "Database Error: unable to update user"
+                raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+            message: str = "Successfully updated user address"
+            return jsonify({'status': True, 'payload': user_instance.to_dict(),
+                            'message': message}), status_codes.successfully_updated_code
+        message: str = "User Not Found: Unable to update address"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors

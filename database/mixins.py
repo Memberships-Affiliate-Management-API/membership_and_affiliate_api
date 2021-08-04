@@ -77,6 +77,8 @@ class AddressMixin(ndb.Model):
     ***REMOVED***
         a mixin for user addresses
     ***REMOVED***
+    organization_id: str = ndb.StringProperty(validator=setters.set_id)
+    uid: str = ndb.StringProperty(validator=setters.set_id)
     line_1: str = ndb.StringProperty(default=None, validator=setters.set_string)
     city: str = ndb.StringProperty(default=None, validator=setters.set_string)
     zip_code: str = ndb.StringProperty(default=None, validator=setters.set_string)
