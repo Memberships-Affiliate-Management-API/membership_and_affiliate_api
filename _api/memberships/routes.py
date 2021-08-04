@@ -8,8 +8,6 @@ from views.memberships import MembershipsView, MembershipPlansView
 memberships_bp = Blueprint('memberships', __name__)
 
 
-# TODO - include organization_id for this routes, and refactor the view functions
-
 # NOTE: path is plan_id@organization_id
 @memberships_bp.route("/api/v1/members/<path:path>", methods=['POST'])
 @handle_api_auth
@@ -26,28 +24,10 @@ def create_member() -> tuple:
         create or update member
     ***REMOVED***
     member_details: dict = request.get_json()
-    if ("uid" in member_details) and (member_details["uid"] != ""):
-        uid: str = member_details.get("uid")
-    else:
-        message: str = "uid is required"
-        return jsonify({"status": False, "message": message}), 500
-
-    if ("organization_id" in member_details) and (member_details["organization_id"] != ""):
-        organization_id: typing.Union[str, None] = member_details.get("organization_id")
-    else:
-        message: str = "organization_id is required"
-        return jsonify({"status": False, "message": message}), 500
-
-    if ("plan_id" in member_details) and (member_details["plan_id"] != ""):
-        plan_id: str = member_details.get("plan_id")
-    else:
-        message: str = "plan_id is required"
-        return jsonify({"status": False, "message": message}), 500
-
-    if ("plan_start_date" in member_details) and (member_details["plan_start_date"] != ""):
-        plan_start_date: date = date_string_to_date(member_details.get("plan_start_date"))
-    else:
-        plan_start_date: date = datetime.now().date()
+    uid: str = member_details.get("uid")
+    organization_id: typing.Union[str, None] = member_details.get("organization_id")
+    plan_id: str = member_details.get("plan_id")
+    plan_start_date: date = date_string_to_date(member_details.get("plan_start_date", datetime.now().date()))
 
     members_view_instance: MembershipsView = MembershipsView()
     return members_view_instance.add_membership(organization_id=organization_id, uid=uid, plan_id=plan_id,

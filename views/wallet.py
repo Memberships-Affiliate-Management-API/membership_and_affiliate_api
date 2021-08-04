@@ -1,5 +1,7 @@
 import typing
 from flask import jsonify, current_app
+
+from config.currencies import currency_symbols
 from database.mixins import AmountMixin
 from database.wallet import WalletModel, WalletValidator
 from utils import return_ttl, can_cache
@@ -280,7 +282,7 @@ class WalletView(Validator):
                             'message': 'wallet found'}), status_codes.status_ok_code
         message: str = "Wallet not found"
         return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
-    
+
     @use_context
     @handle_view_errors
     def update_wallet(self, wallet_data: dict) -> tuple:
@@ -520,7 +522,8 @@ class WalletView(Validator):
                                                                   WalletModel.available_funds < higher_bound).fetch()
 
         payload: typing.List[dict] = [wallet.to_dict() for wallet in wallet_list]
-        return jsonify({'status': True, 'payload': payload, 'message': 'wallets returned'}), status_codes.status_ok_code
+        return jsonify({'status': True, 'payload': payload,
+                        'message': 'wallets returned'}), status_codes.status_ok_code
 
     @use_context
     @handle_view_errors

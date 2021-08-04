@@ -223,7 +223,7 @@ class Memberships(ndb.Model):
     status: str = ndb.StringProperty(default="unpaid", validator=setters.set_status)  # Paid/ Unpaid
     date_created: date = ndb.DateTimeProperty(auto_now_add=True, validator=setters.set_date)
     plan_start_date: date = ndb.DateProperty(validator=setters.set_datetime)  # the date this plan will
-    payment_method: str = ndb.StringProperty(validator=setters.set_payment_method)
+    payment_method: str = ndb.StringProperty(default="paypal", validator=setters.set_payment_method)
 
     # become active
 

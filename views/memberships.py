@@ -170,7 +170,8 @@ class MembershipsView(Validators):
     @use_context
     @handle_view_errors
     def _create_or_update_membership(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
-                                     plan_id: typing.Union[str, None], plan_start_date: date) -> tuple:
+                                     plan_id: typing.Union[str, None], plan_start_date: date,
+                                     payment_method: typing.Union[str, None] = "paypal") -> tuple:
         ***REMOVED***
             this merely creates a relationship between a payment plan for a service or product to a client
 
@@ -184,22 +185,23 @@ class MembershipsView(Validators):
         if self.can_add_member(organization_id=organization_id, uid=uid, plan_id=plan_id,
                                start_date=plan_start_date) is True:
 
-            # can use get to simplify this and make transactions faster
             membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                                  Memberships.uid == uid).get()
 
             if not (isinstance(membership_instance, Memberships)):
                 membership_instance: Memberships = Memberships()
-                membership_instance.plan_id = plan_id
-                membership_instance.status = 'Unpaid'
-                membership_instance.date_created = datetime.now()
+                membership_instance.uid = uid
+                membership_instance.organization_id = organization_id
 
-            membership_instance.uid = uid
+            membership_instance.status = 'unpaid'
             membership_instance.plan_start_date = plan_start_date
+            membership_instance.plan_id = plan_id
+            membership_instance.payment_method = payment_method
             key = membership_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             if not bool(key):
                 message: str = "Unable to save membership instance to database, please try again"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+            
             return jsonify({'status': True, 'message': 'successfully updated membership',
                             'payload': membership_instance.to_dict()}), status_codes.successfully_updated_code
 
