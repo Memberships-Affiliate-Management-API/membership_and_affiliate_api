@@ -450,11 +450,14 @@ class MembershipsView(Validators, MembershipsEmails):
             if key is None:
                 message: str = "Unable to Change Membership, please try again later"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
-        else:
-            message: str = "Unable to change membership, cannot find original membership record"
-            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
-        return jsonify({'status': True, 'message': 'successfully updated membership',
-                        'payload': membership_instance.to_dict()}), status_codes.successfully_updated_code
+
+            self.send_change_of_membership_notification_email(organization_id=organization_id, uid=uid)
+
+            return jsonify({'status': True, 'message': 'successfully updated membership',
+                            'payload': membership_instance.to_dict()}), status_codes.successfully_updated_code
+
+        message: str = "Unable to change membership, cannot find original membership record"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -494,11 +497,15 @@ class MembershipsView(Validators, MembershipsEmails):
             if not (bool(key)):
                 message: str = "Unable to Change Membership, please try again later"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
-        else:
-            message: str = "Unable to change membership, cannot find original membership record"
-            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
-        return jsonify({'status': True, 'message': 'successfully updated membership',
-                        'payload': membership_instance.to_dict()}), status_codes.successfully_updated_code
+
+            self.send_change_of_membership_notification_email(organization_id=organization_id, uid=uid)
+
+            return jsonify({'status': True, 'message': 'successfully updated membership',
+                            'payload': membership_instance.to_dict()}), status_codes.successfully_updated_code
+
+        message: str = "Unable to change membership, cannot find original membership record"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+
 
     @use_context
     @handle_view_errors
