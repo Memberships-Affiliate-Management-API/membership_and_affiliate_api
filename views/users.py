@@ -13,7 +13,48 @@ from config.use_context import use_context
 users_type = typing.List[UserModel]
 
 
-class Validators(UserValidators, OrgValidators):
+class UserEmails:
+    ***REMOVED***
+        used to send emails and notifications to users
+    ***REMOVED***
+    def __init__(self):
+        pass
+
+    def send_welcome_to_admins_email(self, email) -> None:
+        ***REMOVED***
+            send an email to admin welcoming him to the admins club
+        :param email:
+        :return:
+        ***REMOVED***
+        pass
+
+    def send_goodbye_admin_email(self, email) -> None:
+        ***REMOVED***
+            send an email informing the user he or she is no longer admin
+        :param email:
+        :return:
+        ***REMOVED***
+        pass
+
+
+    def send_welcome_to_support_email(self, email) -> None:
+        ***REMOVED***
+            send welcome to support email
+        :param email:
+        :return:
+        ***REMOVED***
+        pass
+
+    def send_goodbye_support_email(self, email) -> None:
+        ***REMOVED***
+
+        :param email:
+        :return:
+        ***REMOVED***
+        pass
+
+
+class Validators(UserValidators, OrgValidators, UserEmails):
     ***REMOVED***
         User Validators
     ***REMOVED***
@@ -56,21 +97,6 @@ class Validators(UserValidators, OrgValidators):
         pass
 
 
-    def send_welcome_to_admins_email(self, email) -> None:
-        ***REMOVED***
-            send an email to admin welcoming him to the admins club
-        :param email:
-        :return:
-        ***REMOVED***
-        pass
-
-    def send_goodbye_admin_email(self, email) -> None:
-        ***REMOVED***
-            send an email informing the user he or she is no longer admin
-        :param email:
-        :return:
-        ***REMOVED***
-        pass
 
     def can_add_user(self, organization_id: typing.Union[str, None], email: typing.Union[str, None],
                      cell: typing.Union[str, None]) -> bool:
@@ -350,7 +376,7 @@ class UserView(Validators):
             return jsonify({'status': True, 'payload': user_instance.to_dict(),
                             'message': message}), status_codes.successfully_updated_code
         message: str = "User Record not found: Unable to update cell number"
-        return jsonify({'status': False, 'message': message }), status_codes.data_not_found_code
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -480,6 +506,40 @@ class UserView(Validators):
         :param organization_id:
         :param uid:
         :param is_support:
+        :return:
+        ***REMOVED***
+        self.check_org_and_uid(organization_id=organization_id, uid=uid)
+        if not isinstance(is_support, bool):
+            message: str = "is_support is required and can only be a boolean"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
+                                                   UserModel.uid == uid).get()
+        if isinstance(user_instance, UserModel):
+            user_instance.is_support = is_support
+            key = user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+            if not bool(key):
+                message: str = "Database Error: Unable to update user support status"
+                raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
+            if is_support:
+                self.send_welcome_to_support_email(email=user_instance.email)
+            else:
+                self.send_goodbye_support_email(email=user_instance.email)
+
+            message: str = "Successfully Update support status"
+            return jsonify({'status': True, 'payload': user_instance.to_dict(),
+                            'message': message}), status_codes.successfully_updated_code
+
+    @use_context
+    @handle_view_errors
+    def set_address(self, organization_id: typing.Union[str, None],
+                    uid: typing.Union[str, None], address_dict: typing.Union[dict, None]) -> tuple:
+        ***REMOVED***
+            given organization_id and uid with address_dict update address
+        :param organization_id:
+        :param uid:
+        :param address_dict:
         :return:
         ***REMOVED***
         pass
