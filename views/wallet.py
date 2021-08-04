@@ -255,9 +255,11 @@ class WalletView(Validator):
 
         wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
                                                          WalletModel.uid == uid).get()
-
-        return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
-                        'message': 'wallet found'}), status_codes.status_ok_code
+        if isinstance(wallet_instance, WalletModel):
+            return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
+                            'message': 'wallet found'}), status_codes.status_ok_code
+        message: str = "Wallet not found"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -273,10 +275,12 @@ class WalletView(Validator):
 
         wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
                                                          WalletModel.uid == uid).get_async().get_result()
-
-        return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
-                        'message': 'wallet found'}), status_codes.status_ok_code
-
+        if isinstance(wallet_instance, WalletModel):
+            return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
+                            'message': 'wallet found'}), status_codes.status_ok_code
+        message: str = "Wallet not found"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+    
     @use_context
     @handle_view_errors
     def update_wallet(self, wallet_data: dict) -> tuple:
