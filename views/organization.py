@@ -5,7 +5,7 @@ organization view
 import typing
 from flask import current_app, jsonify
 from config.exception_handlers import handle_view_errors
-from config.exceptions import InputError, DataServiceError, error_codes, status_codes
+from config.exceptions import InputError, DataServiceError, error_codes, status_codes, UnAuthenticatedError
 from config.use_context import use_context
 from database.mixins import AmountMixin
 from database.organization import Organization, OrgValidators
@@ -103,13 +103,14 @@ class OrganizationView(OrgValidators):
             key: typing.Union[str, None] = organization_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             if not bool(key):
                 message: str = "An Unspecified Error has occurred creating database"
-                return jsonify({'status': False, 'message': message}), 500
+                raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
             message: str = "Successfully created Organization"
-            return jsonify({'status': True, 'payload': organization_instance.to_dict(), 'message': message}), 200
+            return jsonify({'status': True, 'payload': organization_instance.to_dict(),
+                            'message': message}), status_codes.successfully_updated_code
 
-        message: str = "Unable to create organization"
-        return jsonify({'status': False, 'message': message}), 500
+        message: str = "Operation Denied: Unable to create organization"
+        raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
 
     @use_context
     @handle_view_errors
@@ -152,7 +153,7 @@ class OrganizationView(OrgValidators):
             return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
         message: str = "You are not allowed to edit that organization please contact administrator"
-        return jsonify({'status': False, 'message': message}), error_codes.access_forbidden_error_code
+        raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
 
     @use_context
     @handle_view_errors

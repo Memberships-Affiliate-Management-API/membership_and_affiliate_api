@@ -1819,10 +1819,12 @@ class CouponsView(Validators):
         payload: typing.List[dict] = [coupon.to_dict() for coupon in coupons_list]
         if len(payload):
             message: str = "coupons successfully created"
-            return jsonify({'status': True, 'payload': payload, 'message': message}), status_codes.status_ok_code
+            return jsonify({'status': True, 'payload': payload,
+                            'message': message}), status_codes.status_ok_code
 
         message: str = "coupons not found"
-        return jsonify({'status': True, 'payload': payload, 'message': message}), status_codes.data_not_found_code
+        return jsonify({'status': True, 'payload': payload,
+                        'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -1842,10 +1844,12 @@ class CouponsView(Validators):
         payload: typing.List[dict] = [coupon.to_dict() for coupon in coupons_list]
         if len(payload):
             message: str = "coupons successfully retrieved"
-            return jsonify({'status': True, 'payload': payload, 'message': message}), status_codes.status_ok_code
+            return jsonify({'status': True, 'payload': payload,
+                            'message': message}), status_codes.status_ok_code
 
         message: str = "coupons not found"
-        return jsonify({'status': True, 'payload': payload, 'message': message}), status_codes.data_not_found_code
+        return jsonify({'status': True, 'payload': payload,
+                        'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -1866,10 +1870,12 @@ class CouponsView(Validators):
 
         if len(payload):
             message: str = "valid successfully retrieved"
-            return jsonify({'status': True, 'payload': payload, 'message': message}), status_codes.status_ok_code
+            return jsonify({'status': True, 'payload': payload,
+                            'message': message}), status_codes.status_ok_code
 
         message: str = "valid coupon codes not found"
-        return jsonify({'status': True, 'payload': payload, 'message': message}), status_codes.data_not_found_code
+        return jsonify({'status': True, 'payload': payload,
+                        'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -1890,10 +1896,12 @@ class CouponsView(Validators):
         payload: typing.List[dict] = [coupon.to_dict() for coupon in coupons_list]
         if len(payload):
             message: str = "coupons successfully retrieved"
-            return jsonify({'status': True, 'payload': payload, 'message': message}), status_codes.status_ok_code
+            return jsonify({'status': True, 'payload': payload,
+                            'message': message}), status_codes.status_ok_code
 
         message: str = "coupons not found"
-        return jsonify({'status': True, 'payload': payload, 'message': message}), status_codes.data_not_found_code
+        return jsonify({'status': True, 'payload': payload,
+                        'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -1914,10 +1922,12 @@ class CouponsView(Validators):
         payload: typing.List[dict] = [coupon.to_dict() for coupon in coupons_list]
         if len(payload):
             message: str = "expired coupons successfully retrieved"
-            return jsonify({'status': True, 'payload': payload, 'message': message}), status_codes.status_ok_code
+            return jsonify({'status': True, 'payload': payload,
+                            'message': message}), status_codes.status_ok_code
 
         message: str = "expired coupons not found"
-        return jsonify({'status': True, 'payload': payload, 'message': message}), status_codes.data_not_found_code
+        return jsonify({'status': True, 'payload': payload,
+                        'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -1938,10 +1948,14 @@ class CouponsView(Validators):
 
         payload: typing.List[dict] = [coupon.to_dict() for coupon in coupons_list]
         if len(payload):
+
             message: str = "successfully fetched expired coupon codes"
-            return jsonify({'status': True, 'payload': payload, 'message': message}), status_codes.status_ok_code
+            return jsonify({'status': True, 'payload': payload,
+                            'message': message}), status_codes.status_ok_code
+
         message: str = "expired coupons not found"
-        return jsonify({'status': True, 'payload': payload, 'message': message}), status_codes.data_not_found_code
+        return jsonify({'status': True, 'payload': payload,
+                        'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -1995,7 +2009,8 @@ class CouponsView(Validators):
         if isinstance(coupon_instance, Coupons):
             message: str = "Coupon found"
             return jsonify({'status': True,
-                            'message': message, 'payload': coupon_instance.to_dict()}), status_codes.status_ok_code
+                            'message': message,
+                            'payload': coupon_instance.to_dict()}), status_codes.status_ok_code
 
         message: str = "Invalid Coupon Code - Or Coupon Code not found"
         return jsonify({'status': True, 'message': message}), status_codes.data_not_found_code
