@@ -106,9 +106,9 @@ class ClassSetters:
     def set_payment_method(prop, value: typing.Union[str, None]) -> str:
         if not (isinstance(value, str)):
             raise TypeError("{}, Invalid Type".format(str(prop)))
-        if value not in get_payment_methods():
+        if value.lower().strip() not in get_payment_methods():
             raise ValueError("{}, Invalid Payment Method".format(str(prop)))
-        return value
+        return value.lower().strip()
 
     @staticmethod
     def set_percent(prop, value: typing.Union[int, None]) -> int:

@@ -10,7 +10,7 @@ from database.mixins import AmountMixin
 from database.users import UserValidators as UserValid
 from database.memberships import MembershipValidators as MemberValid
 from database.memberships import CouponsValidator as CouponValid
-from utils.utils import create_id, return_ttl, timestamp, can_cache
+from utils.utils import create_id, return_ttl, timestamp, can_cache, get_payment_methods
 from main import app_cache
 from config.exception_handlers import handle_view_errors
 from config.use_context import use_context
@@ -201,7 +201,7 @@ class MembershipsView(Validators):
             if not bool(key):
                 message: str = "Unable to save membership instance to database, please try again"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
-            
+
             return jsonify({'status': True, 'message': 'successfully updated membership',
                             'payload': membership_instance.to_dict()}), status_codes.successfully_updated_code
 
@@ -212,7 +212,8 @@ class MembershipsView(Validators):
     @handle_view_errors
     async def _create_or_update_membership_async(self, organization_id: typing.Union[str, None],
                                                  uid: typing.Union[str, None], plan_id: typing.Union[str, None],
-                                                 plan_start_date: date) -> tuple:
+                                                 plan_start_date: date,
+                                                 payment_method: typing.Union[str, None] = "paypal") -> tuple:
         ***REMOVED***
             this merely creates a relationship between a payment plan for a service or product to a client
 
@@ -232,12 +233,14 @@ class MembershipsView(Validators):
 
             if not (isinstance(membership_instance, Memberships)):
                 membership_instance: Memberships = Memberships()
-                membership_instance.plan_id = plan_id
-                membership_instance.status = 'Unpaid'
-                membership_instance.date_created = datetime.now()
 
-            membership_instance.uid = uid
+                membership_instance.uid = uid
+                membership_instance.organization_id = organization_id
+
+            membership_instance.status = 'unpaid'
+            membership_instance.plan_id = plan_id
             membership_instance.plan_start_date = plan_start_date
+            membership_instance.payment_method = payment_method
             key = membership_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
             if not bool(key):
                 message: str = "Unable to save membership instance to database, please try again"
@@ -250,29 +253,35 @@ class MembershipsView(Validators):
         return jsonify({'status': False, 'message': message}), 500
 
     def add_membership(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
-                       plan_id: typing.Union[str, None], plan_start_date: date) -> tuple:
+                       plan_id: typing.Union[str, None], plan_start_date: date,
+                       payment_method: typing.Union[str, None] = "paypal") -> tuple:
 
         # TODO - some form of error checking must be conducted here
         return self._create_or_update_membership(organization_id=organization_id, uid=uid, plan_id=plan_id,
-                                                 plan_start_date=plan_start_date)
+                                                 plan_start_date=plan_start_date, payment_method=payment_method)
 
     async def add_membership_async(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
-                                   plan_id: typing.Union[str, None], plan_start_date: date) -> tuple:
+                                   plan_id: typing.Union[str, None], plan_start_date: date,
+                                   payment_method: typing.Union[str, None]) -> tuple:
 
         return await self._create_or_update_membership_async(organization_id=organization_id, uid=uid,
-                                                             plan_id=plan_id, plan_start_date=plan_start_date)
+                                                             plan_id=plan_id, plan_start_date=plan_start_date,
+                                                             payment_method=payment_method)
 
     def update_membership(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
-                          plan_id: typing.Union[str, None], plan_start_date: date) -> tuple:
+                          plan_id: typing.Union[str, None], plan_start_date: date,
+                          payment_method: typing.Union[str, None] = "paypal") -> tuple:
 
         return self._create_or_update_membership(organization_id=organization_id, uid=uid, plan_id=plan_id,
-                                                 plan_start_date=plan_start_date)
+                                                 plan_start_date=plan_start_date, payment_method=payment_method)
 
     async def update_membership_async(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
-                                      plan_id: typing.Union[str, None], plan_start_date: date) -> tuple:
+                                      plan_id: typing.Union[str, None], plan_start_date: date,
+                                      payment_method: typing.Union[str, None] = "paypal") -> tuple:
 
         return await self._create_or_update_membership_async(organization_id=organization_id, uid=uid, plan_id=plan_id,
-                                                             plan_start_date=plan_start_date)
+                                                             plan_start_date=plan_start_date,
+                                                             payment_method=payment_method)
 
     @use_context
     @handle_view_errors
@@ -286,15 +295,15 @@ class MembershipsView(Validators):
             :return:
         ***REMOVED***
 
-        if not bool(organization_id.strip()):
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "Organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        if not bool(uid.strip()):
+        if not isinstance(uid, str) or not bool(uid.strip()):
             message: str = "uid is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        if not bool(status.strip()):
+        if not isinstance(status, str) or not bool(status.strip()):
             message: str = "status is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
@@ -449,6 +458,43 @@ class MembershipsView(Validators):
         return jsonify({'status': True, 'message': 'successfully updated membership',
                         'payload': membership_instance.to_dict()}), status_codes.successfully_updated_code
 
+    @use_context
+    @handle_view_errors
+    def set_payment_method(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
+                           payment_method: typing.Union[str, None] = "paypal") -> tuple:
+        ***REMOVED***
+            set payment method default is paypal
+        :param organization_id:
+        :param uid:
+        :param payment_method:
+        :return:
+        ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+        if not isinstance(uid, str) or not bool(uid.strip()):
+            message: str = "uid is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(payment_method, str) or payment_method.lower() not in get_payment_methods():
+            message: str = "payment method is required and should be one of : {}".format(get_payment_methods())
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
+                                                             Memberships.uid == uid).get()
+        if isinstance(membership_instance, Memberships):
+            membership_instance.payment_method = payment_method
+            key = membership_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+            if not bool(key):
+                message: str = "Database Error: Unable to update payment method"
+                raise InputError(status=error_codes.input_error_code, description=message)
+
+            message: str = "successfully updated payment method"
+            return jsonify({'status': True, 'payload': membership_instance.to_dict(),
+                            'message': message}), status_codes.successfully_updated_code
+        message: str = "Memberships record not found: Unable to update payment method"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+    
     # noinspection PyUnusedLocal
     @use_context
     @handle_view_errors
@@ -785,7 +831,8 @@ class MembershipsView(Validators):
                     'term_payment_amount': membership_plan_instance.term_payment_amount.to_dict(),
                     'registration_amount': membership_plan_instance.registration_amount.to_dict()}
                 message: str = 'successfully returned payment details'
-                return jsonify({'status': True, 'payload': amount_data, 'message': message}), status_codes.status_ok_code
+                return jsonify(
+                    {'status': True, 'payload': amount_data, 'message': message}), status_codes.status_ok_code
 
         message: str = 'unable to locate membership details'
         return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
