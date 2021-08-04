@@ -10,7 +10,7 @@ from database.mixins import AmountMixin
 from database.users import UserValidators as UserValid
 from database.memberships import MembershipValidators as MemberValid
 from database.memberships import CouponsValidator as CouponValid
-from utils.utils import create_id, return_ttl, timestamp, can_cache, get_payment_methods
+from utils.utils import return_ttl, timestamp, can_cache, get_payment_methods
 from main import app_cache
 from config.exception_handlers import handle_view_errors
 from config.use_context import use_context
@@ -27,18 +27,33 @@ class MembershipsEmails:
         self.smtp_server_password: str = current_app.config.get('SMTP_SERVER_PASSWORD')
         self.smtp_server_username: str = current_app.config.get('SMTP_SERVER_USERNAME')
 
-    def send_memberships_welcome_email(self, email):
+    def send_memberships_welcome_email(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
-            once a client or user has registered to a membership plan send them an email welcoming them
-            on board
-        :return:
+                once a client or user has registered to a membership plan send them an email welcoming them
+                on board
+            :param organization_id
+            :param uid
+            :return:
         ***REMOVED***
         pass
 
-    def send_change_of_membership_notification_email(self, email):
+    def send_change_of_membership_notification_email(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
-            once a user membership plan details changes send a notification to the client with the details
-        :return:
+                once a user membership plan details changes send a notification to the client with the details
+            :param: organization_id
+            :param: uid
+            :return:
+        ***REMOVED***
+        pass
+
+    def send_payment_method_changed_email(self, organization_id: str, uid: str) -> None:
+        ***REMOVED***
+                send an email notifying the user that their payment method changed
+                TODO - call user api to fetch user details
+                TODO - with user details compile the payment changed email and send
+            :param organization_id : required
+            :param uid: required
+            :return:
         ***REMOVED***
         pass
 
@@ -516,6 +531,8 @@ class MembershipsView(Validators, MembershipsEmails):
                 message: str = "Database Error: Unable to update payment method"
                 raise InputError(status=error_codes.input_error_code, description=message)
 
+            # Sending User payment method changed notification
+            self.send_payment_method_changed_email(organization_id=organization_id, uid=uid)
             message: str = "successfully updated payment method"
             return jsonify({'status': True, 'payload': membership_instance.to_dict(),
                             'message': message}), status_codes.successfully_updated_code
