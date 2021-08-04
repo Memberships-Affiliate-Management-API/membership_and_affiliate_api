@@ -9,6 +9,7 @@ class Config:
     PROJECT: str = os.environ.get("PROJECT") or config("PROJECT")
     APP_NAME: str = os.environ.get("APP_NAME") or config("APP_NAME")
     ORGANIZATION_ID: str = os.environ.get("ORGANIZATION_ID") or config("ORGANIZATION_ID")
+    ADMIN_UID: str = os.environ.get("ADMIN_UID") or config("ADMIN_UID")
     DEFAULT_ACCESS_RIGHTS: typing.List[str] = ["visitor", "user", "super_user", "admin"]
     ADMIN_EMAIL: str = os.environ.get("ADMIN_EMAIL") or config("ADMIN_EMAIL")
     ADMIN_NAMES: str = os.environ.get("ADMIN_NAMES") or config("ADMIN_NAMES")

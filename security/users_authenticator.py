@@ -3,7 +3,7 @@
 ***REMOVED***
 import datetime
 import jwt
-from flask import current_app, jsonify, request, redirect, url_for, flash
+from flask import current_app, request, redirect, url_for, flash
 from functools import wraps
 
 from config import config_instance
@@ -33,13 +33,13 @@ def get_admin_user() -> UserModel:
     ***REMOVED***
         :return: UserModel
     ***REMOVED***
-    uid = create_id()
-    organization_id = config_instance.ORGANIZATION_ID
-    admin_email = config_instance.ADMIN_EMAIL
-    names = config_instance.ADMIN_NAMES
-    surname = config_instance.ADMIN_SURNAME
-    password = config_instance.ADMIN_PASSWORD
-    cell = config_instance.ADMIN_CELL
+    uid: str = config_instance.ADMIN_UID
+    organization_id: str = config_instance.ORGANIZATION_ID
+    admin_email: str = config_instance.ADMIN_EMAIL
+    names: str = config_instance.ADMIN_NAMES
+    surname: str = config_instance.ADMIN_SURNAME
+    password: str = config_instance.ADMIN_PASSWORD
+    cell: str = config_instance.ADMIN_CELL
 
     return UserModel(organization_id=organization_id, uid=uid, email=admin_email, names=names, surname=surname,
                      cell=cell, password=password, is_admin=True)
@@ -127,23 +127,11 @@ def handle_users_auth(f):
     return decorated
 
 
-def verify_external_auth_token(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        sent_data = request.get_json()
-        api = sent_data['api']
-        secret = sent_data['secret']
-        print("API: {} Secret: {}".format(api, secret))
-        # TODO- find the api token if valid pass if not revoke
-        return f(identity=api, *args, **kwargs)
-
-    return decorated
-
-
 def logged_user(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         current_user = None
+
         if is_development():
             current_user = get_admin_user()
             return f(current_user, *args, **kwargs)
@@ -167,24 +155,6 @@ def logged_user(f):
         return f(current_user, *args, **kwargs)
 
     return decorated
-
-
-def is_authenticated(token: str) -> bool:
-    try:
-        uid = decode_auth_token(auth_token=token)
-        current_user = UserModel.query.filter_by(_uid=uid).first()
-        return True
-    except jwt.DecodeError:
-        return False
-
-
-def authenticated_user(token: str):
-    try:
-        uid = decode_auth_token(auth_token=token)
-        current_user = UserModel.query.filter_by(_uid=uid).first()
-        return current_user
-    except jwt.DecodeError:
-        return None
 
 
 if __name__ == '__main__':
