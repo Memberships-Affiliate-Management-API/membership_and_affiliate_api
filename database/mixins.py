@@ -74,11 +74,15 @@ class UserMixin(ndb.Model):
 
 # TODO add validators for address
 class AddressMixin(ndb.Model):
-    line_1: str = ndb.StringProperty()
-    city: str = ndb.StringProperty()
-    zip_code: str = ndb.StringProperty()
-    province: str = ndb.StringProperty()
-    country: str = ndb.StringProperty()
+    ***REMOVED***
+        a mixin for user addresses
+    ***REMOVED***
+    line_1: str = ndb.StringProperty(default=None, validator=setters.set_string)
+    city: str = ndb.StringProperty(default=None, validator=setters.set_string)
+    zip_code: str = ndb.StringProperty(default=None, validator=setters.set_string)
+    province: str = ndb.StringProperty(default=None, validator=setters.set_string)
+    state: str = ndb.StringProperty(default=None, validator=setters.set_string)
+    country: str = ndb.StringProperty(default=None, validator=setters.set_string)
 
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
