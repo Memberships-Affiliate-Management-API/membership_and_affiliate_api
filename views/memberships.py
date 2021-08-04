@@ -3,7 +3,8 @@ import typing
 from google.api_core.exceptions import RetryError, Aborted
 from flask import jsonify, current_app
 from datetime import datetime, date
-from config.exceptions import DataServiceError, InputError, error_codes, status_codes, UnAuthenticatedError
+from config.exceptions import DataServiceError, InputError, error_codes, status_codes, UnAuthenticatedError, \
+    RequestError
 from database.memberships import MembershipPlans, AccessRights, Memberships, Coupons
 from database.memberships import PlanValidators as PlanValid
 from database.mixins import AmountMixin
@@ -1068,9 +1069,10 @@ class MembershipPlansView(Validators):
             schedule_day=schedule_day,
             schedule_term=schedule_term, term_payment=term_payment, registration_amount=registration_amount,
             currency=currency)
+
         if not bool(plan_id):
             message: str = "Unable to create Payment Plan check your service_id or inform admin"
-            raise InputError(status=error_codes.input_error_code, description=message)
+            raise RequestError(status=error_codes.input_error_code, description=message)
 
         if self.can_add_plan(organization_id=organization_id, plan_name=plan_name) is True:
             total_members: int = 0
@@ -1095,11 +1097,13 @@ class MembershipPlansView(Validators):
             if not bool(key):
                 message: str = 'for some reason we are unable to create a new plan'
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
-        else:
-            message: str = 'Unable to create plan'
-            return jsonify({'status': False, 'message': message}), 500
-        return jsonify({'status': True, 'message': 'successfully created new membership plan',
-                        'payload': plan_instance.to_dict()}), 200
+
+            return jsonify({'status': True, 'message': 'successfully created new membership plan',
+                            'payload': plan_instance.to_dict()}), status_codes.status_ok_code
+
+        # TODO refactor other forbidden errors
+        message: str = 'Operation Denied: Unable to create plan'
+        raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
 
     @use_context
     @handle_view_errors
@@ -1152,11 +1156,12 @@ class MembershipPlansView(Validators):
             if not bool(key):
                 message: str = 'for some reason we are unable to create a new plan'
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
-        else:
-            message: str = 'Unable to create plan'
-            return jsonify({'status': False, 'message': message}), 500
-        return jsonify({'status': True, 'message': 'successfully created new membership plan',
-                        'payload': plan_instance.to_dict()}), 200
+
+            return jsonify({'status': True, 'message': 'successfully created new membership plan',
+                            'payload': plan_instance.to_dict()}), status_codes.successfully_updated_code
+
+        message: str = "Operation Denied: Unable to create new  membership plan"
+        raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
 
     # noinspection DuplicatedCode
     @use_context
@@ -1187,15 +1192,15 @@ class MembershipPlansView(Validators):
                 if not bool(key):
                     message: str = 'for some reason we are unable to create a new plan'
                     raise DataServiceError(status=error_codes.data_service_error_code, description=message)
-                return jsonify({'status': True, 'message': 'successfully created new membership plan',
-                                'payload': membership_plans_instance.to_dict()}), 200
 
-            else:
-                message: str = 'Membership plan not found'
-                return jsonify({'status': False, 'message': message}), 500
-        else:
-            message: str = 'Conditions to update plan not satisfied'
-            return jsonify({'status': False, 'message': message}), 500
+                return jsonify({'status': True, 'message': 'successfully created new membership plan',
+                                'payload': membership_plans_instance.to_dict()}), status_codes.status_ok_code
+
+            message: str = 'Membership plan not found'
+            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+
+        message: str = 'Operation Denied: Conditions to update plan not satisfied'
+        raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
 
     # noinspection DuplicatedCode
     @use_context
