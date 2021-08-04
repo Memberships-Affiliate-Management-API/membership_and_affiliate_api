@@ -23,7 +23,7 @@ class ServiceValidator(OrgValidators, AuthUserValidators, UserValidators):
 
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def can_create_service(self, uid: typing.Union[str, None],
-                           organization_id: typing.Union[str, None] ) -> typing.Union[None, bool]:
+                           organization_id: typing.Union[str, None]) -> typing.Union[None, bool]:
 
         # NOTE: Organization has to be valid itself
         org_exist: typing.Union[None, bool] = self.is_organization_exist(organization_id=organization_id)

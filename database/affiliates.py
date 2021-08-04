@@ -2,7 +2,6 @@ import typing
 from google.cloud import ndb
 from datetime import date, datetime
 from google.api_core.exceptions import RetryError, Aborted
-
 from config.exception_handlers import handle_store_errors
 from database.mixins import AmountMixin
 from database.setters import setters

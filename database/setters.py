@@ -12,28 +12,49 @@ class ClassSetters:
 
     @staticmethod
     def set_id(prop, value: typing.Union[str, None]) -> str:
-        if (value is None) or (value == ""):
-            raise ValueError(" {} cannot be Null".format(str(prop)))
 
         if not(isinstance(value, str)):
             raise ValueError(" {} can only be a string".format(str(prop)))
-        return value
+
+        if not bool(value.strip()):
+            raise ValueError(" {} cannot be Null".format(str(prop)))
+
+        return value.strip()
 
     @staticmethod
     def set_paypal(prop, value: typing.Union[str, None]) -> str:
-        if (value is None) or (value == ""):
-            raise ValueError(" {} cannot be Null".format(str(prop)))
-
+        ***REMOVED***
+            checks if an paypal is email
+        :param prop:
+        :param value:
+        :return:
+        ***REMOVED***
         if not(isinstance(value, str)):
             raise ValueError(" {} can only be a string".format(str(prop)))
+
+        if not bool(value.strip()):
+            raise ValueError(" {} cannot be Null".format(str(prop)))
+
+        # TODO - check email with regex here
+
         return value.strip().lower()
 
     @staticmethod
     def set_transaction_types(prop, value: typing.Union[str, None]) -> str:
+        ***REMOVED***
+            set a transaction type
+        :param prop:
+        :param value:
+        :return:
+        ***REMOVED***
+        if not(isinstance(value, str)):
+            raise ValueError(" {} can only be a string".format(str(prop)))
+
         transaction_types = ['withdrawal', 'deposit']
-        if value not in transaction_types:
+        if value.strip().lower() not in transaction_types:
             raise ValueError(" {} invalid transaction type".format(str(prop)))
-        return value
+
+        return value.strip().lower()
 
     @staticmethod
     def set_datetime(prop, value: datetime) -> datetime:
@@ -49,32 +70,57 @@ class ClassSetters:
 
     @staticmethod
     def set_status(prop, value: typing.Union[str, None]) -> str:
-        if (value is None) or (value == ""):
-            raise ValueError("{} cannot be Null".format(str(prop)))
+        ***REMOVED***
+            only two valid statuses paid and unpaid check if input is valid and set
+        :param prop:
+        :param value:
+        :return:
+        ***REMOVED***
+
         if not (isinstance(value, str)):
             raise TypeError("{} invalid status".format(str(prop)))
-        value = value.strip().lower()
-        if value not in ['paid', 'unpaid']:
+        temp = value.strip().lower()
+        if not bool(temp):
+            raise ValueError("{} cannot be Null".format(str(prop)))
+
+        if temp not in ['paid', 'unpaid']:
             raise TypeError("{} invalid status".format(str(prop)))
-        return value.strip().lower()
+
+        return temp
 
     @staticmethod
     def set_string(prop, value: typing.Union[str, None]) -> str:
-        if (value is None) or (value == ""):
-            raise ValueError("{} cannot be Null".format(str(prop)))
+        ***REMOVED***
+            check if its string and set
+        :param prop:
+        :param value:
+        :return:
+        ***REMOVED***
         if not (isinstance(value, str)):
             raise TypeError("{} can only be a string ".format(str(prop)))
+
+        if not bool(value.strip()):
+            raise ValueError("{} cannot be Null".format(str(prop)))
+
         return value.strip().lower()
 
     @staticmethod
     def set_schedule_term(prop, value: typing.Union[str, None]) -> str:
-        if (value is None) or (value == ""):
-            raise ValueError("{} cannot be Null".format(str(prop)))
+        ***REMOVED***
+            set scheduled term -
+        :param prop:
+        :param value:
+        :return:
+        ***REMOVED***
+
         if not (isinstance(value, str)):
             raise TypeError("{} can only be a string ".format(str(prop)))
-        value = value.strip().lower()
+
+        if not bool(value.strip()):
+            raise ValueError("{} cannot be Null".format(str(prop)))
+        temp = value.strip().lower()
         # TODO - Rewrite this or create a translator for paypal plans payment schedule
-        if value in ["monthly", "quarterly", "annually"]:
+        if temp in ["monthly", "quarterly", "annually"]:
             return value
         raise ValueError("Invalid scheduled term")
 
@@ -106,8 +152,10 @@ class ClassSetters:
     def set_payment_method(prop, value: typing.Union[str, None]) -> str:
         if not (isinstance(value, str)):
             raise TypeError("{}, Invalid Type".format(str(prop)))
+
         if value.lower().strip() not in get_payment_methods():
             raise ValueError("{}, Invalid Payment Method".format(str(prop)))
+        
         return value.lower().strip()
 
     @staticmethod
@@ -127,21 +175,22 @@ class ClassSetters:
             raise ValueError("{} not a valid currency symbol".format(str(prop)))
         return value
 
+    # noinspection PyUnusedLocal
     @staticmethod
     def set_email(prop, value: typing.Union[str, None]) -> str:
         ***REMOVED***
             TODO validate email here
         ***REMOVED***
         import re
-        # TODO fix email regex match
-        regex = '\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b'
-        # print(value)
-        # if re.search(regex, value) is not None:
-        #     return value
         if not isinstance(value, str):
             raise TypeError("invalid argument for email")
 
-        return value
+        # TODO FIX EMAIL REGEX ON SETTERS ITS BROKEN
+        regex = '\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b'
+        if re.search(regex, value):
+            raise ValueError("invalid argument for email")
+
+        return value.strip().lower()
         # raise ValueError("{} invalid email address".format(str(prop)))
 
     # noinspection PyUnusedLocal
@@ -149,7 +198,7 @@ class ClassSetters:
     def set_cell(prop, value: typing.Union[str, None]) -> str:
         if not isinstance(value, str):
             raise TypeError("invalid argument for cell")
-        # TODO check cell number with regex
+        # TODO CHECK CELL WITH REGEX
 
         return value
 
@@ -164,7 +213,7 @@ class ClassSetters:
             raise TypeError("invalid argument for password")
 
         if len(value) < 8:
-            raise ValueError("password length must be 8 characters and higher")
+            raise ValueError("password length must be 8 characters or higher")
 
         # TODO create a function to check password complexity and use it here
 
@@ -181,6 +230,7 @@ class ClassSetters:
         ***REMOVED***
             :return:
         ***REMOVED***
+        # TODO- check domain with regex
         import requests
         if not (isinstance(value, str)):
             raise TypeError("domain name can only be a string")

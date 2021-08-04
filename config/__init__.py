@@ -26,11 +26,11 @@ class Config:
         self.SMTP_SERVER_PASSWORD: str = os.environ.get("SMTP_SERVER_PASSWORD") or config("SMTP_SERVER_PASSWORD")
         self.SMTP_SERVER_USERNAME: str = os.environ.get("SMTP_SERVER_USERNAME") or config("SMTP_SERVER_USERNAME")
         self.UTC_OFFSET = datetime.timedelta(hours=2)
-        self.PUBSUB_VERIFICATION_TOKEN = os.environ.get("PUBSUB_VERIFICATION_TOKEN") or \
-                                         config("PUBSUB_VERIFICATION_TOKEN")
-        self.DATASTORE_TIMEOUT: int = 360  # seconds
+        self.PUBSUB_VERIFICATION_TOKEN = os.environ.get("PUBSUB_VERIFICATION_TOKEN") or config("PUBSUB_VERIFICATION_TOKEN")
+        self.DATASTORE_TIMEOUT: int = 360  # seconds 6 minutes
         self.DATASTORE_RETRIES: int = 3  # total retries when saving to datastore
         self.CURRENCY: str = "USD"
+        # TODO obtain correct paypal client ids
         self.PAYPAL_CLIENT_ID: str = os.environ.get("PAYPAL_CLIENT_ID") or config("PAYPAL_CLIENT_ID")
         self.PAYPAL_CLIENT_SECRET: str = os.environ.get("PAYPAL_CLIENT_SECRET") or config("PAYPAL_CLIENT_SECRET")
         self.PAYPAL_CLIENT_ID_SAND: str = os.environ.get("PAYPAL_CLIENT_ID_SAND") or config("PAYPAL_CLIENT_ID_SAND")
@@ -45,7 +45,7 @@ class Config:
         self.GOOGLE_APPLICATION_CREDENTIALS: str = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS") or config(
             "GOOGLE_APPLICATION_CREDENTIALS")
 
-        # TODO : set config IS_PRODUCTION Automatically here, may use any of several ways, consider setting DEBUG Also
+        # NOTE : setting IS_PRODUCTION here - could find a better way of doing this rather than depending on the OS
         if "Windows_NT" == os.environ.get("OS"):
             self.DEBUG = True
             self.IS_PRODUCTION = False
@@ -72,6 +72,7 @@ class Config:
             preferably host the cache as a docker instance on Cloud Run
         :return: dict
         ***REMOVED***
+        # TODO learn how to host redis cache on Heroku
         if not self.IS_PRODUCTION or os.environ.get('IS_HEROKU'):
             return {
                 "CACHE_TYPE": "simple",
@@ -79,7 +80,6 @@ class Config:
                 "CACHE_KEY_PREFIX": "memberships_cache_"
             }
         else:
-            # TODO: Respond with Cache Configuration for a production environment
             user = os.environ.get("CACHE_REDIS_USER") or config("CACHE_REDIS_USER")
             password = os.environ.get("CACHE_REDIS_PASSWORD") or config("CACHE_REDIS_PASSWORD")
             redis_host = os.environ.get("CACHE_REDIS_HOST") or config("CACHE_REDIS_HOST")

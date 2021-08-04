@@ -32,6 +32,7 @@ def check_firebase_uid(uid: str) -> bool:
 
 def get_admin_user() -> UserModel:
     ***REMOVED***
+        return admin_user - uses include on development server
         :return: UserModel
     ***REMOVED***
     uid: str = config_instance.ADMIN_UID
@@ -48,7 +49,7 @@ def get_admin_user() -> UserModel:
 
 def is_app_admin(current_user: UserModel) -> bool:
     ***REMOVED***
-        checks if user is app admin
+        checks if user is app admin - meaning admin for main organization for the API
     :param current_user:
     :return:
     ***REMOVED***
@@ -99,9 +100,11 @@ def handle_users_auth(f):
         if 'x-access-token' in request.headers:
             token = request.headers['x-access-token']
             # print('token found : {}'.format(token))
+        # NOTE: if running on development server by-pass authentication and return admin user
         if is_development():
             current_user = get_admin_user()
             return f(current_user, *args, **kwargs)
+
         if not token:
             return redirect(url_for('memberships_main.memberships_main_routes', path='login'))
         try:
@@ -132,7 +135,8 @@ def logged_user(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         current_user = None
-
+        # NOTE: by passes authentication and returns admin user as authenticated user on development
+        # TODO: this may need to be turned off in-case of testing authentication mechanism
         if is_development():
             current_user = get_admin_user()
             return f(current_user, *args, **kwargs)

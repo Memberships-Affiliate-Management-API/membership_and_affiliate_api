@@ -8,6 +8,9 @@ from utils.utils import get_days
 
 
 class MembershipValidators:
+    ***REMOVED***
+        validating input and authenticating calls to memberships database
+    ***REMOVED***
 
     @staticmethod
     def start_date_valid(start_date: date) -> bool:
@@ -31,7 +34,9 @@ class MembershipValidators:
 
 
 class PlanValidators:
-
+    ***REMOVED***
+        validating and authenticating calls to MembershipPlans Database
+    ***REMOVED***
     @staticmethod
     def plan_exist(organization_id: str, plan_id: str) -> typing.Union[None, bool]:
         ***REMOVED***
@@ -45,7 +50,7 @@ class PlanValidators:
             return False
 
         try:
-            plan_instance: MembershipPlans = MembershipPlans.query(MembershipPlans.organization_id==organization_id,
+            plan_instance: MembershipPlans = MembershipPlans.query(MembershipPlans.organization_id == organization_id,
                                                                    MembershipPlans.plan_id == plan_id).get()
             if isinstance(plan_instance, MembershipPlans):
                 return True
@@ -133,6 +138,9 @@ class PlanValidators:
 
 
 class CouponsValidator:
+    ***REMOVED***
+        validating input and authenticating calls to Coupons database
+    ***REMOVED***
     def __init__(self):
         pass
 
@@ -166,7 +174,7 @@ class CouponsValidator:
             return False
         try:
             coupons_instance: Coupons = Coupons.query(
-                Coupons.organization_id==organization_id, Coupons.code == code).get_async().get_result()
+                Coupons.organization_id == organization_id, Coupons.code == code).get_async().get_result()
 
             if isinstance(coupons_instance, Coupons):
                 return True
@@ -308,6 +316,9 @@ class MembershipPlans(ndb.Model):
 
 # noinspection DuplicatedCode
 class MembershipInvoices(ndb.Model):
+    ***REMOVED***
+        Invoices for MembershipPlans
+    ***REMOVED***
     organization_id: str = ndb.StringProperty(validator=setters.set_id)
     uid: str = ndb.StringProperty(validator=setters.set_id)
     plan_id: str = ndb.StringProperty(validator=setters.set_id)
