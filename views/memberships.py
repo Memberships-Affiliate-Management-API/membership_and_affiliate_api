@@ -1329,7 +1329,7 @@ class MembershipPlansView(Validators):
             MembershipPlans.organization_id == organization_id, MembershipPlans.schedule_term == schedule_term).fetch()
 
         payload: typing.List[dict] = [membership.to_dict() for membership in membership_plan_list]
-        if len(payload) > 0:
+        if len(payload):
             return jsonify({'status': True, 'payload': payload,
                             'message': 'successfully retrieved monthly plans'}), status_codes.status_ok_code
 
@@ -1354,7 +1354,7 @@ class MembershipPlansView(Validators):
 
         payload: typing.List[dict] = [membership.to_dict() for membership in membership_plan_list]
 
-        if len(payload) > 0:
+        if len(payload):
             return jsonify({'status': True, 'payload': payload,
                             'message': 'successfully retrieved monthly plans'}), status_codes.status_ok_code
 
@@ -1393,6 +1393,8 @@ class MembershipPlansView(Validators):
                 return membership_plan_instance
         return None
 
+    @use_context
+    @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def return_plan(self, organization_id: str, plan_id: str) -> tuple:
         ***REMOVED***
@@ -1405,9 +1407,13 @@ class MembershipPlansView(Validators):
         plan_instance = self.get_plan(organization_id=organization_id, plan_id=plan_id)
         if bool(plan_instance):
             message: str = "successfully fetched plan"
-            return jsonify({'status': True, 'payload': plan_instance.to_dict(), 'message': message}), 200
-        return jsonify({'status': False, 'message': 'Unable to get plan'}), 500
+            return jsonify({'status': True, 'payload': plan_instance.to_dict(),
+                            'message': message}), status_codes.status_ok_code
 
+        return jsonify({'status': False, 'message': 'Unable to get plan'}), status_codes.data_not_found_code
+
+    @use_context
+    @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def return_plan_async(self, organization_id: str, plan_id: str) -> tuple:
         ***REMOVED***
@@ -1420,10 +1426,15 @@ class MembershipPlansView(Validators):
         plan_instance = await self.get_plan_async(organization_id=organization_id, plan_id=plan_id)
         if bool(plan_instance):
             message: str = "successfully fetched plan"
-            return jsonify({'status': True, 'payload': plan_instance.to_dict(), 'message': message}), 200
-        return jsonify({'status': False, 'message': 'Unable to get plan'}), 500
+            return jsonify({'status': True, 'payload': plan_instance.to_dict(),
+                            'message': message}), status_codes.status_ok_code
+
+        return jsonify({'status': False,
+                        'message': 'Unable to get plan'}), status_codes.data_not_found_code
 
     @staticmethod
+    @use_context
+    @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def return_all_plans(organization_id: str) -> tuple:
         ***REMOVED***
@@ -1436,10 +1447,17 @@ class MembershipPlansView(Validators):
             MembershipPlans.organization_id == organization_id).fetch()
 
         plan_list: typing.List[dict] = [plan.to_dict() for plan in membership_plan_list]
-        return jsonify({'status': True, 'payload': plan_list,
-                        'message': 'successfully fetched all memberships'}), 200
+
+        if len(plan_list):
+            return jsonify({'status': True, 'payload': plan_list,
+                            'message': 'successfully fetched all memberships'}), status_codes.status_ok_code
+
+        message: str = "Unable to find membership plans"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @staticmethod
+    @use_context
+    @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     async def return_all_plans_async(organization_id: str) -> tuple:
         ***REMOVED***
@@ -1452,8 +1470,12 @@ class MembershipPlansView(Validators):
             MembershipPlans.organization_id == organization_id).fetch_async().get_result()
 
         plan_list: typing.List[dict] = [plan.to_dict() for plan in membership_plan_list]
-        return jsonify({'status': True, 'payload': plan_list,
-                        'message': 'successfully fetched all memberships'}), 200
+        if len(plan_list):
+            return jsonify({'status': True, 'payload': plan_list,
+                            'message': 'successfully fetched all memberships'}), status_codes.status_ok_code
+
+        message: str = "Unable to find membership plans"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
 
 class AccessRightsView:
@@ -1795,7 +1817,7 @@ class CouponsView(Validators):
         coupons_list: typing.List[Coupons] = Coupons.query(Coupons.organization_id == organization_id).fetch()
 
         payload: typing.List[dict] = [coupon.to_dict() for coupon in coupons_list]
-        if len(payload) > 0:
+        if len(payload):
             message: str = "coupons successfully created"
             return jsonify({'status': True, 'payload': payload, 'message': message}), status_codes.status_ok_code
 
@@ -1818,7 +1840,7 @@ class CouponsView(Validators):
         coupons_list: typing.List[Coupons] = Coupons.query(
             Coupons.organization_id == organization_id).fetch_async().get_result()
         payload: typing.List[dict] = [coupon.to_dict() for coupon in coupons_list]
-        if len(payload) > 0:
+        if len(payload):
             message: str = "coupons successfully retrieved"
             return jsonify({'status': True, 'payload': payload, 'message': message}), status_codes.status_ok_code
 
@@ -1842,7 +1864,7 @@ class CouponsView(Validators):
             Coupons.organization_id == organization_id, Coupons.is_valid == True).fetch()
         payload: typing.List[dict] = [coupon.to_dict() for coupon in coupons_list]
 
-        if len(payload) > 0:
+        if len(payload):
             message: str = "valid successfully retrieved"
             return jsonify({'status': True, 'payload': payload, 'message': message}), status_codes.status_ok_code
 
@@ -1866,7 +1888,7 @@ class CouponsView(Validators):
                                                            Coupons.is_valid == True).fetch_async().get_result()
 
         payload: typing.List[dict] = [coupon.to_dict() for coupon in coupons_list]
-        if len(payload) > 0:
+        if len(payload):
             message: str = "coupons successfully retrieved"
             return jsonify({'status': True, 'payload': payload, 'message': message}), status_codes.status_ok_code
 
@@ -1890,7 +1912,7 @@ class CouponsView(Validators):
                                                            Coupons.expiration_time < timestamp()).fetch()
 
         payload: typing.List[dict] = [coupon.to_dict() for coupon in coupons_list]
-        if len(payload) > 0:
+        if len(payload):
             message: str = "expired coupons successfully retrieved"
             return jsonify({'status': True, 'payload': payload, 'message': message}), status_codes.status_ok_code
 
@@ -1915,7 +1937,7 @@ class CouponsView(Validators):
             Coupons.expiration_time < timestamp()).fetch_async().get_result()
 
         payload: typing.List[dict] = [coupon.to_dict() for coupon in coupons_list]
-        if len(payload) > 0:
+        if len(payload):
             message: str = "successfully fetched expired coupon codes"
             return jsonify({'status': True, 'payload': payload, 'message': message}), status_codes.status_ok_code
         message: str = "expired coupons not found"
