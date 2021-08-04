@@ -14,6 +14,33 @@ from main import app_cache
 from utils.utils import create_id, return_ttl, can_cache
 
 
+class OrganizationEmails:
+    def __init__(self):
+        self.admin_email: str = current_app.config.get('ADMIN_EMAIL')
+        self.no_response_email: str = current_app.config.get('NO_RESPONSE_EMAIL')
+        self.smtp_server_uri: str = current_app.config.get('SMTP_SERVER_URI')
+        self.smtp_server_password: str = current_app.config.get('SMTP_SERVER_PASSWORD')
+        self.smtp_server_username: str = current_app.config.get('SMTP_SERVER_USERNAME')
+
+    def send_successfully_created_organization(self, organization_id: str, uid: str) -> None:
+        ***REMOVED***
+
+        :param organization_id:
+        :param uid:
+        :return:
+        ***REMOVED***
+        pass
+
+    def organization_wallet_created(self, organization_id: str, uid: str) -> None:
+        ***REMOVED***
+            send an email when an organization wallet has been created
+        :param organization_id:
+        :param uid:
+        :return:
+        ***REMOVED***
+        pass
+    
+
 class OrganizationView(OrgValidators):
     ***REMOVED***
      Utilities to validate UserInput Data and also validate access rights of those using the API, While
