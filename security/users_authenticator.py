@@ -152,6 +152,10 @@ def logged_user(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         current_user = None
+        if is_development():
+            current_user = get_admin_user()
+            return f(current_user, *args, **kwargs)
+
         if 'x-access-token' in request.headers:
             token = request.headers['x-access-token']
             if token:
