@@ -1,7 +1,9 @@
 from flask import Blueprint, render_template, url_for, get_flashed_messages, redirect, flash
+
+from config.exceptions import status_codes
 from database.users import UserModel
 from main import app_cache
-from security.users_authenticator import logged_user
+from security.users_authenticator import logged_user, is_app_admin
 from utils.utils import return_ttl, can_cache
 
 admin_dashboard_bp = Blueprint("admin_dashboard", __name__)
@@ -13,8 +15,8 @@ admin_dashboard_bp = Blueprint("admin_dashboard", __name__)
 def admin_dashboard(current_user: UserModel) -> tuple:
     get_flashed_messages()
 
-    if current_user and current_user.is_admin:
-        return render_template('admin/dashboard.html'), 200
+    if is_app_admin(current_user=current_user):
+        return render_template('admin/dashboard.html'), status_codes.status_ok_code
     flash('This area is not for public use sorry')
     return redirect(url_for('memberships_main.memberships_main_routes', path='login'))
 
@@ -25,7 +27,7 @@ def admin_dashboard(current_user: UserModel) -> tuple:
 def admin_dashboard_routes(current_user: UserModel, path: str) -> tuple:
     get_flashed_messages()
 
-    if current_user and (not current_user.is_admin):
+    if is_app_admin(current_user=current_user):
         flash('This area is not for public use sorry')
         return redirect(url_for('memberships_main.memberships_main_routes', path='login'))
 

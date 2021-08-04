@@ -29,24 +29,6 @@ def check_firebase_uid(uid: str) -> bool:
     return True
 
 
-# def handle_users_auth(func):
-#     @functools.wraps(func)
-#     def auth_wrapper(*args, **kwargs):
-#
-#         auth_token: str = request.headers.get('auth-token')
-#         uid: str = request.headers.get('uid')
-#
-#         if check_jwt_token(auth_token=auth_token):
-#             return func(*args, **kwargs)
-#
-#         if check_firebase_uid(uid=uid):
-#             return func(*args, **kwargs)
-#
-#         message: str = "request not authorized"
-#         raise UnAuthenticatedError(status=401, description=message)
-#
-#     return auth_wrapper
-
 def get_admin_user() -> UserModel:
     ***REMOVED***
         :return: UserModel
@@ -61,6 +43,16 @@ def get_admin_user() -> UserModel:
 
     return UserModel(organization_id=organization_id, uid=uid, email=admin_email, names=names, surname=surname,
                      cell=cell, password=password, is_admin=True)
+
+
+def is_app_admin(current_user: UserModel) -> bool:
+    ***REMOVED***
+        checks if user is app admin
+    :param current_user:
+    :return:
+    ***REMOVED***
+    app_admin: bool = current_user and current_user.uid and (current_user.organization_id == config_instance.ORGANIZATION_ID)
+    return True if app_admin else False
 
 
 def encode_auth_token(uid: str) -> str:
