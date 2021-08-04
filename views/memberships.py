@@ -612,7 +612,7 @@ class MembershipsView(Validators, MembershipsEmails):
                                                                       Memberships.plan_id == plan_id,
                                                                       Memberships.status == status).fetch()
 
-        if isinstance(membership_list, list) and len(membership_list) > 0:
+        if isinstance(membership_list, list) and len(membership_list):
             response_data: typing.List[dict] = [member.to_dict() for member in membership_list]
             message: str = 'successfully fetched members'
             return jsonify({'status': True, 'payload': response_data, 'message': message}), status_codes.status_ok_code
@@ -681,7 +681,7 @@ class MembershipsView(Validators, MembershipsEmails):
         membership_list: typing.List[Memberships] = Memberships.query(Memberships.organization_id == organization_id,
                                                                       Memberships.status == status).fetch()
 
-        if isinstance(membership_list, list) and len(membership_list) > 0:
+        if isinstance(membership_list, list) and len(membership_list):
             response_data: typing.List[dict] = [member.to_dict() for member in membership_list]
             message: str = 'successfully fetched members'
             return jsonify({'status': True, 'payload': response_data, 'message': message}), status_codes.status_ok_code
@@ -711,7 +711,7 @@ class MembershipsView(Validators, MembershipsEmails):
         membership_list: typing.List[Memberships] = Memberships.query(
             Memberships.organization_id == organization_id, Memberships.status == status).fetch_async().get_result()
 
-        if isinstance(membership_list, list) and len(membership_list) > 0:
+        if isinstance(membership_list, list) and len(membership_list):
             response_data: typing.List[dict] = [member.to_dict() for member in membership_list]
             message: str = 'successfully fetched members'
             return jsonify({'status': True, 'payload': response_data, 'message': message}), status_codes.status_ok_code
@@ -738,7 +738,7 @@ class MembershipsView(Validators, MembershipsEmails):
         membership_list: typing.List[Memberships] = Memberships.query(Memberships.organization_id == organization_id,
                                                                       Memberships.plan_id == plan_id).fetch()
 
-        if isinstance(membership_list, list) and len(membership_list) > 0:
+        if isinstance(membership_list, list) and len(membership_list):
             response_data: typing.List[dict] = [member.to_dict() for member in membership_list]
             message: str = 'successfully fetched members'
             return jsonify({'status': True, 'payload': response_data, 'message': message}), status_codes.status_ok_code
@@ -761,7 +761,7 @@ class MembershipsView(Validators, MembershipsEmails):
         membership_list: typing.List[Memberships] = Memberships.query(
             Memberships.organization_id == organization_id, Memberships.plan_id == plan_id).fetch_async().get_result()
 
-        if isinstance(membership_list, list) and len(membership_list) > 0:
+        if isinstance(membership_list, list) and len(membership_list):
             response_data: typing.List[dict] = [member.to_dict() for member in membership_list]
             message: str = 'successfully fetched members'
             return jsonify({'status': True, 'payload': response_data, 'message': message}), status_codes.status_ok_code
@@ -784,7 +784,7 @@ class MembershipsView(Validators, MembershipsEmails):
         membership_list: typing.List[Memberships] = Memberships.query(
             Memberships.organization_id == organization_id, Memberships.plan_id == plan_id).fetch_async().get_result()
 
-        if isinstance(membership_list, list) and len(membership_list) > 0:
+        if isinstance(membership_list, list) and len(membership_list):
             response_data: typing.List[dict] = [member.to_dict() for member in membership_list]
             message: str = 'successfully fetched members'
             return jsonify({'status': True, 'payload': response_data, 'message': message}), status_codes.status_ok_code
@@ -921,14 +921,13 @@ class MembershipsView(Validators, MembershipsEmails):
             key = membership_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             if not bool(key):
                 message: str = 'for some reason we are unable to set payment status'
-                raise InputError(status=422, description=message)
-        else:
-            message: str = "Membership not found"
-            return jsonify({'status': False, 'message': message}), 500
+                raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-        message: str = 'payment status has been successfully set'
-        return jsonify({'status': True, 'message': message,
-                        'payload': membership_instance.to_dict()}), 200
+            message: str = 'payment status has been successfully set'
+            return jsonify({'status': True, 'message': message,
+                            'payload': membership_instance.to_dict()}), status_codes.status_ok_code
+        message: str = "Membership not found"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -949,12 +948,12 @@ class MembershipsView(Validators, MembershipsEmails):
             if not bool(key):
                 message: str = 'for some reason we are unable to set payment status'
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
-        else:
-            message: str = "Membership not found"
-            return jsonify({'status': False, 'message': message}), 500
 
-        return jsonify({'status': True, 'message': 'payment status has been successfully set',
-                        'payload': membership_instance.to_dict()}), 200
+            message: str = 'payment status has been successfully set'
+            return jsonify({'status': True, 'message': message,
+                            'payload': membership_instance.to_dict()}), status_codes.status_ok_code
+        message: str = "Membership not found"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
 
 def plan_data_wrapper(func):

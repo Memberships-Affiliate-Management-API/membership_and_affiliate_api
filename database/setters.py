@@ -155,7 +155,7 @@ class ClassSetters:
 
         if value.lower().strip() not in get_payment_methods():
             raise ValueError("{}, Invalid Payment Method".format(str(prop)))
-        
+
         return value.lower().strip()
 
     @staticmethod
