@@ -166,6 +166,8 @@ class ClassSetters:
         if len(value) < 8:
             raise ValueError("password length must be 8 characters and higher")
 
+        # TODO create a function to check password complexity and use it here
+
         return generate_password_hash(value, method="pbkdf2:sha256", salt_length=8)
 
     @staticmethod

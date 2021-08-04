@@ -37,6 +37,41 @@ class Validators(UserValidators, OrgValidators):
             message: str = "cell is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
+    @staticmethod
+    def check_org_and_uid(organization_id: typing.Union[str, None], uid: typing.Union[str, None]) -> None:
+        ***REMOVED***
+            check if organization_id or uid are available if not throw input_error_code and exit
+        :param organization_id:
+        :param uid:
+        :return:
+        ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(uid, str) or not bool(uid.strip()):
+            message: str = "uid is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        pass
+
+
+    def send_welcome_to_admins_email(self, email) -> None:
+        ***REMOVED***
+            send an email to admin welcoming him to the admins club
+        :param email:
+        :return:
+        ***REMOVED***
+        pass
+
+    def send_goodbye_admin_email(self, email) -> None:
+        ***REMOVED***
+            send an email informing the user he or she is no longer admin
+        :param email:
+        :return:
+        ***REMOVED***
+        pass
+
     def can_add_user(self, organization_id: typing.Union[str, None], email: typing.Union[str, None],
                      cell: typing.Union[str, None]) -> bool:
         ***REMOVED***
@@ -259,13 +294,8 @@ class UserView(Validators):
         :param surname: optional
         :return:
         ***REMOVED***
-        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            message: str = "organization_id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(uid, str) or not bool(uid.strip()):
-            message: str = "uid is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
+        # checks if organization_id and uid are available if not throws input Error
+        self.check_org_and_uid(organization_id=organization_id, uid=uid)
 
         if not isinstance(names, str) or not bool(names.strip()):
             message: str = "names is required"
@@ -290,6 +320,169 @@ class UserView(Validators):
 
         message: str = "User not found: Unable to update names"
         return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+
+    @use_context
+    @handle_view_errors
+    def update_cell(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
+                    cell: typing.Union[str, None]) -> tuple:
+        ***REMOVED***
+                given organization_id and uid update cell number
+            :param organization_id:
+            :param uid:
+            :param cell:
+            :return:
+        ***REMOVED***
+        self.check_org_and_uid(organization_id=organization_id, uid=uid)
+        if not isinstance(cell, str) or not bool(cell.strip()):
+            message: str = "cell is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
+                                                   UserModel.uid == uid).get()
+        if isinstance(user_instance, UserModel):
+            user_instance.cell = cell
+            # TODO - run a function to send verification sms if available_funds
+            key = user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+            if not bool(key):
+                message: str = "Database Error: unable to save updated user record"
+                raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+            message: str = "Successfully Updated Cell Number"
+            return jsonify({'status': True, 'payload': user_instance.to_dict(),
+                            'message': message}), status_codes.successfully_updated_code
+        message: str = "User Record not found: Unable to update cell number"
+        return jsonify({'status': False, 'message': message }), status_codes.data_not_found_code
+
+    @use_context
+    @handle_view_errors
+    def update_email(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
+                     email: typing.Union[str, None]) -> tuple:
+        ***REMOVED***
+         update user email given organization_id and uid
+        :param organization_id:
+        :param uid:
+        :param email:
+        :return:
+        ***REMOVED***
+        self.check_org_and_uid(organization_id=organization_id, uid=uid)
+        if not isinstance(email, str) or not bool(email.strip()):
+            message: str = "Email is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
+                                                   UserModel.uid == uid).get()
+        if isinstance(user_instance, UserModel):
+            if user_instance.email != email:
+                user_instance.email = email
+                # TODO send verification email and mark email as not verified
+                key = user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+                if not bool(key):
+                    message: str = "Database Error: Unable to update user record"
+                    raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
+                message: str = "Successfully Updated Email Record please check your email inbox for verification email"
+                return jsonify({'status': True, 'payload': user_instance.to_dict(),
+                                'message': message}), status_codes.successfully_updated_code
+
+            message: str = "Email is already upto-date"
+            return jsonify({'status': True, 'payload': user_instance.to_dict(),
+                            'message': message}), status_codes.status_ok_code
+
+        message: str = "Unable to find User record: Email not updated"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+
+    @use_context
+    @handle_view_errors
+    def update_password(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
+                        password:  typing.Union[str, None], new_password: typing.Union[str, None]) -> tuple:
+        ***REMOVED***
+            update password given  organization_id and uid update password
+            check if old password matches the present password if that's the case then
+            update the password
+        :param organization_id:
+        :param uid:
+        :param password:
+        :param new_password:
+        :return:
+        ***REMOVED***
+        self.check_org_and_uid(organization_id=organization_id, uid=uid)
+
+        if not isinstance(password, str) or not bool(password.strip()):
+            message: str = "password is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+        if not isinstance(new_password, str) or not bool(new_password.strip()):
+            message: str = "new Password is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
+                                                   UserModel.uid == uid).get()
+
+        if isinstance(user_instance, UserModel):
+            # Note: checking if old password is equal to the password on file
+            if not check_password_hash(password=password, pwhash=user_instance.password):
+                message: str = "Passwords do not match - please try again"
+                raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
+
+            user_instance.password = new_password
+            key = user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+            if not bool(key):
+                message: str = "Database Error: unable to update password"
+                raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
+            # TODO - logoff the user
+            message: str = "Successfully Updated Password - please login again"
+            return jsonify({'status': True,
+                            'payload': user_instance.to_dict(),
+                            'message': message}), status_codes.successfully_updated_code
+
+        message: str = "User Record not found: Unable to update password"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+
+    @use_context
+    @handle_view_errors
+    def set_is_admin(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
+                     is_admin: typing.Union[bool, None] = False) -> tuple:
+        ***REMOVED***
+            given organization_id and uid update is_admin
+        :param organization_id:
+        :param uid:
+        :param is_admin:
+        :return:
+        ***REMOVED***
+        self.check_org_and_uid(organization_id=organization_id, uid=uid)
+        if not isinstance(is_admin, bool):
+            message: str = "is_admin is required and can only be a boolean"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
+                                                   UserModel.uid == uid).get()
+        if isinstance(user_instance, UserModel):
+            user_instance.is_admin = is_admin
+            key = user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+            if not bool(key):
+                message: str = "Database Error: Unable to update user admin status"
+                raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
+            if is_admin:
+                self.send_welcome_to_admins_email(email=user_instance.email)
+            else:
+                self.send_goodbye_admin_email(email=user_instance.email)
+
+            message: str = "Successfully Update admin status"
+            return jsonify({'status': True, 'payload': user_instance.to_dict(),
+                            'message': message}), status_codes.successfully_updated_code
+
+    @use_context
+    @handle_view_errors
+    def set_is_support(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
+                       is_support:  typing.Union[bool, None]) -> tuple:
+        ***REMOVED***
+            given organization_id and uid set support role
+        :param organization_id:
+        :param uid:
+        :param is_support:
+        :return:
+        ***REMOVED***
+        pass
 
     @use_context
     @handle_view_errors

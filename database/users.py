@@ -83,12 +83,17 @@ class UserValidators:
 
 
 class UserModel(ndb.Model):
+    ***REMOVED***
+        UserModel
+        TODO if email/account is not verified in 7 days lock the account - by turning active to False
+    ***REMOVED***
     organization_id: str = ndb.StringProperty(required=True, indexed=True, validator=setters.set_id)
     uid: str = ndb.StringProperty(required=True, indexed=True,  validator=setters.set_id)
     names: str = ndb.StringProperty(validator=setters.set_string)
     surname: str = ndb.StringProperty(validator=setters.set_string)
     cell: str = ndb.StringProperty(indexed=True, validator=setters.set_cell)
     email: str = ndb.StringProperty(indexed=True, validator=setters.set_email)
+    email_verified: bool = ndb.BooleanProperty(default=False, validator=setters.set_bool)
     password: str = ndb.StringProperty(validator=setters.set_password)
     is_active: bool = ndb.BooleanProperty(default=True, validator=setters.set_bool)
     time_registered: int = ndb.IntegerProperty(default=timestamp(), validator=setters.set_number)
@@ -118,3 +123,13 @@ class UserModel(ndb.Model):
 
     def __len__(self) -> int:
         return int(self.__bool__())
+
+    def to_dict(self) -> dict:
+        ***REMOVED***
+            ensuring that password is not returned when calling to_dict()
+        :return: user_instance.to_dict()
+        ***REMOVED***
+        return {"organization_id": self.organization_id, "uid": self.uid, "names": self.names, "surname": self.surname,
+                "cell": self.cell, "email": self.email, "email_verified": self.email_verified,
+                "is_active": self.is_active, "time_registered": self.time_registered, "is_admin": self.is_admin,
+                "is_support": self.is_support}
