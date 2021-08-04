@@ -18,6 +18,21 @@ class UserEmails:
         used to send emails and notifications to users
     ***REMOVED***
     def __init__(self):
+        self.admin_email: str = current_app.config.get('ADMIN_EMAIL')
+        self.no_response_email: str = current_app.config.get('NO_RESPONSE_EMAIL')
+        self.smtp_server_uri: str = current_app.config.get('SMTP_SERVER_URI')
+        self.smtp_server_password: str = current_app.config.get('SMTP_SERVER_PASSWORD')
+        self.smtp_server_username: str = current_app.config.get('SMTP_SERVER_USERNAME')
+
+    def _do_send_mail(self, to_address: str, subject: str, body_text: str, body_html: str) -> bool:
+        ***REMOVED***
+            actually send email here
+        :param to_address:
+        :param subject:
+        :param body_text:
+        :param body_html:
+        :return:
+        ***REMOVED***
         pass
 
     def send_welcome_to_admins_email(self, email) -> None:
@@ -36,7 +51,6 @@ class UserEmails:
         ***REMOVED***
         pass
 
-
     def send_welcome_to_support_email(self, email) -> None:
         ***REMOVED***
             send welcome to support email
@@ -52,6 +66,13 @@ class UserEmails:
         :return:
         ***REMOVED***
         pass
+
+    def send_recovery_email(self, email) -> None:
+        ***REMOVED***
+            send recovery email
+        :param email:
+        :return:
+        ***REMOVED***
 
 
 class Validators(UserValidators, OrgValidators, UserEmails):
@@ -96,8 +117,6 @@ class Validators(UserValidators, OrgValidators, UserEmails):
 
         pass
 
-
-
     def can_add_user(self, organization_id: typing.Union[str, None], email: typing.Union[str, None],
                      cell: typing.Union[str, None]) -> bool:
         ***REMOVED***
@@ -106,7 +125,6 @@ class Validators(UserValidators, OrgValidators, UserEmails):
             :param email: required - check if email is available to be used on this organization
             :param cell: required - check if the cell number related to this user is not already registered for another user
             :param organization_id: required - check if user has logged into this organization
-            :param uid: required - check if user id is attached to this email and organization_id
             :return: boolean indicate if the user can be added or not
         ***REMOVED***
         is_organization_exist: typing.Union[bool, None] = self.is_organization_exist(organization_id=organization_id)

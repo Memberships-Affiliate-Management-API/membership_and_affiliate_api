@@ -1,15 +1,21 @@
 import os
 # noinspection PyPackageRequirements
+import typing
+
 from decouple import config
 import datetime
 
 
 class Config:
-    PROJECT = os.environ.get("PROJECT") or config("PROJECT")
-    APP_NAME = os.environ.get("APP_NAME") or config("APP_NAME")
-    ORGANIZATION_ID = os.environ.get("ORGANIZATION_ID") or config("ORGANIZATION_ID")
-    DEFAULT_ACCESS_RIGHTS = ["visitor", "user", "super_user", "admin"]
-    ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL") or config("ADMIN_EMAIL")
+    PROJECT: str = os.environ.get("PROJECT") or config("PROJECT")
+    APP_NAME: str = os.environ.get("APP_NAME") or config("APP_NAME")
+    ORGANIZATION_ID: str = os.environ.get("ORGANIZATION_ID") or config("ORGANIZATION_ID")
+    DEFAULT_ACCESS_RIGHTS: typing.List[str] = ["visitor", "user", "super_user", "admin"]
+    ADMIN_EMAIL: str = os.environ.get("ADMIN_EMAIL") or config("ADMIN_EMAIL")
+    NO_RESPONSE_EMAIL: str = os.environ.get("NO_RESPONSE_EMAIL") or config("NO_RESPONSE_EMAIL")
+    SMTP_SERVER_URI: str = os.environ.get("SMTP_SERVER_URI") or config("SMTP_SERVER_URI")
+    SMTP_SERVER_PASSWORD: str = os.environ.get("SMTP_SERVER_PASSWORD") or config("SMTP_SERVER_PASSWORD")
+    SMTP_SERVER_USERNAME: str = os.environ.get("SMTP_SERVER_USERNAME") or config("SMTP_SERVER_USERNAME")
     UTC_OFFSET = datetime.timedelta(hours=2)
     PUBSUB_VERIFICATION_TOKEN = os.environ.get("PUBSUB_VERIFICATION_TOKEN") or config("PUBSUB_VERIFICATION_TOKEN")
     DATASTORE_TIMEOUT: int = 360  # seconds
