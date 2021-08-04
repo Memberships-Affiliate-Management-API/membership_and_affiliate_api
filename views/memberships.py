@@ -229,11 +229,12 @@ class MembershipsView(Validators, MembershipsEmails):
 
             membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                                  Memberships.uid == uid).get()
-
+            new_member: bool = False
             if not (isinstance(membership_instance, Memberships)):
                 membership_instance: Memberships = Memberships()
                 membership_instance.uid = uid
                 membership_instance.organization_id = organization_id
+                new_member = True
 
             membership_instance.status = 'unpaid'
             membership_instance.plan_start_date = plan_start_date
@@ -243,6 +244,10 @@ class MembershipsView(Validators, MembershipsEmails):
             if not bool(key):
                 message: str = "Unable to save membership instance to database, please try again"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
+            if new_member:
+                # Note only sending welcome emails for new members
+                self.send_memberships_welcome_email(organization_id=organization_id, uid=uid)
 
             return jsonify({'status': True, 'message': 'successfully updated membership',
                             'payload': membership_instance.to_dict()}), status_codes.successfully_updated_code
