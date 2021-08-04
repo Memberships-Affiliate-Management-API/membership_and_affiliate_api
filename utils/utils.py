@@ -14,6 +14,7 @@ char_set = string.ascii_lowercase + string.ascii_uppercase + string.digits
 def is_development() -> bool: return False if config_instance.IS_PRODUCTION else True
 
 
+# NOTE this environment variable is only found on Heroku
 def is_heroku() -> bool: return True if os.environ.get("IS_HEROKU") else False
 
 

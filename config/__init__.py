@@ -6,38 +6,45 @@ import datetime
 
 
 class Config:
-    PROJECT: str = os.environ.get("PROJECT") or config("PROJECT")
-    APP_NAME: str = os.environ.get("APP_NAME") or config("APP_NAME")
-    ORGANIZATION_ID: str = os.environ.get("ORGANIZATION_ID") or config("ORGANIZATION_ID")
-    ADMIN_UID: str = os.environ.get("ADMIN_UID") or config("ADMIN_UID")
-    DEFAULT_ACCESS_RIGHTS: typing.List[str] = ["visitor", "user", "super_user", "admin"]
-    ADMIN_EMAIL: str = os.environ.get("ADMIN_EMAIL") or config("ADMIN_EMAIL")
-    ADMIN_NAMES: str = os.environ.get("ADMIN_NAMES") or config("ADMIN_NAMES")
-    ADMIN_SURNAME: str = os.environ.get("ADMIN_SURNAME") or config("ADMIN_SURNAME")
-    ADMIN_PASSWORD: str = os.environ.get("ADMIN_PASSWORD") or config("ADMIN_PASSWORD")
-    ADMIN_CELL: str = os.environ.get("ADMIN_CELL") or config("ADMIN_CELL")
-    NO_RESPONSE_EMAIL: str = os.environ.get("NO_RESPONSE_EMAIL") or config("NO_RESPONSE_EMAIL")
-    SMTP_SERVER_URI: str = os.environ.get("SMTP_SERVER_URI") or config("SMTP_SERVER_URI")
-    SMTP_SERVER_PASSWORD: str = os.environ.get("SMTP_SERVER_PASSWORD") or config("SMTP_SERVER_PASSWORD")
-    SMTP_SERVER_USERNAME: str = os.environ.get("SMTP_SERVER_USERNAME") or config("SMTP_SERVER_USERNAME")
-    UTC_OFFSET = datetime.timedelta(hours=2)
-    PUBSUB_VERIFICATION_TOKEN = os.environ.get("PUBSUB_VERIFICATION_TOKEN") or config("PUBSUB_VERIFICATION_TOKEN")
-    DATASTORE_TIMEOUT: int = 360  # seconds
-    DATASTORE_RETRIES: int = 3  # total retries when saving to datastore
-    CURRENCY: str = "USD"
-    PAYPAL_CLIENT_ID: str = os.environ.get("PAYPAL_CLIENT_ID") or config("PAYPAL_CLIENT_ID")
-    PAYPAL_CLIENT_SECRET: str = os.environ.get("PAYPAL_CLIENT_SECRET") or config("PAYPAL_CLIENT_SECRET")
-    PAYPAL_CLIENT_ID_SAND: str = os.environ.get("PAYPAL_CLIENT_ID_SAND") or config("PAYPAL_CLIENT_ID_SAND")
-    PAYPAL_CLIENT_SECRET_SAND: str = os.environ.get("PAYPAL_CLIENT_SECRET_SAND") or config("PAYPAL_CLIENT_SECRET_SAND")
-    IS_PRODUCTION: bool = True
-    SECRET_KEY: str = os.environ.get("SECRET_KEY") or config("SECRET_KEY")
-    DEBUG: bool = False
-    CACHE_TYPE: str = "simple"
-    CACHE_DEFAULT_TIMEOUT: int = 60 * 60 * 6
-    MEM_CACHE_SERVER_URI: str = ""
-    GOOGLE_APPLICATION_CREDENTIALS: str = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS") or config("GOOGLE_APPLICATION_CREDENTIALS")
+    ***REMOVED***
+        configuration variables for setting up the application
+    ***REMOVED***
 
     def __init__(self) -> None:
+        self.PROJECT: str = os.environ.get("PROJECT") or config("PROJECT")
+        self.APP_NAME: str = os.environ.get("APP_NAME") or config("APP_NAME")
+        self.ORGANIZATION_ID: str = os.environ.get("ORGANIZATION_ID") or config("ORGANIZATION_ID")
+        self.ADMIN_UID: str = os.environ.get("ADMIN_UID") or config("ADMIN_UID")
+        self.DEFAULT_ACCESS_RIGHTS: typing.List[str] = ["visitor", "user", "super_user", "admin"]
+        self.ADMIN_EMAIL: str = os.environ.get("ADMIN_EMAIL") or config("ADMIN_EMAIL")
+        self.ADMIN_NAMES: str = os.environ.get("ADMIN_NAMES") or config("ADMIN_NAMES")
+        self.ADMIN_SURNAME: str = os.environ.get("ADMIN_SURNAME") or config("ADMIN_SURNAME")
+        self.ADMIN_PASSWORD: str = os.environ.get("ADMIN_PASSWORD") or config("ADMIN_PASSWORD")
+        self.ADMIN_CELL: str = os.environ.get("ADMIN_CELL") or config("ADMIN_CELL")
+        self.NO_RESPONSE_EMAIL: str = os.environ.get("NO_RESPONSE_EMAIL") or config("NO_RESPONSE_EMAIL")
+        self.SMTP_SERVER_URI: str = os.environ.get("SMTP_SERVER_URI") or config("SMTP_SERVER_URI")
+        self.SMTP_SERVER_PASSWORD: str = os.environ.get("SMTP_SERVER_PASSWORD") or config("SMTP_SERVER_PASSWORD")
+        self.SMTP_SERVER_USERNAME: str = os.environ.get("SMTP_SERVER_USERNAME") or config("SMTP_SERVER_USERNAME")
+        self.UTC_OFFSET = datetime.timedelta(hours=2)
+        self.PUBSUB_VERIFICATION_TOKEN = os.environ.get("PUBSUB_VERIFICATION_TOKEN") or \
+                                         config("PUBSUB_VERIFICATION_TOKEN")
+        self.DATASTORE_TIMEOUT: int = 360  # seconds
+        self.DATASTORE_RETRIES: int = 3  # total retries when saving to datastore
+        self.CURRENCY: str = "USD"
+        self.PAYPAL_CLIENT_ID: str = os.environ.get("PAYPAL_CLIENT_ID") or config("PAYPAL_CLIENT_ID")
+        self.PAYPAL_CLIENT_SECRET: str = os.environ.get("PAYPAL_CLIENT_SECRET") or config("PAYPAL_CLIENT_SECRET")
+        self.PAYPAL_CLIENT_ID_SAND: str = os.environ.get("PAYPAL_CLIENT_ID_SAND") or config("PAYPAL_CLIENT_ID_SAND")
+        self.PAYPAL_CLIENT_SECRET_SAND: str = os.environ.get("PAYPAL_CLIENT_SECRET_SAND") or config(
+            "PAYPAL_CLIENT_SECRET_SAND")
+        self.IS_PRODUCTION: bool = True
+        self.SECRET_KEY: str = os.environ.get("SECRET_KEY") or config("SECRET_KEY")
+        self.DEBUG: bool = False
+        self.CACHE_TYPE: str = "simple"
+        self.CACHE_DEFAULT_TIMEOUT: int = 60 * 60 * 6
+        self.MEM_CACHE_SERVER_URI: str = ""
+        self.GOOGLE_APPLICATION_CREDENTIALS: str = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS") or config(
+            "GOOGLE_APPLICATION_CREDENTIALS")
+
         # TODO : set config IS_PRODUCTION Automatically here, may use any of several ways, consider setting DEBUG Also
         if "Windows_NT" == os.environ.get("OS"):
             self.DEBUG = True

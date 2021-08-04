@@ -5,12 +5,12 @@ import datetime
 import jwt
 from flask import current_app, request, redirect, url_for, flash
 from functools import wraps
-
 from config import config_instance
 from database.users import UserModel
-from utils import create_id, is_development
+from utils import is_development
 
 
+# noinspection PyUnusedLocal
 def check_jwt_token(auth_token: str) -> bool:
     ***REMOVED***
         TODO - handle JWT authentication
@@ -20,6 +20,7 @@ def check_jwt_token(auth_token: str) -> bool:
     return True
 
 
+# noinspection PyUnusedLocal
 def check_firebase_uid(uid: str) -> bool:
     ***REMOVED***
         TODO - handle firebase authentication

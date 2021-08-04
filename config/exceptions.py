@@ -7,6 +7,7 @@ class ErrorCodes:
         definitions of error codes, for errors that can be raised in Memberships & Affiliates Management API
         this is in-case requests are not completed successfully
     ***REMOVED***
+
     def __init__(self) -> None:
         self.input_error_code: int = 422
         self.data_service_error_code: int = 512
@@ -35,6 +36,7 @@ class StatusCodes:
     ***REMOVED***
         a list of status codes to be returned when request was successfully completed
     ***REMOVED***
+
     def __init__(self):
         self.data_not_found_code: int = 204
         self.successfully_updated_code: int = 201
@@ -200,5 +202,3 @@ class EnvironNotSet(Exception):
 
     def __repr__(self) -> str:
         return self.__str__()
-
-
