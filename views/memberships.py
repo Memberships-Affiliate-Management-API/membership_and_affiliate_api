@@ -21,6 +21,25 @@ class MembershipsEmails:
         methods to send emails related to memberships
     ***REMOVED***
     def __init__(self):
+        self.admin_email: str = current_app.config.get('ADMIN_EMAIL')
+        self.no_response_email: str = current_app.config.get('NO_RESPONSE_EMAIL')
+        self.smtp_server_uri: str = current_app.config.get('SMTP_SERVER_URI')
+        self.smtp_server_password: str = current_app.config.get('SMTP_SERVER_PASSWORD')
+        self.smtp_server_username: str = current_app.config.get('SMTP_SERVER_USERNAME')
+
+    def send_memberships_welcome_email(self, email):
+        ***REMOVED***
+            once a client or user has registered to a membership plan send them an email welcoming them
+            on board
+        :return:
+        ***REMOVED***
+        pass
+
+    def send_change_of_membership_notification_email(self, email):
+        ***REMOVED***
+            once a user membership plan details changes send a notification to the client with the details
+        :return:
+        ***REMOVED***
         pass
 
 
