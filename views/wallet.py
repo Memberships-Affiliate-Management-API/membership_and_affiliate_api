@@ -570,8 +570,12 @@ class WalletView(Validator, WalletEmails):
                                                                   WalletModel.available_funds < higher_bound).fetch()
 
         payload: typing.List[dict] = [wallet.to_dict() for wallet in wallet_list]
-        return jsonify({'status': True, 'payload': payload,
-                        'message': 'wallets returned'}), status_codes.status_ok_code
+        if len(payload):
+            return jsonify({'status': True, 'payload': payload,
+                            'message': 'wallets returned'}), status_codes.status_ok_code
+
+        message: str = "Wallets not found"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -599,8 +603,12 @@ class WalletView(Validator, WalletEmails):
             WalletModel.available_funds < higher_bound).fetch_async().get_result()
 
         payload: typing.List[dict] = [wallet.to_dict() for wallet in wallet_list]
-        return jsonify({'status': True, 'payload': payload,
-                        'message': 'wallets returned'}), status_codes.status_ok_code
+        if len(payload):
+            return jsonify({'status': True, 'payload': payload,
+                            'message': 'wallets returned'}), status_codes.status_ok_code
+
+        message: str = "Wallets not found"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -630,14 +638,17 @@ class WalletView(Validator, WalletEmails):
                                                          WalletModel.uid == uid).get()
 
         if isinstance(wallet_instance, WalletModel):
+            # NOTE: insure that this works or perform this operation in another way
             if isinstance(sub, int):
                 wallet_instance.available_funds.amount -= sub
             if isinstance(add, int):
                 wallet_instance.available_funds.amount += sub
+                
             key = wallet_instance.put()
             if not bool(key):
                 message: str = "General error updating database"
-                raise DataServiceError(status=500, description=message)
+                raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+            
             message: str = "Successfully created transaction"
             return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
                             'message': message}), status_codes.successfully_updated_code
@@ -672,14 +683,18 @@ class WalletView(Validator, WalletEmails):
                                                          WalletModel.uid == uid).get_async().get_result()
 
         if isinstance(wallet_instance, WalletModel):
+
+            # NOTE: insure that this works or perform this operation in another way
             if isinstance(sub, int):
                 wallet_instance.available_funds.amount -= sub
             if isinstance(add, int):
                 wallet_instance.available_funds.amount += add
+
             key = wallet_instance.put_async().get_result()
             if not bool(key):
                 message: str = "General error updating database"
-                raise DataServiceError(status=500, description=message)
+                raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
             message: str = "Successfully created transaction"
             return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
                             'message': message}), status_codes.successfully_updated_code
