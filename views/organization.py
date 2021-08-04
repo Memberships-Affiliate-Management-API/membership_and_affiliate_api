@@ -39,9 +39,9 @@ class OrganizationEmails:
         :return:
         ***REMOVED***
         pass
-    
 
-class OrganizationView(OrgValidators):
+
+class OrganizationView(OrgValidators, OrganizationEmails):
     ***REMOVED***
      Utilities to validate UserInput Data and also validate access rights of those using the API, While
      accessing and manipulating information related to Client Organization.

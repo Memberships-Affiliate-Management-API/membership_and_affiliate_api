@@ -11,6 +11,42 @@ from config.use_context import use_context
 from main import app_cache
 
 
+class WalletEmails:
+    def __init__(self):
+        self.admin_email: str = current_app.config.get('ADMIN_EMAIL')
+        self.no_response_email: str = current_app.config.get('NO_RESPONSE_EMAIL')
+        self.smtp_server_uri: str = current_app.config.get('SMTP_SERVER_URI')
+        self.smtp_server_password: str = current_app.config.get('SMTP_SERVER_PASSWORD')
+        self.smtp_server_username: str = current_app.config.get('SMTP_SERVER_USERNAME')
+
+    def send_balance_changed_notification(self, organization_id: str, uid: str) -> None:
+        ***REMOVED***
+            send an email to client or organization informing them that balance has changed on their wallet
+        :param organization_id:
+        :param uid:
+        :return:
+        ***REMOVED***
+        pass
+
+    def wallet_created_successfully(self, organization_id: str, uid: str) -> None:
+        ***REMOVED***
+            send an email informing user that their wallet has been created and its details
+        :param organization_id:
+        :param uid:
+        :return:
+        ***REMOVED***
+        pass
+
+    def wallet_details_changed(self, organization_id: str, uid: str) -> None:
+        ***REMOVED***
+            send an email informing the user that wallet details has changed
+        :param organization_id:
+        :param uid:
+        :return:
+        ***REMOVED***
+        pass
+
+
 class Validator(WalletValidator):
     ***REMOVED***
         Wallet Validators
@@ -166,7 +202,7 @@ class Validator(WalletValidator):
 
 
 # noinspection DuplicatedCode
-class WalletView(Validator):
+class WalletView(Validator, WalletEmails):
     ***REMOVED***
         view functions for the wallet
     ***REMOVED***
