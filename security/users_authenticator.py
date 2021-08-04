@@ -6,7 +6,9 @@ import jwt
 from flask import current_app, jsonify, request, redirect, url_for, flash
 from functools import wraps
 
+from config import config_instance
 from database.users import UserModel
+from utils import create_id, is_development
 
 
 def check_jwt_token(auth_token: str) -> bool:
@@ -44,6 +46,21 @@ def check_firebase_uid(uid: str) -> bool:
 #         raise UnAuthenticatedError(status=401, description=message)
 #
 #     return auth_wrapper
+
+def get_admin_user() -> UserModel:
+    ***REMOVED***
+        :return: UserModel
+    ***REMOVED***
+    uid = create_id()
+    organization_id = config_instance.ORGANIZATION_ID
+    admin_email = config_instance.ADMIN_EMAIL
+    names = config_instance.ADMIN_NAMES
+    surname = config_instance.ADMIN_SURNAME
+    password = config_instance.ADMIN_PASSWORD
+    cell = config_instance.ADMIN_CELL
+
+    return UserModel(organization_id=organization_id, uid=uid, email=admin_email, names=names, surname=surname,
+                     cell=cell, password=password, is_admin=True)
 
 
 def encode_auth_token(uid: str) -> str:
@@ -89,6 +106,9 @@ def handle_users_auth(f):
         if 'x-access-token' in request.headers:
             token = request.headers['x-access-token']
             # print('token found : {}'.format(token))
+        if is_development():
+            current_user = get_admin_user()
+            return f(current_user, *args, **kwargs)
         if not token:
             return redirect(url_for('memberships_main.memberships_main_routes', path='login'))
         try:

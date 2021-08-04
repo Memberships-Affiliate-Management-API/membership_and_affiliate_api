@@ -648,7 +648,7 @@ class WalletView(Validator, WalletEmails):
             if not bool(key):
                 message: str = "General error updating database"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
-            
+
             message: str = "Successfully created transaction"
             return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
                             'message': message}), status_codes.successfully_updated_code
