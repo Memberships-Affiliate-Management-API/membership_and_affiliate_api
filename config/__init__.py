@@ -1,7 +1,6 @@
 import os
-# noinspection PyPackageRequirements
 import typing
-
+# noinspection PyPackageRequirements
 from decouple import config
 import datetime
 

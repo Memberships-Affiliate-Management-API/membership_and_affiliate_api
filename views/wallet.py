@@ -1,12 +1,12 @@
 import typing
 from flask import jsonify, current_app
-from config.exceptions import DataServiceError, UnAuthenticatedError, status_codes, error_codes, InputError
-from main import app_cache
 from database.mixins import AmountMixin
 from database.wallet import WalletModel, WalletValidator
-from utils.utils import return_ttl, can_cache
+from utils import return_ttl, can_cache
+from config.exceptions import DataServiceError, UnAuthenticatedError, status_codes, error_codes, InputError
 from config.exception_handlers import handle_view_errors
 from config.use_context import use_context
+from main import app_cache
 
 
 class Validator(WalletValidator):
@@ -52,6 +52,18 @@ class Validator(WalletValidator):
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
+
+    @staticmethod
+    def raise_input_error(**kwargs) -> None:
+        ***REMOVED***
+            raise an input error if any of the input variables are Null or Empty
+        :param kwargs:
+        :return:
+        ***REMOVED***
+        for arg in kwargs.items():
+            if not isinstance(arg, str) or not bool(arg.strip()):
+                message: str = "{} is required".format(arg.__name__)
+                raise InputError(status=error_codes.input_error_code, description=message)
 
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def can_add_wallet(self, organization_id: typing.Union[str, None], uid: typing.Union[None, str] = None) -> bool:
@@ -179,19 +191,16 @@ class WalletView(Validator):
             message: str = "You are not authorized to create a new Wallet"
             raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
-        # Creating new Wallet
-        wallet_instance: WalletModel = WalletModel()
-        amount_instance: AmountMixin = AmountMixin()
-        amount_instance.amount = 0
-        amount_instance.currency = currency
-        wallet_instance.uid = uid
-        wallet_instance.available_funds = amount_instance
-        wallet_instance.paypal_address = paypal_address
-        wallet_instance.organization_id = organization_id
-        wallet_instance.is_org_wallet = is_org_wallet
+        # creating new Wallet for a new user
+        amount_instance: AmountMixin = AmountMixin(amount=0, currency=currency)
+
+        wallet_instance: WalletModel = WalletModel(organization_id=organization_id, uid=uid,
+                                                   is_org_wallet=is_org_wallet, available_funds=amount_instance,
+                                                   paypal_address=paypal_address)
+
         key = wallet_instance.put(retries=self._max_retries, timeout=self._max_timeout)
         if not bool(key):
-            raise DataServiceError(status=500, description="An Error occurred creating Wallet")
+            raise DataServiceError(status=500, description="An Error occurred creating Wallet - please try again later")
 
         return jsonify({'status': True, 'message': 'successfully created wallet',
                         'payload': wallet_instance.to_dict()}), status_codes.successfully_updated_code
@@ -215,15 +224,11 @@ class WalletView(Validator):
             message: str = "You are not authorized to create a new Wallet"
             raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
-        wallet_instance: WalletModel = WalletModel()
-        amount_instance: AmountMixin = AmountMixin()
-        amount_instance.amount = 0
-        amount_instance.currency = currency
-        wallet_instance.uid = uid
-        wallet_instance.available_funds = amount_instance
-        wallet_instance.paypal_address = paypal_address
-        wallet_instance.organization_id = organization_id
-        wallet_instance.is_org_wallet = is_org_wallet
+        amount_instance: AmountMixin = AmountMixin(amount=0, currency=currency)
+
+        wallet_instance: WalletModel = WalletModel(organization_id=organization_id, uid=uid,
+                                                   is_org_wallet=is_org_wallet, available_funds=amount_instance,
+                                                   paypal_address=paypal_address)
 
         key = wallet_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
         if not bool(key):

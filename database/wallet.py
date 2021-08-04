@@ -41,7 +41,7 @@ class WalletModel(ndb.Model):
     uid: str = ndb.StringProperty(validator=setters.set_id)
     available_funds: AmountMixin = ndb.StructuredProperty(AmountMixin)
     time_created: datetime = ndb.DateTimeProperty(auto_now_add=True)
-    last_transaction_time: datetime = ndb.DateTimeProperty(auto_now=True)
+    last_transaction_time: datetime = ndb.DateTimeProperty(auto_now=True, validator=setters.set_datetime)
     paypal_address: str = ndb.StringProperty(validator=setters.set_paypal)
 
     def __str__(self) -> str:

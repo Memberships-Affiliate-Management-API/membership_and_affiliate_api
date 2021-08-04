@@ -1,3 +1,8 @@
+***REMOVED***
+    UserView class used to manage:
+        registering new users for both the client and main app
+***REMOVED***
+
 import typing
 from flask import jsonify, current_app
 from werkzeug.security import check_password_hash
@@ -19,6 +24,9 @@ class UserEmails:
         used to send emails and notifications to users
     ***REMOVED***
     def __init__(self):
+        ***REMOVED***
+           NOTE: initializing email SMTP settings from app.config
+        ***REMOVED***
         self.admin_email: str = current_app.config.get('ADMIN_EMAIL')
         self.no_response_email: str = current_app.config.get('NO_RESPONSE_EMAIL')
         self.smtp_server_uri: str = current_app.config.get('SMTP_SERVER_URI')
@@ -27,6 +35,7 @@ class UserEmails:
 
     def _do_send_mail(self, to_address: str, subject: str, body_text: str, body_html: str) -> bool:
         ***REMOVED***
+            # TODO - add an sdk to send emails or use requests to send emails
             actually send email here
         :param to_address:
         :param subject:
@@ -76,7 +85,7 @@ class UserEmails:
         ***REMOVED***
 
 
-class Validators(UserValidators, OrgValidators, UserEmails):
+class Validators(UserValidators, OrgValidators):
     ***REMOVED***
         User Validators
     ***REMOVED***
@@ -86,7 +95,15 @@ class Validators(UserValidators, OrgValidators, UserEmails):
         self._max_timeout = current_app.config.get('DATASTORE_TIMEOUT')
 
     @staticmethod
-    def check_required(organization_id: typing.Union[str, None], email: typing.Union[str, None], cell: typing.Union[str, None]) -> None:
+    def check_required(organization_id: typing.Union[str, None], email: typing.Union[str, None],
+                       cell: typing.Union[str, None]) -> None:
+        ***REMOVED***
+            check organization_id email and cell if they are valid
+        :param organization_id:
+        :param email:
+        :param cell:
+        :return:
+        ***REMOVED***
 
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
@@ -99,6 +116,8 @@ class Validators(UserValidators, OrgValidators, UserEmails):
         if not isinstance(cell, str) or not bool(cell.strip()):
             message: str = "cell is required"
             raise InputError(status=error_codes.input_error_code, description=message)
+
+        pass
 
     @staticmethod
     def check_org_and_uid(organization_id: typing.Union[str, None], uid: typing.Union[str, None]) -> None:
@@ -137,13 +156,17 @@ class Validators(UserValidators, OrgValidators, UserEmails):
                 isinstance(is_cell_available, bool):
             return is_organization_exist and is_email_valid and is_cell_available
 
-        message: str = "Database Error: unable to check the validity of your input due to database errors try again later"
+        message: str = '''Database Error: unable to check the validity of your input due to database 
+        errors try again later'''
         raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
 
 # TODO create test cases for User View and Documentations
 # noinspection DuplicatedCode
-class UserView(Validators):
+class UserView(Validators, UserEmails):
+    ***REMOVED***
+        User-View handling business logic for UserModel
+    ***REMOVED***
     def __init__(self):
         super(UserView, self).__init__()
 
@@ -173,7 +196,7 @@ class UserView(Validators):
         self.check_required(organization_id=organization_id, email=email, cell=cell)
 
         if not self.can_add_user(organization_id=organization_id, email=email, cell=cell):
-            message: str = "You are not authorized to create a user record in this organization"
+            message: str = 'Error Adding User: could be that the user already exist, please login or check your input'
             raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
         if not isinstance(uid, str) or not bool(uid.strip()):
@@ -241,15 +264,16 @@ class UserView(Validators):
                     cell:  typing.Union[str, None], email:  typing.Union[str, None], is_admin: bool,
                     is_support: bool) -> tuple:
         ***REMOVED***
-                update user details all fields are required
-        :param organization_id:
-        :param uid:
-        :param names:
-        :param surname:
-        :param cell:
-        :param email:
-        :param is_admin:
-        :param is_support:
+                update user details all fields are required -
+                if the purpose is to update only one of the fields use one of the specialized methods
+            :param organization_id:
+            :param uid:
+            :param names:
+            :param surname:
+            :param cell:
+            :param email:
+            :param is_admin:
+            :param is_support:
         :return:
         ***REMOVED***
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
@@ -596,10 +620,10 @@ class UserView(Validators):
         if isinstance(user_instance, UserModel):
             address_instance = AddressMixin(organization_id=organization_id, uid=uid, line_1=line_1, city=city,
                                             zip_code=zip_code, province=province, state=state, country=country)
-            key = address_instance.put()
+            address_instance.put()
             user_instance.address = address_instance
-            key = user_instance.put()
-            if not bool(key):
+            user_key = user_instance.put()
+            if not bool(user_key):
                 message: str = "Database Error: unable to update user"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
             message: str = "Successfully updated user address"
@@ -1117,5 +1141,3 @@ class UserView(Validators):
         ***REMOVED***
         # TODO: complete this by actually sending recovery email
         return jsonify({'status': False, 'message': 'Unable to send recovery email please try again later'}), 500
-
-
