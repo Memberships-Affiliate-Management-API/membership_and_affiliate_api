@@ -1241,19 +1241,19 @@ class MembershipPlansView(Validators):
                 membership_plans_instance.term_payment_amount = curr_term_payment
                 membership_plans_instance.registration_amount = curr_registration_amount
                 membership_plans_instance.is_active = is_active
-                key = membership_plans_instance.put_async(
-                    retries=self._max_retries, timeout=self._max_timeout).get_result()
+                key = membership_plans_instance.put_async(retries=self._max_retries,
+                                                          timeout=self._max_timeout).get_result()
                 if not bool(key):
                     message: str = 'for some reason we are unable to create a new plan'
                     raise DataServiceError(status=error_codes.data_service_error_code, description=message)
                 return jsonify({'status': True, 'message': 'successfully created new membership plan',
-                                'payload': membership_plans_instance.to_dict()}), 200
-            else:
-                message: str = 'Membership plan not found'
-                return jsonify({'status': False, 'message': message}), 500
-        else:
-            message: str = 'Conditions to update plan not satisfied'
-            return jsonify({'status': False, 'message': message}), 500
+                                'payload': membership_plans_instance.to_dict()}), status_codes.status_ok_code
+
+            message: str = 'Membership plan not found'
+            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+
+        message: str = 'Operation Denied: Conditions to update plan not satisfied'
+        raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
 
     @use_context
     @handle_view_errors
@@ -1276,13 +1276,14 @@ class MembershipPlansView(Validators):
             key = membership_plans_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             if not bool(key):
                 message: str = 'for some reason we are unable to create a new plan'
-                return jsonify({'status': False, 'message': message}), 500
+                raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
             message: str = 'successfully update membership plan status'
             return jsonify({'status': True, 'message': message,
-                            'payload': membership_plans_instance.to_dict()}), 200
-        else:
-            message: str = 'Membership plan not found'
-            return jsonify({'status': False, 'message': message}), 500
+                            'payload': membership_plans_instance.to_dict()}), status_codes.status_ok_code
+
+        message: str = 'Membership plan not found'
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -1308,10 +1309,10 @@ class MembershipPlansView(Validators):
                 message: str = 'for some reason we are unable to create a new plan'
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
             return jsonify({'status': True, 'message': 'successfully update membership plan status',
-                            'payload': membership_plans_instance.to_dict()}), 200
-        else:
-            message: str = 'Membership plan not found'
-            return jsonify({'status': False, 'message': message}), 500
+                            'payload': membership_plans_instance.to_dict()}), status_codes.status_ok_code
+
+        message: str = 'Membership plan not found'
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
