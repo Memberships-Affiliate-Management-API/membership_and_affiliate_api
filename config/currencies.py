@@ -3,8 +3,6 @@
 ***REMOVED***
 import functools
 import typing
-
-
 # _code,_unicode-decimal,_unicode-hex,__text
 from main import app_cache
 from utils.utils import return_ttl, can_cache
@@ -125,7 +123,7 @@ list_of_currencies: typing.List[list] = [
     ["ZWD", "Zimbabwe Dollar"]]
 
 
-@functools.cache
+@functools.lru_cache(maxsize=len(list_of_currencies))
 def currency_symbols() -> typing.List[str]:
     return [currency[0] for currency in list_of_currencies]
 

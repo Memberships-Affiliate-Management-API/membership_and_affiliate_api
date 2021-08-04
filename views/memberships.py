@@ -27,6 +27,16 @@ class MembershipsEmails:
         self.smtp_server_password: str = current_app.config.get('SMTP_SERVER_PASSWORD')
         self.smtp_server_username: str = current_app.config.get('SMTP_SERVER_USERNAME')
 
+    def __do_send_mail(self, mail_sender: typing.Callable) -> None:
+        ***REMOVED***
+            TODO try sending emails with a specific sender - this allows the actual sending module
+            to be interchangeable at run time
+            send email using mail_sender
+        :param mail_sender:
+        :return:
+        ***REMOVED***
+        pass
+
     def send_memberships_welcome_email(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
                 once a client or user has registered to a membership plan send them an email welcoming them
@@ -511,7 +521,6 @@ class MembershipsView(Validators, MembershipsEmails):
         message: str = "Unable to change membership, cannot find original membership record"
         return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
-
     @use_context
     @handle_view_errors
     def set_payment_method(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
@@ -951,52 +960,52 @@ def plan_data_wrapper(func):
     ***REMOVED***
         wraps add plan in order to check validity of the input data,
         throws InputError in-case of an error in Input
-    :param func:
-    :return: func with correct variables
-
+        :param func:
+        :return: func with correct variables
     ***REMOVED***
-
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
+
         membership_plan_data: typing.Union[dict, None] = kwargs.get('membership_plan_data')
         if not bool(membership_plan_data):
             message: str = "Input is required"
-            raise InputError(status=422, description=message)
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         plan_name: typing.Union[str, None] = membership_plan_data.get('plan_name')
         if not isinstance(plan_name, str) or not bool(plan_name.strip()):
             message: str = "plan name is required"
-            raise InputError(status=422, description=message)
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         description: typing.Union[str, None] = membership_plan_data.get('description')
         if not isinstance(description, str) or not bool(description.strip()):
             message: str = "description is required"
-            raise InputError(status=422, description=message)
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         # Note if scheduled day is not supplied it will be zero or None
-        schedule_day: typing.Union[int, None] = int(membership_plan_data.get('schedule_day') or 0)
+        schedule_day: typing.Union[int, None] = int(membership_plan_data.get('schedule_day', 0))
         # NOTE: if schedule_day is None or Zero then this is an Error
         if not bool(schedule_day):
             message: str = "schedule_day is required and cannot be zero or Null"
-            raise InputError(status=422, description=message)
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         schedule_term: typing.Union[str, None] = membership_plan_data.get('schedule_term')
         if not isinstance(schedule_term, str) or not bool(schedule_term.strip()):
             message: str = "schedule term is required"
-            raise InputError(status=422, description=message)
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         # int(None) avoiding this
-        term_payment: int = int(membership_plan_data.get('term_payment') or 0)
-        registration_amount: int = int(membership_plan_data.get('registration_amount') or 0)
+        term_payment: int = int(membership_plan_data.get('term_payment', 0))
+        registration_amount: int = int(membership_plan_data.get('registration_amount', 0))
 
         currency: typing.Union[str, None] = membership_plan_data.get('currency')
         if not isinstance(currency, str) or not bool(currency.strip()):
             message: str = "currency is required"
-            raise InputError(status=422, description=message)
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         organization_id: typing.Union[str, None] = membership_plan_data.get('organization_id')
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization is required"
-            raise InputError(status=422, description=message)
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         service_id: typing.Union[str, None] = membership_plan_data.get('service_id')
         if not isinstance(service_id, str) or not bool(service_id.strip()):

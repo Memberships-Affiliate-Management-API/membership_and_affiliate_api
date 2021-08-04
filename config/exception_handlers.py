@@ -16,8 +16,8 @@ def handle_view_errors(func):
             return func(*args, **kwargs)
         except ValueError as e:
             message: str = str(e)
-            # IF debug please print debug messages
-            # raise InputError(description='Bad input values, please check your input')
+            if current_app.config.get('DEBUG'):
+                print(message)
             raise InputError(status=500, description=message)
         except TypeError as e:
             message: str = str(e)
@@ -65,23 +65,23 @@ def handle_store_errors(func):
             return func(*args, **kwargs)
         except ConnectionRefusedError as e:
             if current_app.config.get('DEBUG'):
-                print(e)
+                print(str(e))
             return None
         except RetryError as e:
             if current_app.config.get('DEBUG'):
-                print(e)
+                print(str(e))
             return None
         except Aborted as e:
             if current_app.config.get('DEBUG'):
-                print(e)
+                print(str(e))
             return None
         except BadQueryError as e:
             if current_app.config.get('DEBUG'):
-                print(e)
+                print(str(e))
             return None
         except BadRequestError as e:
             if current_app.config.get('DEBUG'):
-                print(e)
+                print(str(e))
             return None
 
     return wrapper

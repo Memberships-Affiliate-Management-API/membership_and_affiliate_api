@@ -88,3 +88,7 @@ class Config:
 
 
 config_instance: Config = Config()
+# Note: Config is a singleton - this means it cannot be redeclared anywhere else
+del Config
+if config_instance.DEBUG:
+    print(config_instance)
