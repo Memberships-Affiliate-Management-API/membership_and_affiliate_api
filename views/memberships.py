@@ -304,11 +304,10 @@ class MembershipsView(Validators, MembershipsEmails):
                 message: str = "Unable to save membership instance to database, please try again"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
             return jsonify({'status': True, 'message': 'successfully updated membership',
-                            'payload': membership_instance.to_dict()}), 200
+                            'payload': membership_instance.to_dict()}), status_codes.status_ok_code
 
-        message: str = ***REMOVED***Unable to create or update memberships this may be 
-        due to errors in database connections or duplicate data***REMOVED***
-        return jsonify({'status': False, 'message': message}), 500
+        message: str = ***REMOVED***Operation Denied: unable to create or update membership***REMOVED***
+        raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
 
     def add_membership(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
                        plan_id: typing.Union[str, None], plan_start_date: date,
@@ -377,10 +376,12 @@ class MembershipsView(Validators, MembershipsEmails):
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
             message: str = "Successfully update membership status"
-            return jsonify({'status': True, 'payload': membership_instance.to_dict(), 'message': message}), 200
+            return jsonify({'status': True, 'payload': membership_instance.to_dict(),
+                            'message': message}), status_codes.status_ok_code
 
         message: str = "Memberships record not found"
-        return jsonify({'status': True, 'payload': membership_instance.to_dict(), 'message': message}), 200
+        return jsonify({'status': True, 'payload': membership_instance.to_dict(),
+                        'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -651,7 +652,7 @@ class MembershipsView(Validators, MembershipsEmails):
             Memberships.organization_id == organization_id, Memberships.plan_id == plan_id,
             Memberships.status == status).fetch_async().get_result()
 
-        if isinstance(membership_list, list) and len(membership_list) > 0:
+        if isinstance(membership_list, list) and len(membership_list):
             response_data: typing.List[dict] = [member.to_dict() for member in membership_list]
             message: str = 'successfully fetched members'
             return jsonify({'status': True, 'payload': response_data, 'message': message}), status_codes.status_ok_code
@@ -1604,11 +1605,12 @@ class CouponsView(Validators):
             if not bool(key):
                 message: str = "an error occured while creating coupon"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
-        else:
-            message: str = 'Unable to add coupon, please check expiration time or coupon code'
-            return jsonify({'status': False, 'message': message}), 500
-        return jsonify({'status': True, 'message': 'successfully created coupon code',
-                        'payload': coupons_instance.to_dict()}), 200
+
+            return jsonify({'status': True, 'message': 'successfully created coupon code',
+                            'payload': coupons_instance.to_dict()}), status_codes.successfully_updated_code
+
+        message: str = 'Unable to add coupon, please check expiration time or coupon code'
+        raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
 
     @get_coupon_data
     @use_context
@@ -1633,11 +1635,11 @@ class CouponsView(Validators):
             if not bool(key):
                 message: str = "an error occured while creating coupon"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
-        else:
-            message: str = 'Unable to add coupon, please check expiration time or coupon code'
-            return jsonify({'status': False, 'message': message}), 500
-        return jsonify({'status': True, 'message': 'successfully created coupon code',
-                        'payload': coupons_instance.to_dict()}), 200
+
+            return jsonify({'status': True, 'message': 'successfully created coupon code',
+                            'payload': coupons_instance.to_dict()}), status_codes.successfully_updated_code
+        message: str = 'Unable to add coupon, please check expiration time or coupon code'
+        raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
 
     @get_coupon_data
     @use_context
