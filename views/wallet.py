@@ -238,7 +238,11 @@ class WalletView(Validator, WalletEmails):
 
         key = wallet_instance.put(retries=self._max_retries, timeout=self._max_timeout)
         if not bool(key):
-            raise DataServiceError(status=500, description="An Error occurred creating Wallet - please try again later")
+            message: str = "Database Error: Wallet may not have been created"
+            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
+        # Sending an email notification to the user informing them that the wallet has been created successfully
+        self.wallet_created_successfully(organization_id=organization_id, uid=uid)
 
         return jsonify({'status': True, 'message': 'successfully created wallet',
                         'payload': wallet_instance.to_dict()}), status_codes.successfully_updated_code
@@ -259,8 +263,8 @@ class WalletView(Validator, WalletEmails):
 
         # NOTE: no need to check if organization_id and uid are available
         if not await self.can_add_wallet_async(organization_id=organization_id, uid=uid):
-            message: str = "You are not authorized to create a new Wallet"
-            raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
+            message: str = "Operation Denied: cannot create a new Wallet"
+            raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
 
         amount_instance: AmountMixin = AmountMixin(amount=0, currency=currency)
 
@@ -272,6 +276,9 @@ class WalletView(Validator, WalletEmails):
         if not bool(key):
             raise DataServiceError(status=error_codes.data_service_error_code,
                                    description="An Error occurred creating Wallet")
+
+        # Sending an email notification to the user informing them that the wallet has been created successfully
+        self.wallet_created_successfully(organization_id=organization_id, uid=uid)
 
         return jsonify({'status': True, 'message': 'successfully created wallet',
                         'payload': wallet_instance.to_dict()}), status_codes.successfully_updated_code
@@ -296,6 +303,7 @@ class WalletView(Validator, WalletEmails):
         if isinstance(wallet_instance, WalletModel):
             return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
                             'message': 'wallet found'}), status_codes.status_ok_code
+
         message: str = "Wallet not found"
         return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
@@ -316,6 +324,7 @@ class WalletView(Validator, WalletEmails):
         if isinstance(wallet_instance, WalletModel):
             return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
                             'message': 'wallet found'}), status_codes.status_ok_code
+
         message: str = "Wallet not found"
         return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
@@ -364,7 +373,7 @@ class WalletView(Validator, WalletEmails):
         wall_instance.paypal_address = paypal_address
         key = wall_instance.put(retries=self._max_retries, timeout=self._max_timeout)
         if not bool(key):
-            message: str = "An Error occurred updating Wallet"
+            message: str = "Database Error: occurred updating Wallet"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
         return jsonify({'status': True, 'payload': wall_instance.to_dict(),
@@ -415,8 +424,9 @@ class WalletView(Validator, WalletEmails):
         wall_instance.paypal_address = paypal_address
         key = wall_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
         if not bool(key):
-            message: str = "Database error while updating wallet"
-            raise DataServiceError(status=500, description=message)
+            message: str = "Database Error: while updating wallet"
+            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
         return jsonify({'status': True, 'payload': wall_instance.to_dict(),
                         'message': 'successfully updated wallet'}), status_codes.successfully_updated_code
 
@@ -448,7 +458,7 @@ class WalletView(Validator, WalletEmails):
         wallet_instance.available_funds = amount_instance
         key = wallet_instance.put(retries=self._max_retries, timeout=self._max_timeout)
         if not bool(key):
-            message: str = "Database error while updating wallet"
+            message: str = "Database Error: while updating wallet"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
         return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
@@ -504,7 +514,8 @@ class WalletView(Validator, WalletEmails):
 
         wallet_list: typing.List[WalletModel] = WalletModel.query(WalletModel.organization_id == organization_id).fetch()
         payload: typing.List[dict] = [wallet.to_dict() for wallet in wallet_list]
-        if len(payload) > 0:
+
+        if len(payload):
             return jsonify({'status': True,
                             'payload': payload,
                             'message': 'wallets returned'}), status_codes.status_ok_code
@@ -527,7 +538,8 @@ class WalletView(Validator, WalletEmails):
             WalletModel.organization_id == organization_id).fetch_async().get_result()
 
         payload: typing.List[dict] = [wallet.to_dict() for wallet in wallet_list]
-        if len(payload) > 0:
+
+        if len(payload):
             return jsonify({'status': True,
                             'payload': payload,
                             'message': 'wallets returned'}), status_codes.status_ok_code
@@ -587,7 +599,8 @@ class WalletView(Validator, WalletEmails):
             WalletModel.available_funds < higher_bound).fetch_async().get_result()
 
         payload: typing.List[dict] = [wallet.to_dict() for wallet in wallet_list]
-        return jsonify({'status': True, 'payload': payload, 'message': 'wallets returned'}), status_codes.status_ok_code
+        return jsonify({'status': True, 'payload': payload,
+                        'message': 'wallets returned'}), status_codes.status_ok_code
 
     @use_context
     @handle_view_errors
