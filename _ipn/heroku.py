@@ -1,11 +1,8 @@
 ***REMOVED***
    https://memberships-affiliates-man-api.herokuapp.com/_ipn/auth/heroku
 ***REMOVED***
-from flask import Blueprint, request, jsonify
-
+from flask import Blueprint, jsonify
 from config.exceptions import status_codes
-from main import app_cache
-from utils.utils import return_ttl, can_cache
 
 heroku_ipn_bp = Blueprint("heroku_ipn", __name__)
 
