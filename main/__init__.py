@@ -26,6 +26,7 @@ def create_app(config_class=config_instance):
     # importing IPN
     from _ipn.email import email_ipn_bp
     from _ipn.paypal import paypal_ipn_bp
+    from _ipn.heroku import heroku_ipn_bp
 
     # importing admin app blueprints
     from main.app.admin.routes.dashboard import admin_dashboard_bp
@@ -50,6 +51,7 @@ def create_app(config_class=config_instance):
     # registering IPN
     app.register_blueprint(email_ipn_bp)
     app.register_blueprint(paypal_ipn_bp)
+    app.register_blueprint(heroku_ipn_bp)
 
     # admin app handlers
     app.register_blueprint(admin_dashboard_bp)
