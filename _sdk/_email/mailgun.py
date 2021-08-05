@@ -1,15 +1,6 @@
 ***REMOVED***
 ***REMOVED***
 
-***REMOVED***
-***REMOVED***
-        "https://api.mailgun.net/v3/sandboxXXXXXXX.mailgun.org/messages",
-        auth=("api", "XXXX"),
-              data={"from": "XXXX",
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
 
 ***REMOVED***
 

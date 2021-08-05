@@ -11,7 +11,10 @@ class Config:
     ***REMOVED***
 
     def __init__(self) -> None:
+<<<<<<< HEAD
         self.MAILGUN_DOMAIN: str = os.environ.get("MAILGUN_DOMAIN") or config("MAILGUN_DOMAIN")
+=======
+>>>>>>> 262c69e (update: added mailgun sdk)
         self.MAILGUN_API_KEY: str = os.environ.get("MAILGUN_API_KEY") or config("MAILGUN_API_KEY")
         self.MAILGUN_VALIDATION_KEY: str = os.environ.get("MAILGUN_VALIDATION_KEY") or config("MAILGUN_VALIDATION_KEY")
         self.MAILGUN_WEBHOOK_KEY: str = os.environ.get("MAILGUN_WEBHOOK_KEY") or config("MAILGUN_WEBHOOK_KEY")
