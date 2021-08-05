@@ -1,5 +1,7 @@
 from flask import Blueprint, jsonify
 from werkzeug.exceptions import BadRequest, Forbidden, NotFound, MethodNotAllowed, Unauthorized, HTTPException
+
+from config import config_instance
 from config.exceptions import DataServiceError, InputError, RemoteDataError
 from config.exceptions import UnAuthenticatedError, RequestError
 
@@ -19,6 +21,9 @@ def warmup() -> tuple:
 # TODO - send an sms notification or email message with the error message for each error
 
 def return_error(e) -> tuple:
+    ***REMOVED***Actually replying with the error and description of the error here***REMOVED***
+    if config_instance.DEBUG:
+        print(f"Description: {e.description} Error_Code: {e.code}")
     return jsonify({'status': False, 'message': e.description}), e.code
 
 
