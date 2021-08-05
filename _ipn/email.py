@@ -43,12 +43,4 @@ def email_sent_ipn(path: str) -> tuple:
     elif path == "unsubscribe":
         pass
 
-
-
-
-
-
-
-
-
     return "OK", 200
