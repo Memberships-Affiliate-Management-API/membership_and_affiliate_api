@@ -1,5 +1,5 @@
 ***REMOVED***
-   http://memberships-affiliates-man-api.herokuapp.com/_ipn/auth/heroku
+   https://memberships-affiliates-man-api.herokuapp.com/_ipn/auth/heroku
 ***REMOVED***
 from flask import Blueprint, request, jsonify
 
