@@ -55,6 +55,7 @@ class MembershipsEmails(Mailgun):
 
         def email_body_composer(names: str, surname: str, plan_name: str, plan_description: str, organization_name: str,
                                 organization_description: str) -> tuple:
+            # Include Powered by Message on the Footer of the Email Message
             ***REMOVED***
                 compose the two email bodies given the above variables
             :param names:
@@ -68,7 +69,7 @@ class MembershipsEmails(Mailgun):
             # TODO find a way to format the email body wonderfully
             _text_body = '''
             Welcome to : {}
-            You have recently subscribe to their : {}
+            You have recently subscribe to : {}
             
             '''.format(organization_name, plan_name)
             _html_body = '''
