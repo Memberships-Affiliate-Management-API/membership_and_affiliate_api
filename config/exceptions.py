@@ -48,8 +48,10 @@ status_codes: StatusCodes = StatusCodes()
 
 
 class DataServiceError(HTTPException):
-    ***REMOVED***
-        use this error to throw a custom error explaining something is wrong with the datastore
+    ***REMOVED****401*
+        raised when user has been performing an update or edit operation on their resource and the application
+        is unable to complete such an operation.
+
     ***REMOVED***
     code: int = error_codes.data_service_error_code
     description: str = 'We have a problem connection to the Database'
@@ -70,8 +72,9 @@ class DataServiceError(HTTPException):
 
 
 class InputError(Exception):
-    ***REMOVED***
-        an error to throw when there is bad data on the Input
+    ***REMOVED****422*
+        raised when a user has supplied bad data or invalid arguments, for example supplying a None / Null value instead
+        of a string will result in this error being thrown
     ***REMOVED***
     code: int = error_codes.input_error_code
     description: str = "Unable to process input"
@@ -115,8 +118,9 @@ class UnAuthenticatedError(HTTPException):
 
 
 class RequestError(HTTPException):
-    ***REMOVED***
-        errors related to requests on local servers
+    ***REMOVED****404*
+       raised when the server has created a request which succeeded but the response
+       isnt what is expected or the remote server returns an error.
     ***REMOVED***
     code: int = error_codes.request_not_found_error_code
     description: str = "Request unsuccessful"
@@ -145,8 +149,10 @@ class RequestError(HTTPException):
 # Errors
 
 class RemoteDataError(IOError):
-    ***REMOVED***
-        Remote data exception
+    ***REMOVED*** *406*
+        raised when the server is trying to access a remote server or service in order
+        to complete the users transaction but is unable to . the proper response
+        would be to retry the action that lead to this error.
     ***REMOVED***
     code: int = error_codes.remote_data_error
     description: str = 'Error connecting to remote server'

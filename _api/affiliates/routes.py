@@ -53,11 +53,8 @@ def affiliate(path: str) -> tuple:
         return affiliate_view_instance.mark_active(affiliate_data=affiliate_data, is_active=True)
     elif path == 'mark-not-active':
         return affiliate_view_instance.mark_active(affiliate_data=affiliate_data, is_active=False)
-    else:
-        # NOTE: Main Error handlers will handle all errors in-case there is no
-        # usable route handler
-        pass
 
+    message: str = ""
 
 @affiliates_bp.route('/api/v1/recruits/<path:path>', methods=['POST'])
 @handle_api_auth
