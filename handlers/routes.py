@@ -41,7 +41,7 @@ def handle_bad_request(e: BadRequest) -> tuple:
 
 @default_handlers_bp.app_errorhandler(Forbidden)
 def handle_forbidden_error(e: Forbidden) -> tuple:
-    ***REMOVED****403* `Forbidden`
+    ***REMOVED****403* Forbidden
 
     Raise if the user doesn't have the permission for the requested resource
     but was authenticated.

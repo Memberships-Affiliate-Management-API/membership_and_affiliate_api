@@ -6,6 +6,7 @@
 import typing
 from flask import jsonify, current_app
 from werkzeug.security import check_password_hash
+from _sdk._email import Mailgun
 from config.exceptions import error_codes, status_codes, InputError, UnAuthenticatedError, DataServiceError
 from database.mixins import AddressMixin
 from database.organization import OrgValidators
@@ -19,52 +20,53 @@ from config.use_context import use_context
 users_type = typing.List[UserModel]
 
 
-class UserEmails:
+class UserEmails(Mailgun):
     ***REMOVED***
         used to send emails and notifications to users
     ***REMOVED***
+
     def __init__(self):
         ***REMOVED***
-           NOTE: initializing email SMTP settings from app.config
+           NOTE: initializing mail gun rest api
         ***REMOVED***
-        self.admin_email: str = current_app.config.get('ADMIN_EMAIL')
-        self.no_response_email: str = current_app.config.get('NO_RESPONSE_EMAIL')
-        self.smtp_server_uri: str = current_app.config.get('SMTP_SERVER_URI')
-        self.smtp_server_password: str = current_app.config.get('SMTP_SERVER_PASSWORD')
-        self.smtp_server_username: str = current_app.config.get('SMTP_SERVER_USERNAME')
+        super(UserEmails, self).__init__()
 
-    def _do_send_mail(self, to_address: str, subject: str, body_text: str, body_html: str) -> bool:
+    def __do_send_mail(self, to_email: str, subject: str, text: str, html: str) -> None:
         ***REMOVED***
-            # TODO - add an sdk to send emails or use requests to send emails
-            actually send email here
-        :param to_address:
-        :param subject:
-        :param body_text:
-        :param body_html:
-        :return:
+              **If possible this method should be run asynchronously**
+              a method to actually send email
+            :param to_email: email address to send the email to
+            :param subject: subject of the email
+            :param text: body in text format
+            :param html: body in html format
+            :return: does not return anything
         ***REMOVED***
-        pass
+        self.__send_with_mailgun_rest_api(to_list=[to_email], subject=subject, text=text, html=html)
 
-    def send_welcome_to_admins_email(self, email) -> None:
+    def send_welcome_to_admins_email(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
             send an email to admin welcoming him to the admins club
-        :param email:
+            NOTE: class __do_send_mail with the finally composed email
+        :param uid:
+        :param organization_id:
         :return:
         ***REMOVED***
         pass
 
-    def send_goodbye_admin_email(self, email) -> None:
+    def send_goodbye_admin_email(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
             send an email informing the user he or she is no longer admin
-        :param email:
+        :param uid:
+        :param organization_id:
         :return:
         ***REMOVED***
         pass
 
-    def send_welcome_to_support_email(self, email) -> None:
+    def send_welcome_to_support_email(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
             send welcome to support email
-        :param email:
+        :param uid:
+        :param organization_id:
         :return:
         ***REMOVED***
         pass
@@ -532,9 +534,9 @@ class UserView(Validators, UserEmails):
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
             if is_admin:
-                self.send_welcome_to_admins_email(email=user_instance.email)
+                self.send_welcome_to_admins_email(organization_id=organization_id, uid=uid)
             else:
-                self.send_goodbye_admin_email(email=user_instance.email)
+                self.send_goodbye_admin_email(organization_id=organization_id, uid=uid)
 
             message: str = "Successfully Update admin status"
             return jsonify({'status': True, 'payload': user_instance.to_dict(),
@@ -566,7 +568,7 @@ class UserView(Validators, UserEmails):
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
             if is_support:
-                self.send_welcome_to_support_email(email=user_instance.email)
+                self.send_welcome_to_support_email(organization_id=organization_id, uid=uid)
             else:
                 self.send_goodbye_support_email(email=user_instance.email)
 

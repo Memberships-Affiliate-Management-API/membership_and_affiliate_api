@@ -18,13 +18,13 @@ from config.use_context import use_context
 from _sdk._email import Mailgun
 
 
-class MembershipsEmails:
+class MembershipsEmails(Mailgun):
     ***REMOVED***
-        methods to send emails related to memberships
+        Class Used to send emails and notifications related to Memberships
     ***REMOVED***
 
     def __init__(self):
-        self._mail_sender = Mailgun()
+        super(MembershipsEmails, self).__init__()
 
     def __do_send_mail(self, to_email: str, subject: str, text: str, html: str) -> None:
         ***REMOVED***
@@ -37,7 +37,7 @@ class MembershipsEmails:
         :param html:
         :return:
         ***REMOVED***
-        self._mail_sender.send_with_rest_api(to_list=[to_email], subject=subject, text=text, html=html)
+        self.__send_with_mailgun_rest_api(to_list=[to_email], subject=subject, text=text, html=html)
 
     def send_memberships_welcome_email(self, organization_id: str, uid: str) -> None:
         ***REMOVED***

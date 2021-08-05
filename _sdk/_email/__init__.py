@@ -1,1 +1,1 @@
-from mailgun import Mailgun
+from .mailgun import Mailgun

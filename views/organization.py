@@ -4,6 +4,7 @@ organization view
 ***REMOVED***
 import typing
 from flask import current_app, jsonify
+from _sdk._email import Mailgun
 from config.exception_handlers import handle_view_errors
 from config.exceptions import InputError, DataServiceError, error_codes, status_codes, UnAuthenticatedError
 from config.use_context import use_context
@@ -14,20 +15,31 @@ from main import app_cache
 from utils.utils import create_id, return_ttl, can_cache
 
 
-class OrganizationEmails:
+class OrganizationEmails(Mailgun):
+    ***REMOVED***
+        class Used to send Emails and Notifications related to Organizations
+    ***REMOVED***
+
     def __init__(self):
-        self.admin_email: str = current_app.config.get('ADMIN_EMAIL')
-        self.no_response_email: str = current_app.config.get('NO_RESPONSE_EMAIL')
-        self.smtp_server_uri: str = current_app.config.get('SMTP_SERVER_URI')
-        self.smtp_server_password: str = current_app.config.get('SMTP_SERVER_PASSWORD')
-        self.smtp_server_username: str = current_app.config.get('SMTP_SERVER_USERNAME')
+        super(OrganizationEmails, self).__init__()
+
+    def __do_send_mail(self, to_email: str, subject: str, text: str, html: str) -> None:
+        ***REMOVED***
+              **If possible this method should be run asynchronously**
+              a method to actually send email
+            :param to_email: email address to send the email to
+            :param subject: subject of the email
+            :param text: body in text format
+            :param html: body in html format
+            :return: does not return anything
+        ***REMOVED***
+        self.__send_with_mailgun_rest_api(to_list=[to_email], subject=subject, text=text, html=html)
 
     def send_successfully_created_organization(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
-
-        :param organization_id:
-        :param uid:
-        :return:
+            :param organization_id:
+            :param uid:
+            :return:
         ***REMOVED***
         pass
 

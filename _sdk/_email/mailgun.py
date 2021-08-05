@@ -11,6 +11,7 @@ from config import config_instance
 from config.exceptions import status_codes, error_codes
 from typing import List
 
+
 class Mailgun:
     def __init__(self):
         ***REMOVED***
@@ -21,7 +22,8 @@ class Mailgun:
         self.end_point = "https://api.mailgun.net/v3/{}/messages".format(config_instance.MAILGUN_DOMAIN)
         self.no_response = config_instance.MAILGUN_NO_RESPONSE
 
-    def send_with_rest_api(self, to_list: List[str], subject: str, text: str, html: str, o_tag: List[str] = None) -> tuple:
+    def __send_with_mailgun_rest_api(self, to_list: List[str], subject: str, text: str, html: str,
+                                     o_tag: List[str] = None) -> tuple:
         ***REMOVED***
         a method to send email via rest api
         :param o_tag:  message o tag | format of o:tag  ["September newsletter", "newsletters"]

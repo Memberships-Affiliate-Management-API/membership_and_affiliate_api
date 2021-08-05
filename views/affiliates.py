@@ -9,6 +9,22 @@ from config.exceptions import DataServiceError, InputError, UnAuthenticatedError
 from utils.utils import create_id, return_ttl, can_cache
 from config.exception_handlers import handle_view_errors
 from config.use_context import use_context
+from _sdk._email import Mailgun
+
+
+class AffiliatesEmails(Mailgun):
+    def __init__(self):
+        super(AffiliatesEmails, self).__init__()
+
+    def __do_send_mail(self, to_email: str, subject: str, text: str, html: str) -> None:
+        ***REMOVED***
+
+        :param subject:
+        :param text:
+        :param html:
+        :return:
+        ***REMOVED***
+        self.__send_with_mailgun_rest_api(to_list=[to_email], subject=subject, text=text, html=html)
 
 
 # TODO Create Test Cases for Affiliates View and Documentations

@@ -1,6 +1,6 @@
 import typing
 from flask import jsonify, current_app
-
+from _sdk._email import Mailgun
 from config.currencies import currency_symbols
 from database.mixins import AmountMixin
 from database.wallet import WalletModel, WalletValidator
@@ -11,13 +11,24 @@ from config.use_context import use_context
 from main import app_cache
 
 
-class WalletEmails:
+class WalletEmails(Mailgun):
+    ***REMOVED***
+        class used to send Wallet related Emails and Notifications
+    ***REMOVED***
     def __init__(self):
-        self.admin_email: str = current_app.config.get('ADMIN_EMAIL')
-        self.no_response_email: str = current_app.config.get('NO_RESPONSE_EMAIL')
-        self.smtp_server_uri: str = current_app.config.get('SMTP_SERVER_URI')
-        self.smtp_server_password: str = current_app.config.get('SMTP_SERVER_PASSWORD')
-        self.smtp_server_username: str = current_app.config.get('SMTP_SERVER_USERNAME')
+        super(WalletEmails, self).__init__()
+
+    def __do_send_mail(self, to_email: str, subject: str, text: str, html: str) -> None:
+        ***REMOVED***
+              **If possible this method should be run asynchronously**
+              a method to actually send email
+            :param to_email: email address to send the email to
+            :param subject: subject of the email
+            :param text: body in text format
+            :param html: body in html format
+            :return: does not return anything
+        ***REMOVED***
+        self.__send_with_mailgun_rest_api(to_list=[to_email], subject=subject, text=text, html=html)
 
     def send_balance_changed_notification(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
