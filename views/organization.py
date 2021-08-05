@@ -168,7 +168,7 @@ class OrganizationView(OrgValidators, OrganizationEmails):
                 org_instance.organization_name = organization_name
                 org_instance.description = description
                 key = org_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-                if key is None:
+                if not bool(key):
                     message: str = "An Unspecified Error has occurred"
                     raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
@@ -214,7 +214,7 @@ class OrganizationView(OrgValidators, OrganizationEmails):
         :return: a list containing all organization details
         ***REMOVED***
         organizations_list: typing.List[dict] = [org.to_dict() for org in Organization.query().fetch()]
-        if len(organizations_list) > 0:
+        if len(organizations_list):
             message: str = 'successfully retrieved organizations'
             return jsonify({'status': True,
                             'payload': organizations_list, 'message': message}), status_codes.status_ok_code
@@ -299,7 +299,7 @@ class OrganizationView(OrgValidators, OrganizationEmails):
             key: typing.Union[str, None] = organization_instance.put(retries=self._max_retries,
                                                                      timeout=self._max_timeout)
 
-            if key is None:
+            if not bool(key):
                 message: str = 'for some reason we are unable to add to total_amount'
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
@@ -372,7 +372,8 @@ class OrganizationView(OrgValidators, OrganizationEmails):
             elif isinstance(sub_payment, AmountMixin):
                 organization_instance.projected_membership_payments -= sub_payment
             else:
-                raise InputError(status=500, description="Please enter either the amount to add or subtract")
+                message : str = "Please enter either the amount to add or subtract"
+                raise InputError(status=error_codes.input_error_code, description=message)
 
             message: str = "Successfully updated projected_membership_payments"
             return jsonify({'status': True,
