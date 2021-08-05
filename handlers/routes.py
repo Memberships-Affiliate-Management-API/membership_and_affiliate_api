@@ -55,7 +55,7 @@ def handle_un_authorized_requests(e: UnAuthenticatedError) -> tuple:
 # noinspection PyUnusedLocal
 @default_handlers_bp.app_errorhandler(HTTPException)
 def handle_http_exception(e: HTTPException) -> tuple:
-    return jsonify({'status': False, 'message': 'HTTP Error'}), 503
+    return jsonify({'status': False, 'message': str(e)}), 503
 
 
 # Custom Errors
