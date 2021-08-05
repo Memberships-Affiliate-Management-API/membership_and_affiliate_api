@@ -5,11 +5,15 @@
     ***REMOVED***
 
 ***REMOVED***
-import requests
+# import requests
+import typing
+
 from flask import jsonify
 from config import config_instance
 from config.exceptions import status_codes, error_codes
 from typing import List
+import aiohttp
+import asyncio
 
 
 class Mailgun:
@@ -22,8 +26,21 @@ class Mailgun:
         self.end_point = "https://api.mailgun.net/v3/{}/messages".format(config_instance.MAILGUN_DOMAIN)
         self.no_response = config_instance.MAILGUN_NO_RESPONSE
         self._admin_get_user_endpoint = '_api/admin/users/get'
+        self._admin_get_membership_endpoint = '_api/admin/memberships/get'
+        self._admin_get_organization_endpoint = '_api/admin/organizations/get'
 
-    def __get_user_data(self, organization_id: str, uid: str) -> any:
+    @staticmethod
+    async def __async_request(_url, json_data, headers) -> typing.Union[dict, None]:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url=_url, json=json_data, headers=headers) as response:
+                response, status = response
+                json_data = response.json()
+                if json_data.get('status'):
+                    user_data: dict = json_data.get('payload')
+                    return user_data
+                return None
+
+    async def __get_user_data_async(self, organization_id: str, uid: str) -> typing.Union[dict, None]:
         ***REMOVED***
             from an api obtain user details related to the parameters
         :param organization_id: organization_id related to the user
@@ -32,12 +49,33 @@ class Mailgun:
         ***REMOVED***
         _url: str = "{}{}".format(config_instance.BASE_URL, self._admin_get_user_endpoint)
         json_data = jsonify({'organization_id': organization_id, 'uid': uid})
-        response, status = requests.post(url=_url, json=json_data)
-        json_data = response.json()
-        if json_data.get('status'):
-            user_data: dict = json_data.get('payload')
-            return user_data
-        return None
+        # TODO replace requests to make this async
+        headers = {'content-type': 'application/json'}
+        return asyncio.run(self.__async_request(_url=_url, json_data=json_data, headers=headers))
+
+    async def __get_membership_data_async(self, organization_id: str, uid: str) -> typing.Union[dict, None]:
+        ***REMOVED***
+            from an api obtain membership plan details related to the parameters
+        :param organization_id:
+        :param uid:
+        :return:
+        ***REMOVED***
+        _url: str = "{}{}".format(config_instance.BASE_URL, self._admin_get_membership_endpoint)
+        json_data = jsonify({'organization_id': organization_id, 'uid': uid})
+        headers = {'content-type': 'application/json'}
+        return asyncio.run(self.__async_request(_url=_url, json_data=json_data, headers=headers))
+
+    async def __get_organization_data_async(self, organization_id: str, uid: str) -> typing.Union[dict, None]:
+        ***REMOVED***
+            returns the organization details based on the organization id and uid
+        :param organization_id:
+        :param uid:
+        :return:
+        ***REMOVED***
+        _url: str = "{}{}".format(config_instance.BASE_URL, self._admin_get_organization_endpoint)
+        json_data = jsonify({'organization_id': organization_id, 'uid': uid})
+        headers = {'content-type': 'application/json'}
+        return asyncio.run(self.__async_request(_url=_url, json_data=json_data, headers=headers))
 
     def __send_with_mailgun_rest_api(self, to_list: List[str], subject: str, text: str, html: str,
                                      o_tag: List[str] = None) -> tuple:

@@ -23,7 +23,7 @@ shortuuid
 Werkzeug~=1.0.1
 gunicorn
 python-decouple
-aiohttp~=3.7.4.post0
+aiohttp[speedups]
 paypalhttp~=1.0.0
 pytest~=6.2.4
 pytest_cov

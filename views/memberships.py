@@ -16,7 +16,7 @@ from main import app_cache
 from config.exception_handlers import handle_view_errors, handle_store_errors
 from config.use_context import use_context
 from _sdk._email import Mailgun
-
+import asyncio
 
 class MembershipsEmails(Mailgun):
     ***REMOVED***
@@ -49,9 +49,19 @@ class MembershipsEmails(Mailgun):
         ***REMOVED***
         # TODO compile a message here
         # TODO find out how to create templates and allow clients to create their email templates
-
         # TODO: fetching user data over API -- all this must be done asynchronously
-        user_data: typing.Union[dict, None] = self.__get_user_data(organization_id=organization_id, uid=uid)
+
+        loop = asyncio.get_event_loop()
+
+        data_tasks = asyncio.gather(self.__get_user_data_async(organization_id=organization_id, uid=uid),
+                                    self.__get_membership_data_async(organization_id=organization_id, uid=uid),
+                                    self.__get_organization_data_async(organization_id=organization_id, uid=uid))
+
+        results = loop.run_until_complete(data_tasks)
+        user_data: typing.Union[dict, None] = results[0]
+        membership_data: typing.Union[dict, None] = results[1]
+        organization_data: typing.Union[dict, None] = results[2]
+
         # TODO Get Organization Details in order to compile subject and bodyY
         # TODO Get Membership details in order to compile subject and body
 
@@ -1445,6 +1455,26 @@ class MembershipPlansView(Validators):
         ***REMOVED***
 
         plan_instance = await self.get_plan_async(organization_id=organization_id, plan_id=plan_id)
+        if bool(plan_instance):
+            message: str = "successfully fetched plan"
+            return jsonify({'status': True, 'payload': plan_instance.to_dict(),
+                            'message': message}), status_codes.status_ok_code
+
+        return jsonify({'status': False,
+                        'message': 'Unable to get plan'}), status_codes.data_not_found_code
+    @use_context
+    @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    def return_plan_by_uid(self, organization_id: str, uid: str) -> tuple:
+        ***REMOVED***
+            return a specific membership plan
+        :param uid:
+        :param organization_id:
+        :return: plan details
+        ***REMOVED***
+
+        plan_instance = MembershipPlans.query(MembershipPlans.organization_id == organization_id,
+                                              MembershipPlans.uid == uid).get()
         if bool(plan_instance):
             message: str = "successfully fetched plan"
             return jsonify({'status': True, 'payload': plan_instance.to_dict(),

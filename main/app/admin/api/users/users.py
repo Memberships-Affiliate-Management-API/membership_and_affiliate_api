@@ -1,6 +1,5 @@
-from flask import Blueprint, request, render_template, url_for, get_flashed_messages, redirect, flash, jsonify
-from config.exceptions import status_codes
-from database.users import UserModel
+from flask import Blueprint, request
+from views.users import UserView
 from security.users_authenticator import logged_user, is_app_admin
 from typing import Union
 
@@ -18,14 +17,8 @@ def admin_users(path: str) -> tuple:
         json_data: dict = request.get_json()
         organization_id: Union[str, None] = json_data.get("organization_id")
         uid: Union[str, None] = json_data.get("uid")
-
-        user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
-                                                   UserModel.uid == uid).get()
-
-        message: str = "successfully retrieved user"
-        return jsonify({'status': True, 'message': message,
-                        'payload': user_instance.to_dict()}), status_codes.status_ok_code
-
+        user_view_instance: UserView = UserView()
+        return user_view_instance.get_user(uid=uid, organization_id=organization_id)
 
 
 
