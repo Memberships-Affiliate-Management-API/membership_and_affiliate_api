@@ -1,18 +1,15 @@
 ***REMOVED***
 ***REMOVED***
-
-
-***REMOVED***
-
-***REMOVED***
-***REMOVED***
+    ***REMOVED***
+    ***REMOVED***
+    ***REMOVED***
 
 ***REMOVED***
 import requests
 from flask import jsonify
 from config import config_instance
 from config.exceptions import status_codes, error_codes
-
+from typing import List
 
 class Mailgun:
     def __init__(self):
@@ -22,8 +19,9 @@ class Mailgun:
         ***REMOVED***
         self.api = config_instance.MAILGUN_API_KEY
         self.end_point = "https://api.mailgun.net/v3/{}/messages".format(config_instance.MAILGUN_DOMAIN)
+        self.no_response = config_instance.MAILGUN_NO_RESPONSE
 
-    def send_with_rest_api(self, from_mail: str, to_list: list, subject: str, text: str, html: str, o_tag: str) -> tuple:
+    def send_with_rest_api(self, to_list: List[str], subject: str, text: str, html: str, o_tag: List[str] = None) -> tuple:
         ***REMOVED***
         a method to send email via rest api
         :param o_tag:  message o tag | format of o:tag  ["September newsletter", "newsletters"]
@@ -34,7 +32,7 @@ class Mailgun:
         :param html: the html part of the email
         :return: tuple indicating the status of the message sent
         ***REMOVED***
-        from_str = "{} <{}>".format(config_instance.APP_NAME, from_mail)
+        from_str = "{} <{}>".format(config_instance.APP_NAME, self.no_response)
         to_str = to_list
         api_instance = ("api", "{}".format(self.api))
 

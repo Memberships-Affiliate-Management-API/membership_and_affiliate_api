@@ -13,6 +13,7 @@ class Config:
     def __init__(self) -> None:
         self.MAILGUN_DOMAIN: str = os.environ.get("MAILGUN_DOMAIN") or config("MAILGUN_DOMAIN")
         self.MAILGUN_API_KEY: str = os.environ.get("MAILGUN_API_KEY") or config("MAILGUN_API_KEY")
+        self.MAILGUN_NO_RESPONSE: str = os.environ.get("MAILGUN_NO_RESPONSE") or config("MAILGUN_NO_RESPONSE")
         self.MAILGUN_VALIDATION_KEY: str = os.environ.get("MAILGUN_VALIDATION_KEY") or config("MAILGUN_VALIDATION_KEY")
         self.MAILGUN_WEBHOOK_KEY: str = os.environ.get("MAILGUN_WEBHOOK_KEY") or config("MAILGUN_WEBHOOK_KEY")
         self.PROJECT: str = os.environ.get("PROJECT") or config("PROJECT")

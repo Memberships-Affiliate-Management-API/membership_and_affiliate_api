@@ -15,28 +15,29 @@ from utils.utils import return_ttl, timestamp, can_cache, get_payment_methods
 from main import app_cache
 from config.exception_handlers import handle_view_errors, handle_store_errors
 from config.use_context import use_context
+from _sdk._email import Mailgun
 
 
 class MembershipsEmails:
     ***REMOVED***
         methods to send emails related to memberships
     ***REMOVED***
-    def __init__(self):
-        self.admin_email: str = current_app.config.get('ADMIN_EMAIL')
-        self.no_response_email: str = current_app.config.get('NO_RESPONSE_EMAIL')
-        self.smtp_server_uri: str = current_app.config.get('SMTP_SERVER_URI')
-        self.smtp_server_password: str = current_app.config.get('SMTP_SERVER_PASSWORD')
-        self.smtp_server_username: str = current_app.config.get('SMTP_SERVER_USERNAME')
 
-    def __do_send_mail(self, mail_sender: typing.Callable) -> None:
+    def __init__(self):
+        self._mail_sender = Mailgun()
+
+    def __do_send_mail(self, to_email: str, subject: str, text: str, html: str) -> None:
         ***REMOVED***
             TODO try sending emails with a specific sender - this allows the actual sending module
             to be interchangeable at run time
             send email using mail_sender
-        :param mail_sender:
+        :param to_email:
+        :param subject:
+        :param text:
+        :param html:
         :return:
         ***REMOVED***
-        pass
+        self._mail_sender.send_with_rest_api(to_list=[to_email], subject=subject, text=text, html=html)
 
     def send_memberships_welcome_email(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
@@ -46,6 +47,9 @@ class MembershipsEmails:
             :param uid
             :return:
         ***REMOVED***
+        # TODO compile a message here
+        # TODO find out how to create templates and allow clients to create their email templates
+
         pass
 
     def send_change_of_membership_notification_email(self, organization_id: str, uid: str) -> None:
@@ -55,6 +59,8 @@ class MembershipsEmails:
             :param: uid
             :return:
         ***REMOVED***
+        # TODO compile a message here
+        # TODO find out how to create templates and allow clients to create their email templates
         pass
 
     def send_payment_method_changed_email(self, organization_id: str, uid: str) -> None:
@@ -66,6 +72,8 @@ class MembershipsEmails:
             :param uid: required
             :return:
         ***REMOVED***
+        # TODO compile a message here
+        # TODO find out how to create templates and allow clients to create their email templates
         pass
 
 
@@ -964,6 +972,7 @@ def plan_data_wrapper(func):
         :param func:
         :return: func with correct variables
     ***REMOVED***
+
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
 
@@ -1949,7 +1958,6 @@ class CouponsView(Validators):
 
         payload: typing.List[dict] = [coupon.to_dict() for coupon in coupons_list]
         if len(payload):
-
             message: str = "successfully fetched expired coupon codes"
             return jsonify({'status': True, 'payload': payload,
                             'message': message}), status_codes.status_ok_code
