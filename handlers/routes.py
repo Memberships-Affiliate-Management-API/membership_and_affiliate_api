@@ -17,63 +17,62 @@ def warmup() -> tuple:
 
 
 # TODO - send an sms notification or email message with the error message for each error
-# noinspection PyUnusedLocal
+
+def return_error(e) -> tuple:
+    return jsonify({'status': False, 'message': e.description}), e.code
+
+
 @default_handlers_bp.app_errorhandler(BadRequest)
 def handle_bad_request(e: BadRequest) -> tuple:
-    return jsonify({'status': False, 'message': 'Bad Request'}), 400
+    return return_error(e)
 
 
-# noinspection PyUnusedLocal
 @default_handlers_bp.app_errorhandler(Forbidden)
 def handle_forbidden_error(e: Forbidden) -> tuple:
-    return jsonify({'status': False, 'message': 'Forbidden Request'}), 403
+    return return_error(e)
 
 
-# noinspection PyUnusedLocal
 @default_handlers_bp.app_errorhandler(NotFound)
 def handle_not_found_error(e: NotFound) -> tuple:
-    return jsonify({'status': False, 'message': 'Resource Not Found'}), 404
+    return return_error(e)
 
 
-# noinspection PyUnusedLocal
 @default_handlers_bp.app_errorhandler(MethodNotAllowed)
 def handle_method_not_allowed(e: MethodNotAllowed) -> tuple:
-    return jsonify({'status': False, 'message': 'Request Method not Allowed'}), 405
+    return return_error(e)
 
 
-# noinspection PyUnusedLocal
 @default_handlers_bp.app_errorhandler(Unauthorized)
 def handle_un_authorized_requests(e: Unauthorized) -> tuple:
-    return jsonify({'status': False, 'message': 'Request Not Authorized'}), 401
+    return return_error(e)
 
 
 @default_handlers_bp.app_errorhandler(UnAuthenticatedError)
 def handle_un_authorized_requests(e: UnAuthenticatedError) -> tuple:
-    return jsonify({'status': False, 'message': e.description}), e.code
+    return return_error(e)
 
 
-# noinspection PyUnusedLocal
 @default_handlers_bp.app_errorhandler(HTTPException)
 def handle_http_exception(e: HTTPException) -> tuple:
-    return jsonify({'status': False, 'message': str(e)}), 503
+    return return_error(e)
 
 
 # Custom Errors
 @default_handlers_bp.app_errorhandler(DataServiceError)
 def handle_data_service_error(e: DataServiceError):
-    return jsonify({'status': False, 'message': e.description}), e.code
+    return return_error(e)
 
 
 @default_handlers_bp.app_errorhandler(InputError)
 def handle_input_error(e: InputError) -> tuple:
-    return jsonify({'status': False, 'message': e.description}), e.code
+    return return_error(e)
 
 
 @default_handlers_bp.app_errorhandler(RemoteDataError)
 def handle_remote_error(e: RemoteDataError) -> tuple:
-    return jsonify({'status': False, 'message': e.description}), e.code
+    return return_error(e)
 
 
 @default_handlers_bp.app_errorhandler(RequestError)
 def handle_remote_error(e: RequestError) -> tuple:
-    return jsonify({'status': False, 'message': e.description}), e.code
+    return return_error(e)
