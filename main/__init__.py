@@ -42,6 +42,9 @@ def create_app(config_class=config_instance):
     # importing main api
     from main.app.memberships_main.api.api import main_api_bp
 
+    # admin api
+    from .app.admin.api.users.users import admin_users_api_bp
+
     app.register_blueprint(affiliates_bp)
     app.register_blueprint(users_bp)
     app.register_blueprint(memberships_bp)
@@ -66,6 +69,9 @@ def create_app(config_class=config_instance):
 
     # registering main api handlers
     app.register_blueprint(main_api_bp)
+
+    # registering admin api users
+    app.register_blueprint(admin_users_api_bp)
 
     # Error Handlers
     app.register_blueprint(default_handlers_bp)

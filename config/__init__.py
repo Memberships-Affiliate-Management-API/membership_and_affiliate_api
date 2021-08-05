@@ -11,6 +11,7 @@ class Config:
     ***REMOVED***
 
     def __init__(self) -> None:
+        self.BASE_URL: str = os.environ.get("BASE_URL") or config("BASE_URL")
         self.MAILGUN_DOMAIN: str = os.environ.get("MAILGUN_DOMAIN") or config("MAILGUN_DOMAIN")
         self.MAILGUN_API_KEY: str = os.environ.get("MAILGUN_API_KEY") or config("MAILGUN_API_KEY")
         self.MAILGUN_NO_RESPONSE: str = os.environ.get("MAILGUN_NO_RESPONSE") or config("MAILGUN_NO_RESPONSE")

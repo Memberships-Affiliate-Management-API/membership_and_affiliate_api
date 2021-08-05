@@ -37,6 +37,8 @@ class OrganizationEmails(Mailgun):
 
     def send_successfully_created_organization(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
+            once an organization is created send an email of this to the end user explaining the steps
+            they need to perform in order to complete the transaction
             :param organization_id:
             :param uid:
             :return:

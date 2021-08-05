@@ -50,7 +50,19 @@ class MembershipsEmails(Mailgun):
         # TODO compile a message here
         # TODO find out how to create templates and allow clients to create their email templates
 
-        pass
+        # TODO: fetching user data over API -- all this must be done asynchronously
+        user_data: typing.Union[dict, None] = self.__get_user_data(organization_id=organization_id, uid=uid)
+        # TODO Get Organization Details in order to compile subject and bodyY
+        # TODO Get Membership details in order to compile subject and body
+
+        if user_data:
+            email: str = user_data.get('email')
+            names: str = user_data.get('names')
+            surname: str = user_data.get('surname')
+            subject: str = ''
+            text: str = ''
+            html: str = ''
+            self.__do_send_mail(to_email=email, subject=subject, text=text, html=html)
 
     def send_change_of_membership_notification_email(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
