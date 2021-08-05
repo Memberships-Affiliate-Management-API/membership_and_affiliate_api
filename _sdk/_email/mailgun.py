@@ -3,9 +3,9 @@
 
 ***REMOVED***
 ***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
+        "https://api.mailgun.net/v3/sandboxXXXXXXX.mailgun.org/messages",
+        auth=("api", "XXXX"),
+              data={"from": "XXXX",
 ***REMOVED***
 ***REMOVED***
 ***REMOVED***
@@ -19,19 +19,18 @@
 ***REMOVED***
 import requests
 from flask import jsonify
-
 from config import config_instance
 from config.exceptions import status_codes, error_codes
 
 
 class Mailgun:
-    def __init__(self, mailgun_domain: str):
+    def __init__(self):
         ***REMOVED***
-            domain name registered with Mailgun
-        :param mailgun_domain:
+            mailgun_domain : domain name registered with mailgun
+            MAILGUN_API_KEY : can be found from mailgun control panel
         ***REMOVED***
         self.api = config_instance.MAILGUN_API_KEY
-        self.end_point = "https://api.mailgun.net/v3/{}/messages".format(mailgun_domain)
+        self.end_point = "https://api.mailgun.net/v3/{}/messages".format(config_instance.MAILGUN_DOMAIN)
 
     def send_with_rest_api(self, from_mail: str, to_list: list, subject: str, text: str, html: str, o_tag: str) -> tuple:
         ***REMOVED***
