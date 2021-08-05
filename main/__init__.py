@@ -45,6 +45,7 @@ def create_app(config_class=config_instance):
     # admin api
     from main.app.admin.api.users.users import admin_users_api_bp
     from main.app.admin.api.organizations.organization import admin_organization_api_bp
+    from main.app.admin.api.memberships.memberships import membership_plans_admin_api_bp
 
     app.register_blueprint(affiliates_bp)
     app.register_blueprint(users_bp)
@@ -74,6 +75,7 @@ def create_app(config_class=config_instance):
     # registering admin api users
     app.register_blueprint(admin_users_api_bp)
     app.register_blueprint(admin_organization_api_bp)
+    app.register_blueprint(membership_plans_admin_api_bp)
 
     # Error Handlers
     app.register_blueprint(default_handlers_bp)

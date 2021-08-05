@@ -18,6 +18,7 @@ from config.use_context import use_context
 from _sdk._email import Mailgun
 import asyncio
 
+
 class MembershipsEmails(Mailgun):
     ***REMOVED***
         Class Used to send emails and notifications related to Memberships
@@ -41,6 +42,7 @@ class MembershipsEmails(Mailgun):
 
     def send_memberships_welcome_email(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
+            **ideally this process should be run on a separate work instance if on Heroku or as a task in GCP**
                 once a client or user has registered to a membership plan send them an email welcoming them
                 on board
             :param organization_id
@@ -50,6 +52,29 @@ class MembershipsEmails(Mailgun):
         # TODO compile a message here
         # TODO find out how to create templates and allow clients to create their email templates
         # TODO: fetching user data over API -- all this must be done asynchronously
+
+        def email_body_composer(names: str, surname: str, plan_name: str, plan_description: str, organization_name: str,
+                                organization_description: str) -> tuple:
+            ***REMOVED***
+                compose the two email bodies given the above variables
+            :param names:
+            :param surname:
+            :param plan_name:
+            :param plan_description:
+            :param organization_name:
+            :param organization_description:
+            :return:
+            ***REMOVED***
+            # TODO find a way to format the email body wonderfully
+            _text_body = '''
+            Welcome to : {}
+            You have recently subscribe to their : {}
+            
+            '''.format(organization_name, plan_name)
+            _html_body = '''
+            
+            '''
+            return _text_body, _html_body
 
         loop = asyncio.get_event_loop()
 
@@ -62,17 +87,22 @@ class MembershipsEmails(Mailgun):
         membership_data: typing.Union[dict, None] = results[1]
         organization_data: typing.Union[dict, None] = results[2]
 
-        # TODO Get Organization Details in order to compile subject and bodyY
-        # TODO Get Membership details in order to compile subject and body
-
         if user_data:
             email: str = user_data.get('email')
             names: str = user_data.get('names')
             surname: str = user_data.get('surname')
-            subject: str = ''
-            text: str = ''
-            html: str = ''
-            self.__do_send_mail(to_email=email, subject=subject, text=text, html=html)
+            plan_name: str = membership_data.get('plan_name')
+            plan_description: str = membership_data.get('description')
+            organization_name: str = organization_data.get('organization_name')
+            description: str = organization_data.get('description')
+
+            # Note: composes and returns email body given membership and organization details the member joined
+            text_body, html_body = email_body_composer(names=names, surname=surname, plan_name=plan_name,
+                                                       plan_description=plan_description, organization_name=organization_name,
+                                                       organization_description=description)
+
+            subject: str = 'Welcome to : {}'.format(organization_name)
+            self.__do_send_mail(to_email=email, subject=subject, text=text_body, html=html_body)
 
     def send_change_of_membership_notification_email(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
@@ -1462,21 +1492,24 @@ class MembershipPlansView(Validators):
 
         return jsonify({'status': False,
                         'message': 'Unable to get plan'}), status_codes.data_not_found_code
+
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def return_plan_by_uid(self, organization_id: str, uid: str) -> tuple:
         ***REMOVED***
-            return a specific membership plan
-        :param uid:
-        :param organization_id:
+            return membership plan details for a specific user
+        :param uid: user uid
+        :param organization_id: organization uid
         :return: plan details
         ***REMOVED***
 
-        plan_instance = MembershipPlans.query(MembershipPlans.organization_id == organization_id,
-                                              MembershipPlans.uid == uid).get()
-        if bool(plan_instance):
-            message: str = "successfully fetched plan"
+        membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
+                                                             Memberships.uid == uid).get()
+
+        if bool(membership_instance):
+            plan_instance = self.get_plan(organization_id=organization_id, plan_id=membership_instance.plan_id)
+            message: str = "successfully fetched user plan"
             return jsonify({'status': True, 'payload': plan_instance.to_dict(),
                             'message': message}), status_codes.status_ok_code
 

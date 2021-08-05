@@ -5,9 +5,8 @@
     ***REMOVED***
 
 ***REMOVED***
-# import requests
+import requests
 import typing
-
 from flask import jsonify
 from config import config_instance
 from config.exceptions import status_codes, error_codes
@@ -17,6 +16,11 @@ import asyncio
 
 
 class Mailgun:
+    ***REMOVED***
+        methods to integrate Mailgun Emailing rest API with Memberships & Affiliates APIKeys
+        for the purposes of sending notifications and emails on behalf of clients.
+        TODO - feature development add Mailgun Templates see Email-templates on Github Repos
+    ***REMOVED***
     def __init__(self):
         ***REMOVED***
             mailgun_domain : domain name registered with mailgun
@@ -26,7 +30,7 @@ class Mailgun:
         self.end_point = "https://api.mailgun.net/v3/{}/messages".format(config_instance.MAILGUN_DOMAIN)
         self.no_response = config_instance.MAILGUN_NO_RESPONSE
         self._admin_get_user_endpoint = '_api/admin/users/get'
-        self._admin_get_membership_endpoint = '_api/admin/memberships/get'
+        self._admin_get_membership_plan_endpoint = '_api/admin/membership-plans/get'
         self._admin_get_organization_endpoint = '_api/admin/organizations/get'
 
     @staticmethod
@@ -60,7 +64,7 @@ class Mailgun:
         :param uid:
         :return:
         ***REMOVED***
-        _url: str = "{}{}".format(config_instance.BASE_URL, self._admin_get_membership_endpoint)
+        _url: str = "{}{}".format(config_instance.BASE_URL, self._admin_get_membership_plan_endpoint)
         json_data = jsonify({'organization_id': organization_id, 'uid': uid})
         headers = {'content-type': 'application/json'}
         return asyncio.run(self.__async_request(_url=_url, json_data=json_data, headers=headers))
@@ -93,6 +97,7 @@ class Mailgun:
         to_str = to_list
         api_instance = ("api", "{}".format(self.api))
 
+        # TODO feature development use an async call here
         response = requests.post(url=self.end_point,
                                  auth=api_instance,
                                  data={"from": from_str, "to": to_str,

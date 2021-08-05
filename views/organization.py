@@ -208,7 +208,8 @@ class OrganizationView(OrgValidators, OrganizationEmails):
         :return: response object and status code, response contains ,
         response json {'status': True, 'payload': '{Organization}', 'message' : 'success'}, 200
         ***REMOVED***
-        # TODO- check if user has proper rights to access organization details
+        # NOTE: may not need to check if user can access organization details if the function is being called on behalf
+        # of the system
         organization_instance: Organization = Organization.query(Organization.organization_id == organization_id).get()
         if isinstance(organization_instance, Organization):
             message: str = 'successfully fetched organization'
