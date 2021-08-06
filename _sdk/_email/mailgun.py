@@ -96,7 +96,6 @@ class Mailgun:
         from_str = "{} <{}>".format(config_instance.APP_NAME, self.no_response)
         to_str = to_list
         api_instance = ("api", "{}".format(self.api))
-
         # TODO feature development use an async call here
         response = requests.post(url=self.end_point,
                                  auth=api_instance,

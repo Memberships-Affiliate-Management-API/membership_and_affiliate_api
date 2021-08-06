@@ -1,4 +1,6 @@
 from flask import Blueprint, request
+
+from config.exceptions import if_bad_request_raise
 from security.api_authenticator import handle_api_auth
 from views.memberships import CouponsView
 coupons_bp = Blueprint('coupons', __name__)
@@ -9,6 +11,8 @@ coupons_bp = Blueprint('coupons', __name__)
 def coupons(path: str) -> tuple:
     coupons_view_instance: CouponsView = CouponsView()
     # TODO - include organization_id for this routes, and refactor the view functions
+    # Raises Bad Request error if request is not in json format
+    if_bad_request_raise(request)
 
     if path == "get":
         coupon_data: dict = request.get_json()
@@ -23,6 +27,7 @@ def coupons(path: str) -> tuple:
         coupon_data: dict = request.get_json()
         return coupons_view_instance.cancel_coupon(coupon_data=coupon_data)
     elif path == "get-all":
+        # TODO supply the required organization_id here
         return coupons_view_instance.get_all_coupons()
     elif path == "get-valid":
         return coupons_view_instance.get_valid_coupons()

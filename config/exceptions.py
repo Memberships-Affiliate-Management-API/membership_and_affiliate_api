@@ -1,5 +1,5 @@
 import typing
-from werkzeug.exceptions import HTTPException
+from werkzeug.exceptions import HTTPException, BadRequest
 
 
 class ErrorCodes:
@@ -120,7 +120,7 @@ class UnAuthenticatedError(HTTPException):
 class RequestError(HTTPException):
     ***REMOVED****404*
        raised when the server has created a request which succeeded but the response
-       isnt what is expected or the remote server returns an error.
+       isn't what is expected or the remote server returns an error.
     ***REMOVED***
     code: int = error_codes.request_not_found_error_code
     description: str = "Request unsuccessful"
@@ -208,3 +208,9 @@ class EnvironNotSet(Exception):
 
     def __repr__(self) -> str:
         return self.__str__()
+
+
+def if_bad_request_raise(request) -> None:
+    content_type: str = request.headers.get('content-type')
+    if not content_type.lower() == 'application/json':
+        raise BadRequest(description="this endpoint only handles parameters in json format")

@@ -1,5 +1,6 @@
 import typing
 from flask import Blueprint, request
+from config.exceptions import if_bad_request_raise
 from security.api_authenticator import handle_api_auth
 from views.affiliates import AffiliatesView, RecruitsView
 
@@ -11,13 +12,30 @@ affiliates_bp = Blueprint('affiliates', __name__)
 @handle_api_auth
 def affiliate(path: str) -> tuple:
     ***REMOVED***
-        returns information to clients / users relating to
-        affiliates management
-
-        :param path: what to retrieve from the affiliates database
+        returns information to clients / users relating to affiliates management
+        required parameter is organization_id must be a part of the request body supplied as json
+        :param path: path indicating the resource to return
         :return: response as tuple of Response and Status code
 
+        `Path Values`
+         path == "get"
+            this obtains a record of one affiliate from the database the required valuables must be passed in
+            json format as a body of a request in this format
+            the required variables are as follows:
+            organization_id : required
+            and either affiliate_id or uid - this means the affiliate record can be obtained by either providing
+            an affiliate_id or uid.
+
+        path == "get-all"
+            fetches all affiliate records belonging to an organization indicated by the supplied
+            variable organization_id.
+            organization_id : must be passed in json format as a body of the request
+
+
+
     ***REMOVED***
+    # Raises Bad Request error if request is not in json format
+    if_bad_request_raise(request)
     affiliate_view_instance: AffiliatesView = AffiliatesView()
     affiliate_data: dict = request.get_json()
 
@@ -54,7 +72,6 @@ def affiliate(path: str) -> tuple:
     elif path == 'mark-not-active':
         return affiliate_view_instance.mark_active(affiliate_data=affiliate_data, is_active=False)
 
-    message: str = ""
 
 @affiliates_bp.route('/api/v1/recruits/<path:path>', methods=['POST'])
 @handle_api_auth
@@ -66,6 +83,9 @@ def recruits(path: str) -> tuple:
     :param path: route to retrieve
     :return:
     ***REMOVED***
+    # Raises Bad Request error if request is not in json format
+    if_bad_request_raise(request)
+
     recruits_view_instance: RecruitsView = RecruitsView()
     recruit_data: dict = request.get_json()
     if path == "get":

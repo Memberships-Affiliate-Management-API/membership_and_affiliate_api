@@ -2,7 +2,6 @@
     UserView class used to manage:
         registering new users for both the client and main app
 ***REMOVED***
-
 import typing
 from flask import jsonify, current_app
 from werkzeug.security import check_password_hash

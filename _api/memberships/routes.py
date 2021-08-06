@@ -2,7 +2,7 @@ import typing
 from flask import Blueprint, request, jsonify
 from datetime import datetime, date
 from security.api_authenticator import handle_api_auth
-from config.exceptions import InputError
+from config.exceptions import InputError, if_bad_request_raise
 from utils.utils import date_string_to_date
 from views.memberships import MembershipsView, MembershipPlansView
 memberships_bp = Blueprint('memberships', __name__)
@@ -23,6 +23,9 @@ def create_member() -> tuple:
     ***REMOVED***
         create or update member
     ***REMOVED***
+    # Raises Bad Request error if request is not in json format
+    if_bad_request_raise(request)
+
     member_details: dict = request.get_json()
     uid: str = member_details.get("uid")
     organization_id: typing.Union[str, None] = member_details.get("organization_id")
@@ -41,6 +44,9 @@ def get_update_status(path: str) -> tuple:
     ***REMOVED***
         plan_id for the status to get or update
     ***REMOVED***
+    # Raises Bad Request error if request is not in json format
+    if_bad_request_raise(request)
+
     if request.method == "PUT":
         json_data: dict = request.get_json()
         if ("status" in json_data) and (json_data["status"] != ""):
@@ -76,6 +82,9 @@ def get_plan_members_by_payment_status(path: str, status: str) -> tuple:
 @handle_api_auth
 def change_membership_plan(path: str) -> tuple:
     plan_id, organization_id = path.split("@")
+    # Raises Bad Request error if request is not in json format
+    if_bad_request_raise(request)
+
     if plan_id != "":
         json_data: dict = request.get_json()
         if ("uid" in json_data) and (json_data['uid'] != ""):
@@ -96,6 +105,9 @@ def change_membership_plan(path: str) -> tuple:
 
 @memberships_bp.route('/api/v1/membership-plan', methods=["POST"])
 def create_membership_plan() -> tuple:
+    # Raises Bad Request error if request is not in json format
+    if_bad_request_raise(request)
+
     membership_plan_data: dict = request.get_json()
     member_ship_instance_view: MembershipPlansView = MembershipPlansView()
     return member_ship_instance_view.add_plan(membership_plan_data=membership_plan_data)
@@ -110,6 +122,9 @@ def get_membership_plans(path: str) -> tuple:
 
 @memberships_bp.route('/api/v1/update-membership-plan', methods=["POST"])
 def update_membership_plan() -> tuple:
+    # Raises Bad Request error if request is not in json format
+    if_bad_request_raise(request)
+
     member_ship_instance_view: MembershipPlansView = MembershipPlansView()
     membership_plan: dict = request.get_json()
     if ("plan_id" in membership_plan) and (membership_plan["plan_id"] != ""):

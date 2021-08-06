@@ -7,7 +7,7 @@ from typing import Union
 membership_plans_admin_api_bp = Blueprint('memberships_admin_api', __name__)
 
 
-@membership_plans_admin_api_bp.route('_api/admin/membership-plans/<string:path>', methods=['GET', 'POST'])
+@membership_plans_admin_api_bp.route('/_api/admin/membership-plans/<string:path>', methods=['GET', 'POST'])
 def memberships_admin_api(path: str) -> tuple:
     ***REMOVED***
         this endpoint is for purposes of user administration only not for admin purposes

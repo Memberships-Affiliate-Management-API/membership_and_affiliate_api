@@ -1,7 +1,7 @@
 import typing
 from flask import Blueprint, request, jsonify
 
-from config.exceptions import error_codes, InputError
+from config.exceptions import error_codes, InputError, if_bad_request_raise
 from security.api_authenticator import handle_api_auth
 from views.users import UserView
 users_bp = Blueprint("users", __name__)
@@ -154,6 +154,9 @@ def login() -> tuple:
 @users_bp.route("/api/v1/auth/logout", methods=["POST"])
 @handle_api_auth
 def logout() -> tuple:
+    # Raises Bad Request error if request is not in json format
+    if_bad_request_raise(request)
+
     user_view_instance: UserView = UserView()
     user_data: dict = request.get_json()
     # TODO- handle logout procedure
@@ -163,6 +166,8 @@ def logout() -> tuple:
 @users_bp.route("/api/v1/auth/register", methods=["POST"])
 @handle_api_auth
 def register() -> tuple:
+    # Raises Bad Request error if request is not in json format
+    if_bad_request_raise(request)
 
     user_view_instance: UserView = UserView()
     user_data: dict = request.get_json()

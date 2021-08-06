@@ -9,6 +9,7 @@
 ***REMOVED***
 from flask import Blueprint, request, jsonify
 
+from config.exceptions import if_bad_request_raise
 from security.api_authenticator import handle_api_auth
 from views.wallet import WalletView
 wallet_bp = Blueprint("wallet", __name__)
@@ -23,18 +24,19 @@ def wallet() -> tuple:
         Wallet API Endpoint for servicing users and clients.
     :return: tuple containing response and status code
     ***REMOVED***
+    # Raises Bad Request error if request is not in json format
+    if_bad_request_raise(request)
+
     wallet_instance: WalletView = WalletView()
+    json_data: dict = request.get_json()
 
     if request.method == "GET":
-        json_data: dict = request.get_json()
-
         organization_id: str = json_data.get('organization_id')
         uid: str = json_data.get('uid')
 
         return wallet_instance.get_wallet(organization_id=organization_id, uid=uid)
 
     elif request.method == "POST":
-        json_data: dict = request.get_json()
 
         uid: str = json_data.get('uid')
         organization_id: str = json_data.get('organization_id')
@@ -46,11 +48,9 @@ def wallet() -> tuple:
                                              currency=currency,
                                              paypal_address=paypal_address)
     elif request.method == "PUT":
-        json_data: dict = request.get_json()
         return wallet_instance.update_wallet(wallet_data=json_data)
 
     elif request.method == "DELETE":
-        json_data: dict = request.get_json()
         return wallet_instance.reset_wallet(wallet_data=json_data)
     else:
         return jsonify({'status': False, 'message': 'Unable to process this request please check your parameters'}), 500
@@ -63,12 +63,12 @@ def org_wallet() -> tuple:
         API Endpoint for organizational Accounts and Administrative Purposes
     :return: response as tuple
     ***REMOVED***
+    if_bad_request_raise(request)
     wallet_instance: WalletView = WalletView()
+    json_data: dict = request.get_json()
 
     if request.method == "GET":
         # Fetching the organizational Wallet
-        json_data: dict = request.get_json()
-
         organization_id: str = json_data.get('organization_id')
         uid: str = json_data.get('uid')
 
@@ -76,8 +76,6 @@ def org_wallet() -> tuple:
 
     elif request.method == "POST":
         # Creating organizational Wallet
-        json_data: dict = request.get_json()
-
         uid: str = json_data.get('uid')
         organization_id: str = json_data.get('organization_id')
         currency: str = json_data.get('currency')
@@ -90,11 +88,7 @@ def org_wallet() -> tuple:
                                              is_org_wallet=True)
     elif request.method == "PUT":
         # NOTE: Updating organization Wallet
-        json_data: dict = request.get_json()
         return wallet_instance.update_wallet(wallet_data=json_data)
-
-    else:
-        return jsonify({'status': False, 'message': 'Unable to process this request please check your parameters'}), 500
 
 
 @wallet_bp.route('/api/v1/wallet/organization/<path:path>', methods=["GET"])
