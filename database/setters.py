@@ -250,7 +250,11 @@ class ClassSetters(Util):
     @staticmethod
     def set_password(prop, value: typing.Union[str, None]) -> str:
         ***REMOVED***
-            TODO validate password here, using regex
+            validate the correctness of the password and its complexity if  accurate
+            then return the hash of the password to be stored on the database
+            :param: value: password in plain-text
+            :param : prop: the password property being set
+            :return: password in hash format
         ***REMOVED***
         from werkzeug.security import generate_password_hash
         if not isinstance(value, str):
@@ -265,6 +269,12 @@ class ClassSetters(Util):
 
     @staticmethod
     def set_value_amount(prop, value: typing.Union[int, None]) -> int:
+        ***REMOVED***
+            amount in integer used to validate amounts in cash on AmountMixin
+        :param prop:
+        :param value: amount in integer
+        :return: integer representing money in cents of whatever currency is being represented
+        ***REMOVED***
         if not (isinstance(value, int)):
             raise TypeError("{} can only be integer".format(str(prop)))
         return value

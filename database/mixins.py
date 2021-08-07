@@ -4,6 +4,11 @@ from database.setters import setters
 
 
 class AmountMixin(ndb.Model):
+    ***REMOVED***
+    A mixin to represent Money in cents
+    :property: amount: integer - representing money in cents
+    :property: currency: currency symbol
+    ***REMOVED***
     amount: int = ndb.IntegerProperty(default=None, validator=setters.set_value_amount)
     currency: str = ndb.StringProperty(default=config_instance.CURRENCY, validator=setters.set_currency)
 
