@@ -7,6 +7,7 @@ import typing
 from datetime import date
 from datetime import time as time_class
 from config import config_instance
+from flask_caching import Cache
 char_set = string.ascii_lowercase + string.ascii_uppercase + string.digits
 
 
@@ -128,15 +129,10 @@ def can_cache() -> any:
     return is_development() or not config_instance.DEBUG
 
 
-def clear_cache(app, cache) -> bool:
-    try:
-        with app.context():
-            cache.clear()
-            return True
-    except Exception as e:
+def clear_cache(app, cache: Cache) -> bool:
+    with app.context():
         cache.clear()
         return True
-    return False
 
 
 if __name__ == '__main__':
@@ -146,4 +142,5 @@ if __name__ == '__main__':
     # print(last_30_days_timestamp)
     # expire_after = datetime.datetime.now() - datetime.timedelta(days=30)
     # print(expire_after.date())
-    print(create_id())
+    pass
+
