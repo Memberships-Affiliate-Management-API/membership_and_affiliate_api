@@ -4,19 +4,49 @@
 import typing
 from datetime import datetime, date
 from utils.utils import get_payment_methods
+import re
 
 
-class ClassSetters:
+class Util:
     def __init__(self):
         pass
 
     @staticmethod
+    def regex_check_email(email: str) -> bool:
+        regex_pattern = r"\"?([-a-zA-Z0-9.`?{}]+@\w+\.\w+)\"?"
+        pattern = re.compile(regex_pattern)
+        return True if re.match(pattern, email) else False
+
+
+class ClassSetters(Util):
+
+    def __init__(self):
+        super(ClassSetters, self).__init__()
+
+
+    @staticmethod
     def set_id(prop, value: typing.Union[str, None]) -> str:
 
-        if not(isinstance(value, str)):
+        if not (isinstance(value, str)):
             raise ValueError(" {} can only be a string".format(str(prop)))
 
         if not bool(value.strip()):
+            raise ValueError(" {} cannot be Null".format(str(prop)))
+
+        return value.strip()
+
+    @staticmethod
+    def set_coupon_code(prop, value: typing.Union[str, None]) -> str:
+        ***REMOVED***
+            TODO: coupon code length - find a way to standardize this length and not make it a magic number
+        :param prop:
+        :param value:
+        :return:
+        ***REMOVED***
+        if not (isinstance(value, str)):
+            raise ValueError(" {} can only be a string".format(str(prop)))
+
+        if value.strip() > 12:
             raise ValueError(" {} cannot be Null".format(str(prop)))
 
         return value.strip()
@@ -29,15 +59,18 @@ class ClassSetters:
         :param value:
         :return:
         ***REMOVED***
-        if not(isinstance(value, str)):
+
+        if not (isinstance(value, str)):
             raise ValueError(" {} can only be a string".format(str(prop)))
 
         if not bool(value.strip()):
             raise ValueError(" {} cannot be Null".format(str(prop)))
 
-        # TODO - check email with regex here
+        utils_instance: Util = Util()
 
-        return value.strip().lower()
+        if utils_instance.regex_check_email(email=value.strip().lower()):
+            return value.strip().lower()
+        raise ValueError(" {} is not a valid email address".format(value))
 
     @staticmethod
     def set_transaction_types(prop, value: typing.Union[str, None]) -> str:
@@ -47,7 +80,7 @@ class ClassSetters:
         :param value:
         :return:
         ***REMOVED***
-        if not(isinstance(value, str)):
+        if not (isinstance(value, str)):
             raise ValueError(" {} can only be a string".format(str(prop)))
 
         transaction_types = ['withdrawal', 'deposit']
@@ -58,13 +91,13 @@ class ClassSetters:
 
     @staticmethod
     def set_datetime(prop, value: datetime) -> datetime:
-        if not(isinstance(value, datetime)):
+        if not (isinstance(value, datetime)):
             raise ValueError("{} invalid argument".format(str(prop)))
         return value
 
     @staticmethod
     def set_bool(prop, value: typing.Union[bool, None]) -> bool:
-        if not(isinstance(value, bool)):
+        if not (isinstance(value, bool)):
             raise ValueError("{} invalid argument".format(str(prop)))
         return value
 
@@ -179,19 +212,20 @@ class ClassSetters:
     @staticmethod
     def set_email(prop, value: typing.Union[str, None]) -> str:
         ***REMOVED***
-            TODO validate email here
+            If email is valid return email address else raise an error
         ***REMOVED***
-        import re
-        if not isinstance(value, str):
-            raise TypeError("invalid argument for email")
 
-        # TODO FIX EMAIL REGEX ON SETTERS ITS BROKEN
-        regex = '\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b'
-        if re.search(regex, value):
-            raise ValueError("invalid argument for email")
+        if not (isinstance(value, str)):
+            raise ValueError(" {} can only be a string".format(str(prop)))
 
-        return value.strip().lower()
-        # raise ValueError("{} invalid email address".format(str(prop)))
+        if not bool(value.strip()):
+            raise ValueError(" {} cannot be Null".format(str(prop)))
+
+        utils_instance: Util = Util()
+
+        if utils_instance.regex_check_email(email=value.strip().lower()):
+            return value.strip().lower()
+        raise ValueError(" {} is not a valid email address".format(value))
 
     # noinspection PyUnusedLocal
     @staticmethod

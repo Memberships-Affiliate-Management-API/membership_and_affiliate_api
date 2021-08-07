@@ -213,4 +213,4 @@ class EnvironNotSet(Exception):
 def if_bad_request_raise(request) -> None:
     content_type: str = request.headers.get('content-type')
     if not content_type.lower() == 'application/json':
-        raise BadRequest(description="this endpoint only handles parameters in json format")
+        raise BadRequest(description="parameters for this end-point may only be in json format")
