@@ -17,12 +17,22 @@ class Util:
         pattern = re.compile(regex_pattern)
         return True if re.match(pattern, email) else False
 
+    @staticmethod
+    def password_complexity(password: str) -> bool:
+        ***REMOVED***
+            password contains upper-case and lower-case characters, numbers and at least 8 characters in length
+        :param password:
+        :return:
+        ***REMOVED***
+        regex_pattern = r'[A-Za-z0-9@#$%^&+=]{8,}'
+        pattern = re.compile(regex_pattern)
+        return True if re.fullmatch(pattern, password) else False
+
 
 class ClassSetters(Util):
 
     def __init__(self):
         super(ClassSetters, self).__init__()
-
 
     @staticmethod
     def set_id(prop, value: typing.Union[str, None]) -> str:
@@ -246,12 +256,12 @@ class ClassSetters(Util):
         if not isinstance(value, str):
             raise TypeError("invalid argument for password")
 
-        if len(value) < 8:
-            raise ValueError("password length must be 8 characters or higher")
-
-        # TODO create a function to check password complexity and use it here
-
-        return generate_password_hash(value, method="pbkdf2:sha256", salt_length=8)
+        utils_instance: Util = Util()
+        if utils_instance.password_complexity(password=value.strip()):
+            return generate_password_hash(value, method="pbkdf2:sha256", salt_length=8)
+        message: str = '''password must be at least 8 characters in length, and contain lower-case and upper-case letters, 
+        numbers and at least a special character'''
+        raise ValueError(message)
 
     @staticmethod
     def set_value_amount(prop, value: typing.Union[int, None]) -> int:
