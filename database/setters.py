@@ -5,7 +5,7 @@ import typing
 from datetime import datetime, date
 from utils.utils import get_payment_methods
 import re
-
+import socket
 
 class Util:
     def __init__(self):
@@ -27,6 +27,26 @@ class Util:
         regex_pattern = r'[A-Za-z0-9@#$%^&+=]{8,}'
         pattern = re.compile(regex_pattern)
         return True if re.fullmatch(pattern, password) else False
+
+    @staticmethod
+    def regex_check_domain(domain: str) -> bool:
+        ***REMOVED***
+
+        :param domain:
+        :return:
+        ***REMOVED***
+        regex_pattern = r'^[a-z0-9]([a-z0-9-]+\.){1,}[a-z0-9]+\Z'
+        pattern = re.compile(regex_pattern)
+        return True if re.fullmatch(pattern, domain) else False
+
+    @staticmethod
+    def resolve_domain_name(domain: str) -> bool:
+        ***REMOVED***
+            checks if domain resolves to an IP address
+        :param domain:
+        :return:
+        ***REMOVED***
+        return True if socket.gethostbyname(domain) else False
 
 
 class ClassSetters(Util):
@@ -218,11 +238,14 @@ class ClassSetters(Util):
             raise ValueError("{} not a valid currency symbol".format(str(prop)))
         return value
 
-    # noinspection PyUnusedLocal
+    # noinspection PyUnusedLocal,DuplicatedCode
     @staticmethod
     def set_email(prop, value: typing.Union[str, None]) -> str:
         ***REMOVED***
+           used for the following
             If email is valid return email address else raise an error
+            :param value: email address
+            :param prop: email property
         ***REMOVED***
 
         if not (isinstance(value, str)):
@@ -282,16 +305,21 @@ class ClassSetters(Util):
     @staticmethod
     def set_domain(prop, value: typing.Union[str, None]) -> str:
         ***REMOVED***
+            check the domain name regex if it passes resolve
+            the domain name if it passes then return domain name
             :return:
         ***REMOVED***
-        # TODO- check domain with regex
-        import requests
+
         if not (isinstance(value, str)):
-            raise TypeError("domain name can only be a string")
-        response = requests.get(url=value)
-        if 400 < response.status_code >= 200:
-            return value
-        raise ValueError("invalid domain name")
+            raise TypeError("{} can only be a string".format(str(prop)))
+
+        utils_instance: Util = Util()
+        domain = value.strip()
+        regex_passes = utils_instance.regex_check_domain(domain=domain)
+        domain_valid = utils_instance.resolve_domain_name(domain=domain)
+        if regex_passes and domain_valid:
+            return domain
+        raise ValueError("Invalid domain name")
 
 
 setters: ClassSetters = ClassSetters()
