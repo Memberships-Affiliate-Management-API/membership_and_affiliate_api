@@ -3,9 +3,14 @@
 ***REMOVED***
 import typing
 from datetime import datetime, date
+
+from phonenumbers import NumberParseException
+
 from utils.utils import get_payment_methods
 import re
 import socket
+import phonenumbers
+
 
 class Util:
     def __init__(self):
@@ -47,6 +52,31 @@ class Util:
         :return:
         ***REMOVED***
         return True if socket.gethostbyname(domain) else False
+
+    @staticmethod
+    def format_cell_number(cell: str) -> str:
+        try:
+            cell_number = phonenumbers.parse(cell.strip(), None)
+            return str(phonenumbers.format_number(cell_number, phonenumbers.PhoneNumberFormat.INTERNATIONAL))
+        except NumberParseException as e:
+            raise ValueError("Please enter cell number in an international format")
+
+    @staticmethod
+    def regex_check_cell(cell: str) -> bool:
+        ***REMOVED***
+            regex check cell number
+        :param cell:
+        :return:
+        ***REMOVED***
+        try:
+            cell_object = phonenumbers.parse(cell, None)
+            possibly_cell_number: bool = phonenumbers.is_possible_number(cell_object)
+            valid_cell_number: bool = phonenumbers.is_valid_number(cell_object)
+            if possibly_cell_number and valid_cell_number:
+                return True
+            return False
+        except NumberParseException as e:
+            raise ValueError("Please enter cell number in an international format")
 
 
 class ClassSetters(Util):
@@ -263,11 +293,18 @@ class ClassSetters(Util):
     # noinspection PyUnusedLocal
     @staticmethod
     def set_cell(prop, value: typing.Union[str, None]) -> str:
+        ***REMOVED***
+            check if value is string , regex check the cell number
+            then format the number internationally and return the formatted value
+        :param prop:
+        :param value: cell number
+        :return: formatted cell number
+        ***REMOVED***
         if not isinstance(value, str):
             raise TypeError("invalid argument for cell")
-        # TODO CHECK CELL WITH REGEX
-
-        return value
+        util_instance: Util = Util()
+        if util_instance.regex_check_cell(cell=value.strip()):
+            return util_instance.format_cell_number(cell=value)
 
     # noinspection PyUnusedLocal
     @staticmethod
@@ -300,6 +337,11 @@ class ClassSetters(Util):
         ***REMOVED***
         if not (isinstance(value, int)):
             raise TypeError("{} can only be integer".format(str(prop)))
+
+        # NOTE: does not allow negative values
+        if value < 0:
+            raise ValueError("amount must be a positive integer representing money in cents")
+
         return value
 
     @staticmethod

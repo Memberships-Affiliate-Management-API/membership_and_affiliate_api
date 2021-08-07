@@ -28,3 +28,4 @@ paypalhttp~=1.0.0
 pytest~=6.2.4
 pytest_cov
 pytest_mock
+phonenumbers
