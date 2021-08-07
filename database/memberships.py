@@ -2,6 +2,8 @@ import typing
 from datetime import datetime, date
 from google.api_core.exceptions import RetryError, Aborted
 from google.cloud import ndb
+
+from config.exception_handlers import handle_store_errors
 from database.mixins import AmountMixin
 from database.setters import setters
 from utils.utils import get_days
@@ -145,47 +147,57 @@ class CouponsValidator:
         pass
 
     @staticmethod
+    @handle_store_errors
     def coupon_exist(organization_id: str, code: str) -> typing.Union[None, bool]:
+        ***REMOVED***
+            checks if a coupon is already created
+        :param organization_id:
+        :param code:
+        :return: True if a coupon is present
+        ***REMOVED***
 
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             return False
 
         if not isinstance(code, str) or not bool(code.strip()):
             return False
-        try:
-            coupons_instance: Coupons = Coupons.query(Coupons.organization_id == organization_id,
-                                                      Coupons.code == code).get()
+        coupons_instance: Coupons = Coupons.query(Coupons.organization_id == organization_id,
+                                                  Coupons.code == code).get()
 
-            if isinstance(coupons_instance, Coupons):
-                return True
-            return False
-        except ConnectionRefusedError:
-            return None
-        except RetryError:
-            return None
+        if isinstance(coupons_instance, Coupons):
+            return True
+        return False
 
     @staticmethod
+    @handle_store_errors
     async def coupon_exist_async(organization_id: str, code: str) -> typing.Union[None, bool]:
+        ***REMOVED***
+            an asynchronous version of coupon_exist
+        :param organization_id:
+        :param code:
+        :return:
+        ***REMOVED***
 
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             return False
 
         if not isinstance(code, str) or not bool(code.strip()):
             return False
-        try:
-            coupons_instance: Coupons = Coupons.query(
-                Coupons.organization_id == organization_id, Coupons.code == code).get_async().get_result()
 
-            if isinstance(coupons_instance, Coupons):
-                return True
-            return False
-        except ConnectionRefusedError:
-            return None
-        except RetryError:
-            return None
+        coupons_instance: Coupons = Coupons.query(
+            Coupons.organization_id == organization_id, Coupons.code == code).get_async().get_result()
+
+        if isinstance(coupons_instance, Coupons):
+            return True
+        return False
 
     @staticmethod
     def expiration_valid(expiration_time: int) -> bool:
+        ***REMOVED***
+            checks if expiration_time is valid
+        :param expiration_time:
+        :return:
+        ***REMOVED***
         if not (isinstance(expiration_time, int)):
             return False
         if expiration_time < get_days(days=1):
@@ -194,6 +206,11 @@ class CouponsValidator:
 
     @staticmethod
     async def expiration_valid_async(expiration_time: int) -> bool:
+        ***REMOVED***
+        checks if expiration time is valid
+        :param expiration_time:
+        :return:
+        ***REMOVED***
 
         if not (isinstance(expiration_time, int)):
             return False
@@ -203,19 +220,25 @@ class CouponsValidator:
 
     @staticmethod
     def discount_valid(discount_valid: int) -> bool:
+        ***REMOVED***
+            checks if discount percentage is valid
+        :param discount_valid:
+        :return: returns True or False
+        ***REMOVED***
         if not (isinstance(discount_valid, int)):
             return False
-        if 0 < discount_valid > 100:
-            return False
-        return True
+        return True if 0 < discount_valid > 100 else False
 
     @staticmethod
     async def discount_valid_async(discount_valid: int) -> bool:
+        ***REMOVED***
+            checks if discount percentage is valid
+        :param discount_valid:
+        :return: returns True or False
+        ***REMOVED***
         if not (isinstance(discount_valid, int)):
             return False
-        if 0 < discount_valid > 100:
-            return False
-        return True
+        return True if 0 < discount_valid > 100 else False
 
 
 # noinspection DuplicatedCode
@@ -223,7 +246,15 @@ class Memberships(ndb.Model):
     ***REMOVED***
         NOTE: Tracks down which user belongs to which plan from which organization_id  and if the user is paid up or unpaid
         for the month it also captures the payment_method selected for the plan
-        # NOTE: plan_id
+
+        `Class Properties`
+        :property organization_id: the id of the organization a client is a member of
+        :property uid: the user id of the client
+        :property plan_id: the plan of payment the client is subscribed to
+        :property status: status in terms of payments of this membership
+        :property date_created: the date the membership has been created
+        :property plan_start_date: the date the plan has been activated
+        :property payment_method: method of payment for the membership plan
     ***REMOVED***
     organization_id: str = ndb.StringProperty(validator=setters.set_id)
     uid: str = ndb.StringProperty(validator=setters.set_id)
@@ -266,10 +297,30 @@ class Memberships(ndb.Model):
 # noinspection DuplicatedCode
 class MembershipPlans(ndb.Model):
     ***REMOVED***
+        Payment plans for services and products belonging to an organization that created it,
+        clients of such organization will subscribe to such payment plans in order to get access to services or products
+        being offered by the organization.
+
         Contains a definition of all Membership Plans
         TODO - Memberships Plans must relate to PayPal Service Plans, when a plan gets created here
         it must also be created on PayPal, plan_id here must be the same as plan_id in paypal or
         another field to relate the two plans may be created...
+
+    `Class Properties`
+    :property : organization_id : the id of the organization which created the membership plan.
+    :property : service_id: the id of the service or product the payment plan belong to.
+    :property : plan_id: the id of the membership plan.
+    :property : plan_name: the name of the payment plan.
+    :property : description : description of the created payment plan.
+    :property : total_members: total members subscribed to the membership plan.
+    :property : schedule_term: the terms of payment for a plan , determined the period upon which
+                collections / payments can be made.
+    :property : schedule_day: the days scheduled for payment collection for a plan-- see scheduled_term for context.
+    :property : term_payment_amount: the amount which would be paid when the time of collection has been reached.
+    :property : registration_amount: the amount which would be paid upon activation of the payment plan for a member.
+    :property : is_active: when true people can activate a membership under this payment plan for a service / product.
+     :property : date_created: the date the payment plan has been created
+
     ***REMOVED***
     organization_id: str = ndb.StringProperty(validator=setters.set_id)
     # Service ID will relate the plan to a specific service_id on Services here and on PayPal Products

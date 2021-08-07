@@ -1,6 +1,5 @@
 from flask import Blueprint, jsonify
-from werkzeug.exceptions import BadRequest, Forbidden, NotFound, MethodNotAllowed, Unauthorized, HTTPException
-
+from werkzeug.exceptions import BadRequest, Forbidden, NotFound, MethodNotAllowed, Unauthorized
 from config import config_instance
 from config.exceptions import DataServiceError, InputError, RemoteDataError
 from config.exceptions import UnAuthenticatedError, RequestError
@@ -93,25 +92,7 @@ def handle_un_authorized_requests(e: Unauthorized) -> tuple:
     response is invalid if it doesn't provide at least one value for
     this header, although real clients typically don't care.
 
-    :param description: Override the default message used for the body
-        of the response.
-    :param www-authenticate: A single value, or list of values, for the
-        WWW-Authenticate header.
 
-    .. versionchanged:: 0.15.3
-        If the ``www_authenticate`` argument is not set, the
-        ``WWW-Authenticate`` header is not set.
-
-    .. versionchanged:: 0.15.3
-        The ``response`` argument was restored.
-
-    .. versionchanged:: 0.15.1
-        ``description`` was moved back as the first argument, restoring
-         its previous position.
-
-    .. versionchanged:: 0.15.0
-        ``www_authenticate`` was added as the first argument, ahead of
-        ``description``.
     :param e: error instance
     :return:
     ***REMOVED***

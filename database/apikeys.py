@@ -3,6 +3,9 @@ from database.setters import setters
 
 
 class APIKeys(ndb.Model):
+    ***REMOVED***
+        a class to keep track of all api keys created for clients / organization in order to access our API
+    ***REMOVED***
     organization_id: str = ndb.StringProperty(validator=setters.set_id)
     api_key: str = ndb.StringProperty(validator=setters.set_id)
     secret_token: str = ndb.StringProperty(validator=setters.set_id)
