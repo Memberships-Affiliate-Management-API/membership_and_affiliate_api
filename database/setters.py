@@ -58,7 +58,7 @@ class Util:
         try:
             cell_number = phonenumbers.parse(cell.strip(), None)
             return str(phonenumbers.format_number(cell_number, phonenumbers.PhoneNumberFormat.INTERNATIONAL))
-        except NumberParseException as e:
+        except NumberParseException:
             raise ValueError("Please enter cell number in an international format")
 
     @staticmethod
@@ -75,7 +75,7 @@ class Util:
             if possibly_cell_number and valid_cell_number:
                 return True
             return False
-        except NumberParseException as e:
+        except NumberParseException:
             raise ValueError("Please enter cell number in an international format")
 
 
@@ -106,11 +106,12 @@ class ClassSetters(Util):
         if not (isinstance(value, str)):
             raise ValueError(" {} can only be a string".format(str(prop)))
 
-        if value.strip() > 12:
+        if len(value.strip()) > 12:
             raise ValueError(" {} cannot be Null".format(str(prop)))
 
         return value.strip()
 
+    # noinspection DuplicatedCode
     @staticmethod
     def set_paypal(prop, value: typing.Union[str, None]) -> str:
         ***REMOVED***
