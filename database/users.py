@@ -94,10 +94,32 @@ class UserValidators:
 
 class UserModel(ndb.Model):
     ***REMOVED***
-        class UserModels allows to store user details to database and also organize the information
-        in an easy to use manner
+        Documentation
+            `Class UserModel`
+                1. class UserModels allows to store user details to database and also organize the information in an
+                easy to use manner
 
         **Class Properties**
+            1. organization_id : organization the user belongs to
+            2. uid: the user id to identify the presentation
+            3. names: names of user
+            4. surname: surname of user
+            5. cell: users cell number must be in international format
+            6. email: users email when email is verified email_verified will be True
+            7. email_verified: boolean value indicating if the users email has been verified
+            8. password: a string representing the password, the property will hash the password before storing it through the setter method
+            9. is_active: indicates if the user is active
+            10. time_registered: the time in timestamp (milliseconds) the user has been registered
+            11. is_admin: indicates if user is admin user - this relates to the organization the user is registered in
+            12. is_support: indicates if user is a support user
+            13. address: users address see address mixin in mixins
+
+        **Property Methods**
+            1. full_names: returns full names for the user which is names and surnames
+            2. user_auth: returns fields in dict relating to user authentication i.e organization_id, uid, email , password
+            3. account_locked: boolean ->  indicates if user account has been locked due to the account email not being verified
+            4. access_rights: dict -> values indicates what access type the user has relating to their organization
+            5. user_details: dict -> user general details in dict form
 
     ***REMOVED***
     organization_id: str = ndb.StringProperty(required=True, indexed=True, validator=setters.set_id)

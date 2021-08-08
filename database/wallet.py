@@ -71,6 +71,7 @@ class WalletModel(ndb.Model):
             1. When a wallet belongs to an organization is_org_wallet will be true, else False.
             2. organization_id indicates the user organization or the organization the wallet belongs to depending
             on the value of is_org_wallet
+            3. On a monthly basis reset monthly_withdrawal_allowance
 
         `Wallet Properties`
             1. organization_id : id of the organization for this wallet
@@ -129,7 +130,7 @@ class WalletModel(ndb.Model):
         return True if minimum_withdrawal <= self.available_funds.amount else False
 
     @property
-    def with_drawable_amount(self) -> AmountMixin:
+    def drawable_amount(self) -> AmountMixin:
         ***REMOVED***
             `Property`
             Amount that can be withdrawn right now
