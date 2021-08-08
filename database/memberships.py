@@ -371,17 +371,29 @@ class MembershipInvoices(ndb.Model):
         Invoices created for clients, based on payments made on service payment plans
 
         `**Class Properties**`
+
         :property : organization_id: string: the id of the organization who's services and products the payment is based
+
         :property :uid: string:  the ID of the user the invoice refers to
+
         :property : plan_id: string: the id of the payment plan the invoice is related to
+
         :property : invoice_id: string : unique id of this invoice
+
         :property : invoice_number: string: sequential number of this invoice
+
         :property : date_created: datetime : the date the invoice is created
+
         :property : invoice_sent: bool : indicates if the invoice has been sent to the user / client
+
         :property : invoice_paid: bool: indicates if invoice has been paid
+
         :property : date_paid: date : the date payment has been made
+
         :property : payment_amount: AmountMixin : the amount to be paid for this invoice
+
         :property : amount_paid: AmountMixin : the amount which has been paid for this invoice
+
     ***REMOVED***
     organization_id: str = ndb.StringProperty(validator=setters.set_id)
     uid: str = ndb.StringProperty(validator=setters.set_id)

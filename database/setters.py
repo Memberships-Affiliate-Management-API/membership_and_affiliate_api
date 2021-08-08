@@ -80,13 +80,27 @@ class Util:
 
 
 class ClassSetters(Util):
+    ***REMOVED***
+        Class Setters
+        Used to set and validate input to ndb properties.
+        If input data is invalid the setters will raise ValueError or
+        TypeError depending on the error at hand.
+
+    ***REMOVED***
 
     def __init__(self):
         super(ClassSetters, self).__init__()
 
     @staticmethod
     def set_id(prop, value: typing.Union[str, None]) -> str:
-
+        ***REMOVED***
+            test if id is string and not a nullish string if thats the
+            case returns the id as string to be set into the database
+            class Property
+        :param prop: property to set
+        :param value: value as id to set
+        :return: returns id as string
+        ***REMOVED***
         if not (isinstance(value, str)):
             raise ValueError(" {} can only be a string".format(str(prop)))
 
@@ -115,17 +129,18 @@ class ClassSetters(Util):
     @staticmethod
     def set_paypal(prop, value: typing.Union[str, None]) -> str:
         ***REMOVED***
-            checks if an paypal is email
-        :param prop:
+            validate the paypal email if its really an email return the email
+            to set on the paypal property
+        :param prop: property to set
         :param value:
         :return:
         ***REMOVED***
 
         if not (isinstance(value, str)):
-            raise ValueError(" {} can only be a string".format(str(prop)))
+            raise ValueError(" {} can only be a string".format(str(prop.__name__)))
 
         if not bool(value.strip()):
-            raise ValueError(" {} cannot be Null".format(str(prop)))
+            raise ValueError(" {} cannot be Null".format(str(prop.__name__)))
 
         utils_instance: Util = Util()
 
@@ -142,24 +157,24 @@ class ClassSetters(Util):
         :return:
         ***REMOVED***
         if not (isinstance(value, str)):
-            raise ValueError(" {} can only be a string".format(str(prop)))
+            raise ValueError(" {} can only be a string".format(str(prop.__name__)))
 
         transaction_types = ['withdrawal', 'deposit']
         if value.strip().lower() not in transaction_types:
-            raise ValueError(" {} invalid transaction type".format(str(prop)))
+            raise ValueError(" {} invalid transaction type".format(str(prop.__name__)))
 
         return value.strip().lower()
 
     @staticmethod
     def set_datetime(prop, value: datetime) -> datetime:
         if not (isinstance(value, datetime)):
-            raise ValueError("{} invalid argument".format(str(prop)))
+            raise ValueError("{} invalid argument".format(str(prop.__name__)))
         return value
 
     @staticmethod
     def set_bool(prop, value: typing.Union[bool, None]) -> bool:
         if not (isinstance(value, bool)):
-            raise ValueError("{} invalid argument".format(str(prop)))
+            raise ValueError("{} invalid argument".format(str(prop.__name__)))
         return value
 
     @staticmethod
@@ -172,13 +187,13 @@ class ClassSetters(Util):
         ***REMOVED***
 
         if not (isinstance(value, str)):
-            raise TypeError("{} invalid status".format(str(prop)))
+            raise TypeError("{} invalid status".format(str(prop.__name__)))
         temp = value.strip().lower()
         if not bool(temp):
-            raise ValueError("{} cannot be Null".format(str(prop)))
+            raise ValueError("{} cannot be Null".format(str(prop.__name__)))
 
         if temp not in ['paid', 'unpaid']:
-            raise TypeError("{} invalid status".format(str(prop)))
+            raise TypeError("{} invalid status".format(str(prop.__name__)))
 
         return temp
 
@@ -191,10 +206,10 @@ class ClassSetters(Util):
         :return:
         ***REMOVED***
         if not (isinstance(value, str)):
-            raise TypeError("{} can only be a string ".format(str(prop)))
+            raise TypeError("{} can only be a string ".format(str(prop.__name__)))
 
         if not bool(value.strip()):
-            raise ValueError("{} cannot be Null".format(str(prop)))
+            raise ValueError("{} cannot be Null".format(str(prop.__name__)))
 
         return value.strip().lower()
 
@@ -208,10 +223,10 @@ class ClassSetters(Util):
         ***REMOVED***
 
         if not (isinstance(value, str)):
-            raise TypeError("{} can only be a string ".format(str(prop)))
+            raise TypeError("{} can only be a string ".format(str(prop.__name__)))
 
         if not bool(value.strip()):
-            raise ValueError("{} cannot be Null".format(str(prop)))
+            raise ValueError("{} cannot be Null".format(str(prop.__name__)))
         temp = value.strip().lower()
         # TODO - Rewrite this or create a translator for paypal plans payment schedule
         if temp in ["monthly", "quarterly", "annually"]:
@@ -221,43 +236,43 @@ class ClassSetters(Util):
     @staticmethod
     def set_schedule_day(prop, value: typing.Union[int, None]) -> int:
         if not (isinstance(value, int)):
-            raise TypeError('{} can only be an integer'.format(str(prop)))
+            raise TypeError('{} can only be an integer'.format(str(prop.__name__)))
         if value not in [1, 2, 3, 4, 5]:
-            raise ValueError('{} can only be between 1 -> 5 of every month'.format(str(prop)))
+            raise ValueError('{} can only be between 1 -> 5 of every month'.format(str(prop.__name__)))
         return value
 
     @staticmethod
     def set_number(prop, value: typing.Union[int, None]) -> int:
         if not (isinstance(value, int)):
-            raise TypeError('{} can only be an integer'.format(str(prop)))
+            raise TypeError('{} can only be an integer'.format(str(prop.__name__)))
 
         if value < 0:
-            raise TypeError("{} no negative numbers".format(str(prop)))
+            raise TypeError("{} no negative numbers".format(str(prop.__name__)))
 
         return value
 
     @staticmethod
     def set_date(prop, value: date) -> date:
         if not (isinstance(value, date)):
-            raise TypeError("{}, Invalid Type".format(str(prop)))
+            raise TypeError("{}, Invalid Type".format(str(prop.__name__)))
         return value
 
     @staticmethod
     def set_payment_method(prop, value: typing.Union[str, None]) -> str:
         if not (isinstance(value, str)):
-            raise TypeError("{}, Invalid Type".format(str(prop)))
+            raise TypeError("{}, Invalid Type".format(str(prop.__name__)))
 
         if value.lower().strip() not in get_payment_methods():
-            raise ValueError("{}, Invalid Payment Method".format(str(prop)))
+            raise ValueError("{}, Invalid Payment Method".format(str(prop.__name__)))
 
         return value.lower().strip()
 
     @staticmethod
     def set_percent(prop, value: typing.Union[int, None]) -> int:
         if not isinstance(value, int):
-            raise TypeError("{}, Invalid Type".format(str(prop)))
+            raise TypeError("{}, Invalid Type".format(str(prop.__name__)))
         if 0 < value > 100:
-            raise ValueError("{}, Invalid Percentage".format(str(prop)))
+            raise ValueError("{}, Invalid Percentage".format(str(prop.__name__)))
         return value
 
     @staticmethod
@@ -266,7 +281,7 @@ class ClassSetters(Util):
         if not (isinstance(value, str)):
             raise TypeError("{} can only be string".format(prop))
         if value not in currency_symbols():
-            raise ValueError("{} not a valid currency symbol".format(str(prop)))
+            raise ValueError("{} not a valid currency symbol".format(str(prop.__name__)))
         return value
 
     # noinspection PyUnusedLocal,DuplicatedCode
@@ -280,10 +295,10 @@ class ClassSetters(Util):
         ***REMOVED***
 
         if not (isinstance(value, str)):
-            raise ValueError(" {} can only be a string".format(str(prop)))
+            raise ValueError(" {} can only be a string".format(str(prop.__name__)))
 
         if not bool(value.strip()):
-            raise ValueError(" {} cannot be Null".format(str(prop)))
+            raise ValueError(" {} cannot be Null".format(str(prop.__name__)))
 
         utils_instance: Util = Util()
 
@@ -337,7 +352,7 @@ class ClassSetters(Util):
         :return: integer representing money in cents of whatever currency is being represented
         ***REMOVED***
         if not (isinstance(value, int)):
-            raise TypeError("{} can only be integer".format(str(prop)))
+            raise TypeError("{} can only be integer".format(str(prop.__name__)))
 
         # NOTE: does not allow negative values
         if value < 0:
@@ -354,7 +369,7 @@ class ClassSetters(Util):
         ***REMOVED***
 
         if not (isinstance(value, str)):
-            raise TypeError("{} can only be a string".format(str(prop)))
+            raise TypeError("{} can only be a string".format(str(prop.__name__)))
 
         utils_instance: Util = Util()
         domain = value.strip()
