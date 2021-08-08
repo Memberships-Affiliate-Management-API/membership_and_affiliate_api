@@ -108,12 +108,12 @@ class ClassSetters(Util):
         ***REMOVED***
         class_name: str = prop.__class__.__name__
         if not (isinstance(value, str)):
-            message: str = '''id should be an instance of : {} , and should represent an instance id'''.format(
+            message: str = '''isinstance ID, should be an instance of : {} , and should represent an instance id'''.format(
                 class_name)
             raise ValueError(message)
 
         if not bool(value.strip()):
-            raise ValueError("id should be an instance of : {} , and  cannot be Null".format(str(class_name)))
+            raise ValueError("isinstance ID, should be an instance of : {} , and  cannot be Null".format(str(class_name)))
 
         return value.strip()
 
@@ -127,10 +127,10 @@ class ClassSetters(Util):
         ***REMOVED***
         class_name: str = prop.__class__.__name__
         if not (isinstance(value, str)):
-            raise ValueError("Coupon Code is an instance of: {} , and can only be a string".format(str(class_name)))
+            raise ValueError("Coupon Code, is an instance of: {} , and can only be a string".format(str(class_name)))
 
         if len(value.strip()) > 12:
-            message: str = ***REMOVED***Coupon Code is an instance of: {} , and cannot be more 
+            message: str = ***REMOVED***Coupon Code, is an instance of: {} , and cannot be more 
             than 12 characters long***REMOVED***.format(str(class_name))
             raise ValueError(message)
 
@@ -148,12 +148,12 @@ class ClassSetters(Util):
         ***REMOVED***
         class_name = prop.__class__.__name__
         if not (isinstance(value, str)):
-            message: str = ***REMOVED***an instance of: {} , and can only be a string representing 
+            message: str = ***REMOVED***paypal address, an instance of: {} , and can only be a string representing 
             a paypal email address***REMOVED***.format(class_name)
             raise ValueError(message)
 
         if not bool(value.strip()):
-            raise ValueError("paypal email is an instance of : {} , and cannot be Null".format(class_name))
+            raise ValueError("paypal address, is an instance of : {} , and cannot be Null".format(class_name))
 
         utils_instance: Util = Util()
 
@@ -171,7 +171,7 @@ class ClassSetters(Util):
         ***REMOVED***
         class_name: str = prop.__class__.__name__
         if not (isinstance(value, str)):
-            raise ValueError(" transaction_type is an instance of : {} , and can only be a string".format(class_name))
+            raise ValueError("transaction_type, is an instance of : {} , and can only be a string".format(class_name))
 
         transaction_types = ['withdrawal', 'deposit']
         if value.strip().lower() not in transaction_types:
@@ -190,7 +190,7 @@ class ClassSetters(Util):
         ***REMOVED***
         class_name: str = prop.__class__.__name__
         if not (isinstance(value, datetime)):
-            raise TypeError("datetime is an instance of : {} , must represent a valid python date".format(class_name))
+            raise TypeError("datetime, is an instance of : {} , must represent a valid python date".format(class_name))
         return value
 
     @staticmethod
@@ -203,7 +203,7 @@ class ClassSetters(Util):
         ***REMOVED***
         class_name: str = prop.__class__.__name__
         if not (isinstance(value, bool)):
-            raise TypeError("boolean is an instance of : {} , and can only be Either True or False".format(class_name))
+            raise TypeError("boolean, is an instance of : {} , and can only be Either True or False".format(class_name))
         return value
 
     @staticmethod
@@ -216,13 +216,13 @@ class ClassSetters(Util):
         ***REMOVED***
         class_name: str = prop.__class__.__name__
         if not (isinstance(value, str)):
-            message: str = ***REMOVED***status is an instance of : {} , and can only be a string 
+            message: str = ***REMOVED***status, is an instance of : {} , and can only be a string 
             representing payment status***REMOVED***.format(class_name)
             raise TypeError(message)
 
         temp = value.strip().lower()
         if not bool(temp):
-            raise ValueError("status is an instance of : {} , and cannot be Null".format(class_name))
+            raise ValueError("status, is an instance of : {} , and cannot be Null".format(class_name))
 
         if temp not in ['paid', 'unpaid']:
             message: str = ***REMOVED*** status should either paid or unpaid this {} is not a valid status***REMOVED***.format(value)
@@ -258,17 +258,17 @@ class ClassSetters(Util):
         ***REMOVED***
         class_name: str = prop.__class__.__name__
         if not (isinstance(value, str)):
-            raise TypeError("scheduled term is an instance of : {} ,  and can only be a string ".format(class_name))
+            raise TypeError("scheduled term, is an instance of : {} ,  and can only be a string ".format(class_name))
 
         if not bool(value.strip()):
-            raise ValueError("schedule term is an instance of : {}, and cannot be Null".format(class_name))
+            raise ValueError("schedule term, is an instance of : {}, and cannot be Null".format(class_name))
 
         temp = value.strip().lower()
         # TODO - Rewrite this or create a translator for paypal plans payment schedule
         schedule_terms: typing.List[str] = get_plan_scheduled_terms()
         if temp in schedule_terms:
             return temp
-        raise ValueError("scheduled term can only be one of the following values : {} ".format(schedule_terms))
+        raise ValueError("scheduled term, can only be one of the following values : {} ".format(schedule_terms))
 
     @staticmethod
     def set_schedule_day(prop: ndb.IntegerProperty, value: typing.Union[int, None]) -> int:
@@ -282,36 +282,65 @@ class ClassSetters(Util):
         class_name: str = prop.__class__.__name__
 
         if not (isinstance(value, int)):
-            raise TypeError('scheduled day is an instance of : {}, and can only be an integer'.format(class_name))
+            raise TypeError('scheduled day, is an instance of : {}, and can only be an integer'.format(class_name))
         if value not in get_scheduled_term_days():
-            message: str = '''scheduled day is an instance of : {}, and can 
+            message: str = '''scheduled day, is an instance of : {}, and can 
             only be a value between 1 -> 5 of every month'''.format(class_name)
             raise ValueError(message)
         return value
 
     @staticmethod
     def set_number(prop: ndb.IntegerProperty, value: typing.Union[int, None]) -> int:
+        ***REMOVED***
+            set an integer number into a database property
+            will check if input is really an integer and then returns the number if not
+            raises TypeError if value is out of range will raise a ValueError
+        :param prop: property to set
+        :param value: value being set must be integer
+        :return: valid integer
+        ***REMOVED***
+        class_name: str = prop.__class__.__name__
         if not (isinstance(value, int)):
-            raise TypeError('{} can only be an integer'.format(str(prop.__class__.__name__)))
+            raise TypeError('Number, is a instance of : {}, and can only be an integer'.format(class_name))
 
         if value < 0:
-            raise TypeError("{} no negative numbers".format(str(prop.__class__.__name__)))
+            raise TypeError("Number, is an instance of :{} and cannot accept negative numbers".format(class_name))
 
         return value
 
     @staticmethod
     def set_date(prop: ndb.DateProperty, value: date) -> date:
+        ***REMOVED***
+            checks to see if date is valid if yes returns the date
+            throws TypeError if an invalid date has been supplied
+        :param prop: property representing the date
+        :param value: value to set to property
+        :return: returns valid date only
+        ***REMOVED***
+        class_name: str = prop.__class__.__name__
         if not (isinstance(value, date)):
-            raise TypeError("{}, Invalid Type".format(str(prop.__class__.__name__)))
+            raise TypeError("date is an instance of : {}, and can only be an instance of date".format(class_name))
         return value
 
     @staticmethod
     def set_payment_method(prop: ndb.StringProperty, value: typing.Union[str, None]) -> str:
+        ***REMOVED***
+            checks to see if payment method is valid if yes then return payment methods
+            raises TypeError in-case of invalid Type and ValueError if value is not a payment method
+        :param prop: property we are setting
+        :param value: the value to set
+        :return: returns a payment method as string
+        ***REMOVED***
+        class_name: str = prop.__class__.__name__
         if not (isinstance(value, str)):
-            raise TypeError("{}, Invalid Type".format(str(prop.__class__.__name__)))
+            message: str = ***REMOVED***payment method, is an instance of : {}, and can only be a string representing a 
+            valid payment method***REMOVED***.format(class_name)
+            raise TypeError(message)
 
         if value.lower().strip() not in get_payment_methods():
-            raise ValueError("{}, Invalid Payment Method".format(str(prop.__class__.__name__)))
+            message: str = ***REMOVED***this value : {}, is not a valid payment method, 
+            supported payment methods are : {}***REMOVED***.format(value, get_payment_methods())
+            raise ValueError(message)
 
         return value.lower().strip()
 

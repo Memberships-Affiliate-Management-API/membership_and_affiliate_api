@@ -3,7 +3,7 @@ from google.cloud import ndb
 from config.exception_handlers import handle_store_errors
 from config.exceptions import InputError, error_codes
 from database.mixins import AddressMixin
-from utils.utils import timestamp
+from utils.utils import timestamp, get_days
 from database.setters import setters
 
 
@@ -25,7 +25,7 @@ class UserValidators:
     @staticmethod
     @handle_store_errors
     async def is_user_valid_async(organization_id: str, uid: str) -> typing.Union[None, bool]:
-        if not(isinstance(uid, str)) or not bool(uid.strip()):
+        if not (isinstance(uid, str)) or not bool(uid.strip()):
             message: str = "uid cannot be Null"
             raise InputError(status=error_codes.input_error_code, description=message)
 
@@ -84,11 +84,14 @@ class UserValidators:
 
 class UserModel(ndb.Model):
     ***REMOVED***
-        UserModel
-        TODO if email/account is not verified in 7 days lock the account - by turning active to False
+        class UserModels allows to store user details to database and also organize the information
+        in an easy to use manner
+
+        **Class Properties**
+        
     ***REMOVED***
     organization_id: str = ndb.StringProperty(required=True, indexed=True, validator=setters.set_id)
-    uid: str = ndb.StringProperty(required=True, indexed=True,  validator=setters.set_id)
+    uid: str = ndb.StringProperty(required=True, indexed=True, validator=setters.set_id)
     names: str = ndb.StringProperty(validator=setters.set_string)
     surname: str = ndb.StringProperty(validator=setters.set_string)
     cell: str = ndb.StringProperty(indexed=True, validator=setters.set_cell)
@@ -159,7 +162,17 @@ class UserModel(ndb.Model):
             'organization_id': self.organization_id,
             'uid': self.uid,
             'email': self.email,
-            'password': self.password }
+            'password': self.password}
+
+    @property
+    def account_locked(self) -> bool:
+        ***REMOVED***
+            checks to see if email is verified if not checks to see if seven days haven't passed since registered
+        :return: boolean indicating if the account is locked
+        ***REMOVED***
+        if self.email_verified:
+            return True if (self.time_registered > (timestamp() - get_days(days=7))) else False
+        return False
 
     @property
     def access_rights(self) -> dict:
@@ -172,7 +185,9 @@ class UserModel(ndb.Model):
             'uid': self.uid,
             'is_admin': self.is_admin,
             'is_support': self.is_support,
-            'is_active': self.is_active}
+            'is_active': self.is_active,
+            'email_verified': self.email_verified,
+            'account_locked': self.account_locked}
 
     @property
     def user_details(self) -> dict:
@@ -187,3 +202,4 @@ class UserModel(ndb.Model):
             'surname': self.surname,
             'cell': self.cell,
             'email': self.email}
+
