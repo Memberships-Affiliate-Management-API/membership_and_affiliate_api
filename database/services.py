@@ -15,6 +15,8 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
 import typing
+from datetime import datetime
+
 from google.cloud import ndb
 from config.exceptions import DataServiceError
 from database.setters import setters
@@ -89,6 +91,8 @@ class Services(ndb.Model):
     # NOTE: home_url is the location online of the page containing
     # the service information page
     home_url: str = ndb.StringProperty(validator=setters.set_domain)
+    date_created: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=setters.set_datetime)
+    date_updated: datetime = ndb.DateTimeProperty(auto_now=, validator=setters.set_datetime)
 
     def __eq__(self, other):
         if self.__class__ != other.__class__:
@@ -112,3 +116,19 @@ class Services(ndb.Model):
 
     def __len__(self) -> int:
         return int(self.__bool__())
+
+    @property
+    def service_detail(self) -> dict:
+        ***REMOVED***
+            `Service Details Property`
+                returns basic details for this service i.e organization_id, service_id, name, description, image_url, home_url
+
+        :return: dict -> containing  organization_id, service_id, name, description, image_url, home_url
+        ***REMOVED***
+        return {
+            'organization_id': self.organization_id,
+            'service_id': self.service_id,
+            'name': self.name,
+            'description': self.description,
+            'image_url': self.image_url,
+            'home_url': self.home_url}
