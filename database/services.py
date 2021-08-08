@@ -25,12 +25,24 @@ from utils.utils import return_ttl, can_cache
 
 
 class ServiceValidator(OrgValidators, AuthUserValidators, UserValidators):
+    ***REMOVED***
+        **Service Class Validator Methods**
+
+    ***REMOVED***
     def __init__(self):
         super(ServiceValidator, self).__init__()
 
     @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def can_create_service(self, uid: typing.Union[str, None],
                            organization_id: typing.Union[str, None]) -> typing.Union[None, bool]:
+        ***REMOVED***
+            checks if user can create a new service if this is the case then returns True
+            will raise a DataServiceError if it fails to determine the users ability to create the service
+
+        :param uid:
+        :param organization_id:
+        :return: boolean indicating if user can create a service
+        ***REMOVED***
 
         # NOTE: Organization has to be valid itself
         org_exist: typing.Union[None, bool] = self.is_organization_exist(organization_id=organization_id)
@@ -48,9 +60,22 @@ class ServiceValidator(OrgValidators, AuthUserValidators, UserValidators):
 
 class Services(ndb.Model):
     ***REMOVED***
-        The Services Module, will capture the service data
-        the information here will be similar to the information
-        on paypal services or products for plans.
+        **Service Class Documentations**
+            **The Services Module**, will capture the service data
+            the information here will be similar to the information
+            on paypal services or products for payment plans.
+
+            **Products / Services** must be created and stored on paypal before Memberships Payment Plans can be defined
+
+        `Class Properties`
+            1. organization_id : the organization which owns the id
+            2. created_by_uid: teh person who created the product or service
+            3. service_id: the id of the created service - this id comes from paypal
+            4. name: name of the service or product
+            5. description: description of the product or service
+            6. category: category of the product or service
+            7. image_url:  image related to product or service - this image could be stored in firebase - or on another endpoint locally on heroku
+            8. home_url:  the home url of the page containing this service or product on the client website or blog
     ***REMOVED***
     organization_id: str = ndb.StringProperty(validator=setters.set_id)
     # NOTE: service_id is the same as product_id in paypal products

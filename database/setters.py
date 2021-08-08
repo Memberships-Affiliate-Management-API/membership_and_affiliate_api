@@ -508,9 +508,12 @@ class ClassSetters(Events, Util):
     @staticmethod
     def set_domain(prop: ndb.StringProperty, value: typing.Union[str, None]) -> str:
         ***REMOVED***
-            check the domain name regex if it passes resolve
-            the domain name if it passes then return domain name
-            :return:
+            Docs:
+                check the domain name regex if it passes resolve
+                the domain name if it passes then return domain name
+            :param: prop: ndb.StringProperty where the domain name will be stored
+            :param: value: value in string format representing a domain name
+            :return: str representing verified domain name
         ***REMOVED***
         class_name: str = setters.return_class_name(prop=prop)
         if not (isinstance(value, str)):
