@@ -1,3 +1,13 @@
+***REMOVED***
+    **Users Database Module**
+    *Class Definitions for Accessing And Management of Users and Clients Data**
+***REMOVED***
+__author__ = "mobius-crypt"
+__email__ = "mobiusndou@gmail.com"
+__twitter__ = "@blueitserver"
+__github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
+__github_profile__ = "https://github.com/freelancing-solutions/"
+
 import typing
 from google.cloud import ndb
 from config.exception_handlers import handle_store_errors

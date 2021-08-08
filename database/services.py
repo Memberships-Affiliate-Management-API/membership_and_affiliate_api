@@ -1,4 +1,5 @@
 ***REMOVED***
+    **Services Module**
     Services Module works together with memberships module
     for example for a music streaming service a plan will be created
     in MembershipsPlans in the Memberships Module and also
@@ -7,6 +8,12 @@
     so that the subscription amount can be taken off the user paypal_address
 
 ***REMOVED***
+__author__ = "mobius-crypt"
+__email__ = "mobiusndou@gmail.com"
+__twitter__ = "@blueitserver"
+__github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
+__github_profile__ = "https://github.com/freelancing-solutions/"
+
 import typing
 from google.cloud import ndb
 from config.exceptions import DataServiceError

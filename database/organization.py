@@ -1,10 +1,18 @@
 ***REMOVED***
+    **Organization Module**
+    *NDB. Class Definitions for Managing Organizations Data*
     ndb. Database Class to handle Organizational Data related
     to Memberships & Affiliates Management API , the Models will saves
     the data to GCP DataStore.
 
     Also Contain all validator classes related to Organizational Classes
 ***REMOVED***
+__author__ = "mobius-crypt"
+__email__ = "mobiusndou@gmail.com"
+__twitter__ = "@blueitserver"
+__github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
+__github_profile__ = "https://github.com/freelancing-solutions/"
+
 import typing
 from datetime import datetime
 from google.cloud import ndb
