@@ -1,7 +1,16 @@
+***REMOVED***
+    **Module Wallet View Controller**
+    **Class Definitions for handling Wallet data input and validations **
+***REMOVED***
+__author__ = "mobius-crypt"
+__email__ = "mobiusndou@gmail.com"
+__twitter__ = "@blueitserver"
+__github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
+__github_profile__ = "https://github.com/freelancing-solutions/"
+
 import typing
 from flask import jsonify, current_app
 from _sdk._email import Mailgun
-from config.currencies import currency_symbols
 from database.mixins import AmountMixin
 from database.wallet import WalletModel, WalletValidator
 from utils import return_ttl, can_cache
@@ -13,7 +22,7 @@ from main import app_cache
 
 class WalletEmails(Mailgun):
     ***REMOVED***
-        class used to send Wallet related Emails and Notifications
+        Class used to send Wallet related Emails and Notifications
     ***REMOVED***
     def __init__(self):
         super(WalletEmails, self).__init__()

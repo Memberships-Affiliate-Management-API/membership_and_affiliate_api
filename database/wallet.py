@@ -1,6 +1,6 @@
 ***REMOVED***
     **Wallet Module**
-    *Wallet Classes For Managemnet of Clients / Organizations and Users Wallets"
+    *Wallet Classes For Management of Clients / Organizations and Users Wallets"
 ***REMOVED***
 __author__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"

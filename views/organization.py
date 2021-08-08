@@ -1,7 +1,13 @@
 ***REMOVED***
-organization view
+** Module - Organization View Controller **
     enables users to add , update Organization Accounts
 ***REMOVED***
+__author__ = "mobius-crypt"
+__email__ = "mobiusndou@gmail.com"
+__twitter__ = "@blueitserver"
+__github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
+__github_profile__ = "https://github.com/freelancing-solutions/"
+
 import typing
 from flask import current_app, jsonify
 from _sdk._email import Mailgun

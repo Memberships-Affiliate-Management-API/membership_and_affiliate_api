@@ -1,5 +1,7 @@
 ***REMOVED***
-    Services View , will handle service Creation
+
+    ** Services View  Controller** ,
+    will handle service Creation
     on the database and also on paypal, Services are necessary in order for organization
     admins to create membership payment plans,
 
@@ -10,6 +12,12 @@
      users will be able to access any such website admin section upon registering
      and becoming a member of such a service.
 ***REMOVED***
+__author__ = "mobius-crypt"
+__email__ = "mobiusndou@gmail.com"
+__twitter__ = "@blueitserver"
+__github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
+__github_profile__ = "https://github.com/freelancing-solutions/"
+
 from flask import jsonify, current_app
 # noinspection PyProtectedMember
 from _sdk._paypal.paypal import PayPalRecurring
