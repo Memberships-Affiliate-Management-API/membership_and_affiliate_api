@@ -1,3 +1,15 @@
+***REMOVED***
+    **Affiliates NDB database Class **
+    used to store and manage access and storage of affiliate data record
+    this module also handles Class Errors and Validations while accessing and storing data into the
+    class instance for database storage
+***REMOVED***
+__author__ = "mobius-crypt"
+__email__ = "mobiusndou@gmail.com"
+__twitter__ = "@blueitserver"
+__github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
+__github_profile__ = "https://github.com/freelancing-solutions/"
+
 import typing
 from google.cloud import ndb
 from datetime import date, datetime

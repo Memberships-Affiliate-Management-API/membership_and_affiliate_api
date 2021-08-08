@@ -1,13 +1,21 @@
 ***REMOVED***
-    this module describes a list of stocks using Symbols which may be accessed
+    **Constants Representing World Wide Currency Symbols and Names**
+
+    this module describes a list of Currency Symbols and Their Names
 ***REMOVED***
+__author__ = "mobius-crypt"
+__email__ = "mobiusndou@gmail.com"
+__twitter__ = "@blueitserver"
+__github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
+__github_profile__ = "https://github.com/freelancing-solutions/"
+
 import functools
 import typing
 # _code,_unicode-decimal,_unicode-hex,__text
 from main import app_cache
 from utils.utils import return_ttl, can_cache
 
-list_of_currencies: typing.List[list] = [
+list_of_currencies: typing.List[typing.List[str]] = [
     ["ALL", 'Albania Lek'],
     ["AFN", "Afghanistan Afghani"],
     ["ARS", "Argentina Peso"],

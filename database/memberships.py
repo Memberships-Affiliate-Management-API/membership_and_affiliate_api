@@ -1,8 +1,20 @@
+***REMOVED***
+    **Memberships Module**
+    *Class Definitions for: Memberships, Memberships Plans and Coupons*
+    This classes are related to creating and management of organiational memberships and their membership plans
+    for organizations products or services in order to collect payments from clients
+
+***REMOVED***
+__author__ = "mobius-crypt"
+__email__ = "mobiusndou@gmail.com"
+__twitter__ = "@blueitserver"
+__github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
+__github_profile__ = "https://github.com/freelancing-solutions/"
+
 import typing
 from datetime import datetime, date
 from google.api_core.exceptions import RetryError, Aborted
 from google.cloud import ndb
-
 from config.exception_handlers import handle_store_errors
 from database.mixins import AmountMixin
 from database.setters import setters
