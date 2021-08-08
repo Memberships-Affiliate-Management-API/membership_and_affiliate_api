@@ -44,12 +44,26 @@ class OrgValidators:
 
 class Organization(ndb.Model):
     ***REMOVED***
-        class contains information on organizations registered to use our API, this class enables users to
-        be registered for under a specific organization as Users, Affiliates, Recruits, and or Memberships on
-        Specific Plans, once a user creates an account the first step is to create an organization, and then start
-        using the API.
+        **Organization Documentation**
+            class contains information on organizations registered to use our API, this class enables users to
+            be registered for under a specific organization as Users, Affiliates, Recruits, and or Memberships on
+            Specific Plans, once a user creates an account the first step is to create an organization, and then start
+            using the API.
 
-        NOTE: Once an Organization is created its wallet must also be created and its key be stored here.
+        **NOTE:**
+            Once an Organization is created its wallet must also be created and its key be stored here.
+        `Class Properties`
+            1. owner_uid: str -> organization owner uid usually this user is also admin
+            2. organization_id: str -> unique id to identify this organization
+            3. wallet_id: str -> unique id to identify the wallet belonging to this organization
+            4. organization_name: str -> the name of this organization
+            5. description: str -> detailed description for the organization
+            6. total_affiliates: int -> a number equalling the total number of affiliates recruited by this organization
+            7. total_paid: AmountMixin -> total amount of money in cents paid out from this organization to clients and etc
+            8. total_members: int -> total number of users or clients belonging to this organization
+            9. projected_membership_payments : AmountMixin -> total expected earnings for this month
+            10. total_membership_payments: AmountMixin -> total payments to the organization which came from memberships
+
     ***REMOVED***
     owner_uid: str = ndb.StringProperty(validator=setters.set_id)
     organization_id: str = ndb.StringProperty(validator=setters.set_id)
@@ -61,6 +75,8 @@ class Organization(ndb.Model):
     total_members: int = ndb.IntegerProperty(validator=setters.set_number)
     projected_membership_payments: AmountMixin = ndb.StructuredProperty(AmountMixin)
     total_membership_payments: AmountMixin = ndb.StructuredProperty(AmountMixin)
+    date_created: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=setters.set_datetime)
+    date_updated: datetime = ndb.DateTimeProperty(auto_now=True, validator=setters.set_datetime)
 
     def __str__(self) -> str:
         return "<Organization Name: {} Affiliates: {} Members: {}".format(self.organization_name, self.total_affiliates,
@@ -85,7 +101,8 @@ class Organization(ndb.Model):
 
 class AuthUserValidators:
     ***REMOVED***
-        Used to validate users and input data for those accessing the Users View / API
+        `Validator Class Organization Authenticated Users`
+            Used to validate users and input data for those accessing the Users View / API
     ***REMOVED***
     def __init__(self) -> None:
         pass
@@ -127,14 +144,25 @@ class AuthUserValidators:
 
 class AuthorizedUsers(ndb.Model):
     ***REMOVED***
-        details of the users authorized to update organization details and other data structures for this organization
-        the roles are admin, super user, and support.
-        if active is set to false the user role is suspended
+        `AuthorizedUsers Class`
+            details of the users authorized to update organization details and other data structures for this organization
+            the roles are admin, super user, and support.
+            if active is set to false the user role is suspended
+        `AuthorizedUsers Properties`
+            1. organization_id : str -> unique id for the organization
+            2. uid: str -> user id representing the authorized user
+            3. role: str -> role of the Authorized user
+            4. is_active: str -> indicates if the user role has been activated
+            5. date_created: datetime -> date this instance was created
+            6. date_updated: datetime -> last date this instance was updated
+
     ***REMOVED***
     organization_id: str = ndb.StringProperty(validator=setters.set_id)
     uid: str = ndb.StringProperty(validator=setters.set_id)
     role: str = ndb.StringProperty(validator=setters.set_string)
     is_active: bool = ndb.BooleanProperty(default=True, validator=setters.set_bool)
+    date_created: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=setters.set_datetime)
+    date_updated: datetime = ndb.DateTimeProperty(auto_now=True, validator=setters.set_datetime)
 
     def __str__(self) -> str:
         return "<AuthorizedUser role: {}, is_active: {}".format(self.role, self.is_active)
@@ -162,6 +190,8 @@ class AuthorizedUsers(ndb.Model):
 
 class OrgAccounts(ndb.Model):
     ***REMOVED***
+        # TODO - ensure this is not invalidated as wallet can store organization wallets
+
         include details of the main organization payments accounts here
         # NOTE: OrgAccounts PayPal Email will be used for making payments out
         # to the Organization Upon successful collection

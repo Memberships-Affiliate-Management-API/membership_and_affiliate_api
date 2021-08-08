@@ -1,0 +1,8 @@
+version: "2"
+services:
+  web:
+    build: .
+    expose:
+      - 8081
+    ports:
+      - 8081:80
