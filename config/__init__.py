@@ -64,6 +64,7 @@ class Config:
 
         self.PAYMENT_PLANS_SCHEDULES: typing.List[str] = ['monthly', 'quarterly', 'annually']
         self.PAYMENT_PLANS_PAYMENT_DAYS: typing.List[int] = [1, 2, 3, 4, 5]
+        self.MINIMUM_WITHDRAWAL_AMOUNT_USD: int = 3000  # amount is in cents
 
         # NOTE : setting IS_PRODUCTION here - could find a better way of doing this rather than depending on the OS
         if "Windows_NT" == os.environ.get("OS"):

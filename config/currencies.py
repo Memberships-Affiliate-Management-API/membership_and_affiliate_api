@@ -12,6 +12,7 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 import functools
 import typing
 # _code,_unicode-decimal,_unicode-hex,__text
+from config import config_instance
 from main import app_cache
 from utils.utils import return_ttl, can_cache
 
@@ -136,7 +137,10 @@ def currency_symbols() -> typing.List[str]:
     return [currency[0] for currency in list_of_currencies]
 
 
-class CurrencyConverter:
+class CurrencyUtils:
+    ***REMOVED***
+        Utilities to manage Currencies and convert between them
+    ***REMOVED***
     from database.mixins import AmountMixin
 
     def __init__(self):
@@ -169,6 +173,30 @@ class CurrencyConverter:
             from_amount.amount = int(converted)
             return from_amount
         return None
+
+    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    def return_minimum_withdrawal_by_currency(self, currency_symbol: str) -> int:
+        ***REMOVED***
+            NOTE: will return the minimum withdrawal amount based on the currency of the wallet
+
+        :param currency_symbol: symbol of the currency to return minimum withdrawal amount by
+        :return: integer indicating amount in cents
+        ***REMOVED***
+        US_Dollar: str = "USD"
+        usd_minimum_withdrawal: int = config_instance.MINIMUM_WITHDRAWAL_AMOUNT_USD
+        currency_symbol: str = currency_symbol.strip().upper()
+        if currency_symbol not in currency_symbols():
+            # Invalid Currency Symbol
+            message: str = "There was an error checking minimum withdrawal amount: Bad Currency Symbol"
+            raise ValueError(message)
+        if currency_symbol != US_Dollar:
+            # convert to the present symbol to get the minimum withdrawal amount in the present currency
+            return int(self.get_conversion_rate(from_symbol=currency_symbol, to_symbol=US_Dollar) * usd_minimum_withdrawal)
+        return usd_minimum_withdrawal
+
+
+currency_util: CurrencyUtils = CurrencyUtils()
+del CurrencyUtils
 
 
 if __name__ == '__main__':

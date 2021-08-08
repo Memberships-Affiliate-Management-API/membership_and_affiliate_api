@@ -484,9 +484,11 @@ class ClassSetters(Events, Util):
     @staticmethod
     def set_value_amount(prop: ndb.IntegerProperty, value: typing.Union[int, None]) -> int:
         ***REMOVED***
-            amount in integer used to validate amounts in cash on AmountMixin
+            DOCS:
+                1. amount in integer used to validate amounts in cash on AmountMixin
+                2. amount is in cents
         :param prop:
-        :param value: amount in integer
+        :param value: amount in integer representing cents
         :return: integer representing money in cents of whatever currency is being represented
         ***REMOVED***
         class_name: str = setters.return_class_name(prop=prop)
