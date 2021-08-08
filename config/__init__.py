@@ -51,6 +51,9 @@ class Config:
         self.GOOGLE_APPLICATION_CREDENTIALS: str = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS") or config(
             "GOOGLE_APPLICATION_CREDENTIALS")
 
+        self.PAYMENT_PLANS_SCHEDULES: typing.List[str] = ['monthly', 'quarterly', 'annually']
+        self.PAYMENT_PLANS_PAYMENT_DAYS: typing.List[int] = [1, 2, 3, 4, 5]
+
         # NOTE : setting IS_PRODUCTION here - could find a better way of doing this rather than depending on the OS
         if "Windows_NT" == os.environ.get("OS"):
             self.DEBUG = True

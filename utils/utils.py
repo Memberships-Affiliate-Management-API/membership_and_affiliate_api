@@ -124,6 +124,22 @@ def get_payment_methods() -> typing.List[str]:
     return ['eft', 'paypal']
 
 
+def get_plan_scheduled_terms() -> typing.List[str]:
+    ***REMOVED***
+        fetches payment plan schedules from config_instance
+    :return: LIST payment_plan_schedules
+    ***REMOVED***
+    return config_instance.PAYMENT_PLANS_SCHEDULES
+
+
+def get_scheduled_term_days() -> typing.List[int]:
+    ***REMOVED***
+        returns the days the transactions can be made once scheduled term has been reached for payment
+    :return: list of integers representing days transactions can be made
+    ***REMOVED***
+    return config_instance.PAYMENT_PLANS_PAYMENT_DAYS
+
+
 def can_cache() -> any:
     ***REMOVED***NOTE: de activates the cache in case we are running on development server or debug is enabled***REMOVED***
     return is_development() or not config_instance.DEBUG
