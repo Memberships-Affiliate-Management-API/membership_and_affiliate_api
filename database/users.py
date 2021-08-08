@@ -88,7 +88,7 @@ class UserModel(ndb.Model):
         in an easy to use manner
 
         **Class Properties**
-        
+
     ***REMOVED***
     organization_id: str = ndb.StringProperty(required=True, indexed=True, validator=setters.set_id)
     uid: str = ndb.StringProperty(required=True, indexed=True, validator=setters.set_id)
@@ -105,8 +105,8 @@ class UserModel(ndb.Model):
     address: AddressMixin = ndb.StructuredProperty(AddressMixin)
 
     def __str__(self) -> str:
-        return "<User Names: {}, Surname: {}, Email: {}, Cell: {}".format(self.names, self.surname, self.email,
-                                                                          self.cell)
+        return "<User: UID: {}, Names: {}, Surname: {}, Email: {}, Cell: {}".format(self.uid, self.names, self.surname,
+                                                                                    self.email, self.cell)
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -137,20 +137,15 @@ class UserModel(ndb.Model):
                 "is_active": self.is_active, "time_registered": self.time_registered, "is_admin": self.is_admin,
                 "is_support": self.is_support}
 
+    # Properties represents values that can be calculated from present values but will not be stored on database
+
     @property
     def full_names(self) -> str:
+        ***REMOVED***
+            represents a users full_names meaning surnames and name together
+        :return: users full names
+        ***REMOVED***
         return '{} {}'.format(self.names, self.surname)
-
-    @full_names.setter
-    def full_names(self, full_names) -> None:
-        names, surname = full_names.split(" ")
-        self.names = names
-        self.surname = surname
-
-    @full_names.deleter
-    def full_names(self) -> None:
-        self.names = ""
-        self.surname = ""
 
     @property
     def user_auth(self) -> dict:
@@ -203,3 +198,13 @@ class UserModel(ndb.Model):
             'cell': self.cell,
             'email': self.email}
 
+    @property
+    def organization_details(self) -> dict:
+        ***REMOVED***
+            fetches organization_details belonging to the user
+        :return: organization name and description
+        ***REMOVED***
+        # TODO fetch organization details from an API
+        return {
+            'organization_name': '',
+            'description': ''}

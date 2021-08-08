@@ -13,6 +13,20 @@ import socket
 import phonenumbers
 
 
+class Events:
+    ***REMOVED***
+       asynchronously triggers events when certain values are changed on the database
+       events server must be instantiated or a ready made solution added
+
+       Suggestion: or could use a memory based data-structure for now to control
+       events, and then create a method which will continuously fetch and execute
+       the events asynchronously.
+    ***REMOVED***
+
+    def __init__(self):
+        pass
+
+
 class Util:
     def __init__(self):
         pass
@@ -83,8 +97,17 @@ class Util:
         except NumberParseException:
             raise ValueError("Please enter cell number in an international format")
 
+    @staticmethod
+    def percent_valid(percent: typing.Union[int, float]) -> bool:
+        ***REMOVED***
+            checks if percentage is valid
+        :param percent: percentage value
+        :return: boolean indicating if percentage is valid
+        ***REMOVED***
+        return True if 0 < percent > 100 else False
 
-class ClassSetters(Util):
+
+class ClassSetters(Events, Util):
     ***REMOVED***
         Class Setters
         Used to set and validate input to ndb properties.
@@ -113,7 +136,8 @@ class ClassSetters(Util):
             raise ValueError(message)
 
         if not bool(value.strip()):
-            raise ValueError("isinstance ID, should be an instance of : {} , and  cannot be Null".format(str(class_name)))
+            raise ValueError(
+                "isinstance ID, should be an instance of : {} , and  cannot be Null".format(str(class_name)))
 
         return value.strip()
 
@@ -346,10 +370,25 @@ class ClassSetters(Util):
 
     @staticmethod
     def set_percent(prop: ndb.IntegerProperty, value: typing.Union[int, None]) -> int:
+        ***REMOVED***
+            set_percent will check if the percentage value is an integer and then return the percentage value
+            if not then it will raise ValueError or TypeError depending on the reason
+        :param prop: property to set the percentage
+        :param value: percentage as integer to set in property
+        :return: percentage as an integer
+        ***REMOVED***
+        class_name: str = prop.__class__.__name__
+        utils_instance: Util = Util()
+
         if not isinstance(value, int):
-            raise TypeError("percent can be instance of {}:  Invalid Type".format(str(prop.__class__.__name__)))
-        if 0 < value > 100:
-            raise ValueError("{}, Invalid Percentage".format(str(prop.__class__.__name__)))
+            message: str = ***REMOVED***Percent is an instance of : {} and can only be an 
+            integer representing a percentage***REMOVED***.format(class_name)
+            raise TypeError(message)
+
+        if utils_instance.percent_valid(percent=value):
+            message: str = ***REMOVED***This value : {}, is not a valid Percentage, percent may be a value 
+            from 0 to 100***REMOVED***.format(value)
+            raise ValueError(message)
         return value
 
     @staticmethod
