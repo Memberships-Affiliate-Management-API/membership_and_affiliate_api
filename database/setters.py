@@ -7,7 +7,7 @@ from datetime import datetime, date
 from google.cloud import ndb
 from phonenumbers import NumberParseException
 
-from utils.utils import get_payment_methods, get_plan_scheduled_terms
+from utils.utils import get_payment_methods, get_plan_scheduled_terms, get_scheduled_term_days
 import re
 import socket
 import phonenumbers
@@ -271,7 +271,7 @@ class ClassSetters(Util):
         raise ValueError("scheduled term can only be one of the following values : {} ".format(schedule_terms))
 
     @staticmethod
-    def set_schedule_day(prop: ndb.StringProperty, value: typing.Union[int, None]) -> int:
+    def set_schedule_day(prop: ndb.IntegerProperty, value: typing.Union[int, None]) -> int:
         ***REMOVED***
             set scheduled day for this plan depending on this plans scheduled term the transaction will
             be made on the first transaction day coinciding with the scheduled term
@@ -282,9 +282,11 @@ class ClassSetters(Util):
         class_name: str = prop.__class__.__name__
 
         if not (isinstance(value, int)):
-            raise TypeError('{} can only be an integer'.format(str(prop.__class__.__name__)))
-        if value not in [1, 2, 3, 4, 5]:
-            raise ValueError('{} can only be between 1 -> 5 of every month'.format(str(prop.__class__.__name__)))
+            raise TypeError('scheduled day is an instance of : {}, and can only be an integer'.format(class_name))
+        if value not in get_scheduled_term_days():
+            message: str = '''scheduled day is an instance of : {}, and can 
+            only be a value between 1 -> 5 of every month'''.format(class_name)
+            raise ValueError(message)
         return value
 
     @staticmethod

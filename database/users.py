@@ -133,3 +133,57 @@ class UserModel(ndb.Model):
                 "cell": self.cell, "email": self.email, "email_verified": self.email_verified,
                 "is_active": self.is_active, "time_registered": self.time_registered, "is_admin": self.is_admin,
                 "is_support": self.is_support}
+
+    @property
+    def full_names(self) -> str:
+        return '{} {}'.format(self.names, self.surname)
+
+    @full_names.setter
+    def full_names(self, full_names) -> None:
+        names, surname = full_names.split(" ")
+        self.names = names
+        self.surname = surname
+
+    @full_names.deleter
+    def full_names(self) -> None:
+        self.names = ""
+        self.surname = ""
+
+    @property
+    def user_auth(self) -> dict:
+        ***REMOVED***
+            user authentication provide user uid, email and hashed password
+        :return: organization_id, uid, email , password
+        ***REMOVED***
+        return {
+            'organization_id': self.organization_id,
+            'uid': self.uid,
+            'email': self.email,
+            'password': self.password }
+
+    @property
+    def access_rights(self) -> dict:
+        ***REMOVED***
+            property indicating what a user can and cannot do together with the organization_id and uid
+        :return: a dict with a full list of user access_rights
+        ***REMOVED***
+        return {
+            'organization_id': self.organization_id,
+            'uid': self.uid,
+            'is_admin': self.is_admin,
+            'is_support': self.is_support,
+            'is_active': self.is_active}
+
+    @property
+    def user_details(self) -> dict:
+        ***REMOVED***
+            user personal details
+        :return: user personal details contains organization_id, uid, names, surname, cell, email
+        ***REMOVED***
+        return {
+            'organization_id': self.organization_id,
+            'uid': self.uid,
+            'names': self.names,
+            'surname': self.surname,
+            'cell': self.cell,
+            'email': self.email}
