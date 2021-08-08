@@ -1,3 +1,16 @@
+***REMOVED***
+    **Affiliate API Endpoint**
+
+    module intended as an Affiliate Api Route for clients using memberships and affiliate management api
+    the module handles routing api requests and authentication of each call
+***REMOVED***
+__author__ = "mobius-crypt"
+__email__ = "mobiusndou@gmail.com"
+__twitter__ = "@blueitserver"
+__github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
+__github_profile__ = "https://github.com/freelancing-solutions/"
+
+
 import typing
 from flask import Blueprint, request
 from config.exceptions import if_bad_request_raise

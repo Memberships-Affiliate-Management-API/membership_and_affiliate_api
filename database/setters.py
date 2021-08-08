@@ -1,12 +1,18 @@
 ***REMOVED***
-    class used to set ndb database properties
+    module used to set values into ndb database properties,
+    this module also has an added function of validating any such values to insure data integrity.
+    the module will also trigger events when some database properties are being set or reset.
+    allowing certain actions to be triggered if its necessary to do so.
 ***REMOVED***
+__author__ = "mobius-crypt"
+__email__ = "mobiusndou@gmail.com"
+__github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
+__github_profile__ = "https://github.com/freelancing-solutions/"
+
 import typing
 from datetime import datetime, date
-
 from google.cloud import ndb
 from phonenumbers import NumberParseException
-
 from utils.utils import get_payment_methods, get_plan_scheduled_terms, get_scheduled_term_days
 import re
 import socket
@@ -129,7 +135,7 @@ class ClassSetters(Events, Util):
         :param value: value as id to set
         :return: returns id as string
         ***REMOVED***
-        class_name: str = prop.__class__.__name__
+        class_name: str = setters.return_class_name(prop=prop)
         if not (isinstance(value, str)):
             message: str = '''isinstance ID, should be an instance of : {} , and should represent an instance id'''.format(
                 class_name)
@@ -149,7 +155,7 @@ class ClassSetters(Events, Util):
         :param value:
         :return:
         ***REMOVED***
-        class_name: str = prop.__class__.__name__
+        class_name: str = setters.return_class_name(prop=prop)
         if not (isinstance(value, str)):
             raise ValueError("Coupon Code, is an instance of: {} , and can only be a string".format(str(class_name)))
 
@@ -170,7 +176,7 @@ class ClassSetters(Events, Util):
         :param value:
         :return:
         ***REMOVED***
-        class_name = prop.__class__.__name__
+        class_name: str = setters.return_class_name(prop=prop)
         if not (isinstance(value, str)):
             message: str = ***REMOVED***paypal address, an instance of: {} , and can only be a string representing 
             a paypal email address***REMOVED***.format(class_name)
@@ -179,9 +185,7 @@ class ClassSetters(Events, Util):
         if not bool(value.strip()):
             raise ValueError("paypal address, is an instance of : {} , and cannot be Null".format(class_name))
 
-        utils_instance: Util = Util()
-
-        if utils_instance.regex_check_email(email=value.strip().lower()):
+        if setters.regex_check_email(email=value.strip().lower()):
             return value.strip().lower()
         raise ValueError("{} is not a valid email address".format(value))
 
@@ -193,10 +197,10 @@ class ClassSetters(Events, Util):
         :param value:
         :return:
         ***REMOVED***
-        class_name: str = prop.__class__.__name__
+        class_name: str = setters.return_class_name(prop=prop)
         if not (isinstance(value, str)):
             raise ValueError("transaction_type, is an instance of : {} , and can only be a string".format(class_name))
-
+        # TODO fix this stop using transaction types like magic numbers
         transaction_types = ['withdrawal', 'deposit']
         if value.strip().lower() not in transaction_types:
             raise ValueError("{} is not a valid transaction_type".format(value))
@@ -212,7 +216,7 @@ class ClassSetters(Events, Util):
         :param value:
         :return:
         ***REMOVED***
-        class_name: str = prop.__class__.__name__
+        class_name: str = setters.return_class_name(prop=prop)
         if not (isinstance(value, datetime)):
             raise TypeError("datetime, is an instance of : {} , must represent a valid python date".format(class_name))
         return value
@@ -225,7 +229,7 @@ class ClassSetters(Events, Util):
         :param value:
         :return:
         ***REMOVED***
-        class_name: str = prop.__class__.__name__
+        class_name: str = setters.return_class_name(prop=prop)
         if not (isinstance(value, bool)):
             raise TypeError("boolean, is an instance of : {} , and can only be Either True or False".format(class_name))
         return value
@@ -238,7 +242,7 @@ class ClassSetters(Events, Util):
         :param value:
         :return:
         ***REMOVED***
-        class_name: str = prop.__class__.__name__
+        class_name: str = setters.return_class_name(prop=prop)
         if not (isinstance(value, str)):
             message: str = ***REMOVED***status, is an instance of : {} , and can only be a string 
             representing payment status***REMOVED***.format(class_name)
@@ -262,7 +266,7 @@ class ClassSetters(Events, Util):
         :param value:
         :return:
         ***REMOVED***
-        class_name: str = prop.__class__.__name__
+        class_name: str = setters.return_class_name(prop=prop)
         if not (isinstance(value, str)):
             raise TypeError("Is an instance of : {} , and can only be a string".format(class_name))
 
@@ -280,7 +284,7 @@ class ClassSetters(Events, Util):
         :param value:
         :return:
         ***REMOVED***
-        class_name: str = prop.__class__.__name__
+        class_name: str = setters.return_class_name(prop=prop)
         if not (isinstance(value, str)):
             raise TypeError("scheduled term, is an instance of : {} ,  and can only be a string ".format(class_name))
 
@@ -303,7 +307,7 @@ class ClassSetters(Events, Util):
         :param value: value to set
         :return: scheduled day as integer
         ***REMOVED***
-        class_name: str = prop.__class__.__name__
+        class_name: str = setters.return_class_name(prop=prop)
 
         if not (isinstance(value, int)):
             raise TypeError('scheduled day, is an instance of : {}, and can only be an integer'.format(class_name))
@@ -323,7 +327,7 @@ class ClassSetters(Events, Util):
         :param value: value being set must be integer
         :return: valid integer
         ***REMOVED***
-        class_name: str = prop.__class__.__name__
+        class_name: str = setters.return_class_name(prop=prop)
         if not (isinstance(value, int)):
             raise TypeError('Number, is a instance of : {}, and can only be an integer'.format(class_name))
 
@@ -341,7 +345,7 @@ class ClassSetters(Events, Util):
         :param value: value to set to property
         :return: returns valid date only
         ***REMOVED***
-        class_name: str = prop.__class__.__name__
+        class_name: str = setters.return_class_name(prop=prop)
         if not (isinstance(value, date)):
             raise TypeError("date is an instance of : {}, and can only be an instance of date".format(class_name))
         return value
@@ -355,7 +359,7 @@ class ClassSetters(Events, Util):
         :param value: the value to set
         :return: returns a payment method as string
         ***REMOVED***
-        class_name: str = prop.__class__.__name__
+        class_name: str = setters.return_class_name(prop=prop)
         if not (isinstance(value, str)):
             message: str = ***REMOVED***payment method, is an instance of : {}, and can only be a string representing a 
             valid payment method***REMOVED***.format(class_name)
@@ -377,7 +381,7 @@ class ClassSetters(Events, Util):
         :param value: percentage as integer to set in property
         :return: percentage as an integer
         ***REMOVED***
-        class_name: str = prop.__class__.__name__
+        class_name: str = setters.return_class_name(prop=prop)
         utils_instance: Util = Util()
 
         if not isinstance(value, int):
@@ -393,13 +397,21 @@ class ClassSetters(Events, Util):
 
     @staticmethod
     def set_currency(prop: ndb.StringProperty, value: typing.Union[str, None]) -> str:
+        ***REMOVED***
+            checks if currency symbol is one of valid currency symbol if yes returns the symbol
+            if not raise ValueError or TypeError depending on why the value is invalid
+        :param prop: property where the currency symbol may be set
+        :param value: value representing the currency symbol
+        :return: will return currency symbol representing a string
+        ***REMOVED***
         from config.currencies import currency_symbols
+        class_name: str = setters.return_class_name(prop=prop)
         if not (isinstance(value, str)):
-            message: str = '''An Instance of : {} : should be a string rep 
-            of currency symbol'''.format(prop.__class__.__name__)
+            message: str = '''Currency is an Instance of : {}, and should be a string representation 
+            of a currency symbol'''.format(class_name)
             raise TypeError(message)
         if value not in currency_symbols():
-            raise ValueError("{} not a valid currency symbol".format(str(prop.__class__.__name__)))
+            raise ValueError("This value : {} is not a valid currency symbol".format(value))
         return value
 
     # noinspection PyUnusedLocal,DuplicatedCode
@@ -430,17 +442,19 @@ class ClassSetters(Events, Util):
         ***REMOVED***
             check if value is string , regex check the cell number
             then format the number internationally and return the formatted value
-        :param prop:
+        :param prop: the property as string the cell number will be stored in
         :param value: cell number
-        :return: formatted cell number
+        :return: formatted cell number as string
         ***REMOVED***
+        class_name: str = setters.return_class_name(prop=prop)
         if not isinstance(value, str):
             message: str = '''An Instance of: {} : should be a string representing a 
-            cell number in international format'''.format(prop.__class__.__name__)
+            cell number in international format'''.format(class_name)
             raise TypeError(message)
         util_instance: Util = Util()
         if util_instance.regex_check_cell(cell=value.strip()):
             return util_instance.format_cell_number(cell=value)
+        raise ValueError("This value: {} , is not a valid cell number".format(value))
 
     # noinspection PyUnusedLocal
     @staticmethod
@@ -453,9 +467,10 @@ class ClassSetters(Events, Util):
             :return: password in hash format
         ***REMOVED***
         from werkzeug.security import generate_password_hash
+        class_name: str = setters.return_class_name(prop=prop)
         if not isinstance(value, str):
-            message: str = '''An instance of : {} :  should be a string representing 
-            user password'''.format(prop.__class__.__name__)
+            message: str = '''password is an instance of : {} :  should be a string representing 
+            user password'''.format(class_name)
             raise TypeError(message)
 
         utils_instance: Util = Util()
@@ -473,14 +488,17 @@ class ClassSetters(Events, Util):
         :param value: amount in integer
         :return: integer representing money in cents of whatever currency is being represented
         ***REMOVED***
+        class_name: str = setters.return_class_name(prop=prop)
         if not (isinstance(value, int)):
-            message: str = '''An instance of : {} : can only be an Integer 
-            representing money in cents'''.format(prop.__class__.__name__)
-            raise TypeError("{} can only be integer".format(str(prop.__class__.__name__)))
+            message: str = '''Amount is an instance of : {} : can only be an Integer 
+            representing money in cents'''.format(class_name)
+            raise TypeError(message)
 
         # NOTE: does not allow negative values
         if value < 0:
-            raise ValueError("amount must be a positive integer representing money in cents")
+            message: str = ***REMOVED***This value : {} , is not valid, it must be a currency amount in cents and 
+            must always be a positive integer***REMOVED***.format(value)
+            raise ValueError(message)
 
         return value
 
@@ -491,17 +509,20 @@ class ClassSetters(Events, Util):
             the domain name if it passes then return domain name
             :return:
         ***REMOVED***
-
+        class_name: str = setters.return_class_name(prop=prop)
         if not (isinstance(value, str)):
-            raise TypeError("{} can only be a string".format(str(prop.__class__.__name__)))
+            message: str = ***REMOVED***domain, is an instance of : {} and can only be a string, representing 
+            a valid domain name***REMOVED***.format(class_name)
+            raise TypeError(message)
 
-        utils_instance: Util = Util()
         domain = value.strip()
-        regex_passes = utils_instance.regex_check_domain(domain=domain)
-        domain_valid = utils_instance.resolve_domain_name(domain=domain)
+        regex_passes = setters.regex_check_domain(domain=domain)
+        domain_valid = setters.resolve_domain_name(domain=domain)
         if regex_passes and domain_valid:
             return domain
-        raise ValueError("Invalid domain name")
+        raise ValueError("This value : {} is not a valid domain name, or the domain may not be accessible".format(value))
 
 
 setters: ClassSetters = ClassSetters()
+# NOTE: insures that setters is a singleton or declared only once
+del ClassSetters

@@ -1,7 +1,17 @@
+***REMOVED***
+***Users Management API***
+
+***REMOVED***
+__author__ = "mobius-crypt"
+__email__ = "mobiusndou@gmail.com"
+__twitter__ = "@blueitserver"
+__github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
+__github_profile__ = "https://github.com/freelancing-solutions/"
+
+
 import typing
 from flask import Blueprint, request, jsonify
-
-from config.exceptions import error_codes, InputError, if_bad_request_raise
+from config.exceptions import if_bad_request_raise
 from security.api_authenticator import handle_api_auth
 from views.users import UserView
 users_bp = Blueprint("users", __name__)

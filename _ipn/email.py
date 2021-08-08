@@ -1,9 +1,15 @@
 ***REMOVED***
+    **Email Messages IPN Endpoints**
     notifications for when emails have been sent will be received here
 
 ***REMOVED***
-from flask import Blueprint, request
+__author__ = "mobius-crypt"
+__email__ = "mobiusndou@gmail.com"
+__twitter__ = "@blueitserver"
+__github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
+__github_profile__ = "https://github.com/freelancing-solutions/"
 
+from flask import Blueprint
 from main import app_cache
 from utils.utils import return_ttl, can_cache
 

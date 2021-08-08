@@ -1,10 +1,18 @@
 ***REMOVED***
+    **Mailgun Emails Integration SDK**
+    *Python ^3.8
 ***REMOVED***
     ***REMOVED***
     ***REMOVED***
     ***REMOVED***
 
 ***REMOVED***
+__author__ = "mobius-crypt"
+__email__ = "mobiusndou@gmail.com"
+__twitter__ = "@blueitserver"
+__github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
+__github_profile__ = "https://github.com/freelancing-solutions/"
+
 import requests
 import typing
 from flask import jsonify
