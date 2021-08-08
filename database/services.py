@@ -78,6 +78,11 @@ class Services(ndb.Model):
             6. category: category of the product or service
             7. image_url:  image related to product or service - this image could be stored in firebase - or on another endpoint locally on heroku
             8. home_url:  the home url of the page containing this service or product on the client website or blog
+            10. date_created: datetime -> the date the service was created
+            11. date_updated: datetime -> the date of the last update
+
+        `Method Properties`
+            1. service_details: dict -> returns basic service details
     ***REMOVED***
     organization_id: str = ndb.StringProperty(validator=setters.set_id)
     # NOTE: service_id is the same as product_id in paypal products
@@ -92,7 +97,7 @@ class Services(ndb.Model):
     # the service information page
     home_url: str = ndb.StringProperty(validator=setters.set_domain)
     date_created: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=setters.set_datetime)
-    date_updated: datetime = ndb.DateTimeProperty(auto_now=, validator=setters.set_datetime)
+    date_updated: datetime = ndb.DateTimeProperty(auto_now=True, validator=setters.set_datetime)
 
     def __eq__(self, other):
         if self.__class__ != other.__class__:
@@ -118,7 +123,7 @@ class Services(ndb.Model):
         return int(self.__bool__())
 
     @property
-    def service_detail(self) -> dict:
+    def service_details(self) -> dict:
         ***REMOVED***
             `Service Details Property`
                 returns basic details for this service i.e organization_id, service_id, name, description, image_url, home_url

@@ -432,9 +432,7 @@ class ClassSetters(Events, Util):
         if not bool(value.strip()):
             raise ValueError(" {} cannot be Null".format(str(prop.__class__.__name__)))
 
-        utils_instance: Util = Util()
-
-        if utils_instance.regex_check_email(email=value.strip().lower()):
+        if setters.regex_check_email(email=value.strip().lower()):
             return value.strip().lower()
         raise ValueError(" {} is not a valid email address".format(value))
 
@@ -452,9 +450,8 @@ class ClassSetters(Events, Util):
             message: str = '''An Instance of: {} : should be a string representing a 
             cell number in international format'''.format(class_name)
             raise TypeError(message)
-        util_instance: Util = Util()
-        if util_instance.regex_check_cell(cell=value.strip()):
-            return util_instance.format_cell_number(cell=value)
+        if setters.regex_check_cell(cell=value.strip()):
+            return setters.format_cell_number(cell=value)
         raise ValueError("This value: {} , is not a valid cell number".format(value))
 
     # noinspection PyUnusedLocal
@@ -474,8 +471,7 @@ class ClassSetters(Events, Util):
             user password'''.format(class_name)
             raise TypeError(message)
 
-        utils_instance: Util = Util()
-        if utils_instance.password_complexity(password=value.strip()):
+        if setters.password_complexity(password=value.strip()):
             return generate_password_hash(value, method="pbkdf2:sha256", salt_length=8)
         message: str = '''password must be at least 8 characters in length, and contain lower-case and upper-case letters, 
         numbers and at least a special character'''
