@@ -225,7 +225,7 @@ class CouponsValidator:
             message: str = "expiration_time can only be an integer"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        return expiration_time < get_days(days=1)
+        return not expiration_time < get_days(days=1)
 
     @staticmethod
     async def expiration_valid_async(expiration_time: int) -> bool:
@@ -236,10 +236,10 @@ class CouponsValidator:
         ***REMOVED***
 
         if not (isinstance(expiration_time, int)):
-            return False
-        if expiration_time < get_days(days=1):
-            return False
-        return True
+            message: str = "expiration_time can only be an integer"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        return not expiration_time < get_days(days=1)
 
     @staticmethod
     def discount_valid(discount_valid: int) -> bool:
@@ -249,8 +249,10 @@ class CouponsValidator:
         :return: returns True or False
         ***REMOVED***
         if not (isinstance(discount_valid, int)):
-            return False
-        return True if 0 < discount_valid > 100 else False
+            message: str = "discount_valid can only be an integer"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        return 0 < discount_valid > 100
 
     @staticmethod
     async def discount_valid_async(discount_valid: int) -> bool:
@@ -260,8 +262,10 @@ class CouponsValidator:
         :return: returns True or False
         ***REMOVED***
         if not (isinstance(discount_valid, int)):
-            return False
-        return True if 0 < discount_valid > 100 else False
+            message: str = "discount_valid can only be an integer"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        return 0 < discount_valid > 100
 
 
 # noinspection DuplicatedCode
