@@ -13,7 +13,6 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 
 import typing
 from datetime import datetime, date
-from google.api_core.exceptions import RetryError, Aborted
 from google.cloud import ndb
 from config.exception_handlers import handle_store_errors
 from config.exceptions import InputError, error_codes

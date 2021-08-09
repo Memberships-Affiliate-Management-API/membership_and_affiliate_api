@@ -32,14 +32,18 @@ class OrgValidators:
     @staticmethod
     @handle_store_errors
     def is_organization_exist(organization_id: typing.Union[str, None]) -> typing.Union[None, bool]:
+        ***REMOVED***
+            **is_organization_exist**
+                checks if an organization exist
+        :param organization_id: unique identifier for the organization
+        :return: True if Organization Exist
+        ***REMOVED***
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id cannot be Null"
             raise InputError(status=error_codes.input_error_code, description=message)
 
         organization_instance: Organization = Organization.query(Organization.organization_id == organization_id).get()
-        if isinstance(organization_instance, Organization):
-            return False
-        return True
+        return bool(organization_instance)
 
 
 class Organization(ndb.Model):
@@ -111,6 +115,13 @@ class AuthUserValidators:
     @handle_store_errors
     def user_is_member_of_org(uid: typing.Union[str, None],
                               organization_id: typing.Union[str, None]) -> typing.Union[None, bool]:
+        ***REMOVED***
+            **user_is_member_of_org**
+                checks if a specific user is a member of an organization
+        :param uid: unique identifier of the user
+        :param organization_id: unique organization identity
+        :return: True if organization exist
+        ***REMOVED***
         if not isinstance(uid, str) or not bool(uid.strip()):
             message: str = "uid cannot be Null"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -119,16 +130,23 @@ class AuthUserValidators:
             message: str = "organization_id cannot be Null"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        auth_users_list: typing.List[AuthorizedUsers] = AuthorizedUsers.query(AuthorizedUsers.uid == uid).fetch()
-        for user_instance in auth_users_list:
-            if user_instance.organization_id == organization_id:
-                return True
-        return False
+        auth_user_instance: typing.List[AuthorizedUsers] = AuthorizedUsers.query(
+            AuthorizedUsers.uid == uid, AuthorizedUsers.organization_id == organization_id).get()
+
+        return bool(auth_user_instance)
 
     @staticmethod
     @handle_store_errors
     def org_user_is_admin(uid: typing.Union[str, None],
                           organization_id: typing.Union[str, None]) -> typing.Union[None, bool]:
+        ***REMOVED***
+            **org_user_is_admin**
+                checks if user belongs to the organization and also if user is an admin of the organization
+
+        :param uid:
+        :param organization_id:
+        :return:
+        ***REMOVED***
         if not (isinstance(uid, str)):
             raise InputError(status=500, description="uid cannot be Null")
         if not (isinstance(organization_id, str)):
@@ -137,9 +155,7 @@ class AuthUserValidators:
         auth_user_instance: AuthorizedUsers = AuthorizedUsers.query(
             AuthorizedUsers.uid == uid, AuthorizedUsers.organization_id == organization_id).get()
 
-        if isinstance(auth_user_instance, AuthorizedUsers) and (auth_user_instance.role == "admin"):
-            return True
-        return False
+        return isinstance(auth_user_instance, AuthorizedUsers) and (auth_user_instance.role == "admin")
 
 
 class AuthorizedUsers(ndb.Model):
