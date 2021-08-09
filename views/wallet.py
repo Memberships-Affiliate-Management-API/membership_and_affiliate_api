@@ -13,7 +13,7 @@ from flask import jsonify, current_app
 from _sdk._email import Mailgun
 from database.mixins import AmountMixin
 from database.wallet import WalletModel, WalletValidator
-from utils import return_ttl, can_cache
+from utils import return_ttl
 from config.exceptions import DataServiceError, UnAuthenticatedError, status_codes, error_codes, InputError
 from config.exception_handlers import handle_view_errors
 from config.use_context import use_context
@@ -29,47 +29,59 @@ class WalletEmails(Mailgun):
 
     def __do_send_mail(self, to_email: str, subject: str, text: str, html: str) -> None:
         ***REMOVED***
-              **If possible this method should be run asynchronously**
-              a method to actually send email
-            :param to_email: email address to send the email to
-            :param subject: subject of the email
-            :param text: body in text format
-            :param html: body in html format
-            :return: does not return anything
+            **__do_send_mail
+                  **If possible this method should be run asynchronously**
+                  a method to actually send email
+
+        :param to_email: email address to send the email to
+        :param subject: subject of the email
+        :param text: body in text format
+        :param html: body in html format
+        :return: does not return anything
         ***REMOVED***
         self.__send_with_mailgun_rest_api(to_list=[to_email], subject=subject, text=text, html=html)
 
     def send_balance_changed_notification(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
-            send an email to client or organization informing them that balance has changed on their wallet
+            **send_balance_changed_notification**
+                send an email to client or organization informing them that balance has changed on their wallet
+
         :param organization_id:
         :param uid:
         :return:
         ***REMOVED***
+        # TODO finish send_balance_changed_notification
         pass
 
     def wallet_created_successfully(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
-            send an email informing user that their wallet has been created and its details
+            **wallet_created_successfully**
+                send an email informing user that their wallet has been created and its details
+
         :param organization_id:
         :param uid:
         :return:
         ***REMOVED***
+        # TODO wallet_created_successfully
         pass
 
     def wallet_details_changed(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
-            send an email informing the user that wallet details has changed
+            **wallet_details_changed**
+                send an email informing the user that wallet details has changed
+
         :param organization_id:
         :param uid:
         :return:
         ***REMOVED***
+        # TODO wallet_details_changed
         pass
 
 
 class Validator(WalletValidator):
     ***REMOVED***
-        Wallet Validators
+        **Class Wallet Validators**
+            validates wallet transactions
         TODO- improve the validators to validate all aspects of wallet transactions
     ***REMOVED***
 
@@ -77,22 +89,6 @@ class Validator(WalletValidator):
         super(Validator, self).__init__()
         self._max_retries = current_app.config.get('DATASTORE_RETRIES')
         self._max_timeout = current_app.config.get('DATASTORE_TIMEOUT')
-
-    @staticmethod
-    def is_uid_none(uid: typing.Union[str, None]) -> bool:
-        ***REMOVED***
-            :param uid:
-            :return:
-        ***REMOVED***
-        if not isinstance(uid, str) or not bool(uid.strip()):
-            return True
-        return False
-
-    @staticmethod
-    async def is_uid_none_async(uid: typing.Union[None, str]) -> bool:
-        if not isinstance(uid, str) or not bool(uid.strip()):
-            return True
-        return False
 
     @staticmethod
     def raise_input_error_if_not_available(organization_id: str, uid: str) -> None:
