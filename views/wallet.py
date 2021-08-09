@@ -171,7 +171,8 @@ class Validator(WalletValidator):
     @app_cache.memoize(timeout=return_ttl('short'))
     def can_update_wallet(self, organization_id: typing.Union[str, None], uid: typing.Union[None, str] = None) -> bool:
         ***REMOVED***
-            checks if user can update wallet
+            **can_add_wallet**
+                checks if user can update wallet - a wallet need to already exists for it to be updated
         :param organization_id:
         :param uid:
         :return:
@@ -181,7 +182,8 @@ class Validator(WalletValidator):
         wallet_exist: typing.Union[bool, None] = self.wallet_exist(organization_id=organization_id, uid=uid)
         if isinstance(wallet_exist, bool):
             return wallet_exist
-        raise DataServiceError(status=500, description='Unable to verify wallet data')
+        message: str = 'database error: Unable to verify wallet data'
+        raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
     @app_cache.memoize(timeout=return_ttl('short'))
     async def can_update_wallet_async(self, organization_id: typing.Union[str, None],
