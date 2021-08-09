@@ -86,8 +86,11 @@ class PlanValidators:
     @handle_store_errors
     async def plan_exist_async(organization_id: str, plan_id: str) -> typing.Union[None, bool]:
         ***REMOVED***
-            return True or False
-            return None if Error
+            **asynchronous version of of plan_exist_async**
+                checks if plan already exist returns True if it does
+        :param organization_id:
+        :param plan_id:
+        :return:
         ***REMOVED***
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id cannot be Null"
@@ -101,9 +104,7 @@ class PlanValidators:
             MembershipPlans.organization_id == organization_id,
             MembershipPlans.plan_id == plan_id).get_async().get_result()
 
-        if isinstance(plan_instance, MembershipPlans):
-            return True
-        return False
+        return isinstance(plan_instance, MembershipPlans)
 
     # noinspection DuplicatedCode
     @staticmethod
