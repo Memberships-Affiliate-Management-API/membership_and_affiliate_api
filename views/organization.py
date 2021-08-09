@@ -11,19 +11,20 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 import typing
 from flask import current_app, jsonify
 from _sdk._email import Mailgun
-from config.exception_handlers import handle_view_errors
+from config.exception_handlers import handle_view_errors, handle_store_errors
 from config.exceptions import InputError, DataServiceError, error_codes, status_codes, UnAuthenticatedError
 from config.use_context import use_context
 from database.mixins import AmountMixin
 from database.organization import Organization, OrgValidators
 # TODO finish up organization  view
 from main import app_cache
-from utils.utils import create_id, return_ttl, can_cache
+from utils.utils import create_id, return_ttl
 
 
 class OrganizationEmails(Mailgun):
     ***REMOVED***
-        class Used to send Emails and Notifications related to Organizations
+        **Class OrganizationEmails**
+            class Used to send Emails and Notifications related to Organizations
     ***REMOVED***
 
     def __init__(self):
@@ -31,8 +32,10 @@ class OrganizationEmails(Mailgun):
 
     def __do_send_mail(self, to_email: str, subject: str, text: str, html: str) -> None:
         ***REMOVED***
-              **If possible this method should be run asynchronously**
-              a method to actually send email
+            **__do_send_mail**
+                If possible this method should be run asynchronously
+                a method to actually send email
+
             :param to_email: email address to send the email to
             :param subject: subject of the email
             :param text: body in text format
@@ -43,17 +46,20 @@ class OrganizationEmails(Mailgun):
 
     def send_successfully_created_organization(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
-            once an organization is created send an email of this to the end user explaining the steps
-            they need to perform in order to complete the transaction
+            **send_successfully_created_organization**
+                once an organization is created send an email of this to the end user explaining the steps
+                they need to perform in order to complete the transaction
+
             :param organization_id:
             :param uid:
             :return:
         ***REMOVED***
         pass
 
-    def organization_wallet_created(self, organization_id: str, uid: str) -> None:
+    def send_organization_wallet_created_email(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
-            send an email when an organization wallet has been created
+            **organization_wallet_created**
+                send an email when an organization wallet has been created
         :param organization_id:
         :param uid:
         :return:
@@ -63,8 +69,9 @@ class OrganizationEmails(Mailgun):
 
 class OrganizationView(OrgValidators, OrganizationEmails):
     ***REMOVED***
-     Utilities to validate UserInput Data and also validate access rights of those using the API, While
-     accessing and manipulating information related to Client Organization.
+        **OrganizationView**
+            Utilities to validate UserInput Data and also validate access rights of those using the API, While
+            accessing and manipulating information related to Client Organization.
     ***REMOVED***
     def __init__(self):
         super(OrganizationView, self).__init__()
@@ -74,8 +81,10 @@ class OrganizationView(OrgValidators, OrganizationEmails):
     def can_create_organization(self, uid: typing.Union[str, None],
                                 organization_name: typing.Union[str, None]) -> bool:
         ***REMOVED***
-            NOTE: check if user has registered, and is a paying user... or created an account.
-            # Note: also Insures that the user does not have an organization already.
+            **can_create_organization**
+                check if user has registered, and is a paying user... or created an account.
+                Note: also Insures that the user does not have an organization already.
+
         :param uid: user id of the user performing the action
         :param organization_name: the name of the organization to of which we should check if we can create
         :return: a boolean indicating if we can create the organization
@@ -85,18 +94,23 @@ class OrganizationView(OrgValidators, OrganizationEmails):
 
     def can_update_organization(self, uid: typing.Union[str, None], organization_id: typing.Union[str, None]) -> bool:
         ***REMOVED***
-            check if user has administrator rights on organization and if organization exist
+            **can_update_organization**
+                check if user has administrator rights on organization and if organization exist
+
             :param uid: the user performing this action
             :param organization_id: the organization_id of the organization to be updated
-        :return: returns a response , status code tuple
+            :return: returns a response , status code tuple
         ***REMOVED***
         # TODO - complete can_update_organization organization account
         pass
 
+    @handle_store_errors
     def _create_org_id(self) -> str:
         ***REMOVED***
-            create a valid organization_id if theres a conflict it creates another one and checks again if there is no
-            conflict it returns the organization_id
+            **_create_org_id**
+                create a valid organization_id if theres a conflict it creates another one and checks again if there is no
+                conflict it returns the organization_id
+
         :return: organization_id
         ***REMOVED***
         organization_id: str = create_id()
@@ -127,9 +141,20 @@ class OrganizationView(OrgValidators, OrganizationEmails):
         :return: tuple containing response object and status code
         ***REMOVED***
         # Note: insures that a valid organization id is created
-        organization_id: str = self._create_org_id()
+        organization_id: typing.Union[str, None] = self._create_org_id()
+
+        # if organization_id == None
+        if not bool(organization_id):
+            message: str = "unable to create a valid organization_id - please try again later"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         # TODO- this function needs to be completed
-        wallet_id: str = self._create_org_wallet(organization_id=organization_id)
+        wallet_id: typing.Union[str, None] = self._create_org_wallet(organization_id=organization_id)
+
+        # if wallet_id is None
+        if not bool(wallet_id):
+            message: str = "unable to create a valid wallet_id - please try again later"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         if not isinstance(description, str) or not bool(description.strip()):
             message: str = "description is required"
@@ -204,7 +229,7 @@ class OrganizationView(OrgValidators, OrganizationEmails):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def get_organization(self, uid: typing.Union[str, None], organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             function used to return the details of user organization,
@@ -228,7 +253,7 @@ class OrganizationView(OrgValidators, OrganizationEmails):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def _return_all_organizations(self) -> tuple:
         ***REMOVED***
             _private function to retrieve all organization details used by system and Application Administrator
@@ -393,7 +418,7 @@ class OrganizationView(OrgValidators, OrganizationEmails):
             elif isinstance(sub_payment, AmountMixin):
                 organization_instance.projected_membership_payments -= sub_payment
             else:
-                message : str = "Please enter either the amount to add or subtract"
+                message: str = "Please enter either the amount to add or subtract"
                 raise InputError(status=error_codes.input_error_code, description=message)
 
             message: str = "Successfully updated projected_membership_payments"
