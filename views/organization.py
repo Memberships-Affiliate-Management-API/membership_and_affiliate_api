@@ -126,8 +126,9 @@ class OrganizationView(OrgValidators, OrganizationEmails):
             :param organization_id: id of the organization to create organization wallet
             :return: the wallet key of the created organization wallet
         ***REMOVED***
-        # TODO this function must call the wallet API to create organization wallet
-        pass
+        _wallet_id: str = create_id()
+        # TODO verify ID through wallet api then send id
+        return _wallet_id
 
     @use_context
     @handle_view_errors
