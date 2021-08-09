@@ -93,10 +93,12 @@ class Validator(WalletValidator):
     @staticmethod
     def raise_input_error_if_not_available(organization_id: str, uid: str) -> None:
         ***REMOVED***
-            raise an error if organization_id or uid is not present
+            **raise_input_error_if_not_available
+                raise an error if organization_id or uid is not present
+
         :param organization_id:
         :param uid:
-        :return:
+        :return: Nothing
         ***REMOVED***
 
         if not isinstance(uid, str) or not bool(uid.strip()):
@@ -110,19 +112,24 @@ class Validator(WalletValidator):
     @staticmethod
     def raise_input_error(**kwargs) -> None:
         ***REMOVED***
-            raise an input error if any of the input variables are Null or Empty
+            **raise_input_error**
+                general function to raise input errors in-case when string variables are not string or are Empty
+                raise an input error if any of the input variables are Null or Empty
+
         :param kwargs:
         :return:
         ***REMOVED***
         for arg in kwargs.items():
             if not isinstance(arg, str) or not bool(arg.strip()):
-                message: str = "{} is required".format(arg.__name__)
+                message: str = "{} is required".format(arg.__class__.__name__)
                 raise InputError(status=error_codes.input_error_code, description=message)
 
     @app_cache.memoize(timeout=return_ttl('short'))
     def can_add_wallet(self, organization_id: typing.Union[str, None], uid: typing.Union[None, str] = None) -> bool:
         ***REMOVED***
-                can add wallet
+            **can_add_wallet**
+                this method will check if a new wallet can be added
+
             :param organization_id:
             :param uid:
             :return:
@@ -133,13 +140,19 @@ class Validator(WalletValidator):
         wallet_exist: typing.Union[bool, None] = self.wallet_exist(organization_id=organization_id, uid=uid)
         if isinstance(wallet_exist, bool):
             return not wallet_exist
-        raise DataServiceError(status=error_codes.data_service_error_code, description='Unable to verify wallet data')
+
+        # result is None meaning an error occurred then Raise a DataServiceError
+        message: str = 'database Error: Unable to verify wallet data'
+        raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
     @app_cache.memoize(timeout=return_ttl('short'))
     async def can_add_wallet_async(self, organization_id: typing.Union[str, None],
                                    uid: typing.Union[None, str] = None) -> bool:
         ***REMOVED***
-            testing if user can add a wallet
+            **can_add_wallet_async**
+                An asynchronous version of can_add_wallet
+                testing if user can add a wallet
+
         :param organization_id:
         :param uid:
         :return:
@@ -151,7 +164,9 @@ class Validator(WalletValidator):
 
         if isinstance(wallet_exist, bool):
             return not wallet_exist
-        raise DataServiceError(status=error_codes.data_service_error_code, description='Unable to verify wallet data')
+
+        message: str = 'database Error: Unable to verify wallet data'
+        raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
     @app_cache.memoize(timeout=return_ttl('short'))
     def can_update_wallet(self, organization_id: typing.Union[str, None], uid: typing.Union[None, str] = None) -> bool:
