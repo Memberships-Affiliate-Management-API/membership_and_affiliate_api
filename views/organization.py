@@ -190,13 +190,14 @@ class OrganizationView(OrgValidators, OrganizationEmails):
     def update_organization(self, uid: typing.Union[str, None], organization_id: typing.Union[str, None],
                             organization_name: typing.Union[str, None], description: typing.Union[str, None]) -> tuple:
         ***REMOVED***
-            function used to update the name and description of an organization.
+            **update_organization**
+                function used to update the name and description of an organization.
 
             :param uid: user id of the user updating the organization
             :param organization_id: the id of the organization being updated, this id has to exist first
             :param organization_name: the name the organization will be updated to
             :param description: the description the organization will be updated to
-        :return: tuple containing response and status code
+            :return: tuple containing response and status code
         ***REMOVED***
         if not isinstance(description, str) or not bool(description.strip()):
             message: str = "description is required"
@@ -207,7 +208,7 @@ class OrganizationView(OrgValidators, OrganizationEmails):
             raise InputError(status=error_codes.input_error_code, description=message)
 
         # NOTE: returns true if user has sufficient rights to update organization.
-        if self.can_update_organization(uid=uid, organization_id=organization_id) is True:
+        if self.can_update_organization(uid=uid, organization_id=organization_id):
 
             org_instance: Organization = Organization.query(Organization.organization_id == organization_id).get()
             if isinstance(org_instance, Organization):
@@ -233,12 +234,13 @@ class OrganizationView(OrgValidators, OrganizationEmails):
     @app_cache.memoize(timeout=return_ttl('short'))
     def get_organization(self, uid: typing.Union[str, None], organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
-            function used to return the details of user organization,
+            **get_organization**
+                function used to return the details of user organization,
 
             :param uid: required:  user id of the user requesting organization details
             :param organization_id: required: the id of the organization to return
-        :return: response object and status code, response contains ,
-        response json {'status': True, 'payload': '{Organization}', 'message' : 'success'}, 200
+            :return: response object and status code, response contains ,
+            response json {'status': True, 'payload': '{Organization}', 'message' : 'success'}, 200
         ***REMOVED***
         # NOTE: may not need to check if user can access organization details if the function is being called on behalf
         # of the system
@@ -257,8 +259,10 @@ class OrganizationView(OrgValidators, OrganizationEmails):
     @app_cache.memoize(timeout=return_ttl('short'))
     def _return_all_organizations(self) -> tuple:
         ***REMOVED***
-            _private function to retrieve all organization details used by system and Application Administrator
-        :return: a list containing all organization details
+            **_return_all_organizations**
+                _private function to retrieve all organization details used by system and Application Administrator
+
+            :return: a list containing all organization details
         ***REMOVED***
         organizations_list: typing.List[dict] = [org.to_dict() for org in Organization.query().fetch()]
         if len(organizations_list):
@@ -274,14 +278,15 @@ class OrganizationView(OrgValidators, OrganizationEmails):
     def _update_affiliate_count(self, organization_id: typing.Union[str, None], add: typing.Union[int, None] = None,
                                 sub: typing.Union[int, None] = None) -> tuple:
         ***REMOVED***
-            Private Function: this function will never be called externally or by the user.
+            **_update_affiliate_count**
+                Private Function: this function will never be called externally or by the user.
 
-            a function to update the affiliate count of organization instance, must be called each time there is a change_membership
-            in the total number of affiliates belonging to an organization.
+                a function to update the affiliate count of organization instance, must be called each time there is a change_membership
+                in the total number of affiliates belonging to an organization.
 
-                :param organization_id: the id of the organization of which the total affiliates has to be updated.
-                :param add: Optional amount to add, if you want to subtract pass None to this value and integer to sub
-                :param sub: Optional amount to subtract, if you want to add pass None to this value and integer to add
+            :param organization_id: the id of the organization of which the total affiliates has to be updated.
+            :param add: Optional amount to add, if you want to subtract pass None to this value and integer to sub
+            :param sub: Optional amount to subtract, if you want to add pass None to this value and integer to add
             :return: tuple containing response and status code.
         ***REMOVED***
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
@@ -317,6 +322,7 @@ class OrganizationView(OrgValidators, OrganizationEmails):
                            add_amount: typing.Union[AmountMixin, None] = None,
                            sub_amount: typing.Union[AmountMixin, None] = None) -> tuple:
         ***REMOVED***
+            **_update_total_paid**
                 Private function to update the total amount paid by the organization.
 
                 Supply either add_amount or sub_amount but not both, amounts shall be a class of AmountMixin and of the
@@ -326,7 +332,7 @@ class OrganizationView(OrgValidators, OrganizationEmails):
             :param add_amount: Optional pass add_amount <AmountMixin> to add or None otherwise
             :param sub_amount: Optional pass sub_amount as <AmountMixin> to subtract or None otherwise
 
-        :return: tuple containing response and status code
+            :return: tuple containing response and status code
 
         ***REMOVED***
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
