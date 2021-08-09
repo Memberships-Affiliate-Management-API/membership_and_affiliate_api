@@ -34,9 +34,7 @@ class MembershipValidators:
             **start_date_valid**
                 check if date is from today and falls within normal parameters
         ***REMOVED***
-        if isinstance(start_date, date) and start_date > today():
-            return True
-        return False
+        return isinstance(start_date, date) and start_date > today()
 
     @staticmethod
     async def start_date_valid_async(start_date: date) -> bool:
@@ -44,9 +42,7 @@ class MembershipValidators:
             **asynchronous version of start_date_valid_async**
                 check if date is from today and falls within normal parameters
         ***REMOVED***
-        if isinstance(start_date, date) and start_date > today():
-            return True
-        return False
+        return isinstance(start_date, date) and start_date > today()
 
 
 class PlanValidators:
@@ -164,7 +160,8 @@ class PlanValidators:
 
 class CouponsValidator:
     ***REMOVED***
-        validating input and authenticating calls to Coupons database
+        **Class Coupons Validator**
+            validating input and authenticating calls to Coupons database
     ***REMOVED***
     def __init__(self):
         pass
@@ -191,9 +188,7 @@ class CouponsValidator:
         coupons_instance: Coupons = Coupons.query(Coupons.organization_id == organization_id,
                                                   Coupons.code == code.strip().lower()).get()
 
-        if isinstance(coupons_instance, Coupons):
-            return True
-        return False
+        return isinstance(coupons_instance, Coupons)
 
     # noinspection DuplicatedCode
     @staticmethod
@@ -217,9 +212,7 @@ class CouponsValidator:
         coupons_instance: Coupons = Coupons.query(
             Coupons.organization_id == organization_id, Coupons.code == code.strip().lower()).get_async().get_result()
 
-        if isinstance(coupons_instance, Coupons):
-            return True
-        return False
+        return isinstance(coupons_instance, Coupons)
 
     @staticmethod
     def expiration_valid(expiration_time: int) -> bool:
@@ -232,9 +225,7 @@ class CouponsValidator:
             message: str = "expiration_time can only be an integer"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        if expiration_time < get_days(days=1):
-            return False
-        return True
+        return expiration_time < get_days(days=1)
 
     @staticmethod
     async def expiration_valid_async(expiration_time: int) -> bool:
