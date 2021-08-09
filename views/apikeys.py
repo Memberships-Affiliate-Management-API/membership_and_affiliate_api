@@ -25,7 +25,7 @@ class APIKeysValidators(OrgValidators, AuthUserValidators):
         self._max_retries = current_app.config.get('DATASTORE_RETRIES')
         self._max_timeout = current_app.config.get('DATASTORE_TIMEOUT')
 
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def organization_exist(self, organization_id: typing.Union[str, None]) -> bool:
         ***REMOVED***
             checks if an organization is in existence
@@ -41,7 +41,7 @@ class APIKeysValidators(OrgValidators, AuthUserValidators):
             return does_organization_exist
         raise DataServiceError(status=500, description="Database Error: Unable to verify organization")
 
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def user_can_create_key(self, uid: typing.Union[str, None], organization_id: typing.Union[str, None]) -> bool:
         ***REMOVED***
             checks if user can create key
@@ -177,7 +177,7 @@ class APIKeysView(APIKeysValidators):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def return_all_organization_keys(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             return a list of api-keys belonging to a specific organization
@@ -200,7 +200,7 @@ class APIKeysView(APIKeysValidators):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def return_active_organization_keys(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             return_active_organization_keys returns all active organizational keys
@@ -224,7 +224,7 @@ class APIKeysView(APIKeysValidators):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def get_api_key(self, api_key: typing.Union[str, None], organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             fetch a specific api key

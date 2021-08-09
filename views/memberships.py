@@ -151,7 +151,7 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         self._max_retries = current_app.config.get('DATASTORE_RETRIES')
         self._max_timeout = current_app.config.get('DATASTORE_TIMEOUT')
 
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def can_add_member(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
                        plan_id: typing.Union[str, None], start_date: date) -> bool:
         user_valid: typing.Union[None, bool] = self.is_user_valid(organization_id=organization_id, uid=uid)
@@ -164,7 +164,7 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         message: str = "Unable to verify input data, due to database error, please try again later"
         raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     async def can_add_member_async(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
                                    plan_id: typing.Union[str, None],
                                    start_date: date) -> bool:
@@ -179,7 +179,7 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         message: str = "Unable to verify input data, due to database error, please try again later"
         raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def can_add_plan(self, organization_id: typing.Union[str, None], plan_name: typing.Union[str, None]) -> bool:
         name_exist: typing.Union[None, bool] = self.plan_name_exist(organization_id=organization_id,
                                                                     plan_name=plan_name)
@@ -188,7 +188,7 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         message: str = "Unable to verify input data, due to database error, please try again later"
         raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     async def can_add_plan_async(self, organization_id: typing.Union[str, None],
                                  plan_name: typing.Union[str, None]) -> bool:
         name_exist: typing.Union[None, bool] = await self.plan_name_exist_async(
@@ -199,7 +199,7 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         message: str = "Unable to verify input data, due to database error, please try again later"
         raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def can_update_plan(self, organization_id: typing.Union[str, None],
                         plan_id: typing.Union[str, None], plan_name: typing.Union[str, None]) -> bool:
         plan_exist: typing.Union[None, bool] = self.plan_exist(organization_id=organization_id, plan_id=plan_id)
@@ -211,7 +211,7 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         message: str = "Unable to verify input data, due to database error, please try again later"
         raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     async def can_update_plan_async(self, organization_id: typing.Union[str, None],
                                     plan_id: typing.Union[str, None], plan_name: typing.Union[str, None]) -> bool:
 
@@ -226,7 +226,7 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         message: str = "Unable to verify input data, due to database error, please try again later"
         raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def can_add_coupon(self, organization_id: typing.Union[str, None], code: typing.Union[str, None],
                        expiration_time: typing.Union[int, None],
                        discount: typing.Union[int, None]) -> bool:
@@ -240,7 +240,7 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         message: str = "Unable to verify input data"
         raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     async def can_add_coupon_async(self, organization_id: typing.Union[str, None], code: typing.Union[str, None],
                                    expiration_time: typing.Union[int, None],
                                    discount: typing.Union[int, None]) -> bool:
@@ -255,7 +255,7 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         message: str = "Unable to verify input data"
         raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def can_update_coupon(self, organization_id: typing.Union[str, None], code: typing.Union[str, None],
                           expiration_time: typing.Union[int, None],
                           discount: typing.Union[int, None]) -> bool:
@@ -269,7 +269,7 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         message: str = "Unable to verify input data"
         raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     async def can_update_coupon_async(self, organization_id: typing.Union[str, None], code: typing.Union[str, None],
                                       expiration_time: typing.Union[int, None],
                                       discount: typing.Union[int, None]) -> bool:
@@ -657,7 +657,7 @@ class MembershipsView(Validators, MembershipsEmails):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def return_plan_members_by_payment_status(self, organization_id: typing.Union[str, None],
                                               plan_id: typing.Union[str, None],
                                               status: typing.Union[str, None]) -> tuple:
@@ -694,7 +694,7 @@ class MembershipsView(Validators, MembershipsEmails):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     async def return_plan_members_by_payment_status_async(self, organization_id: typing.Union[str, None],
                                                           plan_id: typing.Union[str, None],
                                                           status: typing.Union[str, None]) -> tuple:
@@ -733,7 +733,7 @@ class MembershipsView(Validators, MembershipsEmails):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def return_members_by_payment_status(self, organization_id: typing.Union[str, None],
                                          status: typing.Union[str, None]) -> tuple:
         ***REMOVED***
@@ -763,7 +763,7 @@ class MembershipsView(Validators, MembershipsEmails):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     async def return_members_by_payment_status_async(self, organization_id: typing.Union[str, None],
                                                      status: typing.Union[str, None]) -> tuple:
         ***REMOVED***
@@ -793,7 +793,7 @@ class MembershipsView(Validators, MembershipsEmails):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def return_plan_members(self, organization_id: typing.Union[str, None], plan_id: typing.Union[str, None]) -> tuple:
 
         ***REMOVED***
@@ -820,7 +820,7 @@ class MembershipsView(Validators, MembershipsEmails):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     async def return_plan_members_async(self, organization_id: typing.Union[str, None],
                                         plan_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
@@ -843,7 +843,7 @@ class MembershipsView(Validators, MembershipsEmails):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     async def return_plan_members_async(self, organization_id: typing.Union[str, None],
                                         plan_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
@@ -866,7 +866,7 @@ class MembershipsView(Validators, MembershipsEmails):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def is_member_off(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             returns user membership details
@@ -892,7 +892,7 @@ class MembershipsView(Validators, MembershipsEmails):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     async def is_member_off_async(self, organization_id: typing.Union[str, None],
                                   uid: typing.Union[str, None]) -> tuple:
 
@@ -912,7 +912,7 @@ class MembershipsView(Validators, MembershipsEmails):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def payment_amount(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             for a specific user return payment amount
@@ -944,7 +944,7 @@ class MembershipsView(Validators, MembershipsEmails):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     async def payment_amount_async(self, organization_id: typing.Union[str, None],
                                    uid: typing.Union[str, None]) -> tuple:
 
@@ -1388,7 +1388,7 @@ class MembershipPlansView(Validators):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def return_plans_by_schedule_term(self, organization_id: typing.Union[str, None], schedule_term: str) -> tuple:
         ***REMOVED***
             returns plan schedules - this is a payment schedule for the plan
@@ -1410,7 +1410,7 @@ class MembershipPlansView(Validators):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     async def return_plans_by_schedule_term_async(self, organization_id: typing.Union[str, None],
                                                   schedule_term: str) -> tuple:
         ***REMOVED***
@@ -1467,7 +1467,7 @@ class MembershipPlansView(Validators):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def return_plan(self, organization_id: str, plan_id: str) -> tuple:
         ***REMOVED***
             return a specific membership plan
@@ -1486,7 +1486,7 @@ class MembershipPlansView(Validators):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     async def return_plan_async(self, organization_id: str, plan_id: str) -> tuple:
         ***REMOVED***
             return a specific membership plan
@@ -1506,7 +1506,7 @@ class MembershipPlansView(Validators):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def return_plan_by_uid(self, organization_id: str, uid: str) -> tuple:
         ***REMOVED***
             return membership plan details for a specific user
@@ -1530,7 +1530,7 @@ class MembershipPlansView(Validators):
     @staticmethod
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def return_all_plans(organization_id: str) -> tuple:
         ***REMOVED***
             returns all memberships plans, Note that some more details on membership plans are located in PayPal
@@ -1553,7 +1553,7 @@ class MembershipPlansView(Validators):
     @staticmethod
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     async def return_all_plans_async(organization_id: str) -> tuple:
         ***REMOVED***
             returns all memberships plans, Note that some more details on membership plans are located in PayPal
@@ -1899,7 +1899,7 @@ class CouponsView(Validators):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def get_all_coupons(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             returns a list of all coupons
@@ -1924,7 +1924,7 @@ class CouponsView(Validators):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     async def get_all_coupons_async(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             retrieve all coupons
@@ -1949,7 +1949,7 @@ class CouponsView(Validators):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def get_valid_coupons(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             returns a list of expired coupon codes
@@ -1975,7 +1975,7 @@ class CouponsView(Validators):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     async def get_valid_coupons_async(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             returns a list of valid coupon codes
@@ -2001,7 +2001,7 @@ class CouponsView(Validators):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def get_expired_coupons(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             returns a list of expired coupon codes
@@ -2027,7 +2027,7 @@ class CouponsView(Validators):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     async def get_expired_coupons_async(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             returns a list of expired coupon codes
@@ -2054,7 +2054,7 @@ class CouponsView(Validators):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def get_coupon(self, coupon_data: dict) -> tuple:
         ***REMOVED***
             returns coupon code data required parameters are organization_id and coupon_id
@@ -2085,7 +2085,7 @@ class CouponsView(Validators):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     async def get_coupon_async(self, coupon_data: dict) -> tuple:
         code: typing.Union[str, None] = coupon_data.get("code")
 
