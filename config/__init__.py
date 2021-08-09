@@ -18,9 +18,10 @@ import datetime
 
 class Config:
     ***REMOVED***
-        configuration variables for setting up the application
+        **APP Configuration Settings**
+            configuration variables for setting up the application
     ***REMOVED***
-
+    # TODO - Clean up configuration settings
     def __init__(self) -> None:
         self.BASE_URL: str = os.environ.get("BASE_URL") or config("BASE_URL")
         self.MAILGUN_DOMAIN: str = os.environ.get("MAILGUN_DOMAIN") or config("MAILGUN_DOMAIN")
@@ -77,8 +78,9 @@ class Config:
             self.ENV = "development"
             self.PROPAGATE_EXCEPTIONS: bool = True
             self.PRESERVE_CONTEXT_ON_EXCEPTION: bool = True
-            self.EXPLAIN_TEMPLATE_LOADING: bool = True
+            self.EXPLAIN_TEMPLATE_LOADING: bool = False
             self.PREFERRED_URL_SCHEME: str = "http"
+            self.TESTING: bool = True
             # TODO - set Cache to MEM_CACHE and then setup the server URI, applicable on version 2
 
     def __str__(self) -> str:
