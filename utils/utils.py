@@ -17,32 +17,39 @@ from datetime import date
 from datetime import time as time_class
 from config import config_instance
 from flask_caching import Cache
+
 char_set = string.ascii_lowercase + string.ascii_uppercase + string.digits
 
 
-# NOTE : Cannot use current_app
-def is_development() -> bool: return False if config_instance.IS_PRODUCTION else True
+# NOTE : Cannot use current_app - is_development is opposite of IS_PRODUCTION
+def is_development() -> bool: return not config_instance.IS_PRODUCTION
 
 
 # NOTE this environment variable is only found on Heroku
 def is_heroku() -> bool: return True if os.environ.get("IS_HEROKU") else False
 
 
+# Creates an ID for use as a unique ID
 def create_id(size: int = 64, chars: str = char_set) -> str: return ''.join(random.choice(chars) for _ in range(size))
 
 
+# Returns he timestamp in milliseconds
 def timestamp() -> int: return int(float(time.time()) * 1000)
 
 
+# Returns the number of days in milliseconds
 def get_days(days: int) -> int: return int(days * 24 * 60 * 60 * 1000)
 
 
+# Returns the difference in milliseconds betwee two timestamps
 def timestamp_difference(stamp1: int, stamp2: int) -> int: return int(stamp1 - stamp2)
 
 
+# Turns a string representation of a date into python date object
 def date_string_to_date(date_str: str) -> date:
     ***REMOVED***
-        date form dd/mm/yyyy
+    :param date_str: string representation of date
+    :return: returns a python date object
     ***REMOVED***
     if isinstance(date_str, str):
         if "/" in date_str:
@@ -72,13 +79,23 @@ def date_string_to_date(date_str: str) -> date:
 
 # cache functions
 def end_of_month() -> bool:
+    ***REMOVED***
+        NOTE: True if the present date can be considered end of month or near end of month
+        :return: True
+    ***REMOVED***
     now: date = datetime.datetime.now().date()
     if now.day in [30, 31, 1]:
         return True
     return False
 
 
+# Used to control cache ttl
 def return_ttl(name: str) -> int:
+    ***REMOVED***
+       NOTE:  returns ttl for cache depending on long, short, and medium
+    :param name:
+    :return:
+    ***REMOVED***
     cache_ttl_short: int = int(60 * 60 * 0.5)  # 30 minutes
     cache_ttl_medium: int = int(60 * 60 * 1)  # 1 hour
     cache_ttl_long: int = int(60 * 60 * 1.5)  # 1 hour 30 minutes
@@ -93,28 +110,53 @@ def return_ttl(name: str) -> int:
 
 
 # TODO Refactor the entire codebase to use this function to obtain todays date
-def today() -> date:
-    return datetime.datetime.now().date()
+def today() -> date: return datetime.datetime.now().date()
 
 
-def time_now() -> time_class:
-    return datetime.datetime.now().time()
+# Returns the present time
+def time_now() -> time_class: return datetime.datetime.now().time()
 
 
-def datetime_now() -> datetime:
-    return datetime.datetime.now()
+# NOTE: Returns the present datetime
+def datetime_now() -> datetime: return datetime.datetime.now()
 
 
-def date_days_ago(days: int) -> date:
-    days_ago = datetime.datetime.now() - datetime.timedelta(days=days)
-    return days_ago.date()
+# NOTE: returns a date indicated by days in the past
+def date_days_ago(days: int) -> date: return (datetime.datetime.now() - datetime.timedelta(days=days)).date()
 
 
-def task_counter(timer_limit: int = 10000) -> any:
+# NOTE: returns the present supported payment method
+def get_payment_methods() -> typing.List[str]: return ['eft', 'paypal']
+
+
+# NOTE: fetches payment plan schedules from config_instance
+def get_plan_scheduled_terms() -> typing.List[str]: return config_instance.PAYMENT_PLANS_SCHEDULES
+
+
+# NOTE: returns the days the transactions can be made once scheduled term has been reached for payment
+def get_scheduled_term_days() -> typing.List[int]: return config_instance.PAYMENT_PLANS_PAYMENT_DAYS
+
+
+# NOTE: Returns True if cache can be used or is supported,  in-case of debug or development the cache
+def can_cache() -> bool: return is_development() or not config_instance.DEBUG
+
+
+def clear_cache(app, cache: Cache) -> bool:
+    with app.context():
+        cache.clear()
+        return True
+
+
+# NOTE: Task counter generator
+def task_counter(timer_limit: int = 1000000) -> any:
     ***REMOVED***
+        **task_counter**
         if request is to create task then
             with connection read task count
             add one to task count
+
+    :param timer_limit:
+    :return:
     ***REMOVED***
     y = 0
     while y < timer_limit:
@@ -125,39 +167,8 @@ def task_counter(timer_limit: int = 10000) -> any:
 counter = task_counter()
 
 
-def get_counter() -> int:
-    return next(counter)
-
-
-def get_payment_methods() -> typing.List[str]:
-    return ['eft', 'paypal']
-
-
-def get_plan_scheduled_terms() -> typing.List[str]:
-    ***REMOVED***
-        fetches payment plan schedules from config_instance
-    :return: LIST payment_plan_schedules
-    ***REMOVED***
-    return config_instance.PAYMENT_PLANS_SCHEDULES
-
-
-def get_scheduled_term_days() -> typing.List[int]:
-    ***REMOVED***
-        returns the days the transactions can be made once scheduled term has been reached for payment
-    :return: list of integers representing days transactions can be made
-    ***REMOVED***
-    return config_instance.PAYMENT_PLANS_PAYMENT_DAYS
-
-
-def can_cache() -> any:
-    ***REMOVED***NOTE: de activates the cache in case we are running on development server or debug is enabled***REMOVED***
-    return is_development() or not config_instance.DEBUG
-
-
-def clear_cache(app, cache: Cache) -> bool:
-    with app.context():
-        cache.clear()
-        return True
+# NOTE: get counter - to use the generator
+def get_counter() -> int: return next(counter)
 
 
 if __name__ == '__main__':
@@ -168,4 +179,3 @@ if __name__ == '__main__':
     # expire_after = datetime.datetime.now() - datetime.timedelta(days=30)
     # print(expire_after.date())
     pass
-

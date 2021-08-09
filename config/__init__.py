@@ -68,8 +68,8 @@ class Config:
 
         # NOTE : setting IS_PRODUCTION here - could find a better way of doing this rather than depending on the OS
         if "Windows_NT" == os.environ.get("OS"):
-            self.DEBUG = True
-            self.IS_PRODUCTION = False
+            self.DEBUG: bool = True
+            self.IS_PRODUCTION: bool = False
             # TODO - set Cache to MEM_CACHE and then setup the server URI, applicable on version 2
 
     def __str__(self) -> str:

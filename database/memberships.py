@@ -1,7 +1,7 @@
 ***REMOVED***
     **Memberships Module**
     *Class Definitions for: Memberships, Memberships Plans and Coupons*
-    This classes are related to creating and management of organiational memberships and their membership plans
+    This classes are related to creating and management of organizational memberships and their membership plans
     for organizations products or services in order to collect payments from clients
 
 ***REMOVED***
@@ -51,7 +51,10 @@ class PlanValidators:
     ***REMOVED***
         validating and authenticating calls to MembershipPlans Database
     ***REMOVED***
+
+    # noinspection DuplicatedCode
     @staticmethod
+    @handle_store_errors
     def plan_exist(organization_id: str, plan_id: str) -> typing.Union[None, bool]:
         ***REMOVED***
             return True or False
@@ -62,21 +65,15 @@ class PlanValidators:
 
         if not isinstance(plan_id, str) or not bool(plan_id.strip()):
             return False
-
-        try:
-            plan_instance: MembershipPlans = MembershipPlans.query(MembershipPlans.organization_id == organization_id,
-                                                                   MembershipPlans.plan_id == plan_id).get()
-            if isinstance(plan_instance, MembershipPlans):
-                return True
-        except ConnectionRefusedError:
-            return None
-        except RetryError:
-            return None
-        except Aborted:
-            return None
+        plan_instance: MembershipPlans = MembershipPlans.query(MembershipPlans.organization_id == organization_id,
+                                                               MembershipPlans.plan_id == plan_id).get()
+        if isinstance(plan_instance, MembershipPlans):
+            return True
         return False
 
+    # noinspection DuplicatedCode
     @staticmethod
+    @handle_store_errors
     async def plan_exist_async(organization_id: str, plan_id: str) -> typing.Union[None, bool]:
         ***REMOVED***
             return True or False
@@ -87,22 +84,17 @@ class PlanValidators:
 
         if not isinstance(plan_id, str) or not bool(plan_id.strip()):
             return False
-        try:
-            plan_instance: MembershipPlans = MembershipPlans.query(
-                MembershipPlans.organization_id == organization_id,
-                MembershipPlans.plan_id == plan_id).get_async().get_result()
+        plan_instance: MembershipPlans = MembershipPlans.query(
+            MembershipPlans.organization_id == organization_id,
+            MembershipPlans.plan_id == plan_id).get_async().get_result()
 
-            if isinstance(plan_instance, MembershipPlans):
-                return True
-        except ConnectionRefusedError:
-            return None
-        except RetryError:
-            return None
-        except Aborted:
-            return None
+        if isinstance(plan_instance, MembershipPlans):
+            return True
         return False
 
+    # noinspection DuplicatedCode
     @staticmethod
+    @handle_store_errors
     def plan_name_exist(organization_id: str, plan_name: str) -> typing.Union[None, bool]:
         ***REMOVED***
             returns True or False if plan exist or dont exist
@@ -114,18 +106,15 @@ class PlanValidators:
         if not isinstance(plan_name, str) or not bool(plan_name.strip()):
             return False
 
-        try:
-            plan_instance: MembershipPlans = MembershipPlans.query(MembershipPlans.organization_id == organization_id,
-                                                                   MembershipPlans.plan_name == plan_name).get()
-            if isinstance(plan_instance, MembershipPlans):
-                return True
-        except ConnectionRefusedError:
-            return None
-        except RetryError:
-            return None
+        plan_instance: MembershipPlans = MembershipPlans.query(MembershipPlans.organization_id == organization_id,
+                                                               MembershipPlans.plan_name == plan_name).get()
+        if isinstance(plan_instance, MembershipPlans):
+            return True
         return False
 
+    # noinspection DuplicatedCode
     @staticmethod
+    @handle_store_errors
     async def plan_name_exist_async(organization_id: str, plan_name: str) -> typing.Union[None, bool]:
         ***REMOVED***
             returns True or False if plan exist or dont exist
@@ -137,17 +126,12 @@ class PlanValidators:
         if not isinstance(plan_name, str) or not bool(plan_name.strip()):
             return False
 
-        try:
-            plan_instance: MembershipPlans = MembershipPlans.query(
-                MembershipPlans.organization_id == organization_id,
-                MembershipPlans.plan_name == plan_name).get_async().get_result()
+        plan_instance: MembershipPlans = MembershipPlans.query(
+            MembershipPlans.organization_id == organization_id,
+            MembershipPlans.plan_name == plan_name).get_async().get_result()
 
-            if isinstance(plan_instance, MembershipPlans):
-                return True
-        except ConnectionRefusedError:
-            return None
-        except RetryError:
-            return None
+        if isinstance(plan_instance, MembershipPlans):
+            return True
         return False
 
 
@@ -158,6 +142,7 @@ class CouponsValidator:
     def __init__(self):
         pass
 
+    # noinspection DuplicatedCode
     @staticmethod
     @handle_store_errors
     def coupon_exist(organization_id: str, code: str) -> typing.Union[None, bool]:
@@ -180,6 +165,7 @@ class CouponsValidator:
             return True
         return False
 
+    # noinspection DuplicatedCode
     @staticmethod
     @handle_store_errors
     async def coupon_exist_async(organization_id: str, code: str) -> typing.Union[None, bool]:
@@ -256,17 +242,19 @@ class CouponsValidator:
 # noinspection DuplicatedCode
 class Memberships(ndb.Model):
     ***REMOVED***
-        NOTE: Tracks down which user belongs to which plan from which organization_id  and if the user is paid up or unpaid
-        for the month it also captures the payment_method selected for the plan
+        **Class Memberships**
+            NOTE: Tracks down which user belongs to which plan from which organization_id  and if the user is paid up or unpaid
+            for the month it also captures the payment_method selected for the plan
+
 
         `Class Properties`
-        :property organization_id: the id of the organization a client is a member of
-        :property uid: the user id of the client
-        :property plan_id: the plan of payment the client is subscribed to
-        :property status: status in terms of payments of this membership
-        :property date_created: the date the membership has been created
-        :property plan_start_date: the date the plan has been activated
-        :property payment_method: method of payment for the membership plan
+            1. property organization_id: the id of the organization a client is a member of
+            2. property uid: the user id of the client
+            3. property plan_id: the plan of payment the client is subscribed to
+            4. property status: status in terms of payments of this membership
+            5. property date_created: the date the membership has been created
+            6. property plan_start_date: the date the plan has been activated
+            7. property payment_method: method of payment for the membership plan
     ***REMOVED***
     organization_id: str = ndb.StringProperty(validator=setters.set_id)
     uid: str = ndb.StringProperty(validator=setters.set_id)
@@ -309,9 +297,10 @@ class Memberships(ndb.Model):
 # noinspection DuplicatedCode
 class MembershipPlans(ndb.Model):
     ***REMOVED***
-        Payment plans for services and products belonging to an organization that created it,
-        clients of such organization will subscribe to such payment plans in order to get access to services or products
-        being offered by the organization.
+        **Class Membership Plans**
+            Payment plans for services and products belonging to an organization that created it,
+            clients of such organization will subscribe to such payment plans in order to get access to services or products
+            being offered by the organization.
 
         Contains a definition of all Membership Plans
         TODO - Memberships Plans must relate to PayPal Service Plans, when a plan gets created here
@@ -319,19 +308,19 @@ class MembershipPlans(ndb.Model):
         another field to relate the two plans may be created...
 
     `Class Properties`
-    :property : organization_id : the id of the organization which created the membership plan.
-    :property : service_id: the id of the service or product the payment plan belong to.
-    :property : plan_id: the id of the membership plan.
-    :property : plan_name: the name of the payment plan.
-    :property : description : description of the created payment plan.
-    :property : total_members: total members subscribed to the membership plan.
-    :property : schedule_term: the terms of payment for a plan , determined the period upon which
-                collections / payments can be made.
-    :property : schedule_day: the days scheduled for payment collection for a plan-- see scheduled_term for context.
-    :property : term_payment_amount: the amount which would be paid when the time of collection has been reached.
-    :property : registration_amount: the amount which would be paid upon activation of the payment plan for a member.
-    :property : is_active: when true people can activate a membership under this payment plan for a service / product.
-     :property : date_created: the date the payment plan has been created
+        1. property : organization_id : the id of the organization which created the membership plan.
+        2. property : service_id: the id of the service or product the payment plan belong to.
+        3. property : plan_id: the id of the membership plan.
+        4. property : plan_name: the name of the payment plan.
+        5. property : description : description of the created payment plan.
+        6. property : total_members: total members subscribed to the membership plan.
+        7. property : schedule_term: the terms of payment for a plan , determined the period upon which
+                    collections / payments can be made.
+        8. property : schedule_day: the days scheduled for payment collection for a plan-- see scheduled_term for context.
+        9. property : term_payment_amount: the amount which would be paid when the time of collection has been reached.
+        10. property : registration_amount: the amount which would be paid upon activation of the payment plan for a member.
+        11. property : is_active: when true people can activate a membership under this payment plan for a service / product.
+        12. property : date_created: the date the payment plan has been created
 
     ***REMOVED***
     organization_id: str = ndb.StringProperty(validator=setters.set_id)
@@ -380,31 +369,21 @@ class MembershipPlans(ndb.Model):
 # noinspection DuplicatedCode
 class MembershipInvoices(ndb.Model):
     ***REMOVED***
-        Invoices created for clients, based on payments made on service payment plans
+        **Class Memberships Invoices**
+            Invoices created for clients, based on payments made on service payment plans
 
         `**Class Properties**`
-
-        :property : organization_id: string: the id of the organization who's services and products the payment is based
-
-        :property :uid: string:  the ID of the user the invoice refers to
-
-        :property : plan_id: string: the id of the payment plan the invoice is related to
-
-        :property : invoice_id: string : unique id of this invoice
-
-        :property : invoice_number: string: sequential number of this invoice
-
-        :property : date_created: datetime : the date the invoice is created
-
-        :property : invoice_sent: bool : indicates if the invoice has been sent to the user / client
-
-        :property : invoice_paid: bool: indicates if invoice has been paid
-
-        :property : date_paid: date : the date payment has been made
-
-        :property : payment_amount: AmountMixin : the amount to be paid for this invoice
-
-        :property : amount_paid: AmountMixin : the amount which has been paid for this invoice
+            1. property : organization_id: string: the id of the organization who's services and products the payment is based
+            2. property :uid: string:  the ID of the user the invoice refers to
+            3. property : plan_id: string: the id of the payment plan the invoice is related to
+            4. property : invoice_id: string : unique id of this invoice
+            5. property : invoice_number: string: sequential number of this invoice
+            6. property : date_created: datetime : the date the invoice is created
+            7. property : invoice_sent: bool : indicates if the invoice has been sent to the user / client
+            8. property : invoice_paid: bool: indicates if invoice has been paid
+            9. property : date_paid: date : the date payment has been made
+            10. property : payment_amount: AmountMixin : the amount to be paid for this invoice
+            11. property : amount_paid: AmountMixin : the amount which has been paid for this invoice
 
     ***REMOVED***
     organization_id: str = ndb.StringProperty(validator=setters.set_id)

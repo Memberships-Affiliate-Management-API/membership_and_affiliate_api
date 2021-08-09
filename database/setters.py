@@ -405,13 +405,13 @@ class ClassSetters(Events, Util):
         :param value: value representing the currency symbol
         :return: will return currency symbol representing a string
         ***REMOVED***
-        from config.currencies import currency_symbols
+        from config.currencies import currency_util
         class_name: str = setters.return_class_name(prop=prop)
         if not (isinstance(value, str)):
             message: str = '''Currency is an Instance of : {}, and should be a string representation 
             of a currency symbol'''.format(class_name)
             raise TypeError(message)
-        if value not in currency_symbols():
+        if value not in currency_util.currency_symbols():
             raise ValueError("This value : {} is not a valid currency symbol".format(value))
         return value
 

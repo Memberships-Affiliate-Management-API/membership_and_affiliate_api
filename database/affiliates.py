@@ -20,6 +20,10 @@ from database.setters import setters
 
 
 class AffiliatesValidators:
+    ***REMOVED***
+        **Class AffiliatesValidators**
+            Input Validations for Affiliates
+    ***REMOVED***
     def __init__(self):
         super(AffiliatesValidators, self).__init__()
 
@@ -29,7 +33,7 @@ class AffiliatesValidators:
         ***REMOVED***
             returns true
         :param affiliate_id:
-        :return:
+        :return: boolean -> indicating if affiliate_exist or not
         ***REMOVED***
         affiliate_instance: Affiliates = Affiliates.query(Affiliates.affiliate_id == affiliate_id).get()
         return isinstance(affiliate_instance, Affiliates)
@@ -51,68 +55,85 @@ class AffiliatesValidators:
 
 
 class RecruitsValidators:
+    ***REMOVED***
+        **RecruitsValidators**
+            Input Validations for recruits class
+    ***REMOVED***
     def __init__(self):
         super(RecruitsValidators, self).__init__()
 
     # noinspection DuplicatedCode
     @staticmethod
+    @handle_store_errors
     def user_already_recruited(uid: typing.Union[str, None]) -> typing.Union[None, bool]:
+        ***REMOVED***
+            TODO - an organization_id
+            method user_already_recruited -> checks if user has already been recruited
+            in this organization
+        :param uid:
+        :return:
+        ***REMOVED***
         if not(isinstance(uid, str)) or (uid == ""):
             raise ValueError("UID cannot be Null, and can only be a string")
-        try:
-            recruit_instance: Recruits = Recruits.query(Recruits.uid == uid).get()
-            if isinstance(recruit_instance, Recruits):
-                return True
-            return False
-        except ConnectionRefusedError:
-            return None
-        except RetryError:
-            return None
-        except Aborted:
-            return None
+
+        recruit_instance: Recruits = Recruits.query(Recruits.uid == uid).get()
+        if isinstance(recruit_instance, Recruits):
+            return True
+        return False
 
     @staticmethod
+    @handle_store_errors
     def user_already_an_affiliate(uid: typing.Union[str, None]) -> typing.Union[None, bool]:
+        ***REMOVED***
+            TODO - an organization_id
+            ** method user_already_an_affiliate**
+                checks if user is already an affiliate
+        :param uid:
+        :return:
+        ***REMOVED***
         if not(isinstance(uid, str)) or (uid == ""):
             raise ValueError("UID cannot be Null, and can only be a string")
-        try:
-            affiliate_instance: Affiliates = Affiliates.query(Affiliates.uid == uid).get()
-            if isinstance(affiliate_instance, Affiliates):
-                return True
-            return False
-        except ConnectionRefusedError:
-            return None
-        except RetryError:
-            return None
-        except Aborted:
-            return None
+        affiliate_instance: Affiliates = Affiliates.query(Affiliates.uid == uid).get()
+        if isinstance(affiliate_instance, Affiliates):
+            return True
+        return False
 
 
 class EarningsValidators:
+    ***REMOVED***
+        **Class EarningsValidators**
+            class used to validate user earnings based on affiliate recruitments and
+            membership payments
+    ***REMOVED***
     def __init__(self):
         super(EarningsValidators, self).__init__()
 
     @staticmethod
+    @handle_store_errors
     def unclosed_earnings_already_exist(affiliate_id: str) -> typing.Union[None, bool]:
         if not(isinstance(affiliate_id, str)) or (affiliate_id == ""):
             raise ValueError("Affiliate_id cannot be Null, and can only be a string")
-        try:
-            earnings_list: typing.List[EarningsData] = EarningsData.query(
-                EarningsData.affiliate_id == affiliate_id).fetch()
-            if isinstance(earnings_list, list) and len(earnings_list) > 0:
-                return True
-            return False
-        except ConnectionRefusedError:
-            return None
-        except RetryError:
-            return None
-        except Aborted:
-            return None
+        earnings_list: typing.List[EarningsData] = EarningsData.query(
+            EarningsData.affiliate_id == affiliate_id).fetch()
+        if isinstance(earnings_list, list) and len(earnings_list) > 0:
+            return True
+        return False
 
 
 class Affiliates(ndb.Model):
     ***REMOVED***
-        class used to track affiliates registered
+        **Class Affiliates**
+            class used to track affiliates registered
+
+        **Class Properties**
+            1. organization_id: string -> unique id to identify the organization for each affiliate instance
+            2. affiliate_id: string -> unique id to identify the recruited affiliate
+            3. uid: string -> user id to identify the user - same user as affiliate_id
+            4. last_updated: datetime -> time indicating the last time this record was updated
+            5. datetime_recruited: datetime -> time the affiliate was registered
+            6. total_recruits: int -> indicates the total number of recruits under this affiliate
+            7. is_active: bool -> indicates if the affiliate is active
+            8. is_deleted: bool -> indicates if an affiliate is deleted or not.
     ***REMOVED***
     organization_id: str = ndb.StringProperty(validator=setters.set_id)
     affiliate_id: str = ndb.StringProperty(validator=setters.set_id)
@@ -149,8 +170,21 @@ class Affiliates(ndb.Model):
 
 class Recruits(ndb.Model):
     ***REMOVED***
-        class used to track recruited affiliates
-        TODO- label each field and how its used
+        **Class Recruits**
+            class used to track recruited affiliates
+
+        **Class Properties**
+            1. organization_id: string -> identifies the organization the recruit belongs to
+            2. affiliate_id: string -> the newly created affiliate_id for the recruited affiliate
+            3. referrer_uid: string -> the same as affiliate_id on main Affiliates Class identify
+                the affiliate who recruited this recruit
+            4. datetime_recruited: datetime -> the date the affiliate recruit was recruited
+            5. datetime_updated: datetime -> the date the affiliate recruit was updated
+            6. is_member: bool -> true if recruit has subscribed into a membership plan
+            7. recruit_plan_id: str -> if a recruit has subscribed to a plan this holds the payment plan id
+            8. is_active: bool -> indicates if a recruit is active
+            9. is_deleted: bool -> indicates if a recruit is deleted
+
     ***REMOVED***
     organization_id: str = ndb.StringProperty(validator=setters.set_id)
     affiliate_id: str = ndb.StringProperty(validator=setters.set_id)
@@ -159,7 +193,7 @@ class Recruits(ndb.Model):
     datetime_updated: datetime = ndb.DateTimeProperty(auto_now=True, validator=setters.set_date)
     is_member: bool = ndb.BooleanProperty(default=False, validator=setters.set_bool)
     # TODO - test this first may need to remove plan ID
-    recruiter_plan_id: str = ndb.StringProperty(validator=setters.set_id)  # Membership plan id allows to get payment fees
+    recruit_plan_id: str = ndb.StringProperty(validator=setters.set_id)  # Membership plan id allows to get payment fees
     is_active: bool = ndb.BooleanProperty(default=True, validator=setters.set_bool)
     is_deleted: bool = ndb.BooleanProperty(default=False, validator=setters.set_bool)
 
@@ -188,8 +222,17 @@ class Recruits(ndb.Model):
 
 class EarningsData(ndb.Model):
     ***REMOVED***
-        class used to track periodical earnings per affiliate
-        #
+        **Class EarningsData**
+            class used to track periodical earnings per affiliate
+
+        **Class Properties**
+            1. organization_id: string -> id indicating the organization the earnings belong to
+            2. affiliate_id: string -> id indicating the affiliate the earnings belong to
+            3. start_date: date -> The date the earnings has been calculated from
+            4. last_updated: date -> the date the earnings record has last been updated
+            5. total_earned: AmountMixin -> Total earned earnings in AmountMixin
+            6. is_paid: bool -> true if earnings has been paid
+            7. on_hold: bool -> True if earnings has been put on hold
     ***REMOVED***
     organization_id: str = ndb.StringProperty(validator=setters.set_id)
     affiliate_id: str = ndb.StringProperty(validator=setters.set_id)

@@ -13,8 +13,8 @@ import typing
 from google.api_core.exceptions import RetryError, Aborted
 from flask import jsonify, current_app
 from datetime import datetime, date
-from config.exceptions import DataServiceError, InputError, error_codes, status_codes, UnAuthenticatedError, \
-    RequestError
+from config.exceptions import (DataServiceError, InputError, error_codes, status_codes,
+                               UnAuthenticatedError, RequestError)
 from database.memberships import MembershipPlans, AccessRights, Memberships, Coupons
 from database.memberships import PlanValidators as PlanValid
 from database.mixins import AmountMixin

@@ -44,8 +44,3 @@ class APIKeys(ndb.Model):
 
     def __len__(self) -> int:
         return int(self.__bool__())
-
-
-
-
-
