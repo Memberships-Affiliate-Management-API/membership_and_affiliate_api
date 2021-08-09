@@ -27,7 +27,7 @@ def warmup() -> tuple:
     return "OK", 200
 
 
-# TODO - send an sms notification or email message with the error message for each error
+# TODO - send an sms notification or email message to app admin with the error message for each error
 
 def return_error(e) -> tuple:
     ***REMOVED***Actually replying with the error and description of the error here***REMOVED***

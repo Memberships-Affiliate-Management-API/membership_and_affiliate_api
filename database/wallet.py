@@ -20,7 +20,10 @@ from database.setters import property_
 
 class WalletValidator:
     ***REMOVED***
-        Validates User Inputs when creating updating and making transactions on clients and organizational wallets
+        **Class WalletValidator**
+            Validates User Inputs when creating updating and making transactions on clients
+            and organizational wallets
+
     ***REMOVED***
     def __init__(self):
         pass
@@ -153,6 +156,19 @@ class WalletModel(ndb.Model):
 
 
 class WalletTransactionsModel(ndb.Model):
+    ***REMOVED***
+        **Class WalletTransactionsModel**
+            a model to keep track of transactions taking place on the wallet for each user and or
+            organizations.
+
+        **Class Properties**
+            1. organization_id: string -> unique organization_id to track the organization the transaction belongs to
+            2. uid: string -> unique identifier for the user who owns the transaction
+            3. transaction_id: string -> unique id to identify this transaction
+            4. transaction_type: string -> the type of transaction taking place
+            5. transaction_date: string -> the date the transaction took place
+
+    ***REMOVED***
     organization_id: str = ndb.StringProperty(validator=property_.set_id)
     uid: str = ndb.StringProperty(validator=property_.set_id)
     transaction_id: str = ndb.StringProperty(validator=property_.set_id)
@@ -182,6 +198,21 @@ class WalletTransactionsModel(ndb.Model):
 
 
 class WalletTransactionItemModel(ndb.Model):
+    ***REMOVED***
+        **Class WalletTransactionItemModel**
+            a model to keep track of each transaction item and amount that belongs to the
+            transaction mentioned in  **WalletTransactionsModel**
+
+        **Class Properties**
+            1. transaction_id: string -> transaction_id relates this record with the actual transaction taking place
+            2. item_id: string -> item_id uniquely identifies this transaction item
+            3. amount: AmountMixin -> amount of money in this transaction
+            4. is_verified: bool -> true if transaction has been verified
+
+        **NOTE**
+            once a transaction has been verified amounts can change hands or transferred from
+            actual accounts
+    ***REMOVED***
     transaction_id: str = ndb.StringProperty(validator=property_.set_id)
     item_id: str = ndb.StringProperty(validator=property_.set_id)
     amount: AmountMixin = ndb.StructuredProperty(AmountMixin)
