@@ -19,7 +19,7 @@ from database.organization import OrgValidators
 from main import app_cache
 from database.users import UserModel, UserValidators
 from security.users_authenticator import encode_auth_token
-from utils.utils import create_id, return_ttl, can_cache
+from utils.utils import create_id, return_ttl
 from config.exception_handlers import handle_view_errors
 from config.use_context import use_context
 
@@ -28,7 +28,8 @@ users_type = typing.List[UserModel]
 
 class UserEmails(Mailgun):
     ***REMOVED***
-        used to send emails and notifications to users
+        **Class UserEmails**
+            used to send emails and notifications to users
     ***REMOVED***
 
     def __init__(self):
@@ -39,20 +40,23 @@ class UserEmails(Mailgun):
 
     def __do_send_mail(self, to_email: str, subject: str, text: str, html: str) -> None:
         ***REMOVED***
-              **If possible this method should be run asynchronously**
-              a method to actually send email
-            :param to_email: email address to send the email to
-            :param subject: subject of the email
-            :param text: body in text format
-            :param html: body in html format
-            :return: does not return anything
+            **__do_send_mail**
+                If possible this method should be run asynchronously a method to actually send email
+
+        :param to_email: email address to send the email to
+        :param subject: subject of the email
+        :param text: body in text format
+        :param html: body in html format
+        :return: does not return anything
         ***REMOVED***
         self.__send_with_mailgun_rest_api(to_list=[to_email], subject=subject, text=text, html=html)
 
     def send_welcome_to_admins_email(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
-            send an email to admin welcoming him to the admins club
-            NOTE: class __do_send_mail with the finally composed email
+            **send_welcome_to_admins_email**
+                send an email to admin welcoming him to the admins club
+                NOTE: class __do_send_mail with the finally composed email
+
         :param uid:
         :param organization_id:
         :return:
@@ -61,7 +65,9 @@ class UserEmails(Mailgun):
 
     def send_goodbye_admin_email(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
-            send an email informing the user he or she is no longer admin
+            **send_goodbye_admin_email**
+                send an email informing the user he or she is no longer admin
+
         :param uid:
         :param organization_id:
         :return:
@@ -70,7 +76,9 @@ class UserEmails(Mailgun):
 
     def send_welcome_to_support_email(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
-            send welcome to support email
+            **send_welcome_to_support_email**
+                send welcome to support email when users joins the support staff
+
         :param uid:
         :param organization_id:
         :return:
@@ -79,6 +87,8 @@ class UserEmails(Mailgun):
 
     def send_goodbye_support_email(self, email) -> None:
         ***REMOVED***
+            **send_goodbye_support_email**
+                used to send emails when users are no longer part of the support roles
 
         :param email:
         :return:
@@ -87,10 +97,12 @@ class UserEmails(Mailgun):
 
     def send_recovery_email(self, email) -> None:
         ***REMOVED***
-            send recovery email
+            **send_recovery_email**
+                send an email informing the user a recovery action has been activated on their account
         :param email:
         :return:
         ***REMOVED***
+        pass
 
 
 class Validators(UserValidators, OrgValidators):
@@ -728,7 +740,7 @@ class UserView(Validators, UserEmails):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def get_active_users(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             return a list of all users
@@ -749,7 +761,7 @@ class UserView(Validators, UserEmails):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     async def get_active_users_async(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             get active users list
@@ -774,7 +786,7 @@ class UserView(Validators, UserEmails):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def get_in_active_users(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             get in-active  list
@@ -798,7 +810,7 @@ class UserView(Validators, UserEmails):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     async def get_in_active_users_async(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             return a list of non active users
@@ -822,7 +834,7 @@ class UserView(Validators, UserEmails):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def get_all_users(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             get a list of all users
@@ -846,7 +858,7 @@ class UserView(Validators, UserEmails):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     async def get_all_users_async(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             get a list of all users
@@ -862,14 +874,15 @@ class UserView(Validators, UserEmails):
 
         if len(users_list) > 0:
             message: str = 'successfully retrieved active users'
-            return jsonify({'status': True, 'payload': users_list, 'message': message}), 200
+            return jsonify({'status': True,
+                            'payload': users_list, 'message': message}), status_codes.status_ok_code
 
         message: str = "Unable to retrieve all users"
         return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def get_user(self, organization_id: typing.Union[str, None], uid:  typing.Union[str, None] = None, cell:  typing.Union[str, None] = None,
                  email:  typing.Union[str, None] = None) -> tuple:
         ***REMOVED***
@@ -922,7 +935,7 @@ class UserView(Validators, UserEmails):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     async def get_user_async(self, organization_id: typing.Union[str, None], uid:  typing.Union[str, None] = None,
                              cell:  typing.Union[str, None] = None, email:  typing.Union[str, None] = None) -> tuple:
         ***REMOVED***
