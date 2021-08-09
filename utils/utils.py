@@ -25,8 +25,8 @@ char_set = string.ascii_lowercase + string.ascii_uppercase + string.digits
 def is_development() -> bool: return not config_instance.IS_PRODUCTION
 
 
-# NOTE this environment variable is only found on Heroku
-def is_heroku() -> bool: return True if os.environ.get("IS_HEROKU") else False
+# NOTE this environment variable is only found on Heroku - will return True of is_heroku is present
+def is_heroku() -> bool: return bool(os.environ.get("IS_HEROKU"))
 
 
 # Creates an ID for use as a unique ID
@@ -41,7 +41,7 @@ def timestamp() -> int: return int(float(time.time()) * 1000)
 def get_days(days: int) -> int: return int(days * 24 * 60 * 60 * 1000)
 
 
-# Returns the difference in milliseconds betwee two timestamps
+# Returns the difference in milliseconds between two timestamps
 def timestamp_difference(stamp1: int, stamp2: int) -> int: return int(stamp1 - stamp2)
 
 
