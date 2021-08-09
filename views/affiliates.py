@@ -24,6 +24,14 @@ from _sdk._email import Mailgun
 
 
 class AffiliatesEmails(Mailgun):
+    ***REMOVED***
+        **Class AffiliatesEmails**
+            gives the ability to send email notifications to affiliates when certain
+            actions must be taken or updates have occurred.
+
+        **Class Methods**
+            1. __do_send_mail -> actually send emails to users - through mailgun api
+    ***REMOVED***
     def __init__(self):
         super(AffiliatesEmails, self).__init__()
 
@@ -43,7 +51,9 @@ class AffiliatesEmails(Mailgun):
 
 class Validator(ValidAffiliate, ValidRecruit, ValidEarnings):
     ***REMOVED***
-        Affiliates View Validators,
+        **Class Validator**
+            Gathers validator classes needed for validating actions and input on
+            while managing Affiliates.
     ***REMOVED***
 
     def __init__(self):
@@ -52,7 +62,8 @@ class Validator(ValidAffiliate, ValidRecruit, ValidEarnings):
     # noinspection PyTypeChecker
     def can_register_affiliate(self, organization_id: str, uid: str) -> bool:
         ***REMOVED***
-            returns true if user can add an affiliate into this organization
+            **can_register_affiliate**
+                returns true if user can add an affiliate into this organization
         :param organization_id:
         :param uid:
         :return:
@@ -75,7 +86,8 @@ class Validator(ValidAffiliate, ValidRecruit, ValidEarnings):
 
     def _create_unique_affiliate_id(self) -> str:
         ***REMOVED***
-            returns an id that does not conflict with any affiliate id
+            **_create_unique_affiliate_id**
+                returns an id that does not conflict with any affiliate id
         :return:
         ***REMOVED***
         _id = create_id()
@@ -86,7 +98,10 @@ class Validator(ValidAffiliate, ValidRecruit, ValidEarnings):
 # noinspection DuplicatedCode
 class AffiliatesView(Validator):
     ***REMOVED***
-        Register new affiliates using this class
+        **Class AffiliatesView**
+            Enables the api to access methods to access data and create and update affiliates
+            also insures that input is validated and users are authenticated
+
     ***REMOVED***
 
     def __init__(self):
@@ -250,7 +265,7 @@ class AffiliatesView(Validator):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def get_affiliate(self, affiliate_data: dict) -> tuple:
         ***REMOVED***
             obtains a record of one affiliate from the store. given either uid or affiliate_id, organization_id
@@ -296,7 +311,7 @@ class AffiliatesView(Validator):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def get_all_affiliates(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             returns a list of all affiliates that belongs to the organization
@@ -325,7 +340,7 @@ class AffiliatesView(Validator):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def get_active_affiliates(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             NOTE: active affiliates but not deleted
@@ -351,7 +366,7 @@ class AffiliatesView(Validator):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def get_in_active_affiliates(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             returns a list of affiliates who are not active - but not deleted
@@ -379,7 +394,7 @@ class AffiliatesView(Validator):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def get_deleted_affiliates(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             return deleted affiliates by organization_id
@@ -406,7 +421,7 @@ class AffiliatesView(Validator):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def get_not_deleted_affiliates(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             # NOTE: this function may be redundant
@@ -554,7 +569,7 @@ class RecruitsView(Validator):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def get_recruit(self, recruit_data: dict) -> tuple:
         ***REMOVED***
             given affiliate_id return recruit organization_id has to be valid
@@ -585,7 +600,7 @@ class RecruitsView(Validator):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def get_recruits_by_active_status(self, organization_id: str, is_active: bool) -> tuple:
         ***REMOVED***
             get recruit by active status
@@ -610,7 +625,7 @@ class RecruitsView(Validator):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def get_recruits_by_deleted_status(self, organization_id: str, is_deleted: bool) -> tuple:
         ***REMOVED***
             get_recruits_by_deleted_status
@@ -635,7 +650,7 @@ class RecruitsView(Validator):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def get_recruits_by_affiliate(self, affiliate_data: dict) -> tuple:
         ***REMOVED***
             return recruits belonging to a certain affiliate
@@ -666,7 +681,7 @@ class RecruitsView(Validator):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def get_recruits_by_active_affiliate(self, affiliate_data: dict, is_active: bool) -> tuple:
         ***REMOVED***
             return a list of recruits by is_active status
