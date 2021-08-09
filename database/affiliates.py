@@ -77,9 +77,7 @@ class RecruitsValidators:
             raise ValueError("UID cannot be Null, and can only be a string")
 
         recruit_instance: Recruits = Recruits.query(Recruits.uid == uid).get()
-        if isinstance(recruit_instance, Recruits):
-            return True
-        return False
+        return isinstance(recruit_instance, Recruits)
 
     @staticmethod
     @handle_store_errors
@@ -94,9 +92,7 @@ class RecruitsValidators:
         if not(isinstance(uid, str)) or (uid == ""):
             raise ValueError("UID cannot be Null, and can only be a string")
         affiliate_instance: Affiliates = Affiliates.query(Affiliates.uid == uid).get()
-        if isinstance(affiliate_instance, Affiliates):
-            return True
-        return False
+        return isinstance(affiliate_instance, Affiliates)
 
 
 class EarningsValidators:
@@ -115,9 +111,8 @@ class EarningsValidators:
             raise ValueError("Affiliate_id cannot be Null, and can only be a string")
         earnings_list: typing.List[EarningsData] = EarningsData.query(
             EarningsData.affiliate_id == affiliate_id).fetch()
-        if isinstance(earnings_list, list) and len(earnings_list) > 0:
-            return True
-        return False
+
+        return isinstance(earnings_list, list) and len(earnings_list) > 0
 
 
 class Affiliates(ndb.Model):
