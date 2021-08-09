@@ -249,7 +249,7 @@ class EarningsData(ndb.Model):
             return False
         if self.start_date != other.start_date:
             return False
-        if self.total_earned != other.total_earned:
+        if self.total_earned != other.transactions_total:
             return False
         return True
 
@@ -270,11 +270,20 @@ class EarningsData(ndb.Model):
 
 class AffiliateEarningsTransactions(ndb.Model):
     ***REMOVED***
-        keeps track of amounts paid from earningsData
+        **Class AffiliateEarningsTransactions**
+            keeps track of amounts paid from EarningsData, meaning this holds a list
+            of transaction relating to affiliate earnings.
+
+        **Class Properties**
+            1. organization_id: string -> unique id to identify the organization
+            2. affiliate_id: string -> unique id to identify the affiliate the transaction refers to
+            3. transactions_total: AmountMixin -> total amount in transactions
+            4. transaction_id_list: list[str] -> list of transaction ids relating to this affiliate
+            5. last_transaction_time: datetime -> time the last transaction took place
     ***REMOVED***
     organization_id: str = ndb.StringProperty(validator=property_.set_id)
     affiliate_id: str = ndb.StringProperty(validator=property_.set_id)
-    total_earned: AmountMixin = ndb.StructuredProperty(AmountMixin)
+    transactions_total: AmountMixin = ndb.StructuredProperty(AmountMixin)
     transaction_id_list: typing.List[str] = ndb.StringProperty(repeated=True)
     last_transaction_time: datetime = ndb.DateTimeProperty(auto_now=True, validator=property_.set_date)
 
@@ -283,12 +292,12 @@ class AffiliateEarningsTransactions(ndb.Model):
             return False
         if self.affiliate_id != other.affiliate_id:
             return False
-        if self.total_earned != other.total_earned:
+        if self.transactions_total != other.transactions_total:
             return False
         return True
 
     def __str__(self) -> str:
-        return "<Total Earned: {} ".format(str(self.total_earned))
+        return "<Total Earned: {} ".format(str(self.transactions_total))
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -303,7 +312,17 @@ class AffiliateEarningsTransactions(ndb.Model):
 
 class AffiliateTransactionItems(ndb.Model):
     ***REMOVED***
-        keeps track of singular transaction items
+        **Class AffiliateTransactionItems**
+            keeps track of singular transaction items, the transaction id's can be found on
+            AffiliateEarningsTransactions.transaction_id_list
+
+        **Class Properties**
+            1. transaction_id: string -> unique identifier for each transaction
+            2. amount: string -> amount in the transaction
+            3. transaction_date: datetime -> the date the transaction took place
+
+        **NOTE:**
+            Transactions here only relates to affiliate earnings so there is no transaction types
     ***REMOVED***
     transaction_id: str = ndb.StringProperty(validator=property_.set_id)
     amount: AmountMixin = ndb.StructuredProperty(AmountMixin)
@@ -334,10 +353,24 @@ class AffiliateTransactionItems(ndb.Model):
 
 class AffiliateSettingsStats(ndb.Model):
     ***REMOVED***
-        if earnings are recurring then an affiliate will continue to earn income
-        on their down-line ,
-        if not then income will be earned once off when a recruited
-        user becomes a member.
+        **Class AffiliateSettingsStats**
+            if earnings are recurring then an affiliate will continue to earn income
+            on their down-line ,
+            if not then income will be earned once off when a recruited
+            user becomes a member.
+
+        **NOTE**
+            the cron job for calculating affiliate income must take this class into consideration
+            in order to accurately calculate affiliate income
+
+        **Class Properties**
+            1. organization_id: string -> organization identity
+            2. earnings_percent: string -> amount in percentage that can be earned by an affiliate
+            3. recurring_earnings: bool -> true if earnings can be earned in a recurring fashion false Otherwise
+            4. total_affiliates_earnings: AmountMixin -> total amount earned by affiliates so far
+
+        **NOTE**
+            all amounts are in cents
     ***REMOVED***
     organization_id: str = ndb.StringProperty(validator=property_.set_id)
     earnings_percent: int = ndb.IntegerProperty(validator=property_.set_percent)

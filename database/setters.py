@@ -22,12 +22,13 @@ import phonenumbers
 
 class Events:
     ***REMOVED***
-       asynchronously triggers events when certain values are changed on the database
-       events server must be instantiated or a ready made solution added
+        **Class Events**
+           asynchronously triggers events when certain values are changed on the database
+           events server must be instantiated or a ready made solution added
 
-       Suggestion: or could use a memory based data-structure for now to control
-       events, and then create a method which will continuously fetch and execute
-       the events asynchronously.
+           **Suggestion:** or could use a memory based data-structure for now to control
+           events, and then create a method which will continuously fetch and execute
+           the events asynchronously.
     ***REMOVED***
 
     def __init__(self):
@@ -40,7 +41,12 @@ class Util:
             ndb property validators utilities and helpers
     ***REMOVED***
     def __init__(self):
-        pass
+        # maximum length for coupon codes
+        self.__max_coupon_code_len: int = 12
+        # maximum len for _id
+        self.__max_id_len: int = 64
+        self.__payment_statuses: typing.List[str] = ['paid', 'unpaid']
+        self.__transaction_types: typing.List[str] = ['withdrawal', 'deposit', 'refund']
 
     @staticmethod
     def return_class_name(prop: ndb.Property) -> str:
@@ -140,9 +146,13 @@ class PropertySetters(Events, Util):
     @staticmethod
     def set_id(prop: ndb.StringProperty, value: typing.Union[str, None]) -> str:
         ***REMOVED***
-            test if id is string and not a nullish string if that's the
-            case returns the id as string to be set into the database
-            class Property
+            **set_id**
+                sets a unique id used to differentiate between different records in database
+
+                test if id is string and not a nullish string if that's the
+                case returns the id as string to be set into the database
+                class Property
+
         :param prop: property to set
         :param value: value as id to set
         :return: returns id as string
@@ -162,31 +172,34 @@ class PropertySetters(Events, Util):
     @staticmethod
     def set_coupon_code(prop: ndb.StringProperty, value: typing.Union[str, None]) -> str:
         ***REMOVED***
-            TODO: coupon code length - find a way to standardize this length and not make it a magic number
-        :param prop:
-        :param value:
+            **set_coupon_code**
+                validates and sets coupon code for membership payments
+        :param prop: coupon code property to set
+        :param value: coupon code
         :return:
         ***REMOVED***
         class_name: str = property_.return_class_name(prop=prop)
         if not (isinstance(value, str)):
             raise ValueError("Coupon Code, is an instance of: {} , and can only be a string".format(str(class_name)))
 
-        if len(value.strip()) != 12:
+        if len(value.strip()) != property_.__max_coupon_code_len:
             message: str = ***REMOVED***Coupon Code, is an instance of: {} , and must be 12 characters long
             ***REMOVED***.format(str(class_name))
             raise ValueError(message)
 
-        return value.strip()
+        return value.strip().lower()
 
     # noinspection DuplicatedCode
     @staticmethod
     def set_paypal(prop: ndb.StringProperty, value: typing.Union[str, None]) -> str:
         ***REMOVED***
-            validate the paypal email if its really an email return the email
-            to set on the paypal property
+            **set_paypal**
+                validate the paypal email if its really an email return the email
+                to set on the paypal property
+
         :param prop: property to set
-        :param value:
-        :return:
+        :param value: paypal_address to set once validated
+         :return: valid paypal_address only
         ***REMOVED***
         class_name: str = property_.return_class_name(prop=prop)
         if not isinstance(value, str):
@@ -204,17 +217,18 @@ class PropertySetters(Events, Util):
     @staticmethod
     def set_transaction_types(prop: ndb.StringProperty, value: typing.Union[str, None]) -> str:
         ***REMOVED***
-            set a transaction type
-        :param prop:
-        :param value:
-        :return:
+            **set_transaction_types**
+                validated and set transaction_types
+        :param prop: property representing transaction_types
+        :param value: transaction type to check
+        :return: valid transaction type, return to set
         ***REMOVED***
         class_name: str = property_.return_class_name(prop=prop)
         if not (isinstance(value, str)):
             raise ValueError("transaction_type, is an instance of : {} , and can only be a string".format(class_name))
-        # TODO fix this stop using transaction types like magic numbers
-        transaction_types = ['withdrawal', 'deposit']
-        if value.strip().lower() not in transaction_types:
+
+        # NOTE: valid transaction types "withdrawal", "deposit", "refund"
+        if value.strip().lower() not in property_.__transaction_types:
             raise ValueError("{} is not a valid transaction_type".format(value))
 
         return value.strip().lower()
@@ -222,11 +236,12 @@ class PropertySetters(Events, Util):
     @staticmethod
     def set_datetime(prop: ndb.DateTimeProperty, value: datetime) -> datetime:
         ***REMOVED***
-            checks if value is a python datetime type, if not raise a type error indicating
-            what i should be
-        :param prop:
-        :param value:
-        :return:
+            **set_datetime**
+                checks if value is a python datetime type, if not raise a type error indicating
+                what i should be
+        :param prop: datetime property to set if value is also a python datetime value
+        :param value: python datetime
+        :return: datetime
         ***REMOVED***
         class_name: str = property_.return_class_name(prop=prop)
         if not (isinstance(value, datetime)):
@@ -236,10 +251,11 @@ class PropertySetters(Events, Util):
     @staticmethod
     def set_bool(prop: ndb.BooleanProperty, value: typing.Union[bool, None]) -> bool:
         ***REMOVED***
-            checks if value is boolean if not raises a TypeError
-        :param prop:
-        :param value:
-        :return:
+            **set_bool**
+                checks if value is boolean if not raises a TypeError, then returns the value if valid
+        :param prop: property boolean to set if value is a boolean
+        :param value: boolean value
+        :return: returns value as boolean
         ***REMOVED***
         class_name: str = property_.return_class_name(prop=prop)
         if not (isinstance(value, bool)):
@@ -249,7 +265,8 @@ class PropertySetters(Events, Util):
     @staticmethod
     def set_status(prop: ndb.StringProperty, value: typing.Union[str, None]) -> str:
         ***REMOVED***
-            only two valid statuses paid and unpaid check if input is valid and set
+            **set payment status**
+                only two valid statuses paid and unpaid check if input is valid and set
         :param prop:
         :param value:
         :return:
@@ -264,7 +281,7 @@ class PropertySetters(Events, Util):
         if not bool(temp):
             raise ValueError("status, is an instance of : {} , and cannot be Null".format(class_name))
 
-        if temp not in ['paid', 'unpaid']:
+        if temp not in property_.__payment_statuses:
             message: str = ***REMOVED*** status should either paid or unpaid this {} is not a valid status***REMOVED***.format(value)
             raise TypeError("{} invalid status".format(message))
 

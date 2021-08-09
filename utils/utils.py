@@ -18,7 +18,28 @@ from datetime import time as time_class
 from config import config_instance
 from flask_caching import Cache
 
+# NOTE set of characters to use when generating Unique ID
 char_set = string.ascii_lowercase + string.ascii_uppercase + string.digits
+
+# NOTE input character set
+input_character_set = string.printable
+
+
+# Creates an ID for use as a unique ID
+def create_id(size: int = 64, chars: str = char_set) -> str: return ''.join(random.choice(chars) for _ in range(size))
+
+
+def is_valid_chars(value: str, chars: str = input_character_set) -> bool:
+    ***REMOVED***
+        checks if all characters are valid
+    :param value: value to check
+    :param chars: valid characters
+    :return: bool indicating if characters are valid or not
+    ***REMOVED***
+    for c in value:
+        if c not in chars:
+            return False
+    return True
 
 
 # NOTE : Cannot use current_app - is_development is opposite of IS_PRODUCTION
@@ -27,10 +48,6 @@ def is_development() -> bool: return not config_instance.IS_PRODUCTION
 
 # NOTE this environment variable is only found on Heroku - will return True of is_heroku is present
 def is_heroku() -> bool: return bool(os.environ.get("IS_HEROKU"))
-
-
-# Creates an ID for use as a unique ID
-def create_id(size: int = 64, chars: str = char_set) -> str: return ''.join(random.choice(chars) for _ in range(size))
 
 
 # Returns he timestamp in milliseconds
