@@ -123,7 +123,7 @@ class Validator(WalletValidator):
                 message: str = "{} is required".format(arg.__name__)
                 raise InputError(status=error_codes.input_error_code, description=message)
 
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def can_add_wallet(self, organization_id: typing.Union[str, None], uid: typing.Union[None, str] = None) -> bool:
         ***REMOVED***
                 can add wallet
@@ -139,7 +139,7 @@ class Validator(WalletValidator):
             return not wallet_exist
         raise DataServiceError(status=error_codes.data_service_error_code, description='Unable to verify wallet data')
 
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     async def can_add_wallet_async(self, organization_id: typing.Union[str, None],
                                    uid: typing.Union[None, str] = None) -> bool:
         ***REMOVED***
@@ -157,7 +157,7 @@ class Validator(WalletValidator):
             return not wallet_exist
         raise DataServiceError(status=error_codes.data_service_error_code, description='Unable to verify wallet data')
 
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def can_update_wallet(self, organization_id: typing.Union[str, None], uid: typing.Union[None, str] = None) -> bool:
         ***REMOVED***
             checks if user can update wallet
@@ -172,7 +172,7 @@ class Validator(WalletValidator):
             return wallet_exist
         raise DataServiceError(status=500, description='Unable to verify wallet data')
 
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     async def can_update_wallet_async(self, organization_id: typing.Union[str, None],
                                       uid: typing.Union[None, str] = None) -> bool:
         ***REMOVED***
@@ -188,7 +188,7 @@ class Validator(WalletValidator):
             return wallet_exist
         raise DataServiceError(status=error_codes.data_service_error_code, description='Unable to verify wallet data')
 
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def can_reset_wallet(self, organization_id: typing.Union[str, None], uid: typing.Union[None, str]) -> bool:
         ***REMOVED***
             checks if user can reset wallet
@@ -203,7 +203,7 @@ class Validator(WalletValidator):
             return wallet_exist
         raise DataServiceError(status=error_codes.data_service_error_code, description='Unable to verify wallet data')
 
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     async def can_reset_wallet_async(self, organization_id: typing.Union[str, None],
                                      uid: typing.Union[None, str]) -> bool:
         ***REMOVED***
@@ -305,7 +305,7 @@ class WalletView(Validator, WalletEmails):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def get_wallet(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             # TODO - may need to update cache or find a way to update cache when there are updates
@@ -329,7 +329,7 @@ class WalletView(Validator, WalletEmails):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     async def get_wallet_async(self, organization_id: typing.Union[str, None],  uid: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             get_wallet_async an asynchronous version of get_wallet
@@ -521,7 +521,7 @@ class WalletView(Validator, WalletEmails):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def return_all_wallets(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
         given an organization_id return all the organizations wallets
@@ -543,7 +543,7 @@ class WalletView(Validator, WalletEmails):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     async def return_all_wallets_async(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             given an organization_id return all the organizations wallets
