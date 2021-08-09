@@ -144,11 +144,12 @@ class AuthUserValidators:
 
 class AuthorizedUsers(ndb.Model):
     ***REMOVED***
-        `AuthorizedUsers Class`
+        **AuthorizedUsers Class**
             details of the users authorized to update organization details and other data structures for this organization
             the roles are admin, super user, and support.
             if active is set to false the user role is suspended
-        `AuthorizedUsers Properties`
+
+        **AuthorizedUsers Properties**
             1. organization_id : str -> unique id for the organization
             2. uid: str -> user id representing the authorized user
             3. role: str -> role of the Authorized user
@@ -238,7 +239,6 @@ class PaymentResults(ndb.Model):
     payment_result: str = ndb.StringProperty(validator=property_.set_string)
     time_created: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=property_.set_datetime)
     last_updated: datetime = ndb.DateTimeProperty(auto_now=True, validator=property_.set_datetime)
-
 
     def __str__(self) -> str:
         return "<PaymentResults : PaymentResults {} ".format(self.payment_result)
