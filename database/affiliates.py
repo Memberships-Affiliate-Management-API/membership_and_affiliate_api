@@ -15,6 +15,7 @@ from google.cloud import ndb
 from datetime import date, datetime
 from google.api_core.exceptions import RetryError, Aborted
 from config.exception_handlers import handle_store_errors
+from config.exceptions import InputError, error_codes
 from database.mixins import AmountMixin
 from database.setters import property_
 
@@ -31,7 +32,9 @@ class AffiliatesValidators:
     @handle_store_errors
     def affiliate_exist(affiliate_id: typing.Union[str, None]) -> typing.Union[None, bool]:
         ***REMOVED***
-            returns true
+            **affiliate_exist**
+                test if an affiliate already exists in the organization
+                TODO- ensure this search takes into account the organization_id
         :param affiliate_id:
         :return: boolean -> indicating if affiliate_exist or not
         ***REMOVED***
@@ -43,7 +46,9 @@ class AffiliatesValidators:
     def recruiter_registered(organization_id: typing.Union[str, None],
                              uid: typing.Union[str, None]) -> typing.Union[None, bool]:
         ***REMOVED***
-            returns true or False according to registration status None otherwise
+            **recruiter_registered**
+                returns true or False according to registration status None otherwise
+
         :param organization_id:
         :param uid:
         :return:
@@ -67,14 +72,17 @@ class RecruitsValidators:
     @handle_store_errors
     def user_already_recruited(uid: typing.Union[str, None]) -> typing.Union[None, bool]:
         ***REMOVED***
-            TODO - an organization_id
-            method user_already_recruited -> checks if user has already been recruited
-            in this organization
+            **user_already_recruited**
+                method user_already_recruited -> checks if user has already been recruited
+                in this organization
+
         :param uid:
         :return:
         ***REMOVED***
-        if not(isinstance(uid, str)) or (uid == ""):
-            raise ValueError("UID cannot be Null, and can only be a string")
+        # TODO - an organization_id
+        if not(isinstance(uid, str)) or not bool(uid.strip()):
+            message: str = "uid is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         recruit_instance: Recruits = Recruits.query(Recruits.uid == uid).get()
         return isinstance(recruit_instance, Recruits)
@@ -83,14 +91,16 @@ class RecruitsValidators:
     @handle_store_errors
     def user_already_an_affiliate(uid: typing.Union[str, None]) -> typing.Union[None, bool]:
         ***REMOVED***
-            TODO - an organization_id
             ** method user_already_an_affiliate**
                 checks if user is already an affiliate
         :param uid:
         :return:
         ***REMOVED***
-        if not(isinstance(uid, str)) or (uid == ""):
-            raise ValueError("UID cannot be Null, and can only be a string")
+        # TODO - an organization_id
+        if not(isinstance(uid, str)) or not bool(uid.strip()):
+            message: str = "uid is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         affiliate_instance: Affiliates = Affiliates.query(Affiliates.uid == uid).get()
         return isinstance(affiliate_instance, Affiliates)
 
@@ -107,8 +117,10 @@ class EarningsValidators:
     @staticmethod
     @handle_store_errors
     def unclosed_earnings_already_exist(affiliate_id: str) -> typing.Union[None, bool]:
-        if not(isinstance(affiliate_id, str)) or (affiliate_id == ""):
-            raise ValueError("Affiliate_id cannot be Null, and can only be a string")
+        if not(isinstance(affiliate_id, str)) or not bool(affiliate_id.strip()):
+            message: str = "affiliate_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         earnings_list: typing.List[EarningsData] = EarningsData.query(
             EarningsData.affiliate_id == affiliate_id).fetch()
 
