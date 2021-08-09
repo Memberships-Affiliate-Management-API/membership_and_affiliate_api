@@ -65,11 +65,20 @@ class Config:
         self.PAYMENT_PLANS_SCHEDULES: typing.List[str] = ['monthly', 'quarterly', 'annually']
         self.PAYMENT_PLANS_PAYMENT_DAYS: typing.List[int] = [1, 2, 3, 4, 5]
         self.MINIMUM_WITHDRAWAL_AMOUNT_USD: int = 3000  # amount is in cents
+        self.ENV: str = "production"
+        self.TEMPLATES_AUTO_RELOAD: bool = True
+        self.PREFERRED_URL_SCHEME: str = "https"
 
-        # NOTE : setting IS_PRODUCTION here - could find a better way of doing this rather than depending on the OS
+        # NOTE : setting IS_PRODUCTION here - could find a better way of doing this rather
+        # than depending on the OS
         if "Windows_NT" == os.environ.get("OS"):
-            self.DEBUG: bool = True
-            self.IS_PRODUCTION: bool = False
+            self.DEBUG = True
+            self.IS_PRODUCTION = False
+            self.ENV = "development"
+            self.PROPAGATE_EXCEPTIONS: bool = True
+            self.PRESERVE_CONTEXT_ON_EXCEPTION: bool = True
+            self.EXPLAIN_TEMPLATE_LOADING: bool = True
+            self.PREFERRED_URL_SCHEME: str = "http"
             # TODO - set Cache to MEM_CACHE and then setup the server URI, applicable on version 2
 
     def __str__(self) -> str:
@@ -123,5 +132,3 @@ class Config:
 config_instance: Config = Config()
 # Note: Config is a singleton - this means it cannot be redeclared anywhere else
 del Config
-if config_instance.DEBUG:
-    print(config_instance)

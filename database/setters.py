@@ -38,7 +38,7 @@ class Events:
 class Util:
     ***REMOVED***
         **Class Util**
-            ndb property validators utilities and helpers
+            ndb property validators utilities, constants and helpers
     ***REMOVED***
     def __init__(self):
         # maximum length for coupon codes
@@ -369,8 +369,10 @@ class PropertySetters(Events, Util):
     @staticmethod
     def set_date(prop: ndb.DateProperty, value: date) -> date:
         ***REMOVED***
-            checks to see if date is valid if yes returns the date
-            throws TypeError if an invalid date has been supplied
+            **set_date**
+                checks to see if date is valid if yes returns the date
+                throws TypeError if an invalid date has been supplied
+
         :param prop: property representing the date
         :param value: value to set to property
         :return: returns valid date only
@@ -383,8 +385,9 @@ class PropertySetters(Events, Util):
     @staticmethod
     def set_payment_method(prop: ndb.StringProperty, value: typing.Union[str, None]) -> str:
         ***REMOVED***
-            checks to see if payment method is valid if yes then return payment methods
-            raises TypeError in-case of invalid Type and ValueError if value is not a payment method
+            **set_payment_method**
+                checks to see if payment method is valid if yes then return payment methods
+                raises TypeError in-case of invalid Type and ValueError if value is not a payment method
         :param prop: property we are setting
         :param value: the value to set
         :return: returns a payment method as string
@@ -405,8 +408,9 @@ class PropertySetters(Events, Util):
     @staticmethod
     def set_percent(prop: ndb.IntegerProperty, value: typing.Union[int, None]) -> int:
         ***REMOVED***
-            set_percent will check if the percentage value is an integer and then return the percentage value
-            if not then it will raise ValueError or TypeError depending on the reason
+            **set_percent**
+                set_percent will check if the percentage value is an integer and then return the percentage value
+                if not then it will raise ValueError or TypeError depending on the reason
         :param prop: property to set the percentage
         :param value: percentage as integer to set in property
         :return: percentage as an integer
@@ -428,8 +432,9 @@ class PropertySetters(Events, Util):
     @staticmethod
     def set_currency(prop: ndb.StringProperty, value: typing.Union[str, None]) -> str:
         ***REMOVED***
-            checks if currency symbol is one of valid currency symbol if yes returns the symbol
-            if not raise ValueError or TypeError depending on why the value is invalid
+            **set_currency**
+                checks if currency symbol is one of valid currency symbol if yes returns the symbol
+                if not raise ValueError or TypeError depending on why the value is invalid
         :param prop: property where the currency symbol may be set
         :param value: value representing the currency symbol
         :return: will return currency symbol representing a string
@@ -448,8 +453,9 @@ class PropertySetters(Events, Util):
     @staticmethod
     def set_email(prop: ndb.StringProperty, value: typing.Union[str, None]) -> str:
         ***REMOVED***
-           used for the following
-            If email is valid return email address else raise an error
+            **set_email**
+                used for the following
+                If email is valid return email address else raise an error
             :param value: email address
             :param prop: email property
         ***REMOVED***
@@ -468,8 +474,9 @@ class PropertySetters(Events, Util):
     @staticmethod
     def set_cell(prop: ndb.StringProperty, value: typing.Union[str, None]) -> str:
         ***REMOVED***
-            check if value is string , regex check the cell number
-            then format the number internationally and return the formatted value
+            **set_cell**
+                check if value is string , regex check the cell number
+                then format the number internationally and return the formatted value
         :param prop: the property as string the cell number will be stored in
         :param value: cell number
         :return: formatted cell number as string
@@ -487,8 +494,9 @@ class PropertySetters(Events, Util):
     @staticmethod
     def set_password(prop: ndb.StringProperty, value: typing.Union[str, None]) -> str:
         ***REMOVED***
-            validate the correctness of the password and its complexity if  accurate
-            then return the hash of the password to be stored on the database
+            **set_password**
+                validate the correctness of the password and its complexity if  accurate
+                then return the hash of the password to be stored on the database
             :param: value: password in plain-text
             :param : prop: the password property being set
             :return: password in hash format

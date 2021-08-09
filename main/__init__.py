@@ -79,5 +79,6 @@ def create_app(config_class=config_instance):
 
     # Error Handlers
     app.register_blueprint(default_handlers_bp)
+    print(app.config)
 
     return app
