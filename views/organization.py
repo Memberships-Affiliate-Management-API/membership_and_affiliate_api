@@ -369,8 +369,9 @@ class OrganizationView(OrgValidators, OrganizationEmails):
     def _update_total_members(self, organization_id: typing.Union[str, None], add: typing.Union[int, None] = None,
                               sub: typing.Union[int, None] = None) -> tuple:
         ***REMOVED***
-            supply either the amount to add to total members or the amount to subtract
-            Amounts should be integers
+            **_update_total_members**
+                supply either the amount to add to total members or the amount to subtract
+                Amounts should be integers
 
             :param organization_id:
             :param add: Optional > amount to add <int> or else pass None
@@ -407,11 +408,13 @@ class OrganizationView(OrgValidators, OrganizationEmails):
                                               sub_payment: typing.Union[str, None] = None) -> tuple:
 
         ***REMOVED***
-            to update projected_membership_payments supply either the amount to add or subtract but not both
-        :param organization_id:
-        :param add_payment: Optional payment amount to Add type <AmountMixin> or pass None
-        :param sub_payment: Optional payment amount to Subtract <AmountMixin>, or Pass None
-        :return: tuple
+            **_update_projected_membership_payments**
+                to update projected_membership_payments supply either the amount to add or subtract but not both
+
+            :param organization_id:
+            :param add_payment: Optional payment amount to Add type <AmountMixin> or pass None
+            :param sub_payment: Optional payment amount to Subtract <AmountMixin>, or Pass None
+            :return: tuple
         ***REMOVED***
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
@@ -442,12 +445,14 @@ class OrganizationView(OrgValidators, OrganizationEmails):
                                           sub_total_membership_payment: typing.Union[AmountMixin, None] = None,
                                           add_total_membership_amount: typing.Union[AmountMixin, None] = None) -> tuple:
         ***REMOVED***
-            update overall total_membership_payments for organization, supply either the amount to add or subsctract
-            but not both
+            **_update_total_membership_payments**
+                update overall total_membership_payments for organization, supply either the amount to add or substract
+                but not both
+
             :param organization_id: the id of the organization to update the total memberships
             :param sub_total_membership_payment: amount to subtract
             :param add_total_membership_amount: amount to add
-        :return: react a response and status code tuple
+            :return: react a response and status code tuple
         ***REMOVED***
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
