@@ -16,23 +16,25 @@ from datetime import datetime, date
 from google.api_core.exceptions import RetryError, Aborted
 from google.cloud import ndb
 from config.exception_handlers import handle_store_errors
+from config.exceptions import InputError, error_codes
 from database.mixins import AmountMixin
 from database.setters import property_
-from utils.utils import get_days
+from utils.utils import get_days, today
 
 
 class MembershipValidators:
     ***REMOVED***
-        validating input and authenticating calls to memberships database
+        **Class Memberships Validators**
+            validating input and authenticating calls to memberships database
     ***REMOVED***
 
     @staticmethod
     def start_date_valid(start_date: date) -> bool:
         ***REMOVED***
-            check if date is from today and falls within normal parameters
+            **start_date_valid**
+                check if date is from today and falls within normal parameters
         ***REMOVED***
-        now = datetime.now().date()
-        if isinstance(start_date, date) and start_date > now:
+        if isinstance(start_date, date) and start_date > today():
             return True
         return False
 
@@ -41,8 +43,7 @@ class MembershipValidators:
         ***REMOVED***
             check if date is from today and falls within normal parameters
         ***REMOVED***
-        now = datetime.now().date()
-        if isinstance(start_date, date) and start_date > now:
+        if isinstance(start_date, date) and start_date > today():
             return True
         return False
 
@@ -61,10 +62,13 @@ class PlanValidators:
             return None if Error
         ***REMOVED***
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            return False
+            message: str = "organization_id cannot be Null"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         if not isinstance(plan_id, str) or not bool(plan_id.strip()):
-            return False
+            message: str = "plan_id cannot be Null"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         plan_instance: MembershipPlans = MembershipPlans.query(MembershipPlans.organization_id == organization_id,
                                                                MembershipPlans.plan_id == plan_id).get()
         if isinstance(plan_instance, MembershipPlans):
@@ -80,10 +84,13 @@ class PlanValidators:
             return None if Error
         ***REMOVED***
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            return False
+            message: str = "organization_id cannot be Null"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         if not isinstance(plan_id, str) or not bool(plan_id.strip()):
-            return False
+            message: str = "plan_id cannot be Null"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         plan_instance: MembershipPlans = MembershipPlans.query(
             MembershipPlans.organization_id == organization_id,
             MembershipPlans.plan_id == plan_id).get_async().get_result()
@@ -101,13 +108,17 @@ class PlanValidators:
             returns None if an error occurred
         ***REMOVED***
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            return False
+            message: str = "organization_id cannot be Null"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         if not isinstance(plan_name, str) or not bool(plan_name.strip()):
-            return False
+            message: str = "plan_name cannot be Null"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
-        plan_instance: MembershipPlans = MembershipPlans.query(MembershipPlans.organization_id == organization_id,
-                                                               MembershipPlans.plan_name == plan_name).get()
+        plan_instance: MembershipPlans = MembershipPlans.query(
+            MembershipPlans.organization_id == organization_id,
+            MembershipPlans.plan_name == plan_name.strip().lower()).get()
+
         if isinstance(plan_instance, MembershipPlans):
             return True
         return False
@@ -121,14 +132,16 @@ class PlanValidators:
             returns None if an error occurred
         ***REMOVED***
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            return False
+            message: str = "organization_id cannot be Null"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         if not isinstance(plan_name, str) or not bool(plan_name.strip()):
-            return False
+            message: str = "plan_name cannot be Null"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         plan_instance: MembershipPlans = MembershipPlans.query(
             MembershipPlans.organization_id == organization_id,
-            MembershipPlans.plan_name == plan_name).get_async().get_result()
+            MembershipPlans.plan_name == plan_name.strip().lower()).get_async().get_result()
 
         if isinstance(plan_instance, MembershipPlans):
             return True
@@ -154,12 +167,15 @@ class CouponsValidator:
         ***REMOVED***
 
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            return False
+            message: str = "organization_id cannot be Null"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         if not isinstance(code, str) or not bool(code.strip()):
-            return False
+            message: str = "code cannot be Null"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         coupons_instance: Coupons = Coupons.query(Coupons.organization_id == organization_id,
-                                                  Coupons.code == code).get()
+                                                  Coupons.code == code.strip().lower()).get()
 
         if isinstance(coupons_instance, Coupons):
             return True
@@ -177,13 +193,15 @@ class CouponsValidator:
         ***REMOVED***
 
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            return False
+            message: str = "organization_id cannot be Null"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         if not isinstance(code, str) or not bool(code.strip()):
-            return False
+            message: str = "code cannot be Null"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         coupons_instance: Coupons = Coupons.query(
-            Coupons.organization_id == organization_id, Coupons.code == code).get_async().get_result()
+            Coupons.organization_id == organization_id, Coupons.code == code.strip().lower()).get_async().get_result()
 
         if isinstance(coupons_instance, Coupons):
             return True
@@ -197,7 +215,9 @@ class CouponsValidator:
         :return:
         ***REMOVED***
         if not (isinstance(expiration_time, int)):
-            return False
+            message: str = "expiration_time can only be an integer"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         if expiration_time < get_days(days=1):
             return False
         return True
