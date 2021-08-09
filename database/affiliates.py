@@ -38,7 +38,9 @@ class AffiliatesValidators:
         :return: boolean -> indicating if affiliate_exist or not
         ***REMOVED***
         affiliate_instance: Affiliates = Affiliates.query(Affiliates.affiliate_id == affiliate_id).get()
-        return isinstance(affiliate_instance, Affiliates)
+
+        # returns true if affiliate exists
+        return bool(affiliate_instance)
 
     @staticmethod
     @handle_store_errors
@@ -54,8 +56,8 @@ class AffiliatesValidators:
         ***REMOVED***
         affiliate_instance: Affiliates = Affiliates.query(Affiliates.organization_id == organization_id,
                                                           Affiliates.uid == uid).get()
-
-        return isinstance(affiliate_instance, Affiliates)
+        # NOTE returns true if affiliate_instance is found
+        return bool(affiliate_instance)
 
 
 class RecruitsValidators:
@@ -84,7 +86,9 @@ class RecruitsValidators:
             raise InputError(status=error_codes.input_error_code, description=message)
 
         recruit_instance: Recruits = Recruits.query(Recruits.uid == uid).get()
-        return isinstance(recruit_instance, Recruits)
+
+        # NOTE: returns true if user is already recruited
+        return bool(recruit_instance)
 
     @staticmethod
     @handle_store_errors
@@ -101,7 +105,9 @@ class RecruitsValidators:
             raise InputError(status=error_codes.input_error_code, description=message)
 
         affiliate_instance: Affiliates = Affiliates.query(Affiliates.uid == uid).get()
-        return isinstance(affiliate_instance, Affiliates)
+
+        # NOTE: returns true if user is already recruited
+        return bool(affiliate_instance)
 
 
 class EarningsValidators:
@@ -120,10 +126,10 @@ class EarningsValidators:
             message: str = "affiliate_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        earnings_list: typing.List[EarningsData] = EarningsData.query(
-            EarningsData.affiliate_id == affiliate_id).fetch()
+        earnings_instance: typing.List[EarningsData] = EarningsData.query(EarningsData.affiliate_id == affiliate_id).get()
 
-        return isinstance(earnings_list, list) and len(earnings_list) > 0
+        # returns true if earnings already exists
+        return bool(earnings_instance)
 
 
 class Affiliates(ndb.Model):
