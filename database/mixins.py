@@ -1,6 +1,6 @@
 ***REMOVED***
     **NDB Database Common Mixins**
-    This Module defines common mixis which are useful in defining main database classes on the applications
+    This Module defines common Mixins which are useful in defining main database classes on the applications
 ***REMOVED***
 __author__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
@@ -16,9 +16,12 @@ from database.setters import setters
 
 class AmountMixin(ndb.Model):
     ***REMOVED***
-    A mixin to represent Money in cents
-    :property: amount: integer - representing money in cents
-    :property: currency: currency symbol
+    **Class AmountMixin**
+        A mixin to represent Money in cents
+
+    **Class Properties**
+        1. property: Amount: Integer -> Money in Cents
+        2. property: Currency: String ->  Currency symbol
     ***REMOVED***
     amount: int = ndb.IntegerProperty(default=None, validator=setters.set_value_amount)
     currency: str = ndb.StringProperty(default=config_instance.CURRENCY, validator=setters.set_currency)
@@ -63,6 +66,15 @@ class AmountMixin(ndb.Model):
 
 
 class UserMixin(ndb.Model):
+    ***REMOVED***
+        **Class UserMixin**
+            handling user login properties of User Class -
+            Passwords Hash are handled by werkzeug.security using the method : "pbkdf2:sha256"
+
+        **Class Properties**
+            1. Property: Email : String -> email password
+            2. Property: Password : String -> User Password - will be converted to a password hash
+    ***REMOVED***
     email: str = ndb.StringProperty(validator=setters.set_email)
     password: str = ndb.StringProperty(validator=setters.set_password)
 
@@ -91,7 +103,18 @@ class UserMixin(ndb.Model):
 # TODO add validators for address
 class AddressMixin(ndb.Model):
     ***REMOVED***
-        a mixin for user addresses
+        **Class AddressMixin**
+            a mixin for user addresses
+        **Class Properties**
+            1. organization_id: string -> the id of the organization the owner of the address has registered to
+            2. uid: string -> the unique identifying id for the user who owns the address
+            3. line_1: string -> Physical Address Line 1
+            4. city: string -> The City or Town of the address
+            5. zip_code: string -> Zip Code or postal code for the address
+            6. province: string -> in-case of a country with provinces
+            7. state: string -> in-case of a countries with states
+            8. country: string -> physical address country
+    # TODO - validate countries through a country list the membership API Supports
     ***REMOVED***
     organization_id: str = ndb.StringProperty(validator=setters.set_id)
     uid: str = ndb.StringProperty(validator=setters.set_id)
