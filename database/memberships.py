@@ -41,7 +41,8 @@ class MembershipValidators:
     @staticmethod
     async def start_date_valid_async(start_date: date) -> bool:
         ***REMOVED***
-            check if date is from today and falls within normal parameters
+            **asynchronous version of start_date_valid_async**
+                check if date is from today and falls within normal parameters
         ***REMOVED***
         if isinstance(start_date, date) and start_date > today():
             return True
@@ -50,7 +51,9 @@ class MembershipValidators:
 
 class PlanValidators:
     ***REMOVED***
-        validating and authenticating calls to MembershipPlans Database
+        **Class PlanValidators**
+            validating and authenticating calls to MembershipPlans Database
+
     ***REMOVED***
 
     # noinspection DuplicatedCode
@@ -58,8 +61,13 @@ class PlanValidators:
     @handle_store_errors
     def plan_exist(organization_id: str, plan_id: str) -> typing.Union[None, bool]:
         ***REMOVED***
-            return True or False
-            return None if Error
+            **plan_exist**
+                return True or False
+                return None if Error
+
+        :param organization_id: unique organization id
+        :param plan_id: unique plan_id
+        :return: True if plan exist or False Otherwise
         ***REMOVED***
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id cannot be Null"
@@ -71,9 +79,7 @@ class PlanValidators:
 
         plan_instance: MembershipPlans = MembershipPlans.query(MembershipPlans.organization_id == organization_id,
                                                                MembershipPlans.plan_id == plan_id).get()
-        if isinstance(plan_instance, MembershipPlans):
-            return True
-        return False
+        return isinstance(plan_instance, MembershipPlans)
 
     # noinspection DuplicatedCode
     @staticmethod
