@@ -23,18 +23,32 @@ class UserValidators:
     @staticmethod
     @handle_store_errors
     def is_user_valid(organization_id: str, uid: str) -> typing.Union[None, bool]:
+        ***REMOVED***
+            **is_user_valid**
+                returns true if user_instance is found and user_instance.is_active
+        :param organization_id:
+        :param uid:
+        :return:
+        ***REMOVED***
         if not isinstance(uid, str) or not bool(uid.strip()):
             message: str = "uid cannot be Null"
             raise InputError(status=error_codes.input_error_code, description=message)
 
         user_instance: UserModel = UserModel.query(
             UserModel.organization_id == organization_id, UserModel.uid == uid).get()
-
-        return user_instance.is_active if isinstance(user_instance, UserModel) else False
+        # if user_instance is valid return user_instance.is_active
+        return bool(user_instance) and user_instance.is_active
 
     @staticmethod
     @handle_store_errors
     async def is_user_valid_async(organization_id: str, uid: str) -> typing.Union[None, bool]:
+        ***REMOVED***
+            **is_user_valid_async**
+                returns true if user_instance is valid and user_instance.is_active
+        :param organization_id:
+        :param uid:
+        :return:
+        ***REMOVED***
         if not (isinstance(uid, str)) or not bool(uid.strip()):
             message: str = "uid cannot be Null"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -46,13 +60,15 @@ class UserValidators:
         user_instance: UserModel = UserModel.query(
             UserModel.organization_id == organization_id, UserModel.uid == uid).get_async().get_result()
 
-        return user_instance.is_active if isinstance(user_instance, UserModel) else False
+        # if user_instance is valid return user_instance.is_active
+        return bool(user_instance) and user_instance.is_active
 
     @staticmethod
     @handle_store_errors
     def is_email_available(organization_id: str, email: str) -> typing.Union[None, bool]:
         ***REMOVED***
-            return False if email is not available True otherwise
+            **is_email_available**
+                return False if email is not available True otherwise
         :param organization_id:
         :param email:
         :return:
@@ -67,13 +83,16 @@ class UserValidators:
 
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.email == email).get()
-        return not isinstance(user_instance, UserModel)
+
+        # returns False if user_instance is a valid User
+        return not bool(user_instance)
 
     @staticmethod
     @handle_store_errors
     def is_cell_available(organization_id: str, cell: str) -> typing.Union[None, bool]:
         ***REMOVED***
-
+            **is_cell_available**
+                checks if cell is available returns true if that's the case
         :param organization_id:
         :param cell:
         :return:
@@ -88,8 +107,8 @@ class UserValidators:
 
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.cell == cell).get()
-
-        return not isinstance(user_instance, UserModel)
+        # Returns False if user_instance is a valid user
+        return not bool(user_instance)
 
 
 class UserModel(ndb.Model):
