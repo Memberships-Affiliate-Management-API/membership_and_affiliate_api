@@ -31,7 +31,9 @@ import asyncio
 
 class MembershipsEmails(Mailgun):
     ***REMOVED***
-        Class Used to send emails and notifications related to Memberships
+        **Class MembershipsEmails**
+            Class Used to send emails and notifications related to Memberships
+
     ***REMOVED***
 
     def __init__(self):
@@ -39,22 +41,27 @@ class MembershipsEmails(Mailgun):
 
     def __do_send_mail(self, to_email: str, subject: str, text: str, html: str) -> None:
         ***REMOVED***
-            TODO try sending emails with a specific sender - this allows the actual sending module
-            to be interchangeable at run time
-            send email using mail_sender
+            **__do_send_mail**
+                TODO try sending emails with a specific sender - this allows the actual sending module
+                to be interchangeable at run time
+                send email using mail_sender
+
         :param to_email:
         :param subject:
         :param text:
         :param html:
         :return:
         ***REMOVED***
+        # Actually sending email with mailgun api
         self.__send_with_mailgun_rest_api(to_list=[to_email], subject=subject, text=text, html=html)
 
     def send_memberships_welcome_email(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
-            **ideally this process should be run on a separate work instance if on Heroku or as a task in GCP**
+            **send_memberships_welcome_email**
+                ideally this process should be run on a separate work instance if on Heroku or as a task in GCP**
                 once a client or user has registered to a membership plan send them an email welcoming them
                 on board
+
             :param organization_id
             :param uid
             :return:
@@ -67,7 +74,9 @@ class MembershipsEmails(Mailgun):
                                 organization_description: str) -> tuple:
             # Include Powered by Message on the Footer of the Email Message
             ***REMOVED***
-                compose the two email bodies given the above variables
+                **Email body Composer**
+                    compose the two email bodies given the above variables
+
             :param names:
             :param surname:
             :param plan_name:
@@ -143,7 +152,8 @@ class MembershipsEmails(Mailgun):
 # TODO Create Test Cases for Memberships & Documentations
 class Validators(UserValid, PlanValid, MemberValid, CouponValid):
     ***REMOVED***
-        validators for membership views
+        **Class Validators**
+            a group of validators for membership views
     ***REMOVED***
 
     def __init__(self):
@@ -154,7 +164,17 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
     @app_cache.memoize(timeout=return_ttl('short'))
     def can_add_member(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
                        plan_id: typing.Union[str, None], start_date: date) -> bool:
+        ***REMOVED***
+            **can_add_member**
+                checks if user can add a member to memberships record
+        :param organization_id:
+        :param uid:
+        :param plan_id:
+        :param start_date:
+        :return:
+        ***REMOVED***
         user_valid: typing.Union[None, bool] = self.is_user_valid(organization_id=organization_id, uid=uid)
+        # TODO - may need to revise this, there is no reason to check if a plan_exist - just if a membership exist
         plan_exist: typing.Union[None, bool] = self.plan_exist(organization_id=organization_id, plan_id=plan_id)
         date_valid: typing.Union[None, bool] = self.start_date_valid(start_date=start_date)
 
@@ -168,6 +188,15 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
     async def can_add_member_async(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
                                    plan_id: typing.Union[str, None],
                                    start_date: date) -> bool:
+        ***REMOVED***
+            **can_add_member_async**
+                asynchronous version of can_add_member
+        :param organization_id:
+        :param uid:
+        :param plan_id:
+        :param start_date:
+        :return:
+        ***REMOVED***
         user_valid: typing.Union[None, bool] = await self.is_user_valid_async(organization_id=organization_id, uid=uid)
         plan_exist: typing.Union[None, bool] = await self.plan_exist_async(organization_id=organization_id,
                                                                            plan_id=plan_id)
@@ -181,6 +210,14 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
 
     @app_cache.memoize(timeout=return_ttl('short'))
     def can_add_plan(self, organization_id: typing.Union[str, None], plan_name: typing.Union[str, None]) -> bool:
+        ***REMOVED***
+            **can_add_plan**
+                check if a new plan can be added
+
+        :param organization_id:
+        :param plan_name:
+        :return:
+        ***REMOVED***
         name_exist: typing.Union[None, bool] = self.plan_name_exist(organization_id=organization_id,
                                                                     plan_name=plan_name)
         if isinstance(name_exist, bool):
@@ -191,6 +228,14 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
     @app_cache.memoize(timeout=return_ttl('short'))
     async def can_add_plan_async(self, organization_id: typing.Union[str, None],
                                  plan_name: typing.Union[str, None]) -> bool:
+        ***REMOVED***
+            **can_add_plan_async**
+                checks if user can add plan
+
+        :param organization_id:
+        :param plan_name:
+        :return:
+        ***REMOVED***
         name_exist: typing.Union[None, bool] = await self.plan_name_exist_async(
             organization_id=organization_id, plan_name=plan_name)
 
@@ -202,7 +247,17 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
     @app_cache.memoize(timeout=return_ttl('short'))
     def can_update_plan(self, organization_id: typing.Union[str, None],
                         plan_id: typing.Union[str, None], plan_name: typing.Union[str, None]) -> bool:
+        ***REMOVED***
+            **can_update_plan**
+                checks if plan can be updated
+
+        :param organization_id:
+        :param plan_id:
+        :param plan_name:
+        :return:
+        ***REMOVED***
         plan_exist: typing.Union[None, bool] = self.plan_exist(organization_id=organization_id, plan_id=plan_id)
+        # TODO - verify if checking of plan_name_exist is really needed
         plan_name_exist: typing.Union[None, bool] = self.plan_name_exist(
             organization_id=organization_id, plan_name=plan_name)
 
@@ -214,6 +269,15 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
     @app_cache.memoize(timeout=return_ttl('short'))
     async def can_update_plan_async(self, organization_id: typing.Union[str, None],
                                     plan_id: typing.Union[str, None], plan_name: typing.Union[str, None]) -> bool:
+        ***REMOVED***
+            **can_update_plan_async**
+                check if plan can be updated
+
+        :param organization_id:
+        :param plan_id:
+        :param plan_name:
+        :return:
+        ***REMOVED***
 
         plan_exist: typing.Union[None, bool] = await self.plan_exist_async(
             organization_id=organization_id, plan_id=plan_id)
@@ -230,6 +294,16 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
     def can_add_coupon(self, organization_id: typing.Union[str, None], code: typing.Union[str, None],
                        expiration_time: typing.Union[int, None],
                        discount: typing.Union[int, None]) -> bool:
+        ***REMOVED***
+            **can_add_coupon**
+                check if coupon can be updated
+
+        :param organization_id:
+        :param code:
+        :param expiration_time:
+        :param discount:
+        :return:
+        ***REMOVED***
 
         coupon_exist: typing.Union[None, bool] = self.coupon_exist(organization_id=organization_id, code=code)
         expiration_valid: typing.Union[None, bool] = self.expiration_valid(expiration_time=expiration_time)
@@ -244,6 +318,16 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
     async def can_add_coupon_async(self, organization_id: typing.Union[str, None], code: typing.Union[str, None],
                                    expiration_time: typing.Union[int, None],
                                    discount: typing.Union[int, None]) -> bool:
+        ***REMOVED***
+            **can_add_coupon_async**
+                check if coupon can be added
+
+        :param organization_id:
+        :param code:
+        :param expiration_time:
+        :param discount:
+        :return:
+        ***REMOVED***
         coupon_exist: typing.Union[None, bool] = await self.coupon_exist_async(organization_id=organization_id,
                                                                                code=code)
 
@@ -259,6 +343,16 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
     def can_update_coupon(self, organization_id: typing.Union[str, None], code: typing.Union[str, None],
                           expiration_time: typing.Union[int, None],
                           discount: typing.Union[int, None]) -> bool:
+        ***REMOVED***
+            **can_update_coupon**
+                check if coupon can be updated
+
+        :param organization_id:
+        :param code:
+        :param expiration_time:
+        :param discount:
+        :return:
+        ***REMOVED***
 
         coupon_exist: typing.Union[None, bool] = self.coupon_exist(organization_id=organization_id, code=code)
         expiration_valid: typing.Union[None, bool] = self.expiration_valid(expiration_time=expiration_time)
@@ -273,6 +367,16 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
     async def can_update_coupon_async(self, organization_id: typing.Union[str, None], code: typing.Union[str, None],
                                       expiration_time: typing.Union[int, None],
                                       discount: typing.Union[int, None]) -> bool:
+        ***REMOVED***
+            **can_update_coupon_async**
+                check if coupon can be updated
+
+        :param organization_id:
+        :param code:
+        :param expiration_time:
+        :param discount:
+        :return:
+        ***REMOVED***
 
         coupon_exist: typing.Union[None, bool] = await self.coupon_exist_async(organization_id=organization_id,
                                                                                code=code)
@@ -287,7 +391,10 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
 
 # noinspection DuplicatedCode
 class MembershipsView(Validators, MembershipsEmails):
-
+    ***REMOVED***
+        **MembershipsView**
+            class intended to control access to memberships
+    ***REMOVED***
     def __init__(self):
         super(MembershipsView, self).__init__()
 
@@ -297,7 +404,8 @@ class MembershipsView(Validators, MembershipsEmails):
                                      plan_id: typing.Union[str, None], plan_start_date: date,
                                      payment_method: typing.Union[str, None] = "paypal") -> tuple:
         ***REMOVED***
-            this merely creates a relationship between a payment plan for a service or product to a client
+            **_create_or_update_membership**
+                this merely creates a relationship between a payment plan for a service or product to a client
 
         :param organization_id: id of the organization the client belongs to
         :param uid: id of the client who is getting into a payment plan
@@ -306,8 +414,7 @@ class MembershipsView(Validators, MembershipsEmails):
         :return:
         ***REMOVED***
 
-        if self.can_add_member(organization_id=organization_id, uid=uid, plan_id=plan_id,
-                               start_date=plan_start_date) is True:
+        if self.can_add_member(organization_id=organization_id, uid=uid, plan_id=plan_id, start_date=plan_start_date):
 
             membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                                  Memberships.uid == uid).get()
@@ -344,7 +451,8 @@ class MembershipsView(Validators, MembershipsEmails):
                                                  plan_start_date: date,
                                                  payment_method: typing.Union[str, None] = "paypal") -> tuple:
         ***REMOVED***
-            this merely creates a relationship between a payment plan for a service or product to a client
+            **_create_or_update_membership_async**
+                this merely creates a relationship between a payment plan for a service or product to a client
 
         :param organization_id: id of the organization the client belongs to
         :param uid: id of the client who is getting into a payment plan
@@ -354,7 +462,7 @@ class MembershipsView(Validators, MembershipsEmails):
         ***REMOVED***
 
         if await self.can_add_member_async(organization_id=organization_id, uid=uid, plan_id=plan_id,
-                                           start_date=plan_start_date) is True:
+                                           start_date=plan_start_date):
 
             # can use get to simplify this and make transactions faster
             membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,

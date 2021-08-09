@@ -92,7 +92,9 @@ class Mailgun:
     def __send_with_mailgun_rest_api(self, to_list: List[str], subject: str, text: str, html: str,
                                      o_tag: List[str] = None) -> tuple:
         ***REMOVED***
-        a method to send email via rest api
+        **__send_with_mailgun_rest_api**
+            a method to send email via rest api
+
         :param o_tag:  message o tag | format of o:tag  ["September newsletter", "newsletters"]
         :param to_list: list of email addresses to send this email format ["bar@example.com", "YOU@YOUR_DOMAIN_NAME"]
         :param subject: the subject of the email
