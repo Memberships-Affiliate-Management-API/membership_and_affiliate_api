@@ -32,7 +32,8 @@ class WalletValidator:
     @handle_store_errors
     def wallet_exist(organization_id: str, uid: str) -> typing.Union[bool, None]:
         ***REMOVED***
-            checks if a specific wallet exists
+            **wallet_exist**
+                checks if a specific wallet exists
 
         :param 1. organization_id: the id of the organization the wallet belongs to
         :param 2. uid: the user id of the user the wallet belong to
@@ -41,14 +42,15 @@ class WalletValidator:
 
         wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
                                                          WalletModel.uid == uid).get()
-
-        return True if isinstance(wallet_instance, WalletModel) else False
+        # returns true if wallet is found
+        return bool(wallet_instance)
 
     @staticmethod
     @handle_store_errors
     async def wallet_exist_async(organization_id: str, uid: str) -> typing.Union[bool, None]:
         ***REMOVED***
-            asynchronous version of wallet exists
+            **wallet_exist_async**
+                asynchronous version of wallet exists
         :param organization_id:
         :param uid:
         :return:
@@ -56,7 +58,8 @@ class WalletValidator:
         wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
                                                          WalletModel.uid == uid).get_async().get_result()
 
-        return True if isinstance(wallet_instance, WalletModel) else False
+        # returns true if wallet exists
+        return bool(wallet_instance)
 
     # TODO complete validations for all Wallet Models
     # TODO be sure to integrate all models to the view
