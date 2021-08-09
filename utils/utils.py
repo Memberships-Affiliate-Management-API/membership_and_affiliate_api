@@ -109,7 +109,7 @@ def return_ttl(name: str) -> int:
     return cache_ttl_short
 
 
-# TODO Refactor the entire codebase to use this function to obtain todays date
+# returns today's date
 def today() -> date: return datetime.datetime.now().date()
 
 

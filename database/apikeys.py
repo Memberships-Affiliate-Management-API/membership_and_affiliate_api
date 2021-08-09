@@ -10,19 +10,19 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
 from google.cloud import ndb
-from database.setters import setters
+from database.setters import property_
 
 
 class APIKeys(ndb.Model):
     ***REMOVED***
         a class to keep track of all api keys created for clients / organization in order to access our API
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=setters.set_id)
-    api_key: str = ndb.StringProperty(validator=setters.set_id)
-    secret_token: str = ndb.StringProperty(validator=setters.set_id)
-    assigned_to_uid: str = ndb.StringProperty(validator=setters.set_id)
-    domain: str = ndb.StringProperty(validator=setters.set_domain)
-    is_active: bool = ndb.BooleanProperty(default=True, validator=setters.set_bool)
+    organization_id: str = ndb.StringProperty(validator=property_.set_id)
+    api_key: str = ndb.StringProperty(validator=property_.set_id)
+    secret_token: str = ndb.StringProperty(validator=property_.set_id)
+    assigned_to_uid: str = ndb.StringProperty(validator=property_.set_id)
+    domain: str = ndb.StringProperty(validator=property_.set_domain)
+    is_active: bool = ndb.BooleanProperty(default=True, validator=property_.set_bool)
 
     def __str__(self) -> str:
         return "APIKeys: Organization: {}, key: {} ".format(self.organization_id, self.api_key)

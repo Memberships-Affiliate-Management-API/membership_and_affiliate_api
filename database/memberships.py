@@ -17,7 +17,7 @@ from google.api_core.exceptions import RetryError, Aborted
 from google.cloud import ndb
 from config.exception_handlers import handle_store_errors
 from database.mixins import AmountMixin
-from database.setters import setters
+from database.setters import property_
 from utils.utils import get_days
 
 
@@ -256,13 +256,13 @@ class Memberships(ndb.Model):
             6. property plan_start_date: the date the plan has been activated
             7. property payment_method: method of payment for the membership plan
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=setters.set_id)
-    uid: str = ndb.StringProperty(validator=setters.set_id)
-    plan_id: str = ndb.StringProperty(validator=setters.set_id)
-    status: str = ndb.StringProperty(default="unpaid", validator=setters.set_status)  # Paid/ Unpaid
-    date_created: date = ndb.DateTimeProperty(auto_now_add=True, validator=setters.set_date)
-    plan_start_date: date = ndb.DateProperty(validator=setters.set_datetime)  # the date this plan will
-    payment_method: str = ndb.StringProperty(default="paypal", validator=setters.set_payment_method)
+    organization_id: str = ndb.StringProperty(validator=property_.set_id)
+    uid: str = ndb.StringProperty(validator=property_.set_id)
+    plan_id: str = ndb.StringProperty(validator=property_.set_id)
+    status: str = ndb.StringProperty(default="unpaid", validator=property_.set_status)  # Paid/ Unpaid
+    date_created: date = ndb.DateTimeProperty(auto_now_add=True, validator=property_.set_date)
+    plan_start_date: date = ndb.DateProperty(validator=property_.set_datetime)  # the date this plan will
+    payment_method: str = ndb.StringProperty(default="paypal", validator=property_.set_payment_method)
 
     # become active
 
@@ -323,22 +323,22 @@ class MembershipPlans(ndb.Model):
         12. property : date_created: the date the payment plan has been created
 
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=setters.set_id)
+    organization_id: str = ndb.StringProperty(validator=property_.set_id)
     # Service ID will relate the plan to a specific service_id on Services here and on PayPal Products
-    service_id: str = ndb.StringProperty(validator=setters.set_id)
+    service_id: str = ndb.StringProperty(validator=property_.set_id)
     # NOTE a single service_id can be found on multiple plans
-    plan_id: str = ndb.StringProperty(validator=setters.set_id)
-    plan_name: str = ndb.StringProperty(validator=setters.set_string)
-    description: str = ndb.StringProperty(validator=setters.set_string)
-    total_members: int = ndb.IntegerProperty(validator=setters.set_number)
-    schedule_day: int = ndb.IntegerProperty(default=0, validator=setters.set_schedule_day)  # 1 or 2 or 3 of
+    plan_id: str = ndb.StringProperty(validator=property_.set_id)
+    plan_name: str = ndb.StringProperty(validator=property_.set_string)
+    description: str = ndb.StringProperty(validator=property_.set_string)
+    total_members: int = ndb.IntegerProperty(validator=property_.set_number)
+    schedule_day: int = ndb.IntegerProperty(default=0, validator=property_.set_schedule_day)  # 1 or 2 or 3 of
     # every month or # week, or three months
-    schedule_term: str = ndb.StringProperty(default="monthly", validator=setters.set_schedule_term)  # Monthly,
+    schedule_term: str = ndb.StringProperty(default="monthly", validator=property_.set_schedule_term)  # Monthly,
     # Quarterly, Annually
     term_payment_amount: AmountMixin = ndb.StructuredProperty(AmountMixin)
     registration_amount: AmountMixin = ndb.StructuredProperty(AmountMixin)
-    is_active: bool = ndb.BooleanProperty(default=False, validator=setters.set_bool)
-    date_created: int = ndb.DateProperty(auto_now_add=True, validator=setters.set_datetime)
+    is_active: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
+    date_created: int = ndb.DateProperty(auto_now_add=True, validator=property_.set_datetime)
 
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
@@ -386,15 +386,15 @@ class MembershipInvoices(ndb.Model):
             11. property : amount_paid: AmountMixin : the amount which has been paid for this invoice
 
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=setters.set_id)
-    uid: str = ndb.StringProperty(validator=setters.set_id)
-    plan_id: str = ndb.StringProperty(validator=setters.set_id)
-    invoice_id: str = ndb.StringProperty(validator=setters.set_id)
-    invoice_number: str = ndb.StringProperty(validator=setters.set_id)
-    date_created: date = ndb.DateProperty(auto_now_add=True, validator=setters.set_date)
-    invoice_sent: bool = ndb.BooleanProperty(default=False, validator=setters.set_bool)
-    invoice_paid: bool = ndb.BooleanProperty(default=False, validator=setters.set_bool)
-    date_paid: date = ndb.DateProperty(validator=setters.set_date)
+    organization_id: str = ndb.StringProperty(validator=property_.set_id)
+    uid: str = ndb.StringProperty(validator=property_.set_id)
+    plan_id: str = ndb.StringProperty(validator=property_.set_id)
+    invoice_id: str = ndb.StringProperty(validator=property_.set_id)
+    invoice_number: str = ndb.StringProperty(validator=property_.set_id)
+    date_created: date = ndb.DateProperty(auto_now_add=True, validator=property_.set_date)
+    invoice_sent: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
+    invoice_paid: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
+    date_paid: date = ndb.DateProperty(validator=property_.set_date)
     payment_amount: AmountMixin = ndb.StructuredProperty(AmountMixin)
     amount_paid: AmountMixin = ndb.StructuredProperty(AmountMixin)
 
@@ -462,12 +462,12 @@ class Coupons(ndb.Model):
         :property: expiration_time: int: time in milliseconds when the coupon code will expire
 
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=setters.set_id)
-    code: str = ndb.StringProperty(validator=setters.set_coupon_code)
-    discount_percent: int = ndb.IntegerProperty(default=0, validator=setters.set_number)
-    is_valid: bool = ndb.BooleanProperty(default=True, validator=setters.set_bool)
-    date_created: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=setters.set_datetime)
-    expiration_time: int = ndb.IntegerProperty(default=0, validator=setters.set_number)
+    organization_id: str = ndb.StringProperty(validator=property_.set_id)
+    code: str = ndb.StringProperty(validator=property_.set_coupon_code)
+    discount_percent: int = ndb.IntegerProperty(default=0, validator=property_.set_number)
+    is_valid: bool = ndb.BooleanProperty(default=True, validator=property_.set_bool)
+    date_created: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=property_.set_datetime)
+    expiration_time: int = ndb.IntegerProperty(default=0, validator=property_.set_number)
 
     def __str__(self) -> str:
         return "Code: {} Discount: {} Is Valid: {} Date Created: {} Expire at : {}".format(self.code, self.discount,
@@ -506,8 +506,8 @@ class AccessRights(ndb.Model):
         `Class Properties`
 
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=setters.set_id)
-    plan_id: str = ndb.StringProperty(validator=setters.set_id)
+    organization_id: str = ndb.StringProperty(validator=property_.set_id)
+    plan_id: str = ndb.StringProperty(validator=property_.set_id)
     access_rights_list: typing.List[str] = ndb.StringProperty(repeated=True)  # a list containing the rights of users
 
     # TODO - finish this
@@ -524,16 +524,16 @@ class MembershipDailyStats(ndb.Model):
         provides information and settings pertaining to paying members
         run update stats task against this class daily
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=setters.set_id)
-    daily_id: str = ndb.StringProperty(validator=setters.set_id)
-    total_users: int = ndb.IntegerProperty(default=0, validator=setters.set_number)
-    total_members: int = ndb.IntegerProperty(default=0, validator=setters.set_number)
+    organization_id: str = ndb.StringProperty(validator=property_.set_id)
+    daily_id: str = ndb.StringProperty(validator=property_.set_id)
+    total_users: int = ndb.IntegerProperty(default=0, validator=property_.set_number)
+    total_members: int = ndb.IntegerProperty(default=0, validator=property_.set_number)
     expected_monthly_earnings: AmountMixin = ndb.StructuredProperty(AmountMixin)
     expected_quarterly_earnings: AmountMixin = ndb.StructuredProperty(AmountMixin)
     expected_annual_earnings: AmountMixin = ndb.StructuredProperty(AmountMixin)
     expected_earnings_this_month: AmountMixin = ndb.StructuredProperty(AmountMixin)
     total_earned_so_far: AmountMixin = ndb.StructuredProperty(AmountMixin)
-    date_created: date = ndb.DateProperty(validator=setters.set_date)
+    date_created: date = ndb.DateProperty(validator=property_.set_date)
 
     def __str__(self) -> str:
         return "<Stats Users: {} Members: {}  Earnings: {} Total: {}".format(self.total_users,

@@ -14,7 +14,7 @@ from config.exception_handlers import handle_store_errors
 from config.exceptions import InputError, error_codes
 from database.mixins import AddressMixin
 from utils.utils import timestamp, get_days
-from database.setters import setters
+from database.setters import property_
 
 
 class UserValidators:
@@ -122,18 +122,18 @@ class UserModel(ndb.Model):
             5. user_details: dict -> user general details in dict form
 
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(required=True, indexed=True, validator=setters.set_id)
-    uid: str = ndb.StringProperty(required=True, indexed=True, validator=setters.set_id)
-    names: str = ndb.StringProperty(validator=setters.set_string)
-    surname: str = ndb.StringProperty(validator=setters.set_string)
-    cell: str = ndb.StringProperty(indexed=True, validator=setters.set_cell)
-    email: str = ndb.StringProperty(indexed=True, validator=setters.set_email)
-    email_verified: bool = ndb.BooleanProperty(default=False, validator=setters.set_bool)
-    password: str = ndb.StringProperty(validator=setters.set_password)
-    is_active: bool = ndb.BooleanProperty(default=True, validator=setters.set_bool)
-    time_registered: int = ndb.IntegerProperty(default=timestamp(), validator=setters.set_number)
-    is_admin: bool = ndb.BooleanProperty(default=False, validator=setters.set_bool)
-    is_support: bool = ndb.BooleanProperty(default=False, validator=setters.set_bool)
+    organization_id: str = ndb.StringProperty(required=True, indexed=True, validator=property_.set_id)
+    uid: str = ndb.StringProperty(required=True, indexed=True, validator=property_.set_id)
+    names: str = ndb.StringProperty(validator=property_.set_string)
+    surname: str = ndb.StringProperty(validator=property_.set_string)
+    cell: str = ndb.StringProperty(indexed=True, validator=property_.set_cell)
+    email: str = ndb.StringProperty(indexed=True, validator=property_.set_email)
+    email_verified: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
+    password: str = ndb.StringProperty(validator=property_.set_password)
+    is_active: bool = ndb.BooleanProperty(default=True, validator=property_.set_bool)
+    time_registered: int = ndb.IntegerProperty(default=timestamp(), validator=property_.set_number)
+    is_admin: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
+    is_support: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
     address: AddressMixin = ndb.StructuredProperty(AddressMixin)
 
     def __str__(self) -> str:

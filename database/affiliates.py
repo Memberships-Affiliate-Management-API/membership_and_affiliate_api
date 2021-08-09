@@ -16,7 +16,7 @@ from datetime import date, datetime
 from google.api_core.exceptions import RetryError, Aborted
 from config.exception_handlers import handle_store_errors
 from database.mixins import AmountMixin
-from database.setters import setters
+from database.setters import property_
 
 
 class AffiliatesValidators:
@@ -135,14 +135,14 @@ class Affiliates(ndb.Model):
             7. is_active: bool -> indicates if the affiliate is active
             8. is_deleted: bool -> indicates if an affiliate is deleted or not.
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=setters.set_id)
-    affiliate_id: str = ndb.StringProperty(validator=setters.set_id)
-    uid: str = ndb.StringProperty(validator=setters.set_id)
-    last_updated: datetime = ndb.DateTimeProperty(auto_now=True, validator=setters.set_datetime)
-    datetime_recruited: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=setters.set_datetime)
-    total_recruits: int = ndb.IntegerProperty(default=0, validator=setters.set_number)
-    is_active: bool = ndb.BooleanProperty(default=True, validator=setters.set_bool)
-    is_deleted: bool = ndb.BooleanProperty(default=False, validator=setters.set_bool)
+    organization_id: str = ndb.StringProperty(validator=property_.set_id)
+    affiliate_id: str = ndb.StringProperty(validator=property_.set_id)
+    uid: str = ndb.StringProperty(validator=property_.set_id)
+    last_updated: datetime = ndb.DateTimeProperty(auto_now=True, validator=property_.set_datetime)
+    datetime_recruited: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=property_.set_datetime)
+    total_recruits: int = ndb.IntegerProperty(default=0, validator=property_.set_number)
+    is_active: bool = ndb.BooleanProperty(default=True, validator=property_.set_bool)
+    is_deleted: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
 
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
@@ -186,16 +186,16 @@ class Recruits(ndb.Model):
             9. is_deleted: bool -> indicates if a recruit is deleted
 
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=setters.set_id)
-    affiliate_id: str = ndb.StringProperty(validator=setters.set_id)
-    referrer_uid: str = ndb.StringProperty(validator=setters.set_id)
-    datetime_recruited: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=setters.set_date)
-    datetime_updated: datetime = ndb.DateTimeProperty(auto_now=True, validator=setters.set_date)
-    is_member: bool = ndb.BooleanProperty(default=False, validator=setters.set_bool)
+    organization_id: str = ndb.StringProperty(validator=property_.set_id)
+    affiliate_id: str = ndb.StringProperty(validator=property_.set_id)
+    referrer_uid: str = ndb.StringProperty(validator=property_.set_id)
+    datetime_recruited: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=property_.set_date)
+    datetime_updated: datetime = ndb.DateTimeProperty(auto_now=True, validator=property_.set_date)
+    is_member: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
     # TODO - test this first may need to remove plan ID
-    recruit_plan_id: str = ndb.StringProperty(validator=setters.set_id)  # Membership plan id allows to get payment fees
-    is_active: bool = ndb.BooleanProperty(default=True, validator=setters.set_bool)
-    is_deleted: bool = ndb.BooleanProperty(default=False, validator=setters.set_bool)
+    recruit_plan_id: str = ndb.StringProperty(validator=property_.set_id)  # Membership plan id allows to get payment fees
+    is_active: bool = ndb.BooleanProperty(default=True, validator=property_.set_bool)
+    is_deleted: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
 
     def __str__(self) -> str:
         return "<Recruits: {}{}{}".format(self.affiliate_id, self.referrer_uid, self.datetime_recruited)
@@ -234,13 +234,13 @@ class EarningsData(ndb.Model):
             6. is_paid: bool -> true if earnings has been paid
             7. on_hold: bool -> True if earnings has been put on hold
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=setters.set_id)
-    affiliate_id: str = ndb.StringProperty(validator=setters.set_id)
+    organization_id: str = ndb.StringProperty(validator=property_.set_id)
+    affiliate_id: str = ndb.StringProperty(validator=property_.set_id)
     start_date: date = ndb.DateProperty(auto_now_add=True)
-    last_updated: date = ndb.DateProperty(validator=setters.set_date)
+    last_updated: date = ndb.DateProperty(validator=property_.set_date)
     total_earned: AmountMixin = ndb.StructuredProperty(AmountMixin)
-    is_paid: bool = ndb.BooleanProperty(default=False, validator=setters.set_bool)
-    on_hold: bool = ndb.BooleanProperty(default=False, validator=setters.set_bool)
+    is_paid: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
+    on_hold: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
 
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
@@ -272,11 +272,11 @@ class AffiliateEarningsTransactions(ndb.Model):
     ***REMOVED***
         keeps track of amounts paid from earningsData
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=setters.set_id)
-    affiliate_id: str = ndb.StringProperty(validator=setters.set_id)
+    organization_id: str = ndb.StringProperty(validator=property_.set_id)
+    affiliate_id: str = ndb.StringProperty(validator=property_.set_id)
     total_earned: AmountMixin = ndb.StructuredProperty(AmountMixin)
     transaction_id_list: typing.List[str] = ndb.StringProperty(repeated=True)
-    last_transaction_time: datetime = ndb.DateTimeProperty(auto_now=True, validator=setters.set_date)
+    last_transaction_time: datetime = ndb.DateTimeProperty(auto_now=True, validator=property_.set_date)
 
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
@@ -305,9 +305,9 @@ class AffiliateTransactionItems(ndb.Model):
     ***REMOVED***
         keeps track of singular transaction items
     ***REMOVED***
-    transaction_id: str = ndb.StringProperty(validator=setters.set_id)
+    transaction_id: str = ndb.StringProperty(validator=property_.set_id)
     amount: AmountMixin = ndb.StructuredProperty(AmountMixin)
-    transaction_date: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=setters.set_date)
+    transaction_date: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=property_.set_date)
 
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
@@ -339,11 +339,11 @@ class AffiliateSettingsStats(ndb.Model):
         if not then income will be earned once off when a recruited
         user becomes a member.
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=setters.set_id)
-    earnings_percent: int = ndb.IntegerProperty(validator=setters.set_percent)
-    recurring_earnings: bool = ndb.BooleanProperty(default=False, validator=setters.set_bool)
+    organization_id: str = ndb.StringProperty(validator=property_.set_id)
+    earnings_percent: int = ndb.IntegerProperty(validator=property_.set_percent)
+    recurring_earnings: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
     total_affiliates_earnings: AmountMixin = ndb.StructuredProperty(AmountMixin)
-    total_affiliates: int = ndb.IntegerProperty(default=0, validator=setters.set_number)
+    total_affiliates: int = ndb.IntegerProperty(default=0, validator=property_.set_number)
 
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:

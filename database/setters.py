@@ -35,40 +35,55 @@ class Events:
 
 
 class Util:
+    ***REMOVED***
+        **Class Util**
+            ndb property validators utilities and helpers
+    ***REMOVED***
     def __init__(self):
         pass
 
     @staticmethod
     def return_class_name(prop: ndb.Property) -> str:
+        ***REMOVED***
+            Returns the name of the ndb property
+        ***REMOVED***
         return prop.__class__.__name__
 
     @staticmethod
     def regex_check_email(email: str) -> bool:
+        ***REMOVED***
+            checking if email is valid with regex_pattern
+        :param email: email address being checked
+        :return: bool True if Valid
+        ***REMOVED***
+
         regex_pattern = r"\"?([-a-zA-Z0-9.`?{}]+@\w+\.\w+)\"?"
         pattern = re.compile(regex_pattern)
-        return True if re.match(pattern, email) else False
+        return bool(re.fullmatch(pattern, email))
 
     @staticmethod
     def password_complexity(password: str) -> bool:
         ***REMOVED***
             password contains upper-case and lower-case characters, numbers and at least 8 characters in length
-        :param password:
-        :return:
+        :param password: -> text format of the password to be checked
+        :return: bool -> True if password is complex enough
         ***REMOVED***
         regex_pattern = r'[A-Za-z0-9@#$%^&+=]{8,}'
         pattern = re.compile(regex_pattern)
-        return True if re.fullmatch(pattern, password) else False
+        return bool(re.fullmatch(pattern, password))
 
     @staticmethod
     def regex_check_domain(domain: str) -> bool:
         ***REMOVED***
-
+            **Check a Domain Name**
+                checks a domain name for validity with regex pattern
+                return True if pattern matches
         :param domain:
         :return:
         ***REMOVED***
         regex_pattern = r'^[a-z0-9]([a-z0-9-]+\.){1,}[a-z0-9]+\Z'
         pattern = re.compile(regex_pattern)
-        return True if re.fullmatch(pattern, domain) else False
+        return bool(re.fullmatch(pattern, domain))
 
     @staticmethod
     def resolve_domain_name(domain: str) -> bool:
@@ -77,7 +92,8 @@ class Util:
         :param domain:
         :return:
         ***REMOVED***
-        return True if socket.gethostbyname(domain) else False
+        # TODO - verify this it may return true all the time
+        return True if socket.gethostbyname_ex(domain) else False
 
     @staticmethod
     def format_cell_number(cell: str) -> str:
@@ -104,27 +120,22 @@ class Util:
         except NumberParseException:
             raise ValueError("Please enter cell number in an international format")
 
+    # checks if percentage is valid
     @staticmethod
-    def percent_valid(percent: typing.Union[int, float]) -> bool:
-        ***REMOVED***
-            checks if percentage is valid
-        :param percent: percentage value
-        :return: boolean indicating if percentage is valid
-        ***REMOVED***
-        return True if 0 < percent > 100 else False
+    def percent_valid(percent: typing.Union[int, float]) -> bool: return 0 < percent > 100
 
 
-class ClassSetters(Events, Util):
+class PropertySetters(Events, Util):
     ***REMOVED***
-        Class Setters
-        Used to set and validate input to ndb properties.
-        If input data is invalid the setters will raise ValueError or
-        TypeError depending on the error at hand.
+        **Class PropertySetters**
 
+            Used to set and validate input to ndb properties.
+            If input data is invalid the setters will raise ValueError or
+            TypeError depending on the error at hand.
     ***REMOVED***
 
     def __init__(self):
-        super(ClassSetters, self).__init__()
+        super(PropertySetters, self).__init__()
 
     @staticmethod
     def set_id(prop: ndb.StringProperty, value: typing.Union[str, None]) -> str:
@@ -136,7 +147,7 @@ class ClassSetters(Events, Util):
         :param value: value as id to set
         :return: returns id as string
         ***REMOVED***
-        class_name: str = setters.return_class_name(prop=prop)
+        class_name: str = property_.return_class_name(prop=prop)
         if not (isinstance(value, str)):
             message: str = '''isinstance ID, should be an instance of : {} , and should represent an instance id'''.format(
                 class_name)
@@ -156,13 +167,13 @@ class ClassSetters(Events, Util):
         :param value:
         :return:
         ***REMOVED***
-        class_name: str = setters.return_class_name(prop=prop)
+        class_name: str = property_.return_class_name(prop=prop)
         if not (isinstance(value, str)):
             raise ValueError("Coupon Code, is an instance of: {} , and can only be a string".format(str(class_name)))
 
-        if len(value.strip()) > 12:
-            message: str = ***REMOVED***Coupon Code, is an instance of: {} , and cannot be more 
-            than 12 characters long***REMOVED***.format(str(class_name))
+        if len(value.strip()) != 12:
+            message: str = ***REMOVED***Coupon Code, is an instance of: {} , and must be 12 characters long
+            ***REMOVED***.format(str(class_name))
             raise ValueError(message)
 
         return value.strip()
@@ -177,8 +188,8 @@ class ClassSetters(Events, Util):
         :param value:
         :return:
         ***REMOVED***
-        class_name: str = setters.return_class_name(prop=prop)
-        if not (isinstance(value, str)):
+        class_name: str = property_.return_class_name(prop=prop)
+        if not isinstance(value, str):
             message: str = ***REMOVED***paypal address, an instance of: {} , and can only be a string representing 
             a paypal email address***REMOVED***.format(class_name)
             raise ValueError(message)
@@ -186,7 +197,7 @@ class ClassSetters(Events, Util):
         if not bool(value.strip()):
             raise ValueError("paypal address, is an instance of : {} , and cannot be Null".format(class_name))
 
-        if setters.regex_check_email(email=value.strip().lower()):
+        if property_.regex_check_email(email=value.strip().lower()):
             return value.strip().lower()
         raise ValueError("{} is not a valid email address".format(value))
 
@@ -198,7 +209,7 @@ class ClassSetters(Events, Util):
         :param value:
         :return:
         ***REMOVED***
-        class_name: str = setters.return_class_name(prop=prop)
+        class_name: str = property_.return_class_name(prop=prop)
         if not (isinstance(value, str)):
             raise ValueError("transaction_type, is an instance of : {} , and can only be a string".format(class_name))
         # TODO fix this stop using transaction types like magic numbers
@@ -217,7 +228,7 @@ class ClassSetters(Events, Util):
         :param value:
         :return:
         ***REMOVED***
-        class_name: str = setters.return_class_name(prop=prop)
+        class_name: str = property_.return_class_name(prop=prop)
         if not (isinstance(value, datetime)):
             raise TypeError("datetime, is an instance of : {} , must represent a valid python date".format(class_name))
         return value
@@ -230,7 +241,7 @@ class ClassSetters(Events, Util):
         :param value:
         :return:
         ***REMOVED***
-        class_name: str = setters.return_class_name(prop=prop)
+        class_name: str = property_.return_class_name(prop=prop)
         if not (isinstance(value, bool)):
             raise TypeError("boolean, is an instance of : {} , and can only be Either True or False".format(class_name))
         return value
@@ -243,7 +254,7 @@ class ClassSetters(Events, Util):
         :param value:
         :return:
         ***REMOVED***
-        class_name: str = setters.return_class_name(prop=prop)
+        class_name: str = property_.return_class_name(prop=prop)
         if not (isinstance(value, str)):
             message: str = ***REMOVED***status, is an instance of : {} , and can only be a string 
             representing payment status***REMOVED***.format(class_name)
@@ -262,12 +273,13 @@ class ClassSetters(Events, Util):
     @staticmethod
     def set_string(prop: ndb.StringProperty, value: typing.Union[str, None]) -> str:
         ***REMOVED***
-            checks only that a string is a string
-        :param prop:
-        :param value:
+            **Generic String Setter**
+                checks only that a string is a string
+        :param prop: ndb -> property being set
+        :param value: string
         :return:
         ***REMOVED***
-        class_name: str = setters.return_class_name(prop=prop)
+        class_name: str = property_.return_class_name(prop=prop)
         if not (isinstance(value, str)):
             raise TypeError("Is an instance of : {} , and can only be a string".format(class_name))
 
@@ -285,7 +297,7 @@ class ClassSetters(Events, Util):
         :param value:
         :return:
         ***REMOVED***
-        class_name: str = setters.return_class_name(prop=prop)
+        class_name: str = property_.return_class_name(prop=prop)
         if not (isinstance(value, str)):
             raise TypeError("scheduled term, is an instance of : {} ,  and can only be a string ".format(class_name))
 
@@ -308,7 +320,7 @@ class ClassSetters(Events, Util):
         :param value: value to set
         :return: scheduled day as integer
         ***REMOVED***
-        class_name: str = setters.return_class_name(prop=prop)
+        class_name: str = property_.return_class_name(prop=prop)
 
         if not (isinstance(value, int)):
             raise TypeError('scheduled day, is an instance of : {}, and can only be an integer'.format(class_name))
@@ -328,7 +340,7 @@ class ClassSetters(Events, Util):
         :param value: value being set must be integer
         :return: valid integer
         ***REMOVED***
-        class_name: str = setters.return_class_name(prop=prop)
+        class_name: str = property_.return_class_name(prop=prop)
         if not (isinstance(value, int)):
             raise TypeError('Number, is a instance of : {}, and can only be an integer'.format(class_name))
 
@@ -346,7 +358,7 @@ class ClassSetters(Events, Util):
         :param value: value to set to property
         :return: returns valid date only
         ***REMOVED***
-        class_name: str = setters.return_class_name(prop=prop)
+        class_name: str = property_.return_class_name(prop=prop)
         if not (isinstance(value, date)):
             raise TypeError("date is an instance of : {}, and can only be an instance of date".format(class_name))
         return value
@@ -360,7 +372,7 @@ class ClassSetters(Events, Util):
         :param value: the value to set
         :return: returns a payment method as string
         ***REMOVED***
-        class_name: str = setters.return_class_name(prop=prop)
+        class_name: str = property_.return_class_name(prop=prop)
         if not (isinstance(value, str)):
             message: str = ***REMOVED***payment method, is an instance of : {}, and can only be a string representing a 
             valid payment method***REMOVED***.format(class_name)
@@ -382,7 +394,7 @@ class ClassSetters(Events, Util):
         :param value: percentage as integer to set in property
         :return: percentage as an integer
         ***REMOVED***
-        class_name: str = setters.return_class_name(prop=prop)
+        class_name: str = property_.return_class_name(prop=prop)
         utils_instance: Util = Util()
 
         if not isinstance(value, int):
@@ -406,7 +418,7 @@ class ClassSetters(Events, Util):
         :return: will return currency symbol representing a string
         ***REMOVED***
         from config.currencies import currency_util
-        class_name: str = setters.return_class_name(prop=prop)
+        class_name: str = property_.return_class_name(prop=prop)
         if not (isinstance(value, str)):
             message: str = '''Currency is an Instance of : {}, and should be a string representation 
             of a currency symbol'''.format(class_name)
@@ -432,7 +444,7 @@ class ClassSetters(Events, Util):
         if not bool(value.strip()):
             raise ValueError(" {} cannot be Null".format(str(prop.__class__.__name__)))
 
-        if setters.regex_check_email(email=value.strip().lower()):
+        if property_.regex_check_email(email=value.strip().lower()):
             return value.strip().lower()
         raise ValueError(" {} is not a valid email address".format(value))
 
@@ -445,13 +457,13 @@ class ClassSetters(Events, Util):
         :param value: cell number
         :return: formatted cell number as string
         ***REMOVED***
-        class_name: str = setters.return_class_name(prop=prop)
+        class_name: str = property_.return_class_name(prop=prop)
         if not isinstance(value, str):
             message: str = '''An Instance of: {} : should be a string representing a 
             cell number in international format'''.format(class_name)
             raise TypeError(message)
-        if setters.regex_check_cell(cell=value.strip()):
-            return setters.format_cell_number(cell=value)
+        if property_.regex_check_cell(cell=value.strip()):
+            return property_.format_cell_number(cell=value)
         raise ValueError("This value: {} , is not a valid cell number".format(value))
 
     # noinspection PyUnusedLocal
@@ -465,13 +477,13 @@ class ClassSetters(Events, Util):
             :return: password in hash format
         ***REMOVED***
         from werkzeug.security import generate_password_hash
-        class_name: str = setters.return_class_name(prop=prop)
+        class_name: str = property_.return_class_name(prop=prop)
         if not isinstance(value, str):
             message: str = '''password is an instance of : {} :  should be a string representing 
             user password'''.format(class_name)
             raise TypeError(message)
 
-        if setters.password_complexity(password=value.strip()):
+        if property_.password_complexity(password=value.strip()):
             return generate_password_hash(value, method="pbkdf2:sha256", salt_length=8)
         message: str = '''password must be at least 8 characters in length, and contain lower-case and upper-case letters, 
         numbers and at least a special character'''
@@ -487,7 +499,7 @@ class ClassSetters(Events, Util):
         :param value: amount in integer representing cents
         :return: integer representing money in cents of whatever currency is being represented
         ***REMOVED***
-        class_name: str = setters.return_class_name(prop=prop)
+        class_name: str = property_.return_class_name(prop=prop)
         if not (isinstance(value, int)):
             message: str = '''Amount is an instance of : {} : can only be an Integer 
             representing money in cents'''.format(class_name)
@@ -511,20 +523,20 @@ class ClassSetters(Events, Util):
             :param: value: value in string format representing a domain name
             :return: str representing verified domain name
         ***REMOVED***
-        class_name: str = setters.return_class_name(prop=prop)
+        class_name: str = property_.return_class_name(prop=prop)
         if not (isinstance(value, str)):
             message: str = ***REMOVED***domain, is an instance of : {} and can only be a string, representing 
             a valid domain name***REMOVED***.format(class_name)
             raise TypeError(message)
 
         domain = value.strip()
-        regex_passes = setters.regex_check_domain(domain=domain)
-        domain_valid = setters.resolve_domain_name(domain=domain)
+        regex_passes = property_.regex_check_domain(domain=domain)
+        domain_valid = property_.resolve_domain_name(domain=domain)
         if regex_passes and domain_valid:
             return domain
         raise ValueError("This value : {} is not a valid domain name, or the domain may not be accessible".format(value))
 
 
-setters: ClassSetters = ClassSetters()
+property_: PropertySetters = PropertySetters()
 # NOTE: insures that setters is a singleton or declared only once
-del ClassSetters
+del PropertySetters

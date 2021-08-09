@@ -15,7 +15,7 @@ from google.cloud import ndb
 from config.currencies import currency_util
 from database.mixins import AmountMixin
 from config.exception_handlers import handle_store_errors
-from database.setters import setters
+from database.setters import property_
 
 
 class WalletValidator:
@@ -83,15 +83,15 @@ class WalletModel(ndb.Model):
             7. paypal_address : the paypal address attached to this wallet
             8. is_verified: Indicates if paypal_address has been verified
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=setters.set_id)
-    is_org_wallet: bool = ndb.BooleanProperty(default=False, validator=setters.set_bool)
-    uid: str = ndb.StringProperty(validator=setters.set_id)
+    organization_id: str = ndb.StringProperty(validator=property_.set_id)
+    is_org_wallet: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
+    uid: str = ndb.StringProperty(validator=property_.set_id)
     available_funds: AmountMixin = ndb.StructuredProperty(AmountMixin)
     monthly_withdrawal_allowance: AmountMixin = ndb.StructuredProperty(AmountMixin)
     time_created: datetime = ndb.DateTimeProperty(auto_now_add=True)
-    last_transaction_time: datetime = ndb.DateTimeProperty(auto_now=True, validator=setters.set_datetime)
-    paypal_address: str = ndb.StringProperty(validator=setters.set_paypal)
-    is_verified: bool = ndb.BooleanProperty(default=False, validator=setters.set_bool)
+    last_transaction_time: datetime = ndb.DateTimeProperty(auto_now=True, validator=property_.set_datetime)
+    paypal_address: str = ndb.StringProperty(validator=property_.set_paypal)
+    is_verified: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
 
     def __str__(self) -> str:
         return "<Wallet {}{}{}{}".format(self.paypal_address, self.available_funds, self.time_created,
@@ -153,11 +153,11 @@ class WalletModel(ndb.Model):
 
 
 class WalletTransactionsModel(ndb.Model):
-    organization_id: str = ndb.StringProperty(validator=setters.set_id)
-    uid: str = ndb.StringProperty(validator=setters.set_id)
-    transaction_id: str = ndb.StringProperty(validator=setters.set_id)
-    transaction_type: str = ndb.StringProperty(validator=setters.set_transaction_types)
-    transaction_date: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=setters.set_datetime)
+    organization_id: str = ndb.StringProperty(validator=property_.set_id)
+    uid: str = ndb.StringProperty(validator=property_.set_id)
+    transaction_id: str = ndb.StringProperty(validator=property_.set_id)
+    transaction_type: str = ndb.StringProperty(validator=property_.set_transaction_types)
+    transaction_date: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=property_.set_datetime)
 
     def __str__(self) -> str:
         return "<Transactions {} {}".format(self.transaction_type, self.transaction_date)
@@ -182,10 +182,10 @@ class WalletTransactionsModel(ndb.Model):
 
 
 class WalletTransactionItemModel(ndb.Model):
-    transaction_id: str = ndb.StringProperty(validator=setters.set_id)
-    item_id: str = ndb.StringProperty(validator=setters.set_id)
+    transaction_id: str = ndb.StringProperty(validator=property_.set_id)
+    item_id: str = ndb.StringProperty(validator=property_.set_id)
     amount: AmountMixin = ndb.StructuredProperty(AmountMixin)
-    is_verified: bool = ndb.BooleanProperty(default=False, validator=setters.set_bool)
+    is_verified: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
 
     def __str__(self) -> str:
         return "{}{}".format(self.amount, self.is_verified)

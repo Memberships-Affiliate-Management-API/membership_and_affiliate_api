@@ -19,7 +19,7 @@ from datetime import datetime
 
 from google.cloud import ndb
 from config.exceptions import DataServiceError
-from database.setters import setters
+from database.setters import property_
 from database.organization import OrgValidators, AuthUserValidators
 from database.users import UserValidators
 from main import app_cache
@@ -84,20 +84,20 @@ class Services(ndb.Model):
         `Method Properties`
             1. service_details: dict -> returns basic service details
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=setters.set_id)
+    organization_id: str = ndb.StringProperty(validator=property_.set_id)
     # NOTE: service_id is the same as product_id in paypal products
-    created_by_uid: str = ndb.StringProperty(validator=setters.set_id)
+    created_by_uid: str = ndb.StringProperty(validator=property_.set_id)
     # NOTE: created_by_uid is the user id of the user who created the service
-    service_id: str = ndb.StringProperty(validator=setters.set_id)
-    name: str = ndb.StringProperty(validator=setters.set_string)
-    description: str = ndb.StringProperty(validator=setters.set_string)
-    category: str = ndb.StringProperty(validator=setters.set_string)
-    image_url: str = ndb.StringProperty(validator=setters.set_domain)
+    service_id: str = ndb.StringProperty(validator=property_.set_id)
+    name: str = ndb.StringProperty(validator=property_.set_string)
+    description: str = ndb.StringProperty(validator=property_.set_string)
+    category: str = ndb.StringProperty(validator=property_.set_string)
+    image_url: str = ndb.StringProperty(validator=property_.set_domain)
     # NOTE: home_url is the location online of the page containing
     # the service information page
-    home_url: str = ndb.StringProperty(validator=setters.set_domain)
-    date_created: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=setters.set_datetime)
-    date_updated: datetime = ndb.DateTimeProperty(auto_now=True, validator=setters.set_datetime)
+    home_url: str = ndb.StringProperty(validator=property_.set_domain)
+    date_created: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=property_.set_datetime)
+    date_updated: datetime = ndb.DateTimeProperty(auto_now=True, validator=property_.set_datetime)
 
     def __eq__(self, other):
         if self.__class__ != other.__class__:

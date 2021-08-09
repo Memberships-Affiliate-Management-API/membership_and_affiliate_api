@@ -11,7 +11,7 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 from dataclasses import dataclass
 from google.cloud import ndb
 from config import config_instance
-from database.setters import setters
+from database.setters import property_
 
 
 class AmountMixin(ndb.Model):
@@ -23,8 +23,8 @@ class AmountMixin(ndb.Model):
         1. property: Amount: Integer -> Money in Cents
         2. property: Currency: String ->  Currency symbol
     ***REMOVED***
-    amount: int = ndb.IntegerProperty(default=None, validator=setters.set_value_amount)
-    currency: str = ndb.StringProperty(default=config_instance.CURRENCY, validator=setters.set_currency)
+    amount: int = ndb.IntegerProperty(default=None, validator=property_.set_value_amount)
+    currency: str = ndb.StringProperty(default=config_instance.CURRENCY, validator=property_.set_currency)
 
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
@@ -75,8 +75,8 @@ class UserMixin(ndb.Model):
             1. Property: Email : String -> email password
             2. Property: Password : String -> User Password - will be converted to a password hash
     ***REMOVED***
-    email: str = ndb.StringProperty(validator=setters.set_email)
-    password: str = ndb.StringProperty(validator=setters.set_password)
+    email: str = ndb.StringProperty(validator=property_.set_email)
+    password: str = ndb.StringProperty(validator=property_.set_password)
 
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
@@ -116,14 +116,14 @@ class AddressMixin(ndb.Model):
             8. country: string -> physical address country
     # TODO - validate countries through a country list the membership API Supports
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=setters.set_id)
-    uid: str = ndb.StringProperty(validator=setters.set_id)
-    line_1: str = ndb.StringProperty(default=None, validator=setters.set_string)
-    city: str = ndb.StringProperty(default=None, validator=setters.set_string)
-    zip_code: str = ndb.StringProperty(default=None, validator=setters.set_string)
-    province: str = ndb.StringProperty(default=None, validator=setters.set_string)
-    state: str = ndb.StringProperty(default=None, validator=setters.set_string)
-    country: str = ndb.StringProperty(default=None, validator=setters.set_string)
+    organization_id: str = ndb.StringProperty(validator=property_.set_id)
+    uid: str = ndb.StringProperty(validator=property_.set_id)
+    line_1: str = ndb.StringProperty(default=None, validator=property_.set_string)
+    city: str = ndb.StringProperty(default=None, validator=property_.set_string)
+    zip_code: str = ndb.StringProperty(default=None, validator=property_.set_string)
+    province: str = ndb.StringProperty(default=None, validator=property_.set_string)
+    state: str = ndb.StringProperty(default=None, validator=property_.set_string)
+    country: str = ndb.StringProperty(default=None, validator=property_.set_string)
 
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
