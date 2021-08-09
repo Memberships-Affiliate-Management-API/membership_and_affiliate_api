@@ -189,7 +189,9 @@ class Validator(WalletValidator):
     async def can_update_wallet_async(self, organization_id: typing.Union[str, None],
                                       uid: typing.Union[None, str] = None) -> bool:
         ***REMOVED***
-            asynchronous version of can_update_wallet
+            **can_update_wallet_async**
+                asynchronous version of can_update_wallet
+
         :param organization_id:
         :param uid:
         :return:
@@ -199,12 +201,14 @@ class Validator(WalletValidator):
         wallet_exist: typing.Union[bool, None] = await self.wallet_exist_async(organization_id=organization_id, uid=uid)
         if isinstance(wallet_exist, bool):
             return wallet_exist
-        raise DataServiceError(status=error_codes.data_service_error_code, description='Unable to verify wallet data')
+        message: str = "database error: Unable to verify wallet data"
+        raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
     @app_cache.memoize(timeout=return_ttl('short'))
     def can_reset_wallet(self, organization_id: typing.Union[str, None], uid: typing.Union[None, str]) -> bool:
         ***REMOVED***
-            checks if user can reset wallet
+            **can_reset_wallet**
+                checks if user can reset wallet
         :param organization_id: required
         :param uid: required
         :return:
@@ -214,13 +218,16 @@ class Validator(WalletValidator):
         wallet_exist: typing.Union[bool, None] = self.wallet_exist(organization_id=organization_id, uid=uid)
         if isinstance(wallet_exist, bool):
             return wallet_exist
-        raise DataServiceError(status=error_codes.data_service_error_code, description='Unable to verify wallet data')
+
+        message: str = 'database Error: Unable to verify wallet data'
+        raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
     @app_cache.memoize(timeout=return_ttl('short'))
     async def can_reset_wallet_async(self, organization_id: typing.Union[str, None],
                                      uid: typing.Union[None, str]) -> bool:
         ***REMOVED***
-            asynchronous version of can_reset_wallet
+            **can_reset_wallet_async**
+                asynchronous version of can_reset_wallet
         :param organization_id:
         :param uid:
         :return:
@@ -231,13 +238,24 @@ class Validator(WalletValidator):
 
         if isinstance(wallet_exist, bool):
             return wallet_exist
-        raise DataServiceError(status=error_codes.data_service_error_code, description='Unable to verify wallet data')
+        message: str = 'database Error: Unable to verify wallet data'
+        raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
 
 # noinspection DuplicatedCode
 class WalletView(Validator, WalletEmails):
     ***REMOVED***
-        view functions for the wallet
+        **Class WalletView**
+            view functions for the wallet
+
+        **Class Methods**
+            1. create_wallet -> enables the creation of new wallets only
+            2. update_wallet -> enables the update of existing wallets
+            3. get_wallet -> fetches a specific wallet depending on method parameters
+            4. reset_wallet -> resets wallet to default values except uid and organization_id
+            5. return_all_wallets -> returns all wallets specific to an organization_id
+            6. return_wallets_by_balance -> returns specific wallets in an organization by their balance ranges
+            7. wallet_transact -> create a wallet transaction
     ***REMOVED***
 
     def __init__(self):
