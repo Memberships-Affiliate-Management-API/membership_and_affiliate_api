@@ -267,7 +267,9 @@ class WalletView(Validator, WalletEmails):
                       currency: typing.Union[str, None], paypal_address: typing.Union[str, None],
                       is_org_wallet: bool = False) -> tuple:
         ***REMOVED***
-                enables the system/user to create new wallet for a user
+            **create_wallet**
+                enables the system/user to create new wallet for a user - the user may not already own a wallet
+
         :param organization_id:
         :param uid:
         :param currency:
@@ -303,6 +305,7 @@ class WalletView(Validator, WalletEmails):
     async def create_wallet_async(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None], currency: typing.Union[str, None],
                                   paypal_address: typing.Union[str, None], is_org_wallet: bool = False) -> tuple:
         ***REMOVED***
+        **create_wallet_async**
             asynchronous version of create_wallet
         :param organization_id:
         :param uid:
@@ -339,10 +342,11 @@ class WalletView(Validator, WalletEmails):
     @app_cache.memoize(timeout=return_ttl('short'))
     def get_wallet(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None]) -> tuple:
         ***REMOVED***
-            # TODO - may need to update cache or find a way to update cache when there are updates
-            # this could mean that the old method of having a separate cache for every module may be useful here
+            **get_wallet**
+                # TODO - may need to update cache or find a way to update cache when there are updates
+                # this could mean that the old method of having a separate cache for every module may be useful here
 
-            returns a specific wallet from database
+                returns a specific wallet from database
         :param organization_id:
         :param uid:
         :return:
@@ -363,7 +367,8 @@ class WalletView(Validator, WalletEmails):
     @app_cache.memoize(timeout=return_ttl('short'))
     async def get_wallet_async(self, organization_id: typing.Union[str, None],  uid: typing.Union[str, None]) -> tuple:
         ***REMOVED***
-            get_wallet_async an asynchronous version of get_wallet
+            **get_wallet_async**
+                get_wallet_async an asynchronous version of get_wallet
         :param organization_id:
         :param uid:
         :return:
@@ -383,7 +388,8 @@ class WalletView(Validator, WalletEmails):
     @handle_view_errors
     def update_wallet(self, wallet_data: dict) -> tuple:
         ***REMOVED***
-            lets user or system update wallet
+            **update_wallet**
+                lets user or system update wallet
         :param wallet_data:
         :return:
         ***REMOVED***
@@ -434,7 +440,8 @@ class WalletView(Validator, WalletEmails):
     @handle_view_errors
     async def update_wallet_async(self, wallet_data: dict) -> tuple:
         ***REMOVED***
-            can update wallet asynchronous version of
+            **update_wallet_async**
+                can update wallet asynchronous version of
         :param wallet_data:
         :return:
         ***REMOVED***
@@ -485,6 +492,8 @@ class WalletView(Validator, WalletEmails):
     @handle_view_errors
     def reset_wallet(self, wallet_data: dict) -> tuple:
         ***REMOVED***
+            **reset_wallet**
+                resets wallet to their default values except the uid and organization_Id
 
         :param wallet_data:
         :return:
@@ -519,7 +528,9 @@ class WalletView(Validator, WalletEmails):
     @handle_view_errors
     async def reset_wallet_async(self, wallet_data: dict) -> tuple:
         ***REMOVED***
-            asynchronous version of reset wallet
+            **reset_wallet_async**
+                asynchronous version of reset wallet
+
         :param wallet_data:
         :return:
         ***REMOVED***
@@ -555,7 +566,9 @@ class WalletView(Validator, WalletEmails):
     @app_cache.memoize(timeout=return_ttl('short'))
     def return_all_wallets(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
-        given an organization_id return all the organizations wallets
+            **return_all_wallets**
+                given an organization_id return all the organizations wallets
+
         :param organization_id:
         :return:
         ***REMOVED***
@@ -577,7 +590,9 @@ class WalletView(Validator, WalletEmails):
     @app_cache.memoize(timeout=return_ttl('short'))
     async def return_all_wallets_async(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
-            given an organization_id return all the organizations wallets
+            **return_all_wallets_async**
+                given an organization_id return all the organizations wallets
+
         :param organization_id:
         :return:
         ***REMOVED***
@@ -601,8 +616,9 @@ class WalletView(Validator, WalletEmails):
     def return_wallets_by_balance(self, organization_id: typing.Union[str, None],
                                   lower_bound: int, higher_bound: int) -> tuple:
         ***REMOVED***
-            # TODO consider supplying lower_bound and higher_bound as a dict
-            return wallets with balances within lower_bound and higher_bound
+            **return_wallets_by_balance**
+                # TODO consider supplying lower_bound and higher_bound as a dict
+                return wallets with balances within lower_bound and higher_bound
         :param organization_id:
         :param lower_bound:
         :param higher_bound:
@@ -633,8 +649,10 @@ class WalletView(Validator, WalletEmails):
     async def return_wallets_by_balance_async(self, organization_id: typing.Union[str, None],
                                               lower_bound: int, higher_bound: int) -> tuple:
         ***REMOVED***
-            # TODO - consider changing the function name to : return_wallets_by_balance_range_async
-            asynchronous version of return wallets by balance
+            **return_wallets_by_balance_async**
+                # TODO - consider changing the function name to : return_wallets_by_balance_range_async
+                asynchronous version of return wallets by balance
+
         :param organization_id:
         :param lower_bound:
         :param higher_bound:
@@ -666,8 +684,9 @@ class WalletView(Validator, WalletEmails):
     def wallet_transact(self, organization_id: typing.Union[str, None], uid: str,
                         add: int = None, sub: int = None) -> tuple:
         ***REMOVED***
-            # TODO -- consider providing an amount to add or substract on a dict
-            perform a transaction on a wallet
+            **wallet_transact**
+                # TODO -- consider providing an amount to add or subtract on a dict
+                perform a transaction on a wallet
         :param organization_id:
         :param uid:
         :param add:
@@ -712,7 +731,8 @@ class WalletView(Validator, WalletEmails):
     async def wallet_transact_async(self, organization_id: typing.Union[str, None], uid: str,
                                     add: int = None, sub: int = None) -> tuple:
         ***REMOVED***
-            asynchronous version of wallet_transact
+            **wallet_transact_async**
+                asynchronous version of wallet_transact
         :param organization_id:
         :param uid:
         :param add:
@@ -757,18 +777,19 @@ class WalletView(Validator, WalletEmails):
     @handle_view_errors
     def wallet_withdraw_funds(self, organization_id: typing.Union[str, None], uid: str, amount: int) -> tuple:
         ***REMOVED***
-            organization must contain settings for funds withdrawals
-            i.e from which paypal account may the withdrawal occur
-            and so on.
+            **wallet_withdraw_funds**
+                organization must contain settings for funds withdrawals
+                i.e from which paypal account may the withdrawal occur
+                and so on.
 
-            steps create a withdrawal transaction,
-            with the requested amount,
-            await admin approvals,
-            cron job must run and process all approved withdrawals
-            cron job must retain all the results of the transactions and save on the database
-        :param organization_id:
-        :param uid:
-        :param amount:
+                steps create a withdrawal transaction,
+                with the requested amount,
+                await admin approvals,
+                cron job must run and process all approved withdrawals
+                cron job must retain all the results of the transactions and save on the database
+        :param organization_id: string ->
+        :param uid: string ->
+        :param amount: AmountMixin ->
         :return:
         ***REMOVED***
         pass
