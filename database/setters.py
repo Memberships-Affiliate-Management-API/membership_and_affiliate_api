@@ -122,9 +122,7 @@ class Util:
             cell_object = phonenumbers.parse(cell, None)
             possibly_cell_number: bool = phonenumbers.is_possible_number(cell_object)
             valid_cell_number: bool = phonenumbers.is_valid_number(cell_object)
-            if possibly_cell_number and valid_cell_number:
-                return True
-            return False
+            return possibly_cell_number and valid_cell_number
         except NumberParseException:
             raise ValueError("Please enter cell number in an international format")
 
@@ -326,9 +324,9 @@ class PropertySetters(Events, Util):
         temp = value.strip().lower()
         # TODO - Rewrite this or create a translator for paypal plans payment schedule
         schedule_terms: typing.List[str] = get_plan_scheduled_terms()
-        if temp in schedule_terms:
-            return temp
-        raise ValueError("scheduled term, can only be one of the following values : {} ".format(schedule_terms))
+        if temp not in schedule_terms:
+            raise ValueError("scheduled term, can only be one of the following values : {} ".format(schedule_terms))
+        return temp
 
     @staticmethod
     def set_schedule_day(prop: ndb.IntegerProperty, value: typing.Union[int, None]) -> int:
