@@ -322,6 +322,12 @@ class Memberships(ndb.Model):
     def __len__(self) -> int:
         return int(self.__bool__())
 
+    @property
+    def urlsafe_key(self) -> bytes:
+        return self.key.urlsafe()
+
+    # Turns the class to dict and include instance key
+    def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
 
 # noinspection DuplicatedCode
 class MembershipPlans(ndb.Model):
@@ -393,6 +399,13 @@ class MembershipPlans(ndb.Model):
 
     def __len__(self) -> int:
         return int(self.__bool__())
+
+    @property
+    def urlsafe_key(self) -> bytes:
+        return self.key.urlsafe()
+
+    # Turns the class to dict and include instance key
+    def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
 
 
 # noinspection DuplicatedCode
@@ -469,6 +482,12 @@ class MembershipInvoices(ndb.Model):
     def __len__(self) -> int:
         return int(self.__bool__())
 
+    @property
+    def urlsafe_key(self) -> bytes:
+        return self.key.urlsafe()
+
+    # Turns the class to dict and include instance key
+    def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
 
 # noinspection DuplicatedCode
 class Coupons(ndb.Model):
@@ -524,6 +543,13 @@ class Coupons(ndb.Model):
     def __len__(self) -> int:
         return int(self.__bool__())
 
+    @property
+    def urlsafe_key(self) -> bytes:
+        return self.key.urlsafe()
+
+    # Turns the class to dict and include instance key
+    def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
+
 
 # noinspection DuplicatedCode
 class AccessRights(ndb.Model):
@@ -546,6 +572,13 @@ class AccessRights(ndb.Model):
 
     def __len__(self) -> int:
         return int(self.__bool__())
+
+    @property
+    def urlsafe_key(self) -> bytes:
+        return self.key.urlsafe()
+
+    # Turns the class to dict and include instance key
+    def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
 
 
 class MembershipDailyStats(ndb.Model):
@@ -593,3 +626,10 @@ class MembershipDailyStats(ndb.Model):
 
     def __len__(self) -> int:
         return int(self.__bool__())
+
+    @property
+    def urlsafe_key(self) -> bytes:
+        return self.key.urlsafe()
+
+    # Turns the class to dict and include instance key
+    def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
