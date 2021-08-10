@@ -87,8 +87,9 @@ class Validator(WalletValidator):
 
     def __init__(self):
         super(Validator, self).__init__()
-        self._max_retries = current_app.config.get('DATASTORE_RETRIES')
-        self._max_timeout = current_app.config.get('DATASTORE_TIMEOUT')
+        self._max_retries: int = current_app.config.get('DATASTORE_RETRIES')
+        self._max_timeout: int = current_app.config.get('DATASTORE_TIMEOUT')
+
 
     @staticmethod
     def raise_input_error_if_not_available(organization_id: str, uid: str) -> None:

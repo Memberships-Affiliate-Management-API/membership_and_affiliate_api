@@ -2,6 +2,7 @@
     handle users and admin authentication
 ***REMOVED***
 import datetime
+from typing import Optional
 import jwt
 from flask import current_app, request, redirect, url_for, flash
 from functools import wraps
@@ -95,31 +96,32 @@ def handle_users_auth(f):
     # noinspection PyBroadException
     @wraps(f)
     def decorated(*args, **kwargs):
-        token = None
+        token: Optional[str] = None
         # print('token headers: {}'.format(request.headers))
         if 'x-access-token' in request.headers:
             token = request.headers['x-access-token']
             # print('token found : {}'.format(token))
         # NOTE: if running on development server by-pass authentication and return admin user
+
         if is_development():
-            current_user = get_admin_user()
+            current_user: Optional[UserModel] = get_admin_user()
             return f(current_user, *args, **kwargs)
 
         if not token:
             return redirect(url_for('memberships_main.memberships_main_routes', path='login'))
         try:
-            uid = decode_auth_token(auth_token=token)
-            if uid:
 
-                current_user = UserModel.query(uid=uid).get()
-                if not(isinstance(current_user, UserModel)):
+            uid: Optional[str] = decode_auth_token(auth_token=token)
+            if bool(uid):
+                current_user: Optional[UserModel] = UserModel.query(uid=uid).get()
+                if not isinstance(current_user, UserModel):
                     message = '''Error connecting to database or user does not exist'''
                     flash(message, 'warning')
-                    current_user = None
+                    current_user: Optional[UserModel] = None
             else:
                 message: str = '''to access restricted areas of this web application please login'''
                 flash(message, 'warning')
-                current_user = None
+                current_user: Optional[UserModel] = None
         except jwt.DecodeError:
             flash('Error decoding your token please login again', 'warning')
             return redirect(url_for('memberships_main.memberships_main_routes', path='login'))
@@ -134,22 +136,22 @@ def handle_users_auth(f):
 def logged_user(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        current_user = None
-        # NOTE: by passes authentication and returns admin user as authenticated user on development
-        # TODO: this may need to be turned off in-case of testing authentication mechanism
+        current_user: Optional[UserModel] = None
+        # NOTE: by passes authentication and returns admin user as authenticated
+        # user on development
         if is_development():
-            current_user = get_admin_user()
+            current_user: UserModel = get_admin_user()
             return f(current_user, *args, **kwargs)
 
         if 'x-access-token' in request.headers:
-            token = request.headers['x-access-token']
-            if token:
+            token: Optional[str] = request.headers['x-access-token']
+            if bool(token):
                 try:
-                    uid = decode_auth_token(auth_token=token)
-                    if uid:
-                        user_instance: UserModel = UserModel.query(uid=uid).get()
+                    uid: Optional[str] = decode_auth_token(auth_token=token)
+                    if bool(uid):
+                        user_instance: Optional[UserModel] = UserModel.query(uid=uid).get()
                         if isinstance(user_instance, UserModel):
-                            current_user = UserModel.query.filter_by(_uid=uid).first()
+                            current_user: UserModel = user_instance
                     else:
                         pass
                 except jwt.DecodeError:
