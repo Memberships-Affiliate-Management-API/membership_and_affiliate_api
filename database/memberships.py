@@ -75,7 +75,7 @@ class PlanValidators:
 
         plan_instance: MembershipPlans = MembershipPlans.query(MembershipPlans.organization_id == organization_id,
                                                                MembershipPlans.plan_id == plan_id).get()
-        return isinstance(plan_instance, MembershipPlans)
+        return bool(plan_instance)
 
     # noinspection DuplicatedCode
     @staticmethod
@@ -102,7 +102,7 @@ class PlanValidators:
             MembershipPlans.organization_id == organization_id,
             MembershipPlans.plan_id == plan_id).get_async().get_result()
 
-        return isinstance(plan_instance, MembershipPlans)
+        return bool(plan_instance)
 
     # noinspection DuplicatedCode
     @staticmethod
@@ -112,6 +112,7 @@ class PlanValidators:
             **plan_name_exist**
                 checks if a plan exists by using the plan name , if plan is found returns True, False otherwise
                 raises InputError or TypeError in case of an invalid input
+
         :param organization_id: unique organization_id
         :param plan_name:  unique plan_name
         :return: bool -> True / False
@@ -128,7 +129,7 @@ class PlanValidators:
             MembershipPlans.organization_id == organization_id,
             MembershipPlans.plan_name == plan_name.strip().lower()).get()
 
-        return isinstance(plan_instance, MembershipPlans)
+        return bool(plan_instance)
 
     # noinspection DuplicatedCode
     @staticmethod

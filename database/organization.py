@@ -1,11 +1,11 @@
 ***REMOVED***
     **Organization Module**
-    *NDB. Class Definitions for Managing Organizations Data*
-    ndb. Database Class to handle Organizational Data related
-    to Memberships & Affiliates Management API , the Models will saves
-    the data to GCP DataStore.
+        *NDB. Class Definitions for Managing Organizations Data*
+        ndb. Database Class to handle Organizational Data related
+        to Memberships & Affiliates Management API , the Models will saves
+        the data to GCP DataStore.
 
-    Also Contain all validator classes related to Organizational Classes
+        Also Contain all validator classes related to Organizational Classes
 ***REMOVED***
 __author__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
@@ -101,6 +101,9 @@ class Organization(ndb.Model):
 
     def __len__(self) -> int:
         return int(self.__bool__())
+
+    # Turns the class to dict and include instance key
+    def to_dict(self) -> dict: return super().to_dict().update(key=self.key.urlsafe().decode())
 
 
 class AuthUserValidators:
@@ -204,6 +207,9 @@ class AuthorizedUsers(ndb.Model):
     def __len__(self) -> int:
         return int(self.__bool__())
 
+    # Turns the class to dict and include instance key
+    def to_dict(self) -> dict: return super().to_dict().update(key=self.key.urlsafe().decode())
+
 
 class OrgAccounts(ndb.Model):
     ***REMOVED***
@@ -240,6 +246,9 @@ class OrgAccounts(ndb.Model):
     def __len__(self) -> int:
         return int(self.__bool__())
 
+    # Turns the class to dict and include instance key
+    def to_dict(self) -> dict: return super().to_dict().update(key=self.key.urlsafe().decode())
+
 
 class PaymentResults(ndb.Model):
     ***REMOVED***
@@ -274,3 +283,6 @@ class PaymentResults(ndb.Model):
 
     def __len__(self) -> int:
         return int(self.__bool__())
+
+    # Turns the class to dict and include instance key
+    def to_dict(self) -> dict: return super().to_dict().update(key=self.key.urlsafe().decode())

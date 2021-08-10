@@ -157,6 +157,9 @@ class WalletModel(ndb.Model):
 
         return self.monthly_withdrawal_allowance if avail_funds > allowance else self.available_funds
 
+    # Turns the class to dict and include instance key
+    def to_dict(self) -> dict: return super().to_dict().update(key=self.key.urlsafe().decode())
+
 
 class WalletTransactionsModel(ndb.Model):
     ***REMOVED***
@@ -198,6 +201,9 @@ class WalletTransactionsModel(ndb.Model):
 
     def __len__(self) -> int:
         return int(self.__bool__())
+
+    # Turns the class to dict and include instance key
+    def to_dict(self) -> dict: return super().to_dict().update(key=self.key.urlsafe().decode())
 
 
 class WalletTransactionItemModel(ndb.Model):
@@ -244,3 +250,6 @@ class WalletTransactionItemModel(ndb.Model):
 
     def __len__(self) -> int:
         return int(self.__bool__())
+
+    # Turns the class to dict and include instance key
+    def to_dict(self) -> dict: return super().to_dict().update(key=self.key.urlsafe().decode())

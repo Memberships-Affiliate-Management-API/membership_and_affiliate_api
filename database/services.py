@@ -1,11 +1,11 @@
 ***REMOVED***
     **Services Module**
-    Services Module works together with memberships module
-    for example for a music streaming service a plan will be created
-    in MembershipsPlans in the Memberships Module and also
-    on PayPal, when a user subscribes to a plan the subscription
-    will be created both on Memberships Module and also on PayPal
-    so that the subscription amount can be taken off the user paypal_address
+        Services Module works together with memberships module
+        for example for a music streaming service a plan will be created
+        in MembershipsPlans in the Memberships Module and also
+        on PayPal, when a user subscribes to a plan the subscription
+        will be created both on Memberships Module and also on PayPal
+        so that the subscription amount can be taken off the user paypal_address
 
 ***REMOVED***
 __author__ = "mobius-crypt"
@@ -139,3 +139,6 @@ class Services(ndb.Model):
             'description': self.description,
             'image_url': self.image_url,
             'home_url': self.home_url}
+
+    # Turns the class to dict and include instance key
+    def to_dict(self) -> dict: return super().to_dict().update(key=self.key.urlsafe().decode())

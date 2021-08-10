@@ -44,3 +44,6 @@ class APIKeys(ndb.Model):
 
     def __len__(self) -> int:
         return int(self.__bool__())
+
+    # Turns the class to dict and include instance key
+    def to_dict(self) -> dict: return super().to_dict().update(key=self.key.urlsafe().decode())

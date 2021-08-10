@@ -178,15 +178,8 @@ class UserModel(ndb.Model):
     def __len__(self) -> int:
         return int(self.__bool__())
 
-    def to_dict(self) -> dict:
-        ***REMOVED***
-            ensuring that password is not returned when calling to_dict()
-        :return: user_instance.to_dict()
-        ***REMOVED***
-        return {"organization_id": self.organization_id, "uid": self.uid, "names": self.names, "surname": self.surname,
-                "cell": self.cell, "email": self.email, "email_verified": self.email_verified,
-                "is_active": self.is_active, "time_registered": self.time_registered, "is_admin": self.is_admin,
-                "is_support": self.is_support}
+    # Turns the class to dict and include instance key
+    def to_dict(self) -> dict: return super().to_dict().update(key=self.key.urlsafe().decode())
 
     # Properties represents values that can be calculated from present values but will not be stored on database
 

@@ -1,6 +1,6 @@
 ***REMOVED***
     **NDB Database Common Mixins**
-    This Module defines common Mixins which are useful in defining main database classes on the applications
+        This Module defines common Mixins which are useful in defining main database classes on the applications
 ***REMOVED***
 __author__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"

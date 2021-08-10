@@ -179,6 +179,9 @@ class Affiliates(ndb.Model):
     def __len__(self) -> int:
         return int(self.__bool__())
 
+    # Turns the class to dict and include instance key
+    def to_dict(self) -> dict: return super().to_dict().update(key=self.key.urlsafe().decode())
+
 
 class Recruits(ndb.Model):
     ***REMOVED***
@@ -231,6 +234,9 @@ class Recruits(ndb.Model):
     def __len__(self) -> int:
         return int(self.__bool__())
 
+    # Turns the class to dict and include instance key
+    def to_dict(self) -> dict: return super().to_dict().update(key=self.key.urlsafe().decode())
+
 
 class EarningsData(ndb.Model):
     ***REMOVED***
@@ -279,6 +285,9 @@ class EarningsData(ndb.Model):
     def __len__(self) -> int:
         return int(self.__bool__())
 
+    # Turns the class to dict and include instance key
+    def to_dict(self) -> dict: return super().to_dict().update(key=self.key.urlsafe().decode())
+
 
 class AffiliateEarningsTransactions(ndb.Model):
     ***REMOVED***
@@ -321,6 +330,9 @@ class AffiliateEarningsTransactions(ndb.Model):
     def __len__(self) -> int:
         return int(self.__bool__())
 
+    # Turns the class to dict and include instance key
+    def to_dict(self) -> dict: return super().to_dict().update(key=self.key.urlsafe().decode())
+
 
 class AffiliateTransactionItems(ndb.Model):
     ***REMOVED***
@@ -361,6 +373,9 @@ class AffiliateTransactionItems(ndb.Model):
 
     def __len__(self) -> int:
         return int(self.__bool__())
+
+    # Turns the class to dict and include instance key
+    def to_dict(self) -> dict: return super().to_dict().update(key=self.key.urlsafe().decode())
 
 
 class AffiliateSettingsStats(ndb.Model):
@@ -416,3 +431,6 @@ class AffiliateSettingsStats(ndb.Model):
     def __len__(self) -> int:
         # return self.earnings_percent
         return int(self.__bool__())
+
+    # Turns the class to dict and include instance key
+    def to_dict(self) -> dict: return super().to_dict().update(key=self.key.urlsafe().decode())
