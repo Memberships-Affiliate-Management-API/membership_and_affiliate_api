@@ -54,8 +54,7 @@ def is_app_admin(current_user: UserModel) -> bool:
     :param current_user:
     :return:
     ***REMOVED***
-    app_admin: bool = current_user and current_user.uid and (current_user.organization_id == config_instance.ORGANIZATION_ID)
-    return True if app_admin else False
+    return current_user and current_user.uid and (current_user.organization_id == config_instance.ORGANIZATION_ID)
 
 
 def encode_auth_token(uid: str) -> str:

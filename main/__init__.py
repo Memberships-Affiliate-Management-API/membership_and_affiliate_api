@@ -3,6 +3,8 @@ from flask_caching import Cache
 from config import config_instance
 
 # TODO: consider upgrading the cache service from version 2 of this api
+from utils import clear_cache
+
 app_cache: Cache = Cache(config=config_instance.cache_dict())
 # TODO: problems will arise with a simple cache implementation where there are moreEl
 #  than one instance of this api, as one of the instance may or will hold different
@@ -80,4 +82,7 @@ def create_app(config_class=config_instance):
     # Error Handlers
     app.register_blueprint(default_handlers_bp)
 
+    # Clear Cache
+    if clear_cache(app=app, cache=app_cache):
+        print("Cache Cleared and Starting")
     return app

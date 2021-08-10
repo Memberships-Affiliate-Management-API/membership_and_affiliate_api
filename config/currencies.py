@@ -79,7 +79,6 @@ class CurrencyUtils:
         return [(currency[0], currency[1]) for currency in self.currency_list]
 
     @staticmethod
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
     def get_conversion_rate(from_symbol: str, to_symbol: str) -> typing.Union[float, None]:
         ***REMOVED***
             :param from_symbol:
@@ -89,7 +88,7 @@ class CurrencyUtils:
         # TODO- use an api to get the present conversion_rate
         pass
 
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def currency_conversion(self, from_amount: AmountMixin, convert_to_symbol: str) -> typing.Union[AmountMixin, None]:
         ***REMOVED***
             given an origin amount convert to any supported currency
@@ -106,7 +105,7 @@ class CurrencyUtils:
             return from_amount
         return None
 
-    @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+    @app_cache.memoize(timeout=return_ttl('short'))
     def return_minimum_withdrawal_by_currency(self, currency_symbol: str) -> int:
         ***REMOVED***
             NOTE: will return the minimum withdrawal amount based on the currency of the wallet

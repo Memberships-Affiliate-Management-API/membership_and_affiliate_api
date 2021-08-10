@@ -151,7 +151,7 @@ def can_cache() -> bool: return is_development() or not config_instance.DEBUG
 
 
 def clear_cache(app, cache: Cache) -> bool:
-    with app.context():
+    with app.app_context():
         cache.clear()
         return True
 
