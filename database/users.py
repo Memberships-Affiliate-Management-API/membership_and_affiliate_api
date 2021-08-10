@@ -213,12 +213,10 @@ class UserModel(ndb.Model):
     @property
     def account_locked(self) -> bool:
         ***REMOVED***
-            checks to see if email is verified if not checks to see if seven days haven't passed since registered
+            checks to see if email is verified if yes checks to see if seven days haven't passed since registered
         :return: boolean indicating if the account is locked
         ***REMOVED***
-        if self.email_verified:
-            return True if (self.time_registered > (timestamp() - get_days(days=7))) else False
-        return False
+        return self.email_verified and (self.time_registered > (timestamp() - get_days(days=7)))
 
     @property
     def access_rights(self) -> dict:

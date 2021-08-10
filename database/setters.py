@@ -96,10 +96,12 @@ class Util:
         ***REMOVED***
             checks if domain resolves to an IP address
         :param domain:
-        :return:
+        :return: True if domain resolves else False
         ***REMOVED***
-        # TODO - verify this it may return true all the time
-        return True if socket.gethostbyname_ex(domain) else False
+        try:
+            return bool(socket.gethostbyname_ex(domain))
+        except socket.gaierror:
+            return False
 
     @staticmethod
     def format_cell_number(cell: str) -> str:

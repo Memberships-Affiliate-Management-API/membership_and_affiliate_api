@@ -133,7 +133,7 @@ class WalletModel(ndb.Model):
         minimum_withdrawal: int = currency_util.return_minimum_withdrawal_by_currency(
             currency_symbol=self.available_funds.currency)
 
-        return True if minimum_withdrawal <= self.available_funds.amount else False
+        return minimum_withdrawal <= self.available_funds.amount
 
     @property
     def drawable_amount(self) -> AmountMixin:
