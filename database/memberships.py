@@ -19,6 +19,7 @@ from config.exceptions import InputError, error_codes
 from database.mixins import AmountMixin
 from database.setters import property_
 from utils.utils import get_days, today
+from database.basemodel import BaseModel
 
 
 class MembershipValidators:
@@ -269,7 +270,7 @@ class CouponsValidator:
 
 
 # noinspection DuplicatedCode
-class Memberships(ndb.Model):
+class Memberships(BaseModel):
     ***REMOVED***
         **Class Memberships**
             NOTE: Tracks down which user belongs to which plan from which organization_id  and if the user is paid up or unpaid
@@ -313,34 +314,12 @@ class Memberships(ndb.Model):
         return "<Memberships: status: {}, date_created: {}, start_date: {}".format(self.status, str(self.date_created),
                                                                                    str(self.plan_start_date))
 
-    def __repr__(self) -> str:
-        return "Memberships: {}{}{}".format(self.uid, self.plan_id, self.status)
-
     def __bool__(self) -> bool:
         return bool(self.uid)
 
-    def __len__(self) -> int:
-        return int(self.__bool__())
-
-    @property
-    def urlsafe_key(self) -> bytes:
-        return self.key.urlsafe()
-
-    # Turns the class to dict and include instance key
-    def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
-
-    @staticmethod
-    def get_instance_by_key(key: bytes) -> ndb.Model:
-        ***REMOVED***
-            returns the model instance from a key in byte string format
-        :param key:
-        :return:
-        ***REMOVED***
-        return ndb.Key(urlsafe=key).get()
-
 
 # noinspection DuplicatedCode
-class MembershipPlans(ndb.Model):
+class MembershipPlans(BaseModel):
     ***REMOVED***
         **Class Membership Plans**
             Payment plans for services and products belonging to an organization that created it,
@@ -401,34 +380,12 @@ class MembershipPlans(ndb.Model):
                "term : {}".format(self.plan_name, self.description, self.total_members,
                                   self.schedule_day, self.schedule_term)
 
-    def __repr__(self) -> str:
-        return "<Memberships: {}{}".format(self.plan_id, self.plan_name)
-
     def __bool__(self) -> bool:
         return bool(self.plan_id)
 
-    def __len__(self) -> int:
-        return int(self.__bool__())
-
-    @property
-    def urlsafe_key(self) -> bytes:
-        return self.key.urlsafe()
-
-    # Turns the class to dict and include instance key
-    def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
-
-    @staticmethod
-    def get_instance_by_key(key: bytes) -> ndb.Model:
-        ***REMOVED***
-            returns the model instance from a key in byte string format
-        :param key:
-        :return:
-        ***REMOVED***
-        return ndb.Key(urlsafe=key).get()
-
 
 # noinspection DuplicatedCode
-class MembershipInvoices(ndb.Model):
+class MembershipInvoices(BaseModel):
     ***REMOVED***
         **Class Memberships Invoices**
             Invoices created for clients, based on payments made on service payment plans
@@ -492,34 +449,12 @@ class MembershipInvoices(ndb.Model):
                                                                                               self.payment_amount,
                                                                                               self.amount_paid)
 
-    def __repr__(self) -> str:
-        return self.__str__()
-
     def __bool__(self) -> bool:
         return bool(self.uid)
 
-    def __len__(self) -> int:
-        return int(self.__bool__())
-
-    @property
-    def urlsafe_key(self) -> bytes:
-        return self.key.urlsafe()
-
-    # Turns the class to dict and include instance key
-    def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
-
-    @staticmethod
-    def get_instance_by_key(key: bytes) -> ndb.Model:
-        ***REMOVED***
-            returns the model instance from a key in byte string format
-        :param key:
-        :return:
-        ***REMOVED***
-        return ndb.Key(urlsafe=key).get()
-
 
 # noinspection DuplicatedCode
-class Coupons(ndb.Model):
+class Coupons(BaseModel):
     ***REMOVED***
         Class for the management and storage of Coupons in the Database
         applied on checkout of memberships
@@ -552,9 +487,6 @@ class Coupons(ndb.Model):
                                                                                            self.date_created,
                                                                                            self.expiration_time)
 
-    def __repr__(self) -> str:
-        return self.__str__()
-
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
             return False
@@ -569,28 +501,9 @@ class Coupons(ndb.Model):
     def __bool__(self) -> bool:
         return bool(self.code)
 
-    def __len__(self) -> int:
-        return int(self.__bool__())
-
-    @property
-    def urlsafe_key(self) -> bytes:
-        return self.key.urlsafe()
-
-    # Turns the class to dict and include instance key
-    def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
-
-    @staticmethod
-    def get_instance_by_key(key: bytes) -> ndb.Model:
-        ***REMOVED***
-            returns the model instance from a key in byte string format
-        :param key:
-        :return:
-        ***REMOVED***
-        return ndb.Key(urlsafe=key).get()
-
 
 # noinspection DuplicatedCode
-class AccessRights(ndb.Model):
+class AccessRights(BaseModel):
     ***REMOVED***
         TODO safely remove this class
         There should be a route that the client app can call to get permission for a route,
@@ -608,27 +521,8 @@ class AccessRights(ndb.Model):
     def __bool__(self) -> bool:
         return bool(self.plan_id)
 
-    def __len__(self) -> int:
-        return int(self.__bool__())
 
-    @property
-    def urlsafe_key(self) -> bytes:
-        return self.key.urlsafe()
-
-    # Turns the class to dict and include instance key
-    def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
-
-    @staticmethod
-    def get_instance_by_key(key: bytes) -> ndb.Model:
-        ***REMOVED***
-            returns the model instance from a key in byte string format
-        :param key:
-        :return:
-        ***REMOVED***
-        return ndb.Key(urlsafe=key).get()
-
-
-class MembershipDailyStats(ndb.Model):
+class MembershipDailyStats(BaseModel):
     ***REMOVED***
         provides information and settings pertaining to paying members
         run update stats task against this class daily
@@ -650,9 +544,6 @@ class MembershipDailyStats(ndb.Model):
                                                                              self.expected_earnings_this_month,
                                                                              self.total_earned_so_far)
 
-    def __repr__(self) -> str:
-        return self.__str__()
-
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
             return False
@@ -670,23 +561,3 @@ class MembershipDailyStats(ndb.Model):
 
     def __bool__(self) -> bool:
         return bool(self.daily_id)
-
-    def __len__(self) -> int:
-        return int(self.__bool__())
-
-    @property
-    def urlsafe_key(self) -> bytes:
-        return self.key.urlsafe()
-
-    # Turns the class to dict and include instance key
-    def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
-
-    @staticmethod
-    def get_instance_by_key(key: bytes) -> ndb.Model:
-        ***REMOVED***
-            returns the model instance from a key in byte string format
-        :param key:
-        :return:
-        ***REMOVED***
-        return ndb.Key(urlsafe=key).get()
-

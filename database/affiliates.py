@@ -17,6 +17,7 @@ from config.exception_handlers import handle_store_errors
 from config.exceptions import InputError, error_codes
 from database.mixins import AmountMixin
 from database.setters import property_
+from database.basemodel import BaseModel
 
 
 class AffiliatesValidators:
@@ -132,7 +133,7 @@ class EarningsValidators:
         return bool(earnings_instance)
 
 
-class Affiliates(ndb.Model):
+class Affiliates(BaseModel):
     ***REMOVED***
         **Class Affiliates**
             class used to track affiliates registered
@@ -169,34 +170,12 @@ class Affiliates(ndb.Model):
         return "<Affiliates: date_recruited: {}, total_recruits: {}".format(self.datetime_recruited,
                                                                             self.total_recruits)
 
-    def __repr__(self) -> str:
-        return "<Affiliates: {}{}".format(self.affiliate_id, self.uid)
-
     def __bool__(self) -> bool:
         return bool(self.affiliate_id)
         # return True if self.affiliate_id else False
 
-    def __len__(self) -> int:
-        return int(self.__bool__())
 
-    @property
-    def urlsafe_key(self) -> bytes:
-        return self.key.urlsafe()
-
-    # Turns the class to dict and include instance key
-    def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
-
-    @staticmethod
-    def get_instance_by_key(key: bytes) -> ndb.Model:
-        ***REMOVED***
-            returns the model instance from a key in byte string format
-        :param key:
-        :return:
-        ***REMOVED***
-        return ndb.Key(urlsafe=key).get()
-
-
-class Recruits(ndb.Model):
+class Recruits(BaseModel):
     ***REMOVED***
         **Class Recruits**
             class used to track recruited affiliates
@@ -228,9 +207,6 @@ class Recruits(ndb.Model):
     def __str__(self) -> str:
         return "<Recruits: {}{}{}".format(self.affiliate_id, self.referrer_uid, self.datetime_recruited)
 
-    def __repr__(self) -> str:
-        return self.__str__()
-
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
             return False
@@ -244,27 +220,8 @@ class Recruits(ndb.Model):
         return bool(self.affiliate_id)
         # return True if self.affiliate_id else False
 
-    def __len__(self) -> int:
-        return int(self.__bool__())
 
-    @property
-    def urlsafe_key(self) -> bytes:
-        return self.key.urlsafe()
-
-    # Turns the class to dict and include instance key
-    def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
-
-    @staticmethod
-    def get_instance_by_key(key: bytes) -> ndb.Model:
-        ***REMOVED***
-            returns the model instance from a key in byte string format
-        :param key:
-        :return:
-        ***REMOVED***
-        return ndb.Key(urlsafe=key).get()
-
-
-class EarningsData(ndb.Model):
+class EarningsData(BaseModel):
     ***REMOVED***
         **Class EarningsData**
             class used to track periodical earnings per affiliate
@@ -301,34 +258,12 @@ class EarningsData(ndb.Model):
         return "<EarningsClass start_date: {}, end_date: {}, total_earned: {}, is_paid: {}, on_hold: {}".format(
             self.start_date, self.last_updated, self.total_earned, self.is_paid, self.on_hold)
 
-    def __repr__(self) -> str:
-        return self.__str__()
-
     def __bool__(self) -> bool:
         # return True if self.affiliate_id else False
         return bool(self.affiliate_id)
 
-    def __len__(self) -> int:
-        return int(self.__bool__())
 
-    @property
-    def urlsafe_key(self) -> bytes:
-        return self.key.urlsafe()
-
-    # Turns the class to dict and include instance key
-    def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
-
-    @staticmethod
-    def get_instance_by_key(key: bytes) -> ndb.Model:
-        ***REMOVED***
-            returns the model instance from a key in byte string format
-        :param key:
-        :return:
-        ***REMOVED***
-        return ndb.Key(urlsafe=key).get()
-
-
-class AffiliateEarningsTransactions(ndb.Model):
+class AffiliateEarningsTransactions(BaseModel):
     ***REMOVED***
         **Class AffiliateEarningsTransactions**
             keeps track of amounts paid from EarningsData, meaning this holds a list
@@ -359,35 +294,12 @@ class AffiliateEarningsTransactions(ndb.Model):
     def __str__(self) -> str:
         return "<Total Earned: {} ".format(str(self.transactions_total))
 
-    def __repr__(self) -> str:
-        return self.__str__()
-
     def __bool__(self) -> bool:
         # return True if self.affiliate_id else False
         return bool(self.affiliate_id)
 
-    def __len__(self) -> int:
-        return int(self.__bool__())
 
-    @property
-    def urlsafe_key(self) -> bytes:
-        return self.key.urlsafe()
-
-    # Turns the class to dict and include instance key
-    def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
-
-    @staticmethod
-    def get_instance_by_key(key: bytes) -> ndb.Model:
-        ***REMOVED***
-            returns the model instance from instance key
-            key is in byte format
-        :param key:
-        :return:
-        ***REMOVED***
-        return ndb.Key(urlsafe=key).get()
-
-
-class AffiliateTransactionItems(ndb.Model):
+class AffiliateTransactionItems(BaseModel):
     ***REMOVED***
         **Class AffiliateTransactionItems**
             keeps track of singular transaction items, the transaction id's can be found on
@@ -417,43 +329,12 @@ class AffiliateTransactionItems(ndb.Model):
     def __str__(self) -> str:
         return "<AffiliateTransactionItem Amount: {}, date: {}".format(str(self.amount), str(self.transaction_date))
 
-    def __repr__(self) -> str:
-        return self.__str__()
-
     def __bool__(self) -> bool:
         # return True if self.transaction_id else False
         return bool(self.transaction_id)
 
-    def __len__(self) -> int:
-        return int(self.__bool__())
 
-    @property
-    def urlsafe_key(self) -> bytes:
-        return self.key.urlsafe()
-
-    # Turns the class to dict and include instance key
-    def to_dict(self) -> dict:
-        ***REMOVED***
-             ndb.Key(urlsafe=b"agdleGFtcGxlcgsLEgRLaW5kGLkKDA")
-             Key('Kind', 1337, project='example')
-             Kind = Class Name
-             1337 = actual key - pass this key with ndb.Key constructor
-
-        :return:
-        ***REMOVED***
-        return super().to_dict().update(key=self.urlsafe_key)
-
-    @staticmethod
-    def get_instance_by_key(key: bytes) -> ndb.Model:
-        ***REMOVED***
-            returns the model instance from a key in byte string format
-        :param key:
-        :return:
-        ***REMOVED***
-        return ndb.Key(urlsafe=key).get()
-
-
-class AffiliateSettingsStats(ndb.Model):
+class AffiliateSettingsStats(BaseModel):
     ***REMOVED***
         **Class AffiliateSettingsStats**
             if earnings are recurring then an affiliate will continue to earn income
@@ -496,30 +377,6 @@ class AffiliateSettingsStats(ndb.Model):
                "Total Affiliates: {}".format(str(self.earnings_percent), str(self.recurring_earnings),
                                              str(self.total_affiliates_earnings), str(self.total_affiliates))
 
-    def __repr__(self) -> str:
-        return self.__str__()
-
     def __bool__(self) -> bool:
         # return True if self.earnings_percent is not None else False
         return bool(self.earnings_percent)
-
-    def __len__(self) -> int:
-        # return self.earnings_percent
-        return int(self.__bool__())
-
-    @property
-    def urlsafe_key(self) -> bytes:
-        return self.key.urlsafe()
-
-    # Turns the class to dict and include instance key
-    def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
-
-    @staticmethod
-    def get_instance_by_key(key: bytes) -> ndb.Model:
-        ***REMOVED***
-            returns the model instance from a key in byte string format
-        :param key:
-        :return:
-        ***REMOVED***
-        return ndb.Key(urlsafe=key).get()
-

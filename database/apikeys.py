@@ -11,9 +11,10 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 
 from google.cloud import ndb
 from database.setters import property_
+from database.basemodel import BaseModel
 
 
-class APIKeys(ndb.Model):
+class APIKeys(BaseModel):
     ***REMOVED***
         a class to keep track of all api keys created for clients / organization in order to access our API
     ***REMOVED***
@@ -27,9 +28,6 @@ class APIKeys(ndb.Model):
     def __str__(self) -> str:
         return "APIKeys: Organization: {}, key: {} ".format(self.organization_id, self.api_key)
 
-    def __repr__(self) -> str:
-        return self.__str__()
-
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
             return False
@@ -41,23 +39,3 @@ class APIKeys(ndb.Model):
 
     def __bool__(self) -> bool:
         return bool(self.api_key)
-
-    def __len__(self) -> int:
-        return int(self.__bool__())
-
-    @property
-    def urlsafe_key(self) -> bytes:
-        return self.key.urlsafe()
-
-    # Turns the class to dict and include instance key
-    def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
-
-    @staticmethod
-    def get_instance_by_key(key: bytes) -> ndb.Model:
-        ***REMOVED***
-            returns the model instance from a key in byte string format
-        :param key:
-        :return:
-        ***REMOVED***
-        return ndb.Key(urlsafe=key).get()
-
