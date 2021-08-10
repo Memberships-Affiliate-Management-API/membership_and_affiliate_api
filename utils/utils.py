@@ -94,16 +94,8 @@ def date_string_to_date(date_str: str) -> date:
         raise ValueError('Date format invalid')
 
 
-# cache functions
-def end_of_month() -> bool:
-    ***REMOVED***
-        NOTE: True if the present date can be considered end of month or near end of month
-        :return: True
-    ***REMOVED***
-    now: date = datetime.datetime.now().date()
-    if now.day in [30, 31, 1]:
-        return True
-    return False
+# NOTE: True if the present date can be considered end of month or near end of month
+def end_of_month() -> bool: return today().day in [30, 31, 1]
 
 
 # Used to control cache ttl

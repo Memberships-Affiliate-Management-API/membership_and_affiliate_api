@@ -31,19 +31,31 @@ def affiliate(path: str) -> tuple:
         :return: response as tuple of Response and Status code
 
         `Path Values`
-         path == "get"
-            this obtains a record of one affiliate from the database the required valuables must be passed in
-            json format as a body of a request in this format
-            the required variables are as follows:
-            organization_id : required
-            and either affiliate_id or uid - this means the affiliate record can be obtained by either providing
-            an affiliate_id or uid.
+            path == "get"
+                this obtains a record of one affiliate from the database the required valuables must be passed in
+                json format as a body of a request in this format
+                the required variables are as follows:
+                organization_id : required
+                and either affiliate_id or uid - this means the affiliate record can be obtained by either providing
+                an affiliate_id or uid.
 
-        path == "get-all"
-            fetches all affiliate records belonging to an organization indicated by the supplied
-            variable organization_id.
-            organization_id : must be passed in json format as a body of the request
+            path == "get-all"
+                **Method: POST**
+                **Body: {"organization_id": "x"} as json**
+                fetches all affiliate records belonging to an organization indicated by the supplied
+                parameter organization_id.
+                organization_id : must be passed in json format as a body of the request
 
+            path == "get-active"
+                **Method: POST**
+                **BODY: {"organization_id": "value"} as json**
+                fetches active affiliate records belonging to a specific organization,
+                organization_id must be specified in the call as json body
+
+            path == "get-not-active"
+                **Method: POST**
+                **BODY: {"organization_id": "value"} as json**
+                returns in-active affiliate records for your organization
 
 
     ***REMOVED***

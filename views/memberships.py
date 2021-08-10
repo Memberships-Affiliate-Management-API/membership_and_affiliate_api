@@ -66,6 +66,7 @@ class MembershipsEmails(Mailgun):
             :param uid
             :return:
         ***REMOVED***
+
         # TODO compile a message here
         # TODO find out how to create templates and allow clients to create their email templates
         # TODO: fetching user data over API -- all this must be done asynchronously
@@ -118,7 +119,8 @@ class MembershipsEmails(Mailgun):
 
             # Note: composes and returns email body given membership and organization details the member joined
             text_body, html_body = email_body_composer(names=names, surname=surname, plan_name=plan_name,
-                                                       plan_description=plan_description, organization_name=organization_name,
+                                                       plan_description=plan_description,
+                                                       organization_name=organization_name,
                                                        organization_description=description)
 
             subject: str = 'Welcome to : {}'.format(organization_name)
@@ -395,6 +397,7 @@ class MembershipsView(Validators, MembershipsEmails):
         **MembershipsView**
             class intended to control access to memberships
     ***REMOVED***
+
     def __init__(self):
         super(MembershipsView, self).__init__()
 
@@ -463,7 +466,6 @@ class MembershipsView(Validators, MembershipsEmails):
 
         if await self.can_add_member_async(organization_id=organization_id, uid=uid, plan_id=plan_id,
                                            start_date=plan_start_date):
-
             # can use get to simplify this and make transactions faster
             membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                                  Memberships.uid == uid).get_async().get_result()
@@ -491,6 +493,17 @@ class MembershipsView(Validators, MembershipsEmails):
     def add_membership(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
                        plan_id: typing.Union[str, None], plan_start_date: date,
                        payment_method: typing.Union[str, None] = "paypal") -> tuple:
+        ***REMOVED***
+            **add_membership**
+                add new membership
+
+        :param organization_id:
+        :param uid:
+        :param plan_id:
+        :param plan_start_date:
+        :param payment_method:
+        :return:
+        ***REMOVED***
 
         # TODO - some form of error checking must be conducted here
         return self._create_or_update_membership(organization_id=organization_id, uid=uid, plan_id=plan_id,
@@ -499,6 +512,17 @@ class MembershipsView(Validators, MembershipsEmails):
     async def add_membership_async(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
                                    plan_id: typing.Union[str, None], plan_start_date: date,
                                    payment_method: typing.Union[str, None]) -> tuple:
+        ***REMOVED***
+            **add_membership_async**
+                create new membership_instance
+
+        :param organization_id:
+        :param uid:
+        :param plan_id:
+        :param plan_start_date:
+        :param payment_method:
+        :return:
+        ***REMOVED***
 
         return await self._create_or_update_membership_async(organization_id=organization_id, uid=uid,
                                                              plan_id=plan_id, plan_start_date=plan_start_date,
@@ -507,6 +531,17 @@ class MembershipsView(Validators, MembershipsEmails):
     def update_membership(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
                           plan_id: typing.Union[str, None], plan_start_date: date,
                           payment_method: typing.Union[str, None] = "paypal") -> tuple:
+        ***REMOVED***
+            **update_membership**
+                update membership
+
+        :param organization_id:
+        :param uid:
+        :param plan_id:
+        :param plan_start_date:
+        :param payment_method:
+        :return:
+        ***REMOVED***
 
         return self._create_or_update_membership(organization_id=organization_id, uid=uid, plan_id=plan_id,
                                                  plan_start_date=plan_start_date, payment_method=payment_method)
@@ -514,6 +549,17 @@ class MembershipsView(Validators, MembershipsEmails):
     async def update_membership_async(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
                                       plan_id: typing.Union[str, None], plan_start_date: date,
                                       payment_method: typing.Union[str, None] = "paypal") -> tuple:
+        ***REMOVED***
+            **update_membership_async**
+                update membership
+
+        :param organization_id:
+        :param uid:
+        :param plan_id:
+        :param plan_start_date:
+        :param payment_method:
+        :return:
+        ***REMOVED***
 
         return await self._create_or_update_membership_async(organization_id=organization_id, uid=uid, plan_id=plan_id,
                                                              plan_start_date=plan_start_date,
@@ -524,6 +570,9 @@ class MembershipsView(Validators, MembershipsEmails):
     def set_membership_status(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
                               status: typing.Union[str, None]) -> tuple:
         ***REMOVED***
+            **set_membership_status**
+                set membership status
+
             :param organization_id:
             :param uid:
             :param status: the membership status to set - note if this is not a valid status the database
@@ -567,7 +616,9 @@ class MembershipsView(Validators, MembershipsEmails):
     async def set_membership_status_async(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
                                           status: typing.Union[str, None]) -> tuple:
         ***REMOVED***
-            an asynchronous version of set_membership_status
+            **set_membership_status_async**
+                an asynchronous version of set_membership_status
+
         :param organization_id:
         :param uid:
         :param status:
@@ -606,13 +657,16 @@ class MembershipsView(Validators, MembershipsEmails):
     def change_membership(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
                           origin_plan_id: typing.Union[str, None], dest_plan_id: str) -> tuple:
         ***REMOVED***
-            TODO sync this with paypal payment plans - or maybe this will occur after the changes have taken place
-        :param organization_id:
-        :param uid:
-        :param origin_plan_id:
-        :param dest_plan_id:
-        :return:
+            **change_membership**
+                change Memberships
+
+            :param organization_id:
+            :param uid:
+            :param origin_plan_id:
+            :param dest_plan_id:
+            :return:
         ***REMOVED***
+        # TODO sync this with paypal payment plans - or maybe this will occur after the changes have taken place
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -643,7 +697,7 @@ class MembershipsView(Validators, MembershipsEmails):
                 membership_instance.plan_id = dest_plan_id
                 key = membership_instance.put(retries=self._max_retries,
                                               timeout=self._max_timeout)
-            if key is None:
+            if not bool(key):
                 message: str = "Unable to Change Membership, please try again later"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
