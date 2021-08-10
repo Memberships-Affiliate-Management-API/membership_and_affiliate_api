@@ -245,5 +245,3 @@ class UserModel(BaseModel):
         # excluding password from dict
         exclude: typing.List[str] = ['password']
         return super().to_dict(include=include, exclude=exclude)
-
-
