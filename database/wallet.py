@@ -157,8 +157,22 @@ class WalletModel(ndb.Model):
 
         return self.monthly_withdrawal_allowance if avail_funds > allowance else self.available_funds
 
+    @property
+    def urlsafe_key(self) -> bytes:
+        return self.key.urlsafe()
+
     # Turns the class to dict and include instance key
-    def to_dict(self) -> dict: return super().to_dict().update(key=self.key.urlsafe().decode())
+    def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
+
+    # Properties represents values that can be calculated from present values but will not be stored on database
+    @staticmethod
+    def get_instance_by_key(key: bytes) -> ndb.Model:
+        ***REMOVED***
+            returns the model instance from a key in byte string format
+        :param key:
+        :return:
+        ***REMOVED***
+        return ndb.Key(urlsafe=key).get()
 
 
 class WalletTransactionsModel(ndb.Model):
@@ -202,9 +216,22 @@ class WalletTransactionsModel(ndb.Model):
     def __len__(self) -> int:
         return int(self.__bool__())
 
-    # Turns the class to dict and include instance key
-    def to_dict(self) -> dict: return super().to_dict().update(key=self.key.urlsafe().decode())
+    @property
+    def urlsafe_key(self) -> bytes:
+        return self.key.urlsafe()
 
+    # Turns the class to dict and include instance key
+    def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
+
+    # Properties represents values that can be calculated from present values but will not be stored on database
+    @staticmethod
+    def get_instance_by_key(key: bytes) -> ndb.Model:
+        ***REMOVED***
+            returns the model instance from a key in byte string format
+        :param key:
+        :return:
+        ***REMOVED***
+        return ndb.Key(urlsafe=key).get()
 
 class WalletTransactionItemModel(ndb.Model):
     ***REMOVED***
@@ -251,5 +278,20 @@ class WalletTransactionItemModel(ndb.Model):
     def __len__(self) -> int:
         return int(self.__bool__())
 
+    @property
+    def urlsafe_key(self) -> bytes:
+        return self.key.urlsafe()
+
     # Turns the class to dict and include instance key
-    def to_dict(self) -> dict: return super().to_dict().update(key=self.key.urlsafe().decode())
+    def to_dict(self) -> dict:
+        return super().to_dict().update(key=self.urlsafe_key)
+
+    # Properties represents values that can be calculated from present values but will not be stored on database
+    @staticmethod
+    def get_instance_by_key(key: bytes) -> ndb.Model:
+        ***REMOVED***
+            returns the model instance from a key in byte string format
+        :param key:
+        :return:
+        ***REMOVED***
+        return ndb.Key(urlsafe=key).get()

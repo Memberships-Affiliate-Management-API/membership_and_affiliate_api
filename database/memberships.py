@@ -329,6 +329,16 @@ class Memberships(ndb.Model):
     # Turns the class to dict and include instance key
     def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
 
+    @staticmethod
+    def get_instance_by_key(key: bytes) -> ndb.Model:
+        ***REMOVED***
+            returns the model instance from a key in byte string format
+        :param key:
+        :return:
+        ***REMOVED***
+        return ndb.Key(urlsafe=key).get()
+
+
 # noinspection DuplicatedCode
 class MembershipPlans(ndb.Model):
     ***REMOVED***
@@ -406,6 +416,15 @@ class MembershipPlans(ndb.Model):
 
     # Turns the class to dict and include instance key
     def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
+
+    @staticmethod
+    def get_instance_by_key(key: bytes) -> ndb.Model:
+        ***REMOVED***
+            returns the model instance from a key in byte string format
+        :param key:
+        :return:
+        ***REMOVED***
+        return ndb.Key(urlsafe=key).get()
 
 
 # noinspection DuplicatedCode
@@ -489,6 +508,16 @@ class MembershipInvoices(ndb.Model):
     # Turns the class to dict and include instance key
     def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
 
+    @staticmethod
+    def get_instance_by_key(key: bytes) -> ndb.Model:
+        ***REMOVED***
+            returns the model instance from a key in byte string format
+        :param key:
+        :return:
+        ***REMOVED***
+        return ndb.Key(urlsafe=key).get()
+
+
 # noinspection DuplicatedCode
 class Coupons(ndb.Model):
     ***REMOVED***
@@ -550,6 +579,15 @@ class Coupons(ndb.Model):
     # Turns the class to dict and include instance key
     def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
 
+    @staticmethod
+    def get_instance_by_key(key: bytes) -> ndb.Model:
+        ***REMOVED***
+            returns the model instance from a key in byte string format
+        :param key:
+        :return:
+        ***REMOVED***
+        return ndb.Key(urlsafe=key).get()
+
 
 # noinspection DuplicatedCode
 class AccessRights(ndb.Model):
@@ -579,6 +617,15 @@ class AccessRights(ndb.Model):
 
     # Turns the class to dict and include instance key
     def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
+
+    @staticmethod
+    def get_instance_by_key(key: bytes) -> ndb.Model:
+        ***REMOVED***
+            returns the model instance from a key in byte string format
+        :param key:
+        :return:
+        ***REMOVED***
+        return ndb.Key(urlsafe=key).get()
 
 
 class MembershipDailyStats(ndb.Model):
@@ -633,3 +680,13 @@ class MembershipDailyStats(ndb.Model):
 
     # Turns the class to dict and include instance key
     def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
+
+    @staticmethod
+    def get_instance_by_key(key: bytes) -> ndb.Model:
+        ***REMOVED***
+            returns the model instance from a key in byte string format
+        :param key:
+        :return:
+        ***REMOVED***
+        return ndb.Key(urlsafe=key).get()
+

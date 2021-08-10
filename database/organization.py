@@ -102,8 +102,21 @@ class Organization(ndb.Model):
     def __len__(self) -> int:
         return int(self.__bool__())
 
+    @property
+    def urlsafe_key(self) -> bytes:
+        return self.key.urlsafe()
+
     # Turns the class to dict and include instance key
-    def to_dict(self) -> dict: return super().to_dict().update(key=self.key.urlsafe().decode())
+    def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
+
+    @staticmethod
+    def get_instance_by_key(key: bytes) -> ndb.Model:
+        ***REMOVED***
+            returns the model instance from a key in byte string format
+        :param key:
+        :return:
+        ***REMOVED***
+        return ndb.Key(urlsafe=key).get()
 
 
 class AuthUserValidators:
@@ -207,8 +220,21 @@ class AuthorizedUsers(ndb.Model):
     def __len__(self) -> int:
         return int(self.__bool__())
 
+    @property
+    def urlsafe_key(self) -> bytes:
+        return self.key.urlsafe()
+
     # Turns the class to dict and include instance key
-    def to_dict(self) -> dict: return super().to_dict().update(key=self.key.urlsafe().decode())
+    def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
+
+    @staticmethod
+    def get_instance_by_key(key: bytes) -> ndb.Model:
+        ***REMOVED***
+            returns the model instance from a key in byte string format
+        :param key:
+        :return:
+        ***REMOVED***
+        return ndb.Key(urlsafe=key).get()
 
 
 class OrgAccounts(ndb.Model):
@@ -246,8 +272,21 @@ class OrgAccounts(ndb.Model):
     def __len__(self) -> int:
         return int(self.__bool__())
 
+    @property
+    def urlsafe_key(self) -> bytes:
+        return self.key.urlsafe()
+
     # Turns the class to dict and include instance key
-    def to_dict(self) -> dict: return super().to_dict().update(key=self.key.urlsafe().decode())
+    def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
+
+    @staticmethod
+    def get_instance_by_key(key: bytes) -> ndb.Model:
+        ***REMOVED***
+            returns the model instance from a key in byte string format
+        :param key:
+        :return:
+        ***REMOVED***
+        return ndb.Key(urlsafe=key).get()
 
 
 class PaymentResults(ndb.Model):
@@ -284,5 +323,19 @@ class PaymentResults(ndb.Model):
     def __len__(self) -> int:
         return int(self.__bool__())
 
+    @property
+    def urlsafe_key(self) -> bytes:
+        return self.key.urlsafe()
+
     # Turns the class to dict and include instance key
-    def to_dict(self) -> dict: return super().to_dict().update(key=self.key.urlsafe().decode())
+    def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
+
+    @staticmethod
+    def get_instance_by_key(key: bytes) -> ndb.Model:
+        ***REMOVED***
+            returns the model instance from a key in byte string format
+        :param key:
+        :return:
+        ***REMOVED***
+        return ndb.Key(urlsafe=key).get()
+

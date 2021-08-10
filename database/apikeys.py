@@ -51,3 +51,13 @@ class APIKeys(ndb.Model):
 
     # Turns the class to dict and include instance key
     def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
+
+    @staticmethod
+    def get_instance_by_key(key: bytes) -> ndb.Model:
+        ***REMOVED***
+            returns the model instance from a key in byte string format
+        :param key:
+        :return:
+        ***REMOVED***
+        return ndb.Key(urlsafe=key).get()
+
