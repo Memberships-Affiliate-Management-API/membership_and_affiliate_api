@@ -16,7 +16,6 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 
 import typing
 from datetime import datetime
-
 from google.cloud import ndb
 from config.exceptions import DataServiceError
 from database.setters import property_
@@ -24,6 +23,7 @@ from database.organization import OrgValidators, AuthUserValidators
 from database.users import UserValidators
 from main import app_cache
 from utils.utils import return_ttl
+from database.basemodel import BaseModel
 
 
 class ServiceValidator(OrgValidators, AuthUserValidators, UserValidators):
@@ -62,7 +62,7 @@ class ServiceValidator(OrgValidators, AuthUserValidators, UserValidators):
         raise DataServiceError(status=500, description=message)
 
 
-class Services(ndb.Model):
+class Services(BaseModel):
     ***REMOVED***
         **Service Class Documentations**
             **The Services Module**, will capture the service data
@@ -115,14 +115,8 @@ class Services(ndb.Model):
                                                                          self.description,
                                                                          self.category)
 
-    def __repr__(self) -> str:
-        return self.__str__()
-
     def __bool__(self) -> bool:
         return bool(self.service_id)
-
-    def __len__(self) -> int:
-        return int(self.__bool__())
 
     @property
     def service_details(self) -> dict:
@@ -139,20 +133,3 @@ class Services(ndb.Model):
             'description': self.description,
             'image_url': self.image_url,
             'home_url': self.home_url}
-
-    @property
-    def urlsafe_key(self) -> bytes:
-        return self.key.urlsafe()
-
-    # Turns the class to dict and include instance key
-    def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
-
-    @staticmethod
-    def get_instance_by_key(key: bytes) -> ndb.Model:
-        ***REMOVED***
-            returns the model instance from a key in byte string format
-        :param key:
-        :return:
-        ***REMOVED***
-        return ndb.Key(urlsafe=key).get()
-

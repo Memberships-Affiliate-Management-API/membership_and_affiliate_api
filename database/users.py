@@ -15,6 +15,7 @@ from config.exceptions import InputError, error_codes
 from database.mixins import AddressMixin
 from utils.utils import timestamp, get_days
 from database.setters import property_
+from database.basemodel import BaseModel
 
 
 class UserValidators:
@@ -111,7 +112,7 @@ class UserValidators:
         return not bool(user_instance)
 
 
-class UserModel(ndb.Model):
+class UserModel(BaseModel):
     ***REMOVED***
         Documentation
             `Class UserModel`
@@ -159,9 +160,6 @@ class UserModel(ndb.Model):
         return "<User: UID: {}, Names: {}, Surname: {}, Email: {}, Cell: {}".format(self.uid, self.names, self.surname,
                                                                                     self.email, self.cell)
 
-    def __repr__(self) -> str:
-        return self.__str__()
-
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
             return False
@@ -174,9 +172,6 @@ class UserModel(ndb.Model):
     def __bool__(self) -> bool:
         # return True if self.transaction_id else False
         return bool(self.uid)
-
-    def __len__(self) -> int:
-        return int(self.__bool__())
 
     @property
     def full_names(self) -> str:
@@ -246,19 +241,3 @@ class UserModel(ndb.Model):
             'organization_name': '',
             'description': ''}
 
-    @property
-    def urlsafe_key(self) -> bytes:
-        return self.key.urlsafe()
-
-    # Turns the class to dict and include instance key
-    def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
-
-    # Properties represents values that can be calculated from present values but will not be stored on database
-    @staticmethod
-    def get_instance_by_key(key: bytes) -> ndb.Model:
-        ***REMOVED***
-            returns the model instance from a key in byte string format
-        :param key:
-        :return:
-        ***REMOVED***
-        return ndb.Key(urlsafe=key).get()

@@ -11,11 +11,11 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 import typing
 from datetime import datetime
 from google.cloud import ndb
-
 from config.currencies import currency_util
 from database.mixins import AmountMixin
 from config.exception_handlers import handle_store_errors
 from database.setters import property_
+from database.basemodel import BaseModel
 
 
 class WalletValidator:
@@ -65,7 +65,7 @@ class WalletValidator:
     # TODO be sure to integrate all models to the view
 
 
-class WalletModel(ndb.Model):
+class WalletModel(BaseModel):
     ***REMOVED***
         WALLET Documentations:
 
@@ -103,9 +103,6 @@ class WalletModel(ndb.Model):
         return "<Wallet {}{}{}{}".format(self.paypal_address, self.available_funds, self.time_created,
                                          self.last_transaction_time)
 
-    def __repr__(self) -> str:
-        return self.__str__()
-
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
             return False
@@ -117,9 +114,6 @@ class WalletModel(ndb.Model):
 
     def __bool__(self) -> bool:
         return bool(self.uid)
-
-    def __len__(self) -> int:
-        return int(self.__bool__())
 
     @property
     def can_withdraw(self) -> bool:
@@ -157,25 +151,8 @@ class WalletModel(ndb.Model):
 
         return self.monthly_withdrawal_allowance if avail_funds > allowance else self.available_funds
 
-    @property
-    def urlsafe_key(self) -> bytes:
-        return self.key.urlsafe()
 
-    # Turns the class to dict and include instance key
-    def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
-
-    # Properties represents values that can be calculated from present values but will not be stored on database
-    @staticmethod
-    def get_instance_by_key(key: bytes) -> ndb.Model:
-        ***REMOVED***
-            returns the model instance from a key in byte string format
-        :param key:
-        :return:
-        ***REMOVED***
-        return ndb.Key(urlsafe=key).get()
-
-
-class WalletTransactionsModel(ndb.Model):
+class WalletTransactionsModel(BaseModel):
     ***REMOVED***
         **Class WalletTransactionsModel**
             a model to keep track of transactions taking place on the wallet for each user and or
@@ -198,9 +175,6 @@ class WalletTransactionsModel(ndb.Model):
     def __str__(self) -> str:
         return "<Transactions {} {}".format(self.transaction_type, self.transaction_date)
 
-    def __repr__(self) -> str:
-        return self.__str__()
-
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
             return False
@@ -213,27 +187,8 @@ class WalletTransactionsModel(ndb.Model):
     def __bool__(self) -> bool:
         return bool(self.uid) or bool(self.transaction_id)
 
-    def __len__(self) -> int:
-        return int(self.__bool__())
 
-    @property
-    def urlsafe_key(self) -> bytes:
-        return self.key.urlsafe()
-
-    # Turns the class to dict and include instance key
-    def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
-
-    # Properties represents values that can be calculated from present values but will not be stored on database
-    @staticmethod
-    def get_instance_by_key(key: bytes) -> ndb.Model:
-        ***REMOVED***
-            returns the model instance from a key in byte string format
-        :param key:
-        :return:
-        ***REMOVED***
-        return ndb.Key(urlsafe=key).get()
-
-class WalletTransactionItemModel(ndb.Model):
+class WalletTransactionItemModel(BaseModel):
     ***REMOVED***
         **Class WalletTransactionItemModel**
             a model to keep track of each transaction item and amount that belongs to the
@@ -257,9 +212,6 @@ class WalletTransactionItemModel(ndb.Model):
     def __str__(self) -> str:
         return "{}{}".format(self.amount, self.is_verified)
 
-    def __repr__(self) -> str:
-        return self.__str__()
-
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
             return False
@@ -274,24 +226,3 @@ class WalletTransactionItemModel(ndb.Model):
     def __bool__(self) -> bool:
         # return True if self.transaction_id else False
         return bool(self.transaction_id)
-
-    def __len__(self) -> int:
-        return int(self.__bool__())
-
-    @property
-    def urlsafe_key(self) -> bytes:
-        return self.key.urlsafe()
-
-    # Turns the class to dict and include instance key
-    def to_dict(self) -> dict:
-        return super().to_dict().update(key=self.urlsafe_key)
-
-    # Properties represents values that can be calculated from present values but will not be stored on database
-    @staticmethod
-    def get_instance_by_key(key: bytes) -> ndb.Model:
-        ***REMOVED***
-            returns the model instance from a key in byte string format
-        :param key:
-        :return:
-        ***REMOVED***
-        return ndb.Key(urlsafe=key).get()
