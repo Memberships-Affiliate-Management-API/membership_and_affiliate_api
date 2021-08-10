@@ -137,6 +137,13 @@ class AffiliatesView(Validator):
             message: str = "There was an error creating Affiliate"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
+        # Deleting related Cache
+        # TODO refactor or better handle the deletion process
+        app_cache.delete_memoized(AffiliatesView.get_all_affiliates, AffiliatesView, organization_id)
+        app_cache.delete_memoized(AffiliatesView.get_active_affiliates, AffiliatesView, organization_id)
+        app_cache.delete_memoized(AffiliatesView.get_deleted_affiliates, AffiliatesView, organization_id)
+        app_cache.delete_memoized(AffiliatesView.get_not_deleted_affiliates, AffiliatesView, organization_id)
+
         return jsonify({'status': True,
                         'message': 'successfully registered an affiliate',
                         'payload': affiliate_instance.to_dict()}), status_codes.successfully_updated_code
@@ -213,6 +220,15 @@ class AffiliatesView(Validator):
                 message: str = 'something went wrong while deleting affiliate'
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
+            # Deleting related Cache
+            # TODO refactor or better handle the deletion process
+            _dict: dict = dict(organization_id=organization_id, affiliate_id=affiliate_id)
+            app_cache.delete_memoized(AffiliatesView.get_affiliate, AffiliatesView, _dict)
+            app_cache.delete_memoized(AffiliatesView.get_all_affiliates, AffiliatesView, organization_id)
+            app_cache.delete_memoized(AffiliatesView.get_active_affiliates, AffiliatesView, organization_id)
+            app_cache.delete_memoized(AffiliatesView.get_deleted_affiliates, AffiliatesView, organization_id)
+            app_cache.delete_memoized(AffiliatesView.get_not_deleted_affiliates, AffiliatesView, organization_id)
+
             return jsonify({'status': True,
                             'message': 'successfully deleted the affiliate',
                             'payload': affiliate_instance.to_dict()}), status_codes.successfully_updated_code
@@ -256,6 +272,10 @@ class AffiliatesView(Validator):
             if not bool(key):
                 message: str = "An Unknown Error occurred while trying to mark affiliate as in-active"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
+            # deleting memoize function for get_active_affiliates for the organization_id
+            app_cache.delete_memoized(AffiliatesView.get_active_affiliates, AffiliatesView, organization_id)
+            app_cache.delete_memoized(AffiliatesView.get_in_active_affiliates, AffiliatesView, organization_id)
 
             return jsonify({'status': True, 'message': 'successfully marked affiliate as inactive',
                             'payload': affiliate_instance.to_dict()}), status_codes.successfully_updated_code
