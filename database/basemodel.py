@@ -17,7 +17,7 @@ class BaseModel(ndb.Model):
                 equivalent to __str__
         :return: string rep of instance
         ***REMOVED***
-        return self.__str__()
+        return "{} (id={} state={})".format(type(self).__name__, self.id, self.__str__())
 
     def __len__(self) -> int:
         ***REMOVED***
@@ -26,6 +26,11 @@ class BaseModel(ndb.Model):
         :return: int either 0 or 1 representing if instance is present or not
         ***REMOVED***
         return int(self.__bool__())
+
+    @property
+    def id(self):
+        ***REMOVED***int: The index ID.***REMOVED***
+        return self._id
 
     @property
     def urlsafe_key(self) -> bytes:
@@ -38,7 +43,7 @@ class BaseModel(ndb.Model):
         return self.key.urlsafe()
 
     # Turns the class to dict and include instance key
-    def to_dict(self) -> dict:
+    def to_dict(self, include=all, exclude=None) -> dict:
         ***REMOVED***
             **to_dict**
                 based on the super dict method of ndb.Model
@@ -46,7 +51,7 @@ class BaseModel(ndb.Model):
                 includes ndb.Key
         :return: dict rep of instance
         ***REMOVED***
-        return super().to_dict().update(key=self.urlsafe_key)
+        return super().to_dict(include=include, exclude=exclude).update(key=self.urlsafe_key)
 
     @staticmethod
     def get_instance_by_key(key: bytes) -> ndb.Model:
@@ -56,16 +61,3 @@ class BaseModel(ndb.Model):
         :return: ndb instance fetched by key
         ***REMOVED***
         return ndb.Key(urlsafe=key).get()
-
-    @staticmethod
-    def _notify(message):
-        global notification
-        notification = message
-
-    def _pre_get_hook(self):
-        ***REMOVED***
-             **_pre_get_hook**
-                runs before every get
-        :return:
-        ***REMOVED***
-        self._notify('Gee wiz I have a new friend!')
