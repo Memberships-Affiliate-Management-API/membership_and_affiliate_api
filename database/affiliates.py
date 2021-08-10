@@ -179,8 +179,21 @@ class Affiliates(ndb.Model):
     def __len__(self) -> int:
         return int(self.__bool__())
 
+    @property
+    def urlsafe_key(self) -> bytes:
+        return self.key.urlsafe()
+
     # Turns the class to dict and include instance key
-    def to_dict(self) -> dict: return super().to_dict().update(key=self.key.urlsafe().decode())
+    def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
+
+    @staticmethod
+    def get_instance_by_key(key: bytes) -> ndb.Model:
+        ***REMOVED***
+            returns the model instance from a key in byte string format
+        :param key:
+        :return:
+        ***REMOVED***
+        return ndb.Key(urlsafe=key).get()
 
 
 class Recruits(ndb.Model):
@@ -234,8 +247,21 @@ class Recruits(ndb.Model):
     def __len__(self) -> int:
         return int(self.__bool__())
 
+    @property
+    def urlsafe_key(self) -> bytes:
+        return self.key.urlsafe()
+
     # Turns the class to dict and include instance key
-    def to_dict(self) -> dict: return super().to_dict().update(key=self.key.urlsafe().decode())
+    def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
+
+    @staticmethod
+    def get_instance_by_key(key: bytes) -> ndb.Model:
+        ***REMOVED***
+            returns the model instance from a key in byte string format
+        :param key:
+        :return:
+        ***REMOVED***
+        return ndb.Key(urlsafe=key).get()
 
 
 class EarningsData(ndb.Model):
@@ -285,8 +311,21 @@ class EarningsData(ndb.Model):
     def __len__(self) -> int:
         return int(self.__bool__())
 
+    @property
+    def urlsafe_key(self) -> bytes:
+        return self.key.urlsafe()
+
     # Turns the class to dict and include instance key
-    def to_dict(self) -> dict: return super().to_dict().update(key=self.key.urlsafe().decode())
+    def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
+
+    @staticmethod
+    def get_instance_by_key(key: bytes) -> ndb.Model:
+        ***REMOVED***
+            returns the model instance from a key in byte string format
+        :param key:
+        :return:
+        ***REMOVED***
+        return ndb.Key(urlsafe=key).get()
 
 
 class AffiliateEarningsTransactions(ndb.Model):
@@ -330,8 +369,22 @@ class AffiliateEarningsTransactions(ndb.Model):
     def __len__(self) -> int:
         return int(self.__bool__())
 
+    @property
+    def urlsafe_key(self) -> bytes:
+        return self.key.urlsafe()
+
     # Turns the class to dict and include instance key
-    def to_dict(self) -> dict: return super().to_dict().update(key=self.key.urlsafe().decode())
+    def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
+
+    @staticmethod
+    def get_instance_by_key(key: bytes) -> ndb.Model:
+        ***REMOVED***
+            returns the model instance from instance key
+            key is in byte format
+        :param key:
+        :return:
+        ***REMOVED***
+        return ndb.Key(urlsafe=key).get()
 
 
 class AffiliateTransactionItems(ndb.Model):
@@ -374,8 +427,30 @@ class AffiliateTransactionItems(ndb.Model):
     def __len__(self) -> int:
         return int(self.__bool__())
 
+    @property
+    def urlsafe_key(self) -> bytes:
+        return self.key.urlsafe()
+
     # Turns the class to dict and include instance key
-    def to_dict(self) -> dict: return super().to_dict().update(key=self.key.urlsafe().decode())
+    def to_dict(self) -> dict:
+        ***REMOVED***
+             ndb.Key(urlsafe=b"agdleGFtcGxlcgsLEgRLaW5kGLkKDA")
+             Key('Kind', 1337, project='example')
+             Kind = Class Name
+             1337 = actual key - pass this key with ndb.Key constructor
+
+        :return:
+        ***REMOVED***
+        return super().to_dict().update(key=self.urlsafe_key)
+
+    @staticmethod
+    def get_instance_by_key(key: bytes) -> ndb.Model:
+        ***REMOVED***
+            returns the model instance from a key in byte string format
+        :param key:
+        :return:
+        ***REMOVED***
+        return ndb.Key(urlsafe=key).get()
 
 
 class AffiliateSettingsStats(ndb.Model):
@@ -432,5 +507,19 @@ class AffiliateSettingsStats(ndb.Model):
         # return self.earnings_percent
         return int(self.__bool__())
 
+    @property
+    def urlsafe_key(self) -> bytes:
+        return self.key.urlsafe()
+
     # Turns the class to dict and include instance key
-    def to_dict(self) -> dict: return super().to_dict().update(key=self.key.urlsafe().decode())
+    def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
+
+    @staticmethod
+    def get_instance_by_key(key: bytes) -> ndb.Model:
+        ***REMOVED***
+            returns the model instance from a key in byte string format
+        :param key:
+        :return:
+        ***REMOVED***
+        return ndb.Key(urlsafe=key).get()
+
