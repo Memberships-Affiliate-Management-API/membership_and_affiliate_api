@@ -20,6 +20,7 @@ from config.exception_handlers import handle_store_errors
 from config.exceptions import InputError, error_codes
 from database.mixins import AmountMixin
 from database.setters import property_
+from database.basemodel import BaseModel
 
 
 class OrgValidators:
@@ -46,7 +47,7 @@ class OrgValidators:
         return bool(organization_instance)
 
 
-class Organization(ndb.Model):
+class Organization(BaseModel):
     ***REMOVED***
         **Organization Documentation**
             class contains information on organizations registered to use our API, this class enables users to
@@ -86,9 +87,6 @@ class Organization(ndb.Model):
         return "<Organization Name: {} Affiliates: {} Members: {}".format(self.organization_name, self.total_affiliates,
                                                                           self.total_members)
 
-    def __repr__(self) -> str:
-        return self.__str__()
-
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
             return False
@@ -98,25 +96,6 @@ class Organization(ndb.Model):
 
     def __bool__(self) -> bool:
         return bool(self.organization_id)
-
-    def __len__(self) -> int:
-        return int(self.__bool__())
-
-    @property
-    def urlsafe_key(self) -> bytes:
-        return self.key.urlsafe()
-
-    # Turns the class to dict and include instance key
-    def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
-
-    @staticmethod
-    def get_instance_by_key(key: bytes) -> ndb.Model:
-        ***REMOVED***
-            returns the model instance from a key in byte string format
-        :param key:
-        :return:
-        ***REMOVED***
-        return ndb.Key(urlsafe=key).get()
 
 
 class AuthUserValidators:
@@ -174,7 +153,7 @@ class AuthUserValidators:
         return isinstance(auth_user_instance, AuthorizedUsers) and (auth_user_instance.role == "admin")
 
 
-class AuthorizedUsers(ndb.Model):
+class AuthorizedUsers(BaseModel):
     ***REMOVED***
         **AuthorizedUsers Class**
             details of the users authorized to update organization details and other data structures for this organization
@@ -200,9 +179,6 @@ class AuthorizedUsers(ndb.Model):
     def __str__(self) -> str:
         return "<AuthorizedUser role: {}, is_active: {}".format(self.role, self.is_active)
 
-    def __repr__(self) -> str:
-        return self.__str__()
-
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
             return False
@@ -217,27 +193,8 @@ class AuthorizedUsers(ndb.Model):
     def __bool__(self) -> bool:
         return bool(self.organization_id)
 
-    def __len__(self) -> int:
-        return int(self.__bool__())
 
-    @property
-    def urlsafe_key(self) -> bytes:
-        return self.key.urlsafe()
-
-    # Turns the class to dict and include instance key
-    def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
-
-    @staticmethod
-    def get_instance_by_key(key: bytes) -> ndb.Model:
-        ***REMOVED***
-            returns the model instance from a key in byte string format
-        :param key:
-        :return:
-        ***REMOVED***
-        return ndb.Key(urlsafe=key).get()
-
-
-class OrgAccounts(ndb.Model):
+class OrgAccounts(BaseModel):
     ***REMOVED***
         # TODO - ensure this is not invalidated as wallet can store organization wallets
 
@@ -256,9 +213,6 @@ class OrgAccounts(ndb.Model):
     def __str__(self) -> str:
         return "<OrgAccounts : Paypal {} ".format(self.paypal_email)
 
-    def __repr__(self) -> str:
-        return self.__str__()
-
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
             return False
@@ -269,27 +223,8 @@ class OrgAccounts(ndb.Model):
     def __bool__(self) -> bool:
         return bool(self.organization_id)
 
-    def __len__(self) -> int:
-        return int(self.__bool__())
 
-    @property
-    def urlsafe_key(self) -> bytes:
-        return self.key.urlsafe()
-
-    # Turns the class to dict and include instance key
-    def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
-
-    @staticmethod
-    def get_instance_by_key(key: bytes) -> ndb.Model:
-        ***REMOVED***
-            returns the model instance from a key in byte string format
-        :param key:
-        :return:
-        ***REMOVED***
-        return ndb.Key(urlsafe=key).get()
-
-
-class PaymentResults(ndb.Model):
+class PaymentResults(BaseModel):
     ***REMOVED***
         # NOTE: this are payments from Organization Wallets to Organization PayPal Accounts
         for every payment which is approved by admin, retain the result of the
@@ -307,9 +242,6 @@ class PaymentResults(ndb.Model):
     def __str__(self) -> str:
         return "<PaymentResults : PaymentResults {} ".format(self.payment_result)
 
-    def __repr__(self) -> str:
-        return self.__str__()
-
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
             return False
@@ -319,23 +251,3 @@ class PaymentResults(ndb.Model):
 
     def __bool__(self) -> bool:
         return bool(self.organization_id)
-
-    def __len__(self) -> int:
-        return int(self.__bool__())
-
-    @property
-    def urlsafe_key(self) -> bytes:
-        return self.key.urlsafe()
-
-    # Turns the class to dict and include instance key
-    def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
-
-    @staticmethod
-    def get_instance_by_key(key: bytes) -> ndb.Model:
-        ***REMOVED***
-            returns the model instance from a key in byte string format
-        :param key:
-        :return:
-        ***REMOVED***
-        return ndb.Key(urlsafe=key).get()
-

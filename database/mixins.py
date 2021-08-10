@@ -11,10 +11,11 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 from dataclasses import dataclass
 from google.cloud import ndb
 from config import config_instance
+from database.basemodel import BaseModel
 from database.setters import property_
 
 
-class AmountMixin(ndb.Model):
+class AmountMixin(BaseModel):
     ***REMOVED***
     **Class AmountMixin**
         A mixin to represent Money in cents
@@ -54,34 +55,12 @@ class AmountMixin(ndb.Model):
     def __str__(self) -> str:
         return "Amount: {} {}".format(self.currency, self.amount)
 
-    def __repr__(self) -> str:
-        return self.__str__()
-
     def __bool__(self) -> bool:
         # if term payment amount is set to even zero bool will return True
         return True if self.amount is not None else False
 
-    def __len__(self) -> int:
-        return int(self.__bool__())
 
-    @property
-    def urlsafe_key(self) -> bytes:
-        return self.key.urlsafe()
-
-    # Turns the class to dict and include instance key
-    def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
-
-    @staticmethod
-    def get_instance_by_key(key: bytes) -> ndb.Model:
-        ***REMOVED***
-            returns the model instance from a key in byte string format
-        :param key:
-        :return:
-        ***REMOVED***
-        return ndb.Key(urlsafe=key).get()
-
-
-class UserMixin(ndb.Model):
+class UserMixin(BaseModel):
     ***REMOVED***
         **Class UserMixin**
             handling user login properties of User Class -
@@ -106,34 +85,11 @@ class UserMixin(ndb.Model):
     def __str__(self) -> str:
         return "<User {}".format(self.email)
 
-    def __repr__(self) -> str:
-        return self.__str__()
-
     def __bool__(self) -> bool:
         return bool(self.email)
 
-    def __len__(self) -> int:
-        return int(self.__bool__())
 
-    @property
-    def urlsafe_key(self) -> bytes:
-        return self.key.urlsafe()
-
-    # Turns the class to dict and include instance key
-    def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
-
-    @staticmethod
-    def get_instance_by_key(key: bytes) -> ndb.Model:
-        ***REMOVED***
-            returns the model instance from a key in byte string format
-        :param key:
-        :return:
-        ***REMOVED***
-        return ndb.Key(urlsafe=key).get()
-
-
-# TODO add validators for address
-class AddressMixin(ndb.Model):
+class AddressMixin(BaseModel):
     ***REMOVED***
         **Class AddressMixin**
             a mixin for user addresses
@@ -174,28 +130,6 @@ class AddressMixin(ndb.Model):
         return "<Address : {} {} {} {}".format(self.line_1, self.city, self.zip_code,
                                                self.province)
 
-    def __repr__(self) -> str:
-        return self.__str__()
-
     def __bool__(self) -> bool:
         return bool(self.line_1)
-
-    def __len__(self) -> int:
-        return int(self.__bool__())
-
-    @property
-    def urlsafe_key(self) -> bytes:
-        return self.key.urlsafe()
-
-    # Turns the class to dict and include instance key
-    def to_dict(self) -> dict: return super().to_dict().update(key=self.urlsafe_key)
-
-    @staticmethod
-    def get_instance_by_key(key: bytes) -> ndb.Model:
-        ***REMOVED***
-            returns the model instance from a key in byte string format
-        :param key:
-        :return:
-        ***REMOVED***
-        return ndb.Key(urlsafe=key).get()
 
