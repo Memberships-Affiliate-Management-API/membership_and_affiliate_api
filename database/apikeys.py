@@ -16,13 +16,14 @@ from database.basemodel import BaseModel
 
 class APIKeys(BaseModel):
     ***REMOVED***
-        a class to keep track of all api keys created for clients / organization in order to access our API
+        **Class APIKeys**
+            a class to keep track of all api keys created for clients / organization in order to access our API
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=property_.set_id)
-    api_key: str = ndb.StringProperty(validator=property_.set_id)
-    secret_token: str = ndb.StringProperty(validator=property_.set_id)
-    assigned_to_uid: str = ndb.StringProperty(validator=property_.set_id)
-    domain: str = ndb.StringProperty(validator=property_.set_domain)
+    organization_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
+    api_key: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
+    secret_token: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
+    assigned_to_uid: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
+    domain: str = ndb.StringProperty(validator=property_.set_domain, indexed=True, required=True)
     is_active: bool = ndb.BooleanProperty(default=True, validator=property_.set_bool)
 
     def __str__(self) -> str:

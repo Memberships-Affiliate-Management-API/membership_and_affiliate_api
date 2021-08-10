@@ -70,11 +70,11 @@ class Organization(BaseModel):
             10. total_membership_payments: AmountMixin -> total payments to the organization which came from memberships
 
     ***REMOVED***
-    owner_uid: str = ndb.StringProperty(validator=property_.set_id)
-    organization_id: str = ndb.StringProperty(validator=property_.set_id)
-    wallet_id: str = ndb.StringProperty(validator=property_.set_string)
-    organization_name: str = ndb.StringProperty(validator=property_.set_string)
-    description: str = ndb.StringProperty(validator=property_.set_string)
+    owner_uid: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
+    organization_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
+    wallet_id: str = ndb.StringProperty(validator=property_.set_string, indexed=True, required=True)
+    organization_name: str = ndb.StringProperty(validator=property_.set_string, required=True)
+    description: str = ndb.StringProperty(validator=property_.set_string, required=True)
     total_affiliates: int = ndb.IntegerProperty(validator=property_.set_number)
     total_paid: AmountMixin = ndb.StructuredProperty(AmountMixin)
     total_members: int = ndb.IntegerProperty(validator=property_.set_number)
@@ -169,8 +169,8 @@ class AuthorizedUsers(BaseModel):
             6. date_updated: datetime -> last date this instance was updated
 
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=property_.set_id)
-    uid: str = ndb.StringProperty(validator=property_.set_id)
+    organization_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
+    uid: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
     role: str = ndb.StringProperty(validator=property_.set_string)
     is_active: bool = ndb.BooleanProperty(default=True, validator=property_.set_bool)
     date_created: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=property_.set_datetime)
@@ -206,8 +206,8 @@ class OrgAccounts(BaseModel):
 
         # organizational Wallets in Wallets class can be indicated as such see Wallet Class
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=property_.set_id)
-    paypal_email: str = ndb.StringProperty(validator=property_.set_email)
+    organization_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
+    paypal_email: str = ndb.StringProperty(validator=property_.set_email, indexed=True, required=True)
     is_verified: bool = ndb.BooleanProperty(default=property_.set_bool)
 
     def __str__(self) -> str:
@@ -233,8 +233,8 @@ class PaymentResults(BaseModel):
         Mainly this class is updated by the system through cron jobs and users can read its details
 
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=property_.set_id)
-    transaction_id: str = ndb.StringProperty(validator=property_.set_id)
+    organization_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
+    transaction_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
     payment_result: str = ndb.StringProperty(validator=property_.set_string)
     time_created: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=property_.set_datetime)
     last_updated: datetime = ndb.DateTimeProperty(auto_now=True, validator=property_.set_datetime)

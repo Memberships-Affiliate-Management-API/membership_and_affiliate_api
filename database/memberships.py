@@ -286,10 +286,10 @@ class Memberships(BaseModel):
             6. property plan_start_date: the date the plan has been activated
             7. property payment_method: method of payment for the membership plan
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=property_.set_id)
-    uid: str = ndb.StringProperty(validator=property_.set_id)
-    plan_id: str = ndb.StringProperty(validator=property_.set_id)
-    status: str = ndb.StringProperty(default="unpaid", validator=property_.set_status)  # Paid/ Unpaid
+    organization_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
+    uid: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
+    plan_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
+    status: str = ndb.StringProperty(default="unpaid", validator=property_.set_status, required=True)  # Paid/ Unpaid
     date_created: date = ndb.DateTimeProperty(auto_now_add=True, validator=property_.set_date)
     plan_start_date: date = ndb.DateProperty(validator=property_.set_datetime)  # the date this plan will
     payment_method: str = ndb.StringProperty(default="paypal", validator=property_.set_payment_method)
@@ -347,14 +347,14 @@ class MembershipPlans(BaseModel):
         12. property : date_created: the date the payment plan has been created
 
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=property_.set_id)
+    organization_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
     # Service ID will relate the plan to a specific service_id on Services here and on PayPal Products
-    service_id: str = ndb.StringProperty(validator=property_.set_id)
+    service_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
     # NOTE a single service_id can be found on multiple plans
-    plan_id: str = ndb.StringProperty(validator=property_.set_id)
-    plan_name: str = ndb.StringProperty(validator=property_.set_string)
-    description: str = ndb.StringProperty(validator=property_.set_string)
-    total_members: int = ndb.IntegerProperty(validator=property_.set_number)
+    plan_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
+    plan_name: str = ndb.StringProperty(validator=property_.set_string, indexed=True, required=True)
+    description: str = ndb.StringProperty(validator=property_.set_string, required=True)
+    total_members: int = ndb.IntegerProperty(default=0, validator=property_.set_number)
     schedule_day: int = ndb.IntegerProperty(default=0, validator=property_.set_schedule_day)  # 1 or 2 or 3 of
     # every month or # week, or three months
     schedule_term: str = ndb.StringProperty(default="monthly", validator=property_.set_schedule_term)  # Monthly,
@@ -404,11 +404,11 @@ class MembershipInvoices(BaseModel):
             11. property : amount_paid: AmountMixin : the amount which has been paid for this invoice
 
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=property_.set_id)
-    uid: str = ndb.StringProperty(validator=property_.set_id)
-    plan_id: str = ndb.StringProperty(validator=property_.set_id)
-    invoice_id: str = ndb.StringProperty(validator=property_.set_id)
-    invoice_number: str = ndb.StringProperty(validator=property_.set_id)
+    organization_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True)
+    uid: str = ndb.StringProperty(validator=property_.set_id, indexed=True)
+    plan_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True)
+    invoice_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True)
+    invoice_number: str = ndb.StringProperty(validator=property_.set_id, indexed=True)
     date_created: date = ndb.DateProperty(auto_now_add=True, validator=property_.set_date)
     invoice_sent: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
     invoice_paid: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
@@ -474,8 +474,8 @@ class Coupons(BaseModel):
         :property: expiration_time: int: time in milliseconds when the coupon code will expire
 
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=property_.set_id)
-    code: str = ndb.StringProperty(validator=property_.set_coupon_code)
+    organization_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True)
+    code: str = ndb.StringProperty(validator=property_.set_coupon_code, indexed=True)
     discount_percent: int = ndb.IntegerProperty(default=0, validator=property_.set_number)
     is_valid: bool = ndb.BooleanProperty(default=True, validator=property_.set_bool)
     date_created: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=property_.set_datetime)
@@ -512,8 +512,8 @@ class AccessRights(BaseModel):
         `Class Properties`
 
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=property_.set_id)
-    plan_id: str = ndb.StringProperty(validator=property_.set_id)
+    organization_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True)
+    plan_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True)
     access_rights_list: typing.List[str] = ndb.StringProperty(repeated=True)  # a list containing the rights of users
 
     # TODO - finish this
@@ -527,8 +527,8 @@ class MembershipDailyStats(BaseModel):
         provides information and settings pertaining to paying members
         run update stats task against this class daily
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=property_.set_id)
-    daily_id: str = ndb.StringProperty(validator=property_.set_id)
+    organization_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True)
+    daily_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True)
     total_users: int = ndb.IntegerProperty(default=0, validator=property_.set_number)
     total_members: int = ndb.IntegerProperty(default=0, validator=property_.set_number)
     expected_monthly_earnings: AmountMixin = ndb.StructuredProperty(AmountMixin)

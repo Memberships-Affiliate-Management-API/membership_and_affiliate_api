@@ -86,14 +86,14 @@ class Services(BaseModel):
         `Method Properties`
             1. service_details: dict -> returns basic service details
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=property_.set_id)
+    organization_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
     # NOTE: service_id is the same as product_id in paypal products
-    created_by_uid: str = ndb.StringProperty(validator=property_.set_id)
+    created_by_uid: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
     # NOTE: created_by_uid is the user id of the user who created the service
-    service_id: str = ndb.StringProperty(validator=property_.set_id)
-    name: str = ndb.StringProperty(validator=property_.set_string)
-    description: str = ndb.StringProperty(validator=property_.set_string)
-    category: str = ndb.StringProperty(validator=property_.set_string)
+    service_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
+    name: str = ndb.StringProperty(validator=property_.set_string, required=True)
+    description: str = ndb.StringProperty(validator=property_.set_string, required=True)
+    category: str = ndb.StringProperty(validator=property_.set_string, required=True)
     image_url: str = ndb.StringProperty(validator=property_.set_domain)
     # NOTE: home_url is the location online of the page containing
     # the service information page

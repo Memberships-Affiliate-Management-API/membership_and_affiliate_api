@@ -56,3 +56,16 @@ class BaseModel(ndb.Model):
         :return: ndb instance fetched by key
         ***REMOVED***
         return ndb.Key(urlsafe=key).get()
+
+    @staticmethod
+    def _notify(message):
+        global notification
+        notification = message
+
+    def _pre_get_hook(self):
+        ***REMOVED***
+             **_pre_get_hook**
+                runs before every get
+        :return:
+        ***REMOVED***
+        self._notify('Gee wiz I have a new friend!')

@@ -148,9 +148,9 @@ class Affiliates(BaseModel):
             7. is_active: bool -> indicates if the affiliate is active
             8. is_deleted: bool -> indicates if an affiliate is deleted or not.
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=property_.set_id)
-    affiliate_id: str = ndb.StringProperty(validator=property_.set_id)
-    uid: str = ndb.StringProperty(validator=property_.set_id)
+    organization_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
+    affiliate_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
+    uid: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
     last_updated: datetime = ndb.DateTimeProperty(auto_now=True, validator=property_.set_datetime)
     datetime_recruited: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=property_.set_datetime)
     total_recruits: int = ndb.IntegerProperty(default=0, validator=property_.set_number)
@@ -193,9 +193,9 @@ class Recruits(BaseModel):
             9. is_deleted: bool -> indicates if a recruit is deleted
 
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=property_.set_id)
-    affiliate_id: str = ndb.StringProperty(validator=property_.set_id)
-    referrer_uid: str = ndb.StringProperty(validator=property_.set_id)
+    organization_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
+    affiliate_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
+    referrer_uid: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
     datetime_recruited: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=property_.set_date)
     datetime_updated: datetime = ndb.DateTimeProperty(auto_now=True, validator=property_.set_date)
     is_member: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
@@ -235,8 +235,8 @@ class EarningsData(BaseModel):
             6. is_paid: bool -> true if earnings has been paid
             7. on_hold: bool -> True if earnings has been put on hold
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=property_.set_id)
-    affiliate_id: str = ndb.StringProperty(validator=property_.set_id)
+    organization_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
+    affiliate_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
     start_date: date = ndb.DateProperty(auto_now_add=True)
     last_updated: date = ndb.DateProperty(validator=property_.set_date)
     total_earned: AmountMixin = ndb.StructuredProperty(AmountMixin)
@@ -276,9 +276,9 @@ class AffiliateEarningsTransactions(BaseModel):
             4. transaction_id_list: list[str] -> list of transaction ids relating to this affiliate
             5. last_transaction_time: datetime -> time the last transaction took place
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=property_.set_id)
-    affiliate_id: str = ndb.StringProperty(validator=property_.set_id)
-    transactions_total: AmountMixin = ndb.StructuredProperty(AmountMixin)
+    organization_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
+    affiliate_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
+    transactions_total: AmountMixin = ndb.StructuredProperty(AmountMixin, required=True)
     transaction_id_list: typing.List[str] = ndb.StringProperty(repeated=True)
     last_transaction_time: datetime = ndb.DateTimeProperty(auto_now=True, validator=property_.set_date)
 
@@ -313,8 +313,8 @@ class AffiliateTransactionItems(BaseModel):
         **NOTE:**
             Transactions here only relates to affiliate earnings so there is no transaction types
     ***REMOVED***
-    transaction_id: str = ndb.StringProperty(validator=property_.set_id)
-    amount: AmountMixin = ndb.StructuredProperty(AmountMixin)
+    transaction_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
+    amount: AmountMixin = ndb.StructuredProperty(AmountMixin, required=True)
     transaction_date: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=property_.set_date)
 
     def __eq__(self, other) -> bool:
@@ -355,8 +355,8 @@ class AffiliateSettingsStats(BaseModel):
         **NOTE**
             all amounts are in cents
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=property_.set_id)
-    earnings_percent: int = ndb.IntegerProperty(validator=property_.set_percent)
+    organization_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
+    earnings_percent: int = ndb.IntegerProperty(default=0, validator=property_.set_percent, required=True)
     recurring_earnings: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
     total_affiliates_earnings: AmountMixin = ndb.StructuredProperty(AmountMixin)
     total_affiliates: int = ndb.IntegerProperty(default=0, validator=property_.set_number)
