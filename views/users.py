@@ -10,6 +10,7 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
 import typing
+from typing import Optional
 from flask import jsonify, current_app
 from werkzeug.security import check_password_hash
 from _sdk._email import Mailgun
@@ -116,8 +117,8 @@ class Validators(UserValidators, OrgValidators):
         self._max_timeout = current_app.config.get('DATASTORE_TIMEOUT')
 
     @staticmethod
-    def check_required(organization_id: typing.Union[str, None], email: typing.Union[str, None],
-                       cell: typing.Union[str, None]) -> None:
+    def check_required(organization_id: Optional[str], email: Optional[str],
+                       cell: Optional[str]) -> None:
         ***REMOVED***
             check organization_id email and cell if they are valid
         :param organization_id:
@@ -141,7 +142,7 @@ class Validators(UserValidators, OrgValidators):
         pass
 
     @staticmethod
-    def check_org_and_uid(organization_id: typing.Union[str, None], uid: typing.Union[str, None]) -> None:
+    def check_org_and_uid(organization_id: Optional[str], uid: Optional[str]) -> None:
         ***REMOVED***
             check if organization_id or uid are available if not throw input_error_code and exit
         :param organization_id:
@@ -158,8 +159,8 @@ class Validators(UserValidators, OrgValidators):
 
         pass
 
-    def can_add_user(self, organization_id: typing.Union[str, None], email: typing.Union[str, None],
-                     cell: typing.Union[str, None]) -> bool:
+    def can_add_user(self, organization_id: Optional[str], email: Optional[str],
+                     cell: Optional[str]) -> bool:
         ***REMOVED***
             if this returns true the user can be added
 
@@ -168,10 +169,10 @@ class Validators(UserValidators, OrgValidators):
             :param organization_id: required - check if user has logged into this organization
             :return: boolean indicate if the user can be added or not
         ***REMOVED***
-        is_organization_exist: typing.Union[bool, None] = self.is_organization_exist(organization_id=organization_id)
-        # is_user_valid: typing.Union[bool, None] = self.is_user_valid(organization_id=organization_id, uid=uid)
-        is_email_valid: typing.Union[bool, None] = self.is_email_available(organization_id=organization_id, email=email)
-        is_cell_available: typing.Union[bool, None] = self.is_cell_available(organization_id=organization_id, cell=cell)
+        is_organization_exist: Optional[bool] = self.is_organization_exist(organization_id=organization_id)
+        # is_user_valid: Optional[bool] = self.is_user_valid(organization_id=organization_id, uid=uid)
+        is_email_valid: Optional[bool] = self.is_email_available(organization_id=organization_id, email=email)
+        is_cell_available: Optional[bool] = self.is_cell_available(organization_id=organization_id, cell=cell)
 
         if isinstance(is_organization_exist, bool) and isinstance(is_email_valid, bool) and \
                 isinstance(is_cell_available, bool):
@@ -201,9 +202,9 @@ class UserView(Validators, UserEmails, CacheManager):
     # ----------------------------------------Main API Functions------------------------->
     @use_context
     @handle_view_errors
-    def add_user(self,   organization_id: typing.Union[str, None], names:  typing.Union[str, None],
-                 surname:  typing.Union[str, None], cell:  typing.Union[str, None], email:  typing.Union[str, None],
-                 password:  typing.Union[str, None], uid:  typing.Union[str, None] = None) -> tuple:
+    def add_user(self,   organization_id: Optional[str], names:  Optional[str],
+                 surname:  Optional[str], cell:  Optional[str], email:  Optional[str],
+                 password:  Optional[str], uid:  Optional[str] = None) -> tuple:
         ***REMOVED***
             Register a new User
                 this is called for registering a new user
@@ -244,9 +245,9 @@ class UserView(Validators, UserEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    async def add_user_async(self, organization_id: typing.Union[str, None],  names:  typing.Union[str, None], surname:  typing.Union[str, None],
-                             cell:  typing.Union[str, None], email:  typing.Union[str, None],
-                             password:  typing.Union[str, None], uid:  typing.Union[str, None] = None) -> tuple:
+    async def add_user_async(self, organization_id: Optional[str],  names:  Optional[str], surname:  Optional[str],
+                             cell:  Optional[str], email:  Optional[str],
+                             password:  Optional[str], uid:  Optional[str] = None) -> tuple:
         ***REMOVED***
             creates a new user asynchronously - all parameters are required
         :param organization_id:
@@ -287,9 +288,9 @@ class UserView(Validators, UserEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    def update_user(self, organization_id: typing.Union[str, None], uid:  typing.Union[str, None],
-                    names:  typing.Union[str, None], surname:  typing.Union[str, None],
-                    cell:  typing.Union[str, None], email:  typing.Union[str, None], is_admin: bool,
+    def update_user(self, organization_id: Optional[str], uid:  Optional[str],
+                    names:  Optional[str], surname:  Optional[str],
+                    cell:  Optional[str], email:  Optional[str], is_admin: bool,
                     is_support: bool) -> tuple:
         ***REMOVED***
                 update user details all fields are required -
@@ -337,9 +338,9 @@ class UserView(Validators, UserEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    async def update_user_async(self, organization_id: typing.Union[str, None], uid:  typing.Union[str, None],
-                                names:  typing.Union[str, None], surname:  typing.Union[str, None],
-                                cell:  typing.Union[str, None], email:  typing.Union[str, None],
+    async def update_user_async(self, organization_id: Optional[str], uid:  Optional[str],
+                                names:  Optional[str], surname:  Optional[str],
+                                cell:  Optional[str], email:  Optional[str],
                                 is_admin: bool, is_support: bool) -> tuple:
         ***REMOVED***
             update user details asynchronously
@@ -385,8 +386,8 @@ class UserView(Validators, UserEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    def update_user_names(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
-                          names:  typing.Union[str, None], surname: typing.Union[str, None]) -> tuple:
+    def update_user_names(self, organization_id: Optional[str], uid: Optional[str],
+                          names:  Optional[str], surname: Optional[str]) -> tuple:
         ***REMOVED***
             given organization_id and uid update names
         :param organization_id: required
@@ -430,8 +431,8 @@ class UserView(Validators, UserEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    def update_cell(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
-                    cell: typing.Union[str, None]) -> tuple:
+    def update_cell(self, organization_id: Optional[str], uid: Optional[str],
+                    cell: Optional[str]) -> tuple:
         ***REMOVED***
                 given organization_id and uid update cell number
             :param organization_id:
@@ -468,8 +469,8 @@ class UserView(Validators, UserEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    def update_email(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
-                     email: typing.Union[str, None]) -> tuple:
+    def update_email(self, organization_id: Optional[str], uid: Optional[str],
+                     email: Optional[str]) -> tuple:
         ***REMOVED***
          update user email given organization_id and uid
         :param organization_id:
@@ -511,8 +512,8 @@ class UserView(Validators, UserEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    def update_password(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
-                        password:  typing.Union[str, None], new_password: typing.Union[str, None]) -> tuple:
+    def update_password(self, organization_id: Optional[str], uid: Optional[str],
+                        password:  Optional[str], new_password: Optional[str]) -> tuple:
         ***REMOVED***
             update password given  organization_id and uid update password
             check if old password matches the present password if that's the case then
@@ -563,8 +564,8 @@ class UserView(Validators, UserEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    def set_is_admin(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
-                     is_admin: typing.Union[bool, None] = False) -> tuple:
+    def set_is_admin(self, organization_id: Optional[str], uid: Optional[str],
+                     is_admin: Optional[bool] = False) -> tuple:
         ***REMOVED***
             given organization_id and uid update is_admin
         :param organization_id:
@@ -602,8 +603,8 @@ class UserView(Validators, UserEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    def set_is_support(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
-                       is_support:  typing.Union[bool, None]) -> tuple:
+    def set_is_support(self, organization_id: Optional[str], uid: Optional[str],
+                       is_support:  Optional[bool]) -> tuple:
         ***REMOVED***
             given organization_id and uid set support role
         :param organization_id:
@@ -640,8 +641,8 @@ class UserView(Validators, UserEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    def set_address(self, organization_id: typing.Union[str, None],
-                    uid: typing.Union[str, None], address_dict: typing.Union[dict, None]) -> tuple:
+    def set_address(self, organization_id: Optional[str], uid: Optional[str],
+                    address_dict: typing.Union[dict, None]) -> tuple:
         ***REMOVED***
             given organization_id and uid with address_dict update address
         :param organization_id:
@@ -652,29 +653,29 @@ class UserView(Validators, UserEmails, CacheManager):
 
         self.check_org_and_uid(organization_id=organization_id, uid=uid)
 
-        line_1: typing.Union[str, None] = address_dict.get('line_1')
+        line_1: Optional[str] = address_dict.get('line_1')
         if not isinstance(line_1, str) or not bool(line_1.strip()):
             message: str = "line_1 is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        city: typing.Union[str, None] = address_dict.get('city')
+        city: Optional[str] = address_dict.get('city')
         if not isinstance(city, str) or not bool(city.strip()):
             message: str = "city is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        zip_code: typing.Union[str, None] = address_dict.get('zip_code')
+        zip_code: Optional[str] = address_dict.get('zip_code')
         if not isinstance(zip_code, str) or not bool(zip_code.strip()):
             message: str = "zip_code is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        province: typing.Union[str, None] = address_dict.get('province')
-        state: typing.Union[str, None] = address_dict.get('state')
+        province: Optional[str] = address_dict.get('province')
+        state: Optional[str] = address_dict.get('state')
 
         if not isinstance(province, str) and not isinstance(state, str):
             message: str = "choose either state or province for your country not both"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        country: typing.Union[str, None] = address_dict.get('country')
+        country: Optional[str] = address_dict.get('country')
         if not isinstance(country, str) or not bool(country.strip()):
             message: str = "country is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -704,8 +705,8 @@ class UserView(Validators, UserEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    def delete_user(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None] = None,
-                    email: typing.Union[str, None] = None, cell:  typing.Union[str, None] = None) -> tuple:
+    def delete_user(self, organization_id: Optional[str], uid: Optional[str] = None,
+                    email: Optional[str] = None, cell:  Optional[str] = None) -> tuple:
         ***REMOVED***
             given either, uid, email or cell delete user
             :param organization_id:
@@ -754,8 +755,8 @@ class UserView(Validators, UserEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    async def delete_user_async(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None] = None,
-                                email: typing.Union[str, None] = None, cell:  typing.Union[str, None] = None) -> tuple:
+    async def delete_user_async(self, organization_id: Optional[str], uid: Optional[str] = None,
+                                email: Optional[str] = None, cell:  Optional[str] = None) -> tuple:
         ***REMOVED***
             given either, uid, email or cell delete user
             :param organization_id:
@@ -803,7 +804,7 @@ class UserView(Validators, UserEmails, CacheManager):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    def get_active_users(self, organization_id: typing.Union[str, None]) -> tuple:
+    def get_active_users(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             return a list of all users
         :return:
@@ -824,7 +825,7 @@ class UserView(Validators, UserEmails, CacheManager):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    async def get_active_users_async(self, organization_id: typing.Union[str, None]) -> tuple:
+    async def get_active_users_async(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             get active users list
 
@@ -849,7 +850,7 @@ class UserView(Validators, UserEmails, CacheManager):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    def get_in_active_users(self, organization_id: typing.Union[str, None]) -> tuple:
+    def get_in_active_users(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             get in-active  list
         :param organization_id:
@@ -873,7 +874,7 @@ class UserView(Validators, UserEmails, CacheManager):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    async def get_in_active_users_async(self, organization_id: typing.Union[str, None]) -> tuple:
+    async def get_in_active_users_async(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             return a list of non active users
         :param organization_id:
@@ -897,7 +898,7 @@ class UserView(Validators, UserEmails, CacheManager):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    def get_all_users(self, organization_id: typing.Union[str, None]) -> tuple:
+    def get_all_users(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             get a list of all users
         :param organization_id:
@@ -921,7 +922,7 @@ class UserView(Validators, UserEmails, CacheManager):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    async def get_all_users_async(self, organization_id: typing.Union[str, None]) -> tuple:
+    async def get_all_users_async(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             get a list of all users
         :param organization_id:
@@ -945,8 +946,8 @@ class UserView(Validators, UserEmails, CacheManager):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    def get_user(self, organization_id: typing.Union[str, None], uid:  typing.Union[str, None] = None, cell:  typing.Union[str, None] = None,
-                 email:  typing.Union[str, None] = None) -> tuple:
+    def get_user(self, organization_id: Optional[str], uid:  Optional[str] = None, cell:  Optional[str] = None,
+                 email:  Optional[str] = None) -> tuple:
         ***REMOVED***
             return a user either by uid, cell or email
             :param organization_id:
@@ -998,8 +999,8 @@ class UserView(Validators, UserEmails, CacheManager):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    async def get_user_async(self, organization_id: typing.Union[str, None], uid:  typing.Union[str, None] = None,
-                             cell:  typing.Union[str, None] = None, email:  typing.Union[str, None] = None) -> tuple:
+    async def get_user_async(self, organization_id: Optional[str], uid:  Optional[str] = None,
+                             cell:  Optional[str] = None, email:  Optional[str] = None) -> tuple:
         ***REMOVED***
             return a user either by uid, cell or email
             :param organization_id:
@@ -1046,8 +1047,8 @@ class UserView(Validators, UserEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    def check_password(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
-                       password:  typing.Union[str, None]) -> tuple:
+    def check_password(self, organization_id: Optional[str], uid: Optional[str],
+                       password:  Optional[str]) -> tuple:
         ***REMOVED***
             check password
         :param organization_id:
@@ -1080,8 +1081,8 @@ class UserView(Validators, UserEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    async def check_password_async(self, organization_id: typing.Union[str, None],
-                                   uid: typing.Union[str, None], password:  typing.Union[str, None]) -> tuple:
+    async def check_password_async(self, organization_id: Optional[str],
+                                   uid: Optional[str], password:  Optional[str]) -> tuple:
         ***REMOVED***
             check password asynchronously
         :param organization_id:
@@ -1114,7 +1115,7 @@ class UserView(Validators, UserEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    def deactivate_user(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None]) -> tuple:
+    def deactivate_user(self, organization_id: Optional[str], uid: Optional[str]) -> tuple:
         ***REMOVED***
             de-activate user
         :param organization_id:
@@ -1146,8 +1147,8 @@ class UserView(Validators, UserEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    async def deactivate_user_async(self, organization_id: typing.Union[str, None],
-                                    uid: typing.Union[str, None]) -> tuple:
+    async def deactivate_user_async(self, organization_id: Optional[str],
+                                    uid: Optional[str]) -> tuple:
         ***REMOVED***
             deactivate_user_async given uid and organization_id
         :param organization_id:
@@ -1178,8 +1179,8 @@ class UserView(Validators, UserEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    def login(self, organization_id: typing.Union[str, None], email:   typing.Union[str, None],
-              password: typing.Union[str, None]) -> tuple:
+    def login(self, organization_id: Optional[str], email:   Optional[str],
+              password: Optional[str]) -> tuple:
         ***REMOVED***
             this login utility may support client app , not necessary for admin and service to service calls
             Options:
@@ -1225,8 +1226,8 @@ class UserView(Validators, UserEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    def send_recovery_email(self, organization_id: typing.Union[str, None],
-                            email: typing.Union[str, None]) -> tuple:
+    def send_recovery_email(self, organization_id: Optional[str],
+                            email: Optional[str]) -> tuple:
         ***REMOVED***
             # Use the email sdk to send recovery email and return
         :param organization_id:
