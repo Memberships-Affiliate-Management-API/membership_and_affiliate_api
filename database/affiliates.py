@@ -30,7 +30,7 @@ class AffiliatesValidators:
 
     @staticmethod
     @handle_store_errors
-    def affiliate_exist(affiliate_id: typing.Union[str, None]) -> typing.Union[None, bool]:
+    def affiliate_exist(affiliate_id: Optional[str]) -> typing.Union[None, bool]:
         ***REMOVED***
             **affiliate_exist**
                 test if an affiliate already exists in the organization
@@ -45,8 +45,8 @@ class AffiliatesValidators:
 
     @staticmethod
     @handle_store_errors
-    def recruiter_registered(organization_id: typing.Union[str, None],
-                             uid: typing.Union[str, None]) -> typing.Union[None, bool]:
+    def recruiter_registered(organization_id: Optional[str],
+                             uid: Optional[str]) -> typing.Union[None, bool]:
         ***REMOVED***
             **recruiter_registered**
                 returns true or False according to registration status None otherwise
@@ -72,7 +72,7 @@ class RecruitsValidators:
     # noinspection DuplicatedCode
     @staticmethod
     @handle_store_errors
-    def user_already_recruited(uid: typing.Union[str, None]) -> typing.Union[None, bool]:
+    def user_already_recruited(uid: Optional[str]) -> typing.Union[None, bool]:
         ***REMOVED***
             **user_already_recruited**
                 method user_already_recruited -> checks if user has already been recruited
@@ -93,7 +93,7 @@ class RecruitsValidators:
 
     @staticmethod
     @handle_store_errors
-    def user_already_an_affiliate(uid: typing.Union[str, None]) -> typing.Union[None, bool]:
+    def user_already_an_affiliate(uid: Optional[str]) -> typing.Union[None, bool]:
         ***REMOVED***
             ** method user_already_an_affiliate**
                 checks if user is already an affiliate

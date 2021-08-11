@@ -1,5 +1,5 @@
 ***REMOVED***
-    **Affilaites Keys Module**
+    ** Affiliates Keys Module**
     definition of classes to handle APIKeys for client authorization
 
 ***REMOVED***
