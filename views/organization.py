@@ -178,6 +178,8 @@ class OrganizationView(OrgValidators, OrganizationEmails):
                 message: str = "An Unspecified Error has occurred creating database"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
+            app_cache.delete_memoized(OrganizationView._return_all_organizations, OrganizationView)
+
             message: str = "Successfully created Organization"
             return jsonify({'status': True, 'payload': organization_instance.to_dict(),
                             'message': message}), status_codes.successfully_updated_code
@@ -219,6 +221,9 @@ class OrganizationView(OrgValidators, OrganizationEmails):
                     message: str = "An Unspecified Error has occurred"
                     raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
+                # Delete Return all organizations
+                app_cache.delete_memoized(OrganizationView._return_all_organizations, OrganizationView)
+
                 message: str = "Successfully updated organization"
                 return jsonify({'status': True, 'payload': org_instance.to_dict(),
                                 'message': message}), status_codes.successfully_updated_code
@@ -232,7 +237,7 @@ class OrganizationView(OrgValidators, OrganizationEmails):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    def get_organization(self, uid: typing.Union[str, None], organization_id: typing.Union[str, None]) -> tuple:
+    def get_organization(self, organization_id: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             **get_organization**
                 function used to return the details of user organization,
@@ -308,6 +313,9 @@ class OrganizationView(OrgValidators, OrganizationEmails):
                 message: str = "An Unspecified error occurred while adding to or subtract from affiliate count"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
+            app_cache.delete_memoized(OrganizationView._return_all_organizations, OrganizationView)
+            app_cache.delete_memoized(OrganizationView.get_organization, OrganizationView, organization_id)
+
             message: str = "Successfully updated affiliate count"
             return jsonify({'status': False,
                             'payload': organization_instance.to_dict(),
@@ -356,6 +364,9 @@ class OrganizationView(OrgValidators, OrganizationEmails):
                 message: str = 'for some reason we are unable to add to total_amount'
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
+            app_cache.delete_memoized(OrganizationView._return_all_organizations, OrganizationView)
+            app_cache.delete_memoized(OrganizationView.get_organization, OrganizationView, organization_id)
+
             message: str = "Successfully updated total paid amount on Organization"
             return jsonify({'status': True,
                             'payload': organization_instance.to_dict(),
@@ -392,6 +403,9 @@ class OrganizationView(OrgValidators, OrganizationEmails):
             else:
                 raise InputError(status=error_codes.input_error_code,
                                  description="Please Enter either the amount to add or subtract")
+
+            app_cache.delete_memoized(OrganizationView._return_all_organizations, OrganizationView)
+            app_cache.delete_memoized(OrganizationView.get_organization, OrganizationView, organization_id)
 
             message: str = "Successfully updated total members on organization"
             return jsonify({'status': True,
@@ -431,6 +445,9 @@ class OrganizationView(OrgValidators, OrganizationEmails):
                 message: str = "Please enter either the amount to add or subtract"
                 raise InputError(status=error_codes.input_error_code, description=message)
 
+            app_cache.delete_memoized(OrganizationView._return_all_organizations, OrganizationView)
+            app_cache.delete_memoized(OrganizationView.get_organization, OrganizationView, organization_id)
+
             message: str = "Successfully updated projected_membership_payments"
             return jsonify({'status': True,
                             'payload': organization_instance.to_dict(),
@@ -469,6 +486,9 @@ class OrganizationView(OrgValidators, OrganizationEmails):
                 message: str = "Input Error: Please enter either the amount to add or subtract"
                 raise InputError(status=error_codes.input_error_code,
                                  description=message)
+
+            app_cache.delete_memoized(OrganizationView._return_all_organizations, OrganizationView)
+            app_cache.delete_memoized(OrganizationView.get_organization, OrganizationView, organization_id)
 
             message: str = "Successfully updated total_membership_payments"
             return jsonify({'status': True,
