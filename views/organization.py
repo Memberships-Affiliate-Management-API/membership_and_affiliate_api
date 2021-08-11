@@ -9,6 +9,7 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
 import typing
+from typing import Optional
 from flask import current_app, jsonify
 from _sdk._email import Mailgun
 from config.exception_handlers import handle_view_errors, handle_store_errors
@@ -79,8 +80,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
         self._max_retries = current_app.config.get('DATASTORE_RETRIES')
         self._max_timeout = current_app.config.get('DATASTORE_TIMEOUT')
 
-    def can_create_organization(self, uid: typing.Union[str, None],
-                                organization_name: typing.Union[str, None]) -> bool:
+    def can_create_organization(self, uid: Optional[str], organization_name: Optional[str]) -> bool:
         ***REMOVED***
             **can_create_organization**
                 check if user has registered, and is a paying user... or created an account.
@@ -93,7 +93,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
         # TODO - complete can create organization account
         pass
 
-    def can_update_organization(self, uid: typing.Union[str, None], organization_id: typing.Union[str, None]) -> bool:
+    def can_update_organization(self, uid: Optional[str], organization_id: Optional[str]) -> bool:
         ***REMOVED***
             **can_update_organization**
                 check if user has administrator rights on organization and if organization exist
@@ -121,7 +121,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
             self._create_org_id()
         return organization_id
 
-    def _create_org_wallet(self, organization_id: typing.Union[str, None]) -> str:
+    def _create_org_wallet(self, organization_id: Optional[str]) -> str:
         ***REMOVED***
             _private function to facilitate the create of organizational wallet
             :param organization_id: id of the organization to create organization wallet
@@ -133,8 +133,8 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    def create_organization(self, uid: typing.Union[str, None], organization_name: typing.Union[str, None],
-                            description: typing.Union[str, None]) -> tuple:
+    def create_organization(self, uid: Optional[str], organization_name: Optional[str],
+                            description: Optional[str]) -> tuple:
         ***REMOVED***
 
             :param uid: user_id of the user creating the organization
@@ -143,7 +143,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
         :return: tuple containing response object and status code
         ***REMOVED***
         # Note: insures that a valid organization id is created
-        organization_id: typing.Union[str, None] = self._create_org_id()
+        organization_id: Optional[str] = self._create_org_id()
 
         # if organization_id == None
         if not bool(organization_id):
@@ -151,7 +151,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
             raise InputError(status=error_codes.input_error_code, description=message)
 
         # TODO- this function needs to be completed
-        wallet_id: typing.Union[str, None] = self._create_org_wallet(organization_id=organization_id)
+        wallet_id: Optional[str] = self._create_org_wallet(organization_id=organization_id)
 
         # if wallet_id is None
         if not bool(wallet_id):
@@ -174,7 +174,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
                                                                projected_membership_payments=AmountMixin(amount=0),
                                                                total_membership_payments=AmountMixin(amount=0))
 
-            key: typing.Union[str, None] = organization_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+            key: Optional[str] = organization_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             if not bool(key):
                 message: str = "An Unspecified Error has occurred creating database"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
@@ -190,8 +190,8 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    def update_organization(self, uid: typing.Union[str, None], organization_id: typing.Union[str, None],
-                            organization_name: typing.Union[str, None], description: typing.Union[str, None]) -> tuple:
+    def update_organization(self, uid: Optional[str], organization_id: Optional[str],
+                            organization_name: Optional[str], description: Optional[str]) -> tuple:
         ***REMOVED***
             **update_organization**
                 function used to update the name and description of an organization.
@@ -238,12 +238,10 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    def get_organization(self, organization_id: typing.Union[str, None]) -> tuple:
+    def get_organization(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             **get_organization**
                 function used to return the details of user organization,
-
-            :param uid: required:  user id of the user requesting organization details
             :param organization_id: required: the id of the organization to return
             :return: response object and status code, response contains ,
             response json {'status': True, 'payload': '{Organization}', 'message' : 'success'}, 200
@@ -281,8 +279,8 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    def _update_affiliate_count(self, organization_id: typing.Union[str, None], add: typing.Union[int, None] = None,
-                                sub: typing.Union[int, None] = None) -> tuple:
+    def _update_affiliate_count(self, organization_id: Optional[str], add: Optional[int] = None,
+                                sub: Optional[int] = None) -> tuple:
         ***REMOVED***
             **_update_affiliate_count**
                 Private Function: this function will never be called externally or by the user.
@@ -308,8 +306,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
             else:
                 raise InputError(status=500, description="Please either enter the amount to subtract or add")
 
-            key: typing.Union[str, None] = organization_instance.put(retries=self._max_retries,
-                                                                     timeout=self._max_timeout)
+            key: Optional[str] = organization_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             if not bool(key):
                 message: str = "An Unspecified error occurred while adding to or subtract from affiliate count"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
@@ -326,9 +323,9 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    def _update_total_paid(self, organization_id: typing.Union[str, None],
-                           add_amount: typing.Union[AmountMixin, None] = None,
-                           sub_amount: typing.Union[AmountMixin, None] = None) -> tuple:
+    def _update_total_paid(self, organization_id: Optional[str],
+                           add_amount: Optional[AmountMixin] = None,
+                           sub_amount: Optional[AmountMixin] = None) -> tuple:
         ***REMOVED***
             **_update_total_paid**
                 Private function to update the total amount paid by the organization.
@@ -357,8 +354,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
             else:
                 raise InputError(status=500, description="Please enter either the amount to add or subtract")
 
-            key: typing.Union[str, None] = organization_instance.put(retries=self._max_retries,
-                                                                     timeout=self._max_timeout)
+            key: Optional[str] = organization_instance.put(retries=self._max_retries, timeout=self._max_timeout)
 
             if not bool(key):
                 message: str = 'for some reason we are unable to add to total_amount'
@@ -376,8 +372,8 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    def _update_total_members(self, organization_id: typing.Union[str, None], add: typing.Union[int, None] = None,
-                              sub: typing.Union[int, None] = None) -> tuple:
+    def _update_total_members(self, organization_id: Optional[str], add: Optional[int] = None,
+                              sub: Optional[int] = None) -> tuple:
         ***REMOVED***
             **_update_total_members**
                 supply either the amount to add to total members or the amount to subtract
@@ -415,9 +411,9 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    def _update_projected_membership_payments(self, organization_id: typing.Union[str, None],
-                                              add_payment: typing.Union[str, None] = None,
-                                              sub_payment: typing.Union[str, None] = None) -> tuple:
+    def _update_projected_membership_payments(self, organization_id: Optional[str],
+                                              add_payment: Optional[str] = None,
+                                              sub_payment: Optional[str] = None) -> tuple:
 
         ***REMOVED***
             **_update_projected_membership_payments**
@@ -455,9 +451,9 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    def _update_total_membership_payments(self, organization_id: typing.Union[str, None],
-                                          sub_total_membership_payment: typing.Union[AmountMixin, None] = None,
-                                          add_total_membership_amount: typing.Union[AmountMixin, None] = None) -> tuple:
+    def _update_total_membership_payments(self, organization_id: Optional[str],
+                                          sub_total_membership_payment: Optional[AmountMixin] = None,
+                                          add_total_membership_amount: Optional[AmountMixin] = None) -> tuple:
         ***REMOVED***
             **_update_total_membership_payments**
                 update overall total_membership_payments for organization, supply either the amount to add or substract

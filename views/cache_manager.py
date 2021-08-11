@@ -44,5 +44,5 @@ class CacheManager:
         ***REMOVED***
         app_cache.delete_memoized(org_view._return_all_organizations, org_view)
         app_cache.delete_memoized(org_view.get_organization, org_view, organization_id)
-        return bool
+        return True
 
