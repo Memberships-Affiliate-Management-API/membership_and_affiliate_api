@@ -10,6 +10,7 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
 import typing
+from typing import Optional
 from flask import current_app, jsonify
 from main import app_cache
 from database.affiliates import AffiliatesValidators as ValidAffiliate
@@ -119,8 +120,8 @@ class AffiliatesView(Validator):
         :param affiliate_data:
         :return: tuple with registered affiliate
         ***REMOVED***
-        uid: typing.Union[None, str] = affiliate_data.get('uid')
-        organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
+        uid: Optional[str] = affiliate_data.get('uid')
+        organization_id: Optional[str] = affiliate_data.get('organization_id')
         # NOTE can register affiliate will check organization_id and uid are valid
         if not self.can_register_affiliate(organization_id=organization_id, uid=uid):
             message: str = "You are not authorized to register as an affiliate"
@@ -157,8 +158,8 @@ class AffiliatesView(Validator):
         :param add:
         :return:
         ***REMOVED***
-        affiliate_id: typing.Union[str, None] = affiliate_data.get('affiliate_id')
-        organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
+        affiliate_id: Optional[str] = affiliate_data.get('affiliate_id')
+        organization_id: Optional[str] = affiliate_data.get('organization_id')
 
         if not isinstance(affiliate_id, str) or not bool(affiliate_id.strip()):
             message = 'affiliate_id is required'
@@ -200,12 +201,12 @@ class AffiliatesView(Validator):
             :return: tuple containing the record of the deleted affiliate
         ***REMOVED***
 
-        affiliate_id: typing.Union[None, str] = affiliate_data.get('affiliate_id')
+        affiliate_id: Optional[str] = affiliate_data.get('affiliate_id')
         if not isinstance(affiliate_id, str) or not bool(affiliate_id.strip()):
             message: str = 'affiliate_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
+        organization_id: Optional[str] = affiliate_data.get('organization_id')
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -246,12 +247,12 @@ class AffiliatesView(Validator):
         :param is_active:
         :return:
         ***REMOVED***
-        affiliate_id: typing.Union[None, str] = affiliate_data.get('affiliate_id')
+        affiliate_id: Optional[str] = affiliate_data.get('affiliate_id')
         if not isinstance(affiliate_id, str) or not bool(affiliate_id.strip()):
             message: str = 'affiliate_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
+        organization_id: Optional[str] = affiliate_data.get('organization_id')
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -293,12 +294,12 @@ class AffiliatesView(Validator):
         :param affiliate_data: contains affiliate_id and organization_id the affiliate must belong to the organization
         :return: response contain affiliate record
         ***REMOVED***
-        organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
+        organization_id: Optional[str] = affiliate_data.get('organization_id')
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        affiliate_id: typing.Union[None, str] = affiliate_data.get('affiliate_id')
+        affiliate_id: Optional[str] = affiliate_data.get('affiliate_id')
 
         # Initializing affiliate_instance to None in order to allow testing for valid data
         affiliate_instance: typing.Union[Affiliates, None] = None
@@ -309,7 +310,7 @@ class AffiliatesView(Validator):
             affiliate_instance = Affiliates.query(Affiliates.organization_id == organization_id,
                                                   Affiliates.affiliate_id == affiliate_id).get()
 
-        uid: typing.Union[None, str] = affiliate_data.get('uid')
+        uid: Optional[str] = affiliate_data.get('uid')
         if isinstance(uid, str) and bool(uid.strip()):
             valid_input = True
             affiliate_instance = Affiliates.query(Affiliates.organization_id == organization_id,
@@ -332,7 +333,7 @@ class AffiliatesView(Validator):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    def get_all_affiliates(self, organization_id: typing.Union[str, None]) -> tuple:
+    def get_all_affiliates(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             returns a list of all affiliates that belongs to the organization
             :param organization_id: the organization id to return affiliates off
@@ -361,7 +362,7 @@ class AffiliatesView(Validator):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    def get_active_affiliates(self, organization_id: typing.Union[str, None]) -> tuple:
+    def get_active_affiliates(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             NOTE: active affiliates but not deleted
             returns a list of active affiliates in an organization
@@ -387,7 +388,7 @@ class AffiliatesView(Validator):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    def get_in_active_affiliates(self, organization_id: typing.Union[str, None]) -> tuple:
+    def get_in_active_affiliates(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             returns a list of affiliates who are not active - but not deleted
 
@@ -415,7 +416,7 @@ class AffiliatesView(Validator):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    def get_deleted_affiliates(self, organization_id: typing.Union[str, None]) -> tuple:
+    def get_deleted_affiliates(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             return deleted affiliates by organization_id
         :param organization_id:
@@ -442,7 +443,7 @@ class AffiliatesView(Validator):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    def get_not_deleted_affiliates(self, organization_id: typing.Union[str, None]) -> tuple:
+    def get_not_deleted_affiliates(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             # NOTE: this function may be redundant
             returns a list of affiliates which are not deleted by  ORGANIZATION_ID
@@ -489,12 +490,12 @@ class RecruitsView(Validator):
         :param recruit_data:
         :return:
         ***REMOVED***
-        referrer_uid: typing.Union[None, str] = recruit_data.get('referrer_uid')
+        referrer_uid: Optional[str] = recruit_data.get('referrer_uid')
         if not isinstance(referrer_uid, str) or not bool(referrer_uid.strip()):
             message: str = 'referrer_uid is required'
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        organization_id: typing.Union[str, None] = recruit_data.get('organization_id')
+        organization_id: Optional[str] = recruit_data.get('organization_id')
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -521,12 +522,12 @@ class RecruitsView(Validator):
         :return: tuple as response
         ***REMOVED***
         # Note: affiliate_id of the recruit
-        affiliate_id: typing.Union[str, None] = recruit_data.get('affiliate_id')
+        affiliate_id: Optional[str] = recruit_data.get('affiliate_id')
         if not isinstance(affiliate_id, str) or not bool(affiliate_id.strip()):
             message: str = 'affiliate_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        organization_id: typing.Union[str, None] = recruit_data.get('organization_id')
+        organization_id: Optional[str] = recruit_data.get('organization_id')
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -559,12 +560,12 @@ class RecruitsView(Validator):
         :param is_active:
         :return:
         ***REMOVED***
-        affiliate_id: typing.Union[str, None] = recruit_data.get('affiliate_id')
+        affiliate_id: Optional[str] = recruit_data.get('affiliate_id')
         if not isinstance(affiliate_id, str) or not bool(affiliate_id.strip()):
             message: str = 'affiliate_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        organization_id: typing.Union[str, None] = recruit_data.get('organization_id')
+        organization_id: Optional[str] = recruit_data.get('organization_id')
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -596,12 +597,12 @@ class RecruitsView(Validator):
         :param recruit_data:
         :return:
         ***REMOVED***
-        affiliate_id: typing.Union[str, None] = recruit_data.get('affiliate_id')
+        affiliate_id: Optional[str] = recruit_data.get('affiliate_id')
         if not isinstance(affiliate_id, str) or not bool(affiliate_id.strip()):
             message: str = 'affiliate_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        organization_id: typing.Union[str, None] = recruit_data.get('organization_id')
+        organization_id: Optional[str] = recruit_data.get('organization_id')
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -678,12 +679,12 @@ class RecruitsView(Validator):
         :return: list of recruits belonging to a specific affiliate
         ***REMOVED***
 
-        affiliate_id: typing.Union[str, None] = affiliate_data.get('affiliate_id')
+        affiliate_id: Optional[str] = affiliate_data.get('affiliate_id')
         if not isinstance(affiliate_id, str) or not bool(affiliate_id.strip()):
             message: str = 'affiliate_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
+        organization_id: Optional[str] = affiliate_data.get('organization_id')
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -709,12 +710,12 @@ class RecruitsView(Validator):
         :param is_active:
         :return:
         ***REMOVED***
-        affiliate_id: typing.Union[str, None] = affiliate_data.get('affiliate_id')
+        affiliate_id: Optional[str] = affiliate_data.get('affiliate_id')
         if not isinstance(affiliate_id, str) or not bool(affiliate_id.strip()):
             message: str = 'affiliate_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
+        organization_id: Optional[str] = affiliate_data.get('organization_id')
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
