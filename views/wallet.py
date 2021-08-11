@@ -9,6 +9,7 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
 import typing
+from typing import Optional
 from flask import jsonify, current_app
 from _sdk._email import Mailgun
 from database.mixins import AmountMixin
@@ -91,7 +92,6 @@ class Validator(WalletValidator):
         self._max_retries: int = current_app.config.get('DATASTORE_RETRIES')
         self._max_timeout: int = current_app.config.get('DATASTORE_TIMEOUT')
 
-
     @staticmethod
     def raise_input_error_if_not_available(organization_id: str, uid: str) -> None:
         ***REMOVED***
@@ -127,7 +127,7 @@ class Validator(WalletValidator):
                 raise InputError(status=error_codes.input_error_code, description=message)
 
     @app_cache.memoize(timeout=return_ttl('short'))
-    def can_add_wallet(self, organization_id: typing.Union[str, None], uid: typing.Union[None, str] = None) -> bool:
+    def can_add_wallet(self, organization_id: Optional[str], uid: Optional[str] = None) -> bool:
         ***REMOVED***
             **can_add_wallet**
                 this method will check if a new wallet can be added
@@ -139,7 +139,7 @@ class Validator(WalletValidator):
         # NOTE this will raise input error if either or this
         self.raise_input_error_if_not_available(organization_id=organization_id, uid=uid)
 
-        wallet_exist: typing.Union[bool, None] = self.wallet_exist(organization_id=organization_id, uid=uid)
+        wallet_exist: Optional[bool] = self.wallet_exist(organization_id=organization_id, uid=uid)
         if isinstance(wallet_exist, bool):
             return not wallet_exist
 
@@ -148,8 +148,7 @@ class Validator(WalletValidator):
         raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
     @app_cache.memoize(timeout=return_ttl('short'))
-    async def can_add_wallet_async(self, organization_id: typing.Union[str, None],
-                                   uid: typing.Union[None, str] = None) -> bool:
+    async def can_add_wallet_async(self, organization_id: Optional[str], uid: Optional[str] = None) -> bool:
         ***REMOVED***
             **can_add_wallet_async**
                 An asynchronous version of can_add_wallet
@@ -162,7 +161,7 @@ class Validator(WalletValidator):
 
         self.raise_input_error_if_not_available(organization_id=organization_id, uid=uid)
 
-        wallet_exist: typing.Union[bool, None] = await self.wallet_exist_async(organization_id=organization_id, uid=uid)
+        wallet_exist: Optional[bool] = await self.wallet_exist_async(organization_id=organization_id, uid=uid)
 
         if isinstance(wallet_exist, bool):
             return not wallet_exist
@@ -171,7 +170,7 @@ class Validator(WalletValidator):
         raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
     @app_cache.memoize(timeout=return_ttl('short'))
-    def can_update_wallet(self, organization_id: typing.Union[str, None], uid: typing.Union[None, str] = None) -> bool:
+    def can_update_wallet(self, organization_id: Optional[str], uid: Optional[str] = None) -> bool:
         ***REMOVED***
             **can_add_wallet**
                 checks if user can update wallet - a wallet need to already exists for it to be updated
@@ -181,15 +180,14 @@ class Validator(WalletValidator):
         ***REMOVED***
         self.raise_input_error_if_not_available(organization_id=organization_id, uid=uid)
 
-        wallet_exist: typing.Union[bool, None] = self.wallet_exist(organization_id=organization_id, uid=uid)
+        wallet_exist: Optional[bool] = self.wallet_exist(organization_id=organization_id, uid=uid)
         if isinstance(wallet_exist, bool):
             return wallet_exist
         message: str = 'database error: Unable to verify wallet data'
         raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
     @app_cache.memoize(timeout=return_ttl('short'))
-    async def can_update_wallet_async(self, organization_id: typing.Union[str, None],
-                                      uid: typing.Union[None, str] = None) -> bool:
+    async def can_update_wallet_async(self, organization_id: Optional[str], uid: Optional[str] = None) -> bool:
         ***REMOVED***
             **can_update_wallet_async**
                 asynchronous version of can_update_wallet
@@ -200,14 +198,14 @@ class Validator(WalletValidator):
         ***REMOVED***
         self.raise_input_error_if_not_available(organization_id=organization_id, uid=uid)
 
-        wallet_exist: typing.Union[bool, None] = await self.wallet_exist_async(organization_id=organization_id, uid=uid)
+        wallet_exist: Optional[bool] = await self.wallet_exist_async(organization_id=organization_id, uid=uid)
         if isinstance(wallet_exist, bool):
             return wallet_exist
         message: str = "database error: Unable to verify wallet data"
         raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
     @app_cache.memoize(timeout=return_ttl('short'))
-    def can_reset_wallet(self, organization_id: typing.Union[str, None], uid: typing.Union[None, str]) -> bool:
+    def can_reset_wallet(self, organization_id: Optional[str], uid: Optional[str]) -> bool:
         ***REMOVED***
             **can_reset_wallet**
                 checks if user can reset wallet
@@ -217,7 +215,7 @@ class Validator(WalletValidator):
         ***REMOVED***
         self.raise_input_error_if_not_available(organization_id=organization_id, uid=uid)
 
-        wallet_exist: typing.Union[bool, None] = self.wallet_exist(organization_id=organization_id, uid=uid)
+        wallet_exist: Optional[bool] = self.wallet_exist(organization_id=organization_id, uid=uid)
         if isinstance(wallet_exist, bool):
             return wallet_exist
 
@@ -225,8 +223,8 @@ class Validator(WalletValidator):
         raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
     @app_cache.memoize(timeout=return_ttl('short'))
-    async def can_reset_wallet_async(self, organization_id: typing.Union[str, None],
-                                     uid: typing.Union[None, str]) -> bool:
+    async def can_reset_wallet_async(self, organization_id: Optional[str],
+                                     uid: Optional[str]) -> bool:
         ***REMOVED***
             **can_reset_wallet_async**
                 asynchronous version of can_reset_wallet
@@ -236,7 +234,7 @@ class Validator(WalletValidator):
         ***REMOVED***
         self.raise_input_error_if_not_available(organization_id=organization_id, uid=uid)
 
-        wallet_exist: typing.Union[bool, None] = await self.wallet_exist_async(organization_id=organization_id, uid=uid)
+        wallet_exist: Optional[bool] = await self.wallet_exist_async(organization_id=organization_id, uid=uid)
 
         if isinstance(wallet_exist, bool):
             return wallet_exist
@@ -265,8 +263,8 @@ class WalletView(Validator, WalletEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    def create_wallet(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
-                      currency: typing.Union[str, None], paypal_address: typing.Union[str, None],
+    def create_wallet(self, organization_id: Optional[str], uid: Optional[str],
+                      currency: Optional[str], paypal_address: Optional[str],
                       is_org_wallet: bool = False) -> tuple:
         ***REMOVED***
             **create_wallet**
@@ -306,8 +304,8 @@ class WalletView(Validator, WalletEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    async def create_wallet_async(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None], currency: typing.Union[str, None],
-                                  paypal_address: typing.Union[str, None], is_org_wallet: bool = False) -> tuple:
+    async def create_wallet_async(self, organization_id: Optional[str], uid: Optional[str], currency: Optional[str],
+                                  paypal_address: Optional[str], is_org_wallet: bool = False) -> tuple:
         ***REMOVED***
         **create_wallet_async**
             asynchronous version of create_wallet
@@ -346,7 +344,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    def get_wallet(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None]) -> tuple:
+    def get_wallet(self, organization_id: Optional[str], uid: Optional[str]) -> tuple:
         ***REMOVED***
             **get_wallet**
                 # TODO - may need to update cache or find a way to update cache when there are updates
@@ -371,7 +369,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    async def get_wallet_async(self, organization_id: typing.Union[str, None],  uid: typing.Union[str, None]) -> tuple:
+    async def get_wallet_async(self, organization_id: Optional[str],  uid: Optional[str]) -> tuple:
         ***REMOVED***
             **get_wallet_async**
                 get_wallet_async an asynchronous version of get_wallet
@@ -400,8 +398,8 @@ class WalletView(Validator, WalletEmails, CacheManager):
         :return:
         ***REMOVED***
 
-        uid: typing.Union[str, None] = wallet_data.get("uid")
-        organization_id: typing.Union[str, None] = wallet_data.get('organization_id')
+        uid: Optional[str] = wallet_data.get("uid")
+        organization_id: Optional[str] = wallet_data.get('organization_id')
         # NOTE checking if organization_id or uid is present
         self.raise_input_error_if_not_available(organization_id=organization_id, uid=uid)
 
@@ -412,12 +410,12 @@ class WalletView(Validator, WalletEmails, CacheManager):
             message: str = "available_funds is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        currency: typing.Union[str, None] = wallet_data.get('currency')
+        currency: Optional[str] = wallet_data.get('currency')
         if not isinstance(currency, str) or not bool(currency.strip()):
             message: str = "currency symbol is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        paypal_address: typing.Union[str, None] = wallet_data.get("paypal_address")
+        paypal_address: Optional[str] = wallet_data.get("paypal_address")
         if not isinstance(paypal_address, str) or not bool(paypal_address.strip()):
             message: str = "paypal_address is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -454,8 +452,8 @@ class WalletView(Validator, WalletEmails, CacheManager):
         :return:
         ***REMOVED***
 
-        uid: typing.Union[str, None] = wallet_data.get("uid")
-        organization_id: typing.Union[str, None] = wallet_data.get('organization_id')
+        uid: Optional[str] = wallet_data.get("uid")
+        organization_id: Optional[str] = wallet_data.get('organization_id')
         # NOTE checking if organization_id or uid is present
         self.raise_input_error_if_not_available(organization_id=organization_id, uid=uid)
 
@@ -465,12 +463,12 @@ class WalletView(Validator, WalletEmails, CacheManager):
             message: str = "available_funds is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        currency: typing.Union[str, None] = wallet_data.get('currency')
+        currency: Optional[str] = wallet_data.get('currency')
         if not isinstance(currency, str) or not bool(currency.strip()):
             message: str = "currency symbol is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        paypal_address: typing.Union[str, None] = wallet_data.get("paypal_address")
+        paypal_address: Optional[str] = wallet_data.get("paypal_address")
         if not isinstance(paypal_address, str) or not bool(paypal_address.strip()):
             message: str = "paypal_address is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -508,11 +506,11 @@ class WalletView(Validator, WalletEmails, CacheManager):
         :param wallet_data:
         :return:
         ***REMOVED***
-        uid: typing.Union[str, None] = wallet_data.get('uid')
-        organization_id: typing.Union[str, None] = wallet_data.get('organization_id')
+        uid: Optional[str] = wallet_data.get('uid')
+        organization_id: Optional[str] = wallet_data.get('organization_id')
         self.raise_input_error_if_not_available(organization_id=organization_id, uid=uid)
 
-        currency: typing.Union[str, None] = wallet_data.get('currency')
+        currency: Optional[str] = wallet_data.get('currency')
         if not isinstance(currency, str) or not bool(currency.strip()):
             message: str = "currency is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -547,11 +545,11 @@ class WalletView(Validator, WalletEmails, CacheManager):
         :return:
         ***REMOVED***
 
-        uid: typing.Union[str, None] = wallet_data.get('uid')
-        organization_id: typing.Union[str, None] = wallet_data.get('organization_id')
+        uid: Optional[str] = wallet_data.get('uid')
+        organization_id: Optional[str] = wallet_data.get('organization_id')
         self.raise_input_error_if_not_available(organization_id=organization_id, uid=uid)
 
-        currency: typing.Union[str, None] = wallet_data.get('currency')
+        currency: Optional[str] = wallet_data.get('currency')
         if not isinstance(currency, str) or not bool(currency.strip()):
             message: str = "currency is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -578,7 +576,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    def return_all_wallets(self, organization_id: typing.Union[str, None]) -> tuple:
+    def return_all_wallets(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             **return_all_wallets**
                 given an organization_id return all the organizations wallets
@@ -602,7 +600,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    async def return_all_wallets_async(self, organization_id: typing.Union[str, None]) -> tuple:
+    async def return_all_wallets_async(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             **return_all_wallets_async**
                 given an organization_id return all the organizations wallets
@@ -627,7 +625,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    def return_wallets_by_balance(self, organization_id: typing.Union[str, None],
+    def return_wallets_by_balance(self, organization_id: Optional[str],
                                   lower_bound: int, higher_bound: int) -> tuple:
         ***REMOVED***
             **return_wallets_by_balance**
@@ -660,7 +658,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    async def return_wallets_by_balance_async(self, organization_id: typing.Union[str, None],
+    async def return_wallets_by_balance_async(self, organization_id: Optional[str],
                                               lower_bound: int, higher_bound: int) -> tuple:
         ***REMOVED***
             **return_wallets_by_balance_async**
@@ -695,7 +693,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    def wallet_transact(self, organization_id: typing.Union[str, None], uid: str,
+    def wallet_transact(self, organization_id: Optional[str], uid: str,
                         add: int = None, sub: int = None) -> tuple:
         ***REMOVED***
             **wallet_transact**
@@ -744,7 +742,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    async def wallet_transact_async(self, organization_id: typing.Union[str, None], uid: str,
+    async def wallet_transact_async(self, organization_id: Optional[str], uid: str,
                                     add: int = None, sub: int = None) -> tuple:
         ***REMOVED***
             **wallet_transact_async**
@@ -793,7 +791,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    def wallet_withdraw_funds(self, organization_id: typing.Union[str, None], uid: str, amount: int) -> tuple:
+    def wallet_withdraw_funds(self, organization_id: Optional[str], uid: str, amount: int) -> tuple:
         ***REMOVED***
             **wallet_withdraw_funds**
                 organization must contain settings for funds withdrawals
