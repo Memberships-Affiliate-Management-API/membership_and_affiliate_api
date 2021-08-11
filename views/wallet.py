@@ -18,6 +18,7 @@ from config.exceptions import DataServiceError, UnAuthenticatedError, status_cod
 from config.exception_handlers import handle_view_errors
 from config.use_context import use_context
 from main import app_cache
+from views.cache_manager import CacheManager
 
 
 class WalletEmails(Mailgun):
@@ -244,7 +245,7 @@ class Validator(WalletValidator):
 
 
 # noinspection DuplicatedCode
-class WalletView(Validator, WalletEmails):
+class WalletView(Validator, WalletEmails, CacheManager):
     ***REMOVED***
         **Class WalletView**
             view functions for the wallet
@@ -295,6 +296,8 @@ class WalletView(Validator, WalletEmails):
             message: str = "Database Error: Wallet may not have been created"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
+        self.__delete_wallet_cache(wallet_view=WalletView, organization_id=organization_id, uid=uid)
+
         # Sending an email notification to the user informing them that the wallet has been created successfully
         self.wallet_created_successfully(organization_id=organization_id, uid=uid)
 
@@ -331,6 +334,8 @@ class WalletView(Validator, WalletEmails):
         if not bool(key):
             raise DataServiceError(status=error_codes.data_service_error_code,
                                    description="An Error occurred creating Wallet")
+
+        self.__delete_wallet_cache(wallet_view=WalletView, organization_id=organization_id, uid=uid)
 
         # Sending an email notification to the user informing them that the wallet has been created successfully
         self.wallet_created_successfully(organization_id=organization_id, uid=uid)
@@ -434,6 +439,8 @@ class WalletView(Validator, WalletEmails):
             message: str = "Database Error: occurred updating Wallet"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
+        self.__delete_wallet_cache(wallet_view=WalletView, organization_id=organization_id, uid=uid)
+
         return jsonify({'status': True, 'payload': wall_instance.to_dict(),
                         'message': 'successfully updated wallet'}), status_codes.successfully_updated_code
 
@@ -486,6 +493,8 @@ class WalletView(Validator, WalletEmails):
             message: str = "Database Error: while updating wallet"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
+        self.__delete_wallet_cache(wallet_view=WalletView, organization_id=organization_id, uid=uid)
+
         return jsonify({'status': True, 'payload': wall_instance.to_dict(),
                         'message': 'successfully updated wallet'}), status_codes.successfully_updated_code
 
@@ -521,6 +530,8 @@ class WalletView(Validator, WalletEmails):
         if not bool(key):
             message: str = "Database Error: while updating wallet"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
+        self.__delete_wallet_cache(wallet_view=WalletView, organization_id=organization_id, uid=uid)
 
         return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
                         'message': 'wallet is rest'}), status_codes.successfully_updated_code
@@ -558,6 +569,8 @@ class WalletView(Validator, WalletEmails):
         if not bool(key):
             message: str = "Database error while resetting wallet"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
+        self.__delete_wallet_cache(wallet_view=WalletView, organization_id=organization_id, uid=uid)
 
         return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
                         'message': 'wallet is rest'}), status_codes.successfully_updated_code
@@ -720,6 +733,8 @@ class WalletView(Validator, WalletEmails):
                 message: str = "General error updating database"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
+            self.__delete_wallet_cache(wallet_view=WalletView, organization_id=organization_id, uid=uid)
+
             message: str = "Successfully created transaction"
             return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
                             'message': message}), status_codes.successfully_updated_code
@@ -767,6 +782,8 @@ class WalletView(Validator, WalletEmails):
                 message: str = "General error updating database"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
+            self.__delete_wallet_cache(wallet_view=WalletView, organization_id=organization_id, uid=uid)
+
             message: str = "Successfully created transaction"
             return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
                             'message': message}), status_codes.successfully_updated_code
@@ -793,4 +810,8 @@ class WalletView(Validator, WalletEmails):
         :param amount: AmountMixin ->
         :return:
         ***REMOVED***
+        # TODO - complete this method
+
+        self.__delete_wallet_cache(wallet_view=WalletView, organization_id=organization_id, uid=uid)
+
         pass

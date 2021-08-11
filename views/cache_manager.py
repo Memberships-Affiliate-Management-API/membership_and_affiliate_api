@@ -46,3 +46,18 @@ class CacheManager:
         app_cache.delete_memoized(org_view.get_organization, org_view, organization_id)
         return True
 
+    @staticmethod
+    def __delete_wallet_cache(wallet_view, organization_id, uid) -> bool:
+        ***REMOVED***
+            **__delete_wallet_cache**
+                deletes cache items for wallets when a update event occurs on the database
+        :param wallet_view:
+        :param organization_id:
+        :param uid:
+        :return:
+        ***REMOVED***
+        app_cache.delete_memoized(wallet_view.get_wallet, wallet_view, organization_id, uid)
+        app_cache.delete_memoized(wallet_view.get_wallet_async, wallet_view, organization_id, uid)
+        app_cache.delete_memoized(wallet_view.return_all_wallets, wallet_view, organization_id)
+        app_cache.delete_memoized(wallet_view.return_all_wallets_async, wallet_view, organization_id)
+        return True
