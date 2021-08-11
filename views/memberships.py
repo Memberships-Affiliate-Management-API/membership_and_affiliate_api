@@ -414,6 +414,7 @@ class MembershipsView(Validators, MembershipsEmails):
         :param uid: id of the client who is getting into a payment plan
         :param plan_id: id the payment plan the client is joining
         :param plan_start_date: the date the plan will commence sometimes not the same as the date of creation
+
         :return:
         ***REMOVED***
 
