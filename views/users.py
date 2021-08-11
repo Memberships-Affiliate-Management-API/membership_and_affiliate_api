@@ -230,7 +230,12 @@ class UserView(Validators, UserEmails):
         if not bool(key):
             message: str = "Unable to save database"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
-        print("User Instance: {}".format(user_instance))
+
+        app_cache.delete_memoized(UserView.get_active_users, UserView, organization_id)
+        app_cache.delete_memoized(UserView.get_active_users_async, UserView, organization_id)
+        app_cache.delete_memoized(UserView.get_all_users, UserView, organization_id)
+        app_cache.delete_memoized(UserView.get_all_users_async, UserView, organization_id)
+
         return jsonify({'status': True,
                         "message": "Successfully created new user",
                         "payload": user_instance.to_dict()
@@ -271,6 +276,11 @@ class UserView(Validators, UserEmails):
         if not bool(key):
             message: str = "Unable to save user database"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
+        app_cache.delete_memoized(UserView.get_active_users, UserView, organization_id)
+        app_cache.delete_memoized(UserView.get_active_users_async, UserView, organization_id)
+        app_cache.delete_memoized(UserView.get_all_users, UserView, organization_id)
+        app_cache.delete_memoized(UserView.get_all_users_async, UserView, organization_id)
 
         return jsonify({'status': True,
                         "message": "Successfully created new user",
@@ -319,6 +329,13 @@ class UserView(Validators, UserEmails):
                 message: str = "Unable to save user database"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
+            app_cache.delete_memoized(UserView.get_active_users, UserView, organization_id)
+            app_cache.delete_memoized(UserView.get_active_users_async, UserView, organization_id)
+            app_cache.delete_memoized(UserView.get_all_users, UserView, organization_id)
+            app_cache.delete_memoized(UserView.get_all_users_async, UserView, organization_id)
+            app_cache.delete_memoized(UserView.get_user, UserView, organization_id, uid, cell, email)
+            app_cache.delete_memoized(UserView.get_user_async, UserView, organization_id, uid, cell, email)
+
             return jsonify({'status': True, 'message': 'successfully updated user details',
                             'payload': user_instance.to_dict()}), status_codes.successfully_updated_code
 
@@ -364,6 +381,13 @@ class UserView(Validators, UserEmails):
             if not bool(key):
                 message: str = "Unable to save user database"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
+            app_cache.delete_memoized(UserView.get_active_users, UserView, organization_id)
+            app_cache.delete_memoized(UserView.get_active_users_async, UserView, organization_id)
+            app_cache.delete_memoized(UserView.get_all_users, UserView, organization_id)
+            app_cache.delete_memoized(UserView.get_all_users_async, UserView, organization_id)
+            app_cache.delete_memoized(UserView.get_user, UserView, organization_id, uid, cell, email)
+            app_cache.delete_memoized(UserView.get_user_async, UserView, organization_id, uid, cell, email)
 
             return jsonify({'status': True, 'message': 'successfully updated user details',
                             'payload': user_instance.to_dict()}), status_codes.successfully_updated_code
