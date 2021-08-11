@@ -10,6 +10,7 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 
 import functools
 import typing
+from typing import Optional
 from google.api_core.exceptions import RetryError, Aborted
 from flask import jsonify, current_app
 from datetime import datetime, date
@@ -164,8 +165,8 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         self._max_timeout = current_app.config.get('DATASTORE_TIMEOUT')
 
     @app_cache.memoize(timeout=return_ttl('short'))
-    def can_add_member(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
-                       plan_id: typing.Union[str, None], start_date: date) -> bool:
+    def can_add_member(self, organization_id: Optional[str], uid: Optional[str],
+                       plan_id: Optional[str], start_date: date) -> bool:
         ***REMOVED***
             **can_add_member**
                 checks if user can add a member to memberships record
@@ -187,8 +188,8 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
     @app_cache.memoize(timeout=return_ttl('short'))
-    async def can_add_member_async(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
-                                   plan_id: typing.Union[str, None],
+    async def can_add_member_async(self, organization_id: Optional[str], uid: Optional[str],
+                                   plan_id: Optional[str],
                                    start_date: date) -> bool:
         ***REMOVED***
             **can_add_member_async**
@@ -211,7 +212,7 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
     @app_cache.memoize(timeout=return_ttl('short'))
-    def can_add_plan(self, organization_id: typing.Union[str, None], plan_name: typing.Union[str, None]) -> bool:
+    def can_add_plan(self, organization_id: Optional[str], plan_name: Optional[str]) -> bool:
         ***REMOVED***
             **can_add_plan**
                 check if a new plan can be added
@@ -228,8 +229,8 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
     @app_cache.memoize(timeout=return_ttl('short'))
-    async def can_add_plan_async(self, organization_id: typing.Union[str, None],
-                                 plan_name: typing.Union[str, None]) -> bool:
+    async def can_add_plan_async(self, organization_id: Optional[str],
+                                 plan_name: Optional[str]) -> bool:
         ***REMOVED***
             **can_add_plan_async**
                 checks if user can add plan
@@ -247,8 +248,8 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
     @app_cache.memoize(timeout=return_ttl('short'))
-    def can_update_plan(self, organization_id: typing.Union[str, None],
-                        plan_id: typing.Union[str, None], plan_name: typing.Union[str, None]) -> bool:
+    def can_update_plan(self, organization_id: Optional[str],
+                        plan_id: Optional[str], plan_name: Optional[str]) -> bool:
         ***REMOVED***
             **can_update_plan**
                 checks if plan can be updated
@@ -269,8 +270,8 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
     @app_cache.memoize(timeout=return_ttl('short'))
-    async def can_update_plan_async(self, organization_id: typing.Union[str, None],
-                                    plan_id: typing.Union[str, None], plan_name: typing.Union[str, None]) -> bool:
+    async def can_update_plan_async(self, organization_id: Optional[str],
+                                    plan_id: Optional[str], plan_name: Optional[str]) -> bool:
         ***REMOVED***
             **can_update_plan_async**
                 check if plan can be updated
@@ -293,7 +294,7 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
     @app_cache.memoize(timeout=return_ttl('short'))
-    def can_add_coupon(self, organization_id: typing.Union[str, None], code: typing.Union[str, None],
+    def can_add_coupon(self, organization_id: Optional[str], code: Optional[str],
                        expiration_time: typing.Union[int, None],
                        discount: typing.Union[int, None]) -> bool:
         ***REMOVED***
@@ -317,7 +318,7 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
     @app_cache.memoize(timeout=return_ttl('short'))
-    async def can_add_coupon_async(self, organization_id: typing.Union[str, None], code: typing.Union[str, None],
+    async def can_add_coupon_async(self, organization_id: Optional[str], code: Optional[str],
                                    expiration_time: typing.Union[int, None],
                                    discount: typing.Union[int, None]) -> bool:
         ***REMOVED***
@@ -342,7 +343,7 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
     @app_cache.memoize(timeout=return_ttl('short'))
-    def can_update_coupon(self, organization_id: typing.Union[str, None], code: typing.Union[str, None],
+    def can_update_coupon(self, organization_id: Optional[str], code: Optional[str],
                           expiration_time: typing.Union[int, None],
                           discount: typing.Union[int, None]) -> bool:
         ***REMOVED***
@@ -366,7 +367,7 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
     @app_cache.memoize(timeout=return_ttl('short'))
-    async def can_update_coupon_async(self, organization_id: typing.Union[str, None], code: typing.Union[str, None],
+    async def can_update_coupon_async(self, organization_id: Optional[str], code: Optional[str],
                                       expiration_time: typing.Union[int, None],
                                       discount: typing.Union[int, None]) -> bool:
         ***REMOVED***
@@ -403,9 +404,9 @@ class MembershipsView(Validators, MembershipsEmails):
 
     @use_context
     @handle_view_errors
-    def _create_or_update_membership(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
-                                     plan_id: typing.Union[str, None], plan_start_date: date,
-                                     payment_method: typing.Union[str, None] = "paypal") -> tuple:
+    def _create_or_update_membership(self, organization_id: Optional[str], uid: Optional[str],
+                                     plan_id: Optional[str], plan_start_date: date,
+                                     payment_method: Optional[str] = "paypal") -> tuple:
         ***REMOVED***
             **_create_or_update_membership**
                 this merely creates a relationship between a payment plan for a service or product to a client
@@ -450,10 +451,10 @@ class MembershipsView(Validators, MembershipsEmails):
 
     @use_context
     @handle_view_errors
-    async def _create_or_update_membership_async(self, organization_id: typing.Union[str, None],
-                                                 uid: typing.Union[str, None], plan_id: typing.Union[str, None],
+    async def _create_or_update_membership_async(self, organization_id: Optional[str],
+                                                 uid: Optional[str], plan_id: Optional[str],
                                                  plan_start_date: date,
-                                                 payment_method: typing.Union[str, None] = "paypal") -> tuple:
+                                                 payment_method: Optional[str] = "paypal") -> tuple:
         ***REMOVED***
             **_create_or_update_membership_async**
                 this merely creates a relationship between a payment plan for a service or product to a client
@@ -491,9 +492,9 @@ class MembershipsView(Validators, MembershipsEmails):
         message: str = ***REMOVED***Operation Denied: unable to create or update membership***REMOVED***
         raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
 
-    def add_membership(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
-                       plan_id: typing.Union[str, None], plan_start_date: date,
-                       payment_method: typing.Union[str, None] = "paypal") -> tuple:
+    def add_membership(self, organization_id: Optional[str], uid: Optional[str],
+                       plan_id: Optional[str], plan_start_date: date,
+                       payment_method: Optional[str] = "paypal") -> tuple:
         ***REMOVED***
             **add_membership**
                 add new membership
@@ -510,9 +511,9 @@ class MembershipsView(Validators, MembershipsEmails):
         return self._create_or_update_membership(organization_id=organization_id, uid=uid, plan_id=plan_id,
                                                  plan_start_date=plan_start_date, payment_method=payment_method)
 
-    async def add_membership_async(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
-                                   plan_id: typing.Union[str, None], plan_start_date: date,
-                                   payment_method: typing.Union[str, None]) -> tuple:
+    async def add_membership_async(self, organization_id: Optional[str], uid: Optional[str],
+                                   plan_id: Optional[str], plan_start_date: date,
+                                   payment_method: Optional[str]) -> tuple:
         ***REMOVED***
             **add_membership_async**
                 create new membership_instance
@@ -529,9 +530,9 @@ class MembershipsView(Validators, MembershipsEmails):
                                                              plan_id=plan_id, plan_start_date=plan_start_date,
                                                              payment_method=payment_method)
 
-    def update_membership(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
-                          plan_id: typing.Union[str, None], plan_start_date: date,
-                          payment_method: typing.Union[str, None] = "paypal") -> tuple:
+    def update_membership(self, organization_id: Optional[str], uid: Optional[str],
+                          plan_id: Optional[str], plan_start_date: date,
+                          payment_method: Optional[str] = "paypal") -> tuple:
         ***REMOVED***
             **update_membership**
                 update membership
@@ -547,9 +548,9 @@ class MembershipsView(Validators, MembershipsEmails):
         return self._create_or_update_membership(organization_id=organization_id, uid=uid, plan_id=plan_id,
                                                  plan_start_date=plan_start_date, payment_method=payment_method)
 
-    async def update_membership_async(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
-                                      plan_id: typing.Union[str, None], plan_start_date: date,
-                                      payment_method: typing.Union[str, None] = "paypal") -> tuple:
+    async def update_membership_async(self, organization_id: Optional[str], uid: Optional[str],
+                                      plan_id: Optional[str], plan_start_date: date,
+                                      payment_method: Optional[str] = "paypal") -> tuple:
         ***REMOVED***
             **update_membership_async**
                 update membership
@@ -568,8 +569,7 @@ class MembershipsView(Validators, MembershipsEmails):
 
     @use_context
     @handle_view_errors
-    def set_membership_status(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
-                              status: typing.Union[str, None]) -> tuple:
+    def set_membership_status(self, organization_id: Optional[str], uid: Optional[str], status: Optional[str]) -> tuple:
         ***REMOVED***
             **set_membership_status**
                 set membership status
@@ -614,8 +614,8 @@ class MembershipsView(Validators, MembershipsEmails):
 
     @use_context
     @handle_view_errors
-    async def set_membership_status_async(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
-                                          status: typing.Union[str, None]) -> tuple:
+    async def set_membership_status_async(self, organization_id: Optional[str], uid: Optional[str],
+                                          status: Optional[str]) -> tuple:
         ***REMOVED***
             **set_membership_status_async**
                 an asynchronous version of set_membership_status
@@ -655,8 +655,8 @@ class MembershipsView(Validators, MembershipsEmails):
 
     @use_context
     @handle_view_errors
-    def change_membership(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
-                          origin_plan_id: typing.Union[str, None], dest_plan_id: str) -> tuple:
+    def change_membership(self, organization_id: Optional[str], uid: Optional[str], origin_plan_id: Optional[str],
+                          dest_plan_id: str) -> tuple:
         ***REMOVED***
             **change_membership**
                 change Memberships
@@ -712,8 +712,8 @@ class MembershipsView(Validators, MembershipsEmails):
 
     @use_context
     @handle_view_errors
-    async def change_membership_async(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
-                                      origin_plan_id: typing.Union[str, None], dest_plan_id: str) -> tuple:
+    async def change_membership_async(self, organization_id: Optional[str], uid: Optional[str],
+                                      origin_plan_id: Optional[str], dest_plan_id: str) -> tuple:
 
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
@@ -759,8 +759,8 @@ class MembershipsView(Validators, MembershipsEmails):
 
     @use_context
     @handle_view_errors
-    def set_payment_method(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
-                           payment_method: typing.Union[str, None] = "paypal") -> tuple:
+    def set_payment_method(self, organization_id: Optional[str], uid: Optional[str],
+                           payment_method: Optional[str] = "paypal") -> tuple:
         ***REMOVED***
             set payment method default is paypal
         :param organization_id:
@@ -800,8 +800,7 @@ class MembershipsView(Validators, MembershipsEmails):
     # noinspection PyUnusedLocal
     @use_context
     @handle_view_errors
-    def send_welcome_email(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
-                           plan_id: typing.Union[str, None]) -> tuple:
+    def send_welcome_email(self, organization_id: Optional[str], uid: Optional[str], plan_id: Optional[str]) -> tuple:
         ***REMOVED***
             just send a request to the email service to send emails
         ***REMOVED***
@@ -810,8 +809,8 @@ class MembershipsView(Validators, MembershipsEmails):
     # noinspection PyUnusedLocal
     @use_context
     @handle_view_errors
-    async def send_welcome_email_async(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
-                                       plan_id: typing.Union[str, None]) -> tuple:
+    async def send_welcome_email_async(self, organization_id: Optional[str], uid: Optional[str],
+                                       plan_id: Optional[str]) -> tuple:
         ***REMOVED***
             just send a request to the email service to send emails
         ***REMOVED***
@@ -821,9 +820,8 @@ class MembershipsView(Validators, MembershipsEmails):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    def return_plan_members_by_payment_status(self, organization_id: typing.Union[str, None],
-                                              plan_id: typing.Union[str, None],
-                                              status: typing.Union[str, None]) -> tuple:
+    def return_plan_members_by_payment_status(self, organization_id: Optional[str], plan_id: Optional[str],
+                                              status: Optional[str]) -> tuple:
         ***REMOVED***
             return plan members with a certain status
         :param organization_id:
@@ -858,9 +856,9 @@ class MembershipsView(Validators, MembershipsEmails):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    async def return_plan_members_by_payment_status_async(self, organization_id: typing.Union[str, None],
-                                                          plan_id: typing.Union[str, None],
-                                                          status: typing.Union[str, None]) -> tuple:
+    async def return_plan_members_by_payment_status_async(self, organization_id: Optional[str],
+                                                          plan_id: Optional[str],
+                                                          status: Optional[str]) -> tuple:
         ***REMOVED***
             for members of this plan_id return members by payment_status
             payment status should either be paid or unpaid
@@ -897,8 +895,8 @@ class MembershipsView(Validators, MembershipsEmails):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    def return_members_by_payment_status(self, organization_id: typing.Union[str, None],
-                                         status: typing.Union[str, None]) -> tuple:
+    def return_members_by_payment_status(self, organization_id: Optional[str],
+                                         status: Optional[str]) -> tuple:
         ***REMOVED***
             return members by payment status
         :param organization_id:
@@ -927,8 +925,8 @@ class MembershipsView(Validators, MembershipsEmails):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    async def return_members_by_payment_status_async(self, organization_id: typing.Union[str, None],
-                                                     status: typing.Union[str, None]) -> tuple:
+    async def return_members_by_payment_status_async(self, organization_id: Optional[str],
+                                                     status: Optional[str]) -> tuple:
         ***REMOVED***
             async return members by payment status
         :param organization_id:
@@ -957,7 +955,7 @@ class MembershipsView(Validators, MembershipsEmails):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    def return_plan_members(self, organization_id: typing.Union[str, None], plan_id: typing.Union[str, None]) -> tuple:
+    def return_plan_members(self, organization_id: Optional[str], plan_id: Optional[str]) -> tuple:
 
         ***REMOVED***
             return all members of a plan
@@ -984,8 +982,8 @@ class MembershipsView(Validators, MembershipsEmails):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    async def return_plan_members_async(self, organization_id: typing.Union[str, None],
-                                        plan_id: typing.Union[str, None]) -> tuple:
+    async def return_plan_members_async(self, organization_id: Optional[str],
+                                        plan_id: Optional[str]) -> tuple:
         ***REMOVED***
             return all members of a plan
         ***REMOVED***
@@ -1007,7 +1005,7 @@ class MembershipsView(Validators, MembershipsEmails):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    def is_member_off(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None]) -> tuple:
+    def is_member_off(self, organization_id: Optional[str], uid: Optional[str]) -> tuple:
         ***REMOVED***
             returns user membership details
         ***REMOVED***
@@ -1033,8 +1031,8 @@ class MembershipsView(Validators, MembershipsEmails):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    async def is_member_off_async(self, organization_id: typing.Union[str, None],
-                                  uid: typing.Union[str, None]) -> tuple:
+    async def is_member_off_async(self, organization_id: Optional[str],
+                                  uid: Optional[str]) -> tuple:
 
         ***REMOVED***
             returns user membership details
@@ -1053,7 +1051,7 @@ class MembershipsView(Validators, MembershipsEmails):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    def payment_amount(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None]) -> tuple:
+    def payment_amount(self, organization_id: Optional[str], uid: Optional[str]) -> tuple:
         ***REMOVED***
             for a specific user return payment amount
         ***REMOVED***
@@ -1085,8 +1083,8 @@ class MembershipsView(Validators, MembershipsEmails):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    async def payment_amount_async(self, organization_id: typing.Union[str, None],
-                                   uid: typing.Union[str, None]) -> tuple:
+    async def payment_amount_async(self, organization_id: Optional[str],
+                                   uid: Optional[str]) -> tuple:
 
         ***REMOVED***
             for a specific user return payment amount
@@ -1118,8 +1116,8 @@ class MembershipsView(Validators, MembershipsEmails):
 
     @use_context
     @handle_view_errors
-    def set_payment_status(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None],
-                           status: typing.Union[str, None]) -> tuple:
+    def set_payment_status(self, organization_id: Optional[str], uid: Optional[str],
+                           status: Optional[str]) -> tuple:
 
         ***REMOVED***
             # status is paid or unpaid
@@ -1143,8 +1141,8 @@ class MembershipsView(Validators, MembershipsEmails):
 
     @use_context
     @handle_view_errors
-    async def set_payment_status_async(self, organization_id: typing.Union[str, None],
-                                       uid: typing.Union[str, None], status: typing.Union[str, None]) -> tuple:
+    async def set_payment_status_async(self, organization_id: Optional[str],
+                                       uid: Optional[str], status: Optional[str]) -> tuple:
 
         ***REMOVED***
             # status is paid or unpaid
@@ -1184,12 +1182,12 @@ def plan_data_wrapper(func):
             message: str = "Input is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        plan_name: typing.Union[str, None] = membership_plan_data.get('plan_name')
+        plan_name: Optional[str] = membership_plan_data.get('plan_name')
         if not isinstance(plan_name, str) or not bool(plan_name.strip()):
             message: str = "plan name is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        description: typing.Union[str, None] = membership_plan_data.get('description')
+        description: Optional[str] = membership_plan_data.get('description')
         if not isinstance(description, str) or not bool(description.strip()):
             message: str = "description is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -1201,7 +1199,7 @@ def plan_data_wrapper(func):
             message: str = "schedule_day is required and cannot be zero or Null"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        schedule_term: typing.Union[str, None] = membership_plan_data.get('schedule_term')
+        schedule_term: Optional[str] = membership_plan_data.get('schedule_term')
         if not isinstance(schedule_term, str) or not bool(schedule_term.strip()):
             message: str = "schedule term is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -1210,17 +1208,17 @@ def plan_data_wrapper(func):
         term_payment: int = int(membership_plan_data.get('term_payment', 0))
         registration_amount: int = int(membership_plan_data.get('registration_amount', 0))
 
-        currency: typing.Union[str, None] = membership_plan_data.get('currency')
+        currency: Optional[str] = membership_plan_data.get('currency')
         if not isinstance(currency, str) or not bool(currency.strip()):
             message: str = "currency is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        organization_id: typing.Union[str, None] = membership_plan_data.get('organization_id')
+        organization_id: Optional[str] = membership_plan_data.get('organization_id')
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        service_id: typing.Union[str, None] = membership_plan_data.get('service_id')
+        service_id: Optional[str] = membership_plan_data.get('service_id')
         if not isinstance(service_id, str) or not bool(service_id.strip()):
             message: str = "service or product must be created first before payment plans are created"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -1243,7 +1241,7 @@ class MembershipPlansView(Validators):
     @staticmethod
     def create_plan_in_paypal_services(organization_id: str, service_id: str, plan_name: str, description: str,
                                        schedule_day: int, schedule_term: str, term_payment: int,
-                                       registration_amount: int, currency: str) -> typing.Union[str, None]:
+                                       registration_amount: int, currency: str) -> Optional[str]:
         ***REMOVED***
             creates this plan in paypal services first
         :param service_id:
@@ -1276,7 +1274,7 @@ class MembershipPlansView(Validators):
         # Note: Creating the payment plan in PayPal Services Note: this means the product for the
         #  payment plan is already created
 
-        plan_id: typing.Union[str, None] = self.create_plan_in_paypal_services(
+        plan_id: Optional[str] = self.create_plan_in_paypal_services(
             organization_id=organization_id, service_id=service_id, plan_name=plan_name, description=description,
             schedule_day=schedule_day,
             schedule_term=schedule_term, term_payment=term_payment, registration_amount=registration_amount,
@@ -1335,7 +1333,7 @@ class MembershipPlansView(Validators):
         # Note: Creating the payment plan in PayPal Services Note: this means the product for the
         #  payment plan is already created
 
-        plan_id: typing.Union[str, None] = self.create_plan_in_paypal_services(
+        plan_id: Optional[str] = self.create_plan_in_paypal_services(
             organization_id=organization_id, service_id=service_id, plan_name=plan_name, description=description,
             schedule_day=schedule_day,
             schedule_term=schedule_term, term_payment=term_payment, registration_amount=registration_amount,
@@ -1378,7 +1376,7 @@ class MembershipPlansView(Validators):
     # noinspection DuplicatedCode
     @use_context
     @handle_view_errors
-    def update_plan(self, organization_id: typing.Union[str, None], plan_id: str, plan_name: str, description: str,
+    def update_plan(self, organization_id: Optional[str], plan_id: str, plan_name: str, description: str,
                     schedule_day: int, schedule_term: str, term_payment: int, registration_amount: int,
                     currency: str, is_active: bool) -> tuple:
 
@@ -1417,7 +1415,7 @@ class MembershipPlansView(Validators):
     # noinspection DuplicatedCode
     @use_context
     @handle_view_errors
-    async def update_plan_async(self, organization_id: typing.Union[str, None], plan_id: str, plan_name: str,
+    async def update_plan_async(self, organization_id: Optional[str], plan_id: str, plan_name: str,
                                 description: str, schedule_day: int, schedule_term: str, term_payment: int,
                                 registration_amount: int, currency: str, is_active: bool) -> tuple:
         ***REMOVED***
@@ -1469,7 +1467,7 @@ class MembershipPlansView(Validators):
 
     @use_context
     @handle_view_errors
-    def set_is_active(self, organization_id: typing.Union[str, None], plan_id: typing.Union[str, None],
+    def set_is_active(self, organization_id: Optional[str], plan_id: Optional[str],
                       is_active: bool) -> tuple:
         ***REMOVED***
             TODO- Synchronize the actions of this function with PayPal through the SDK
@@ -1499,7 +1497,7 @@ class MembershipPlansView(Validators):
 
     @use_context
     @handle_view_errors
-    async def set_is_active_async(self, organization_id: typing.Union[str, None], plan_id: typing.Union[str, None],
+    async def set_is_active_async(self, organization_id: Optional[str], plan_id: Optional[str],
                                   is_active: bool) -> tuple:
         ***REMOVED***
             activate or de-activate a membership plan
@@ -1529,7 +1527,7 @@ class MembershipPlansView(Validators):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    def return_plans_by_schedule_term(self, organization_id: typing.Union[str, None], schedule_term: str) -> tuple:
+    def return_plans_by_schedule_term(self, organization_id: Optional[str], schedule_term: str) -> tuple:
         ***REMOVED***
             returns plan schedules - this is a payment schedule for the plan
         :param organization_id:
@@ -1551,7 +1549,7 @@ class MembershipPlansView(Validators):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    async def return_plans_by_schedule_term_async(self, organization_id: typing.Union[str, None],
+    async def return_plans_by_schedule_term_async(self, organization_id: Optional[str],
                                                   schedule_term: str) -> tuple:
         ***REMOVED***
             returns plan schedules - this is a payment schedule for the plan
@@ -1777,7 +1775,7 @@ def get_coupon_data(func):
             message: str = "Input is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        code: typing.Union[str, None] = coupon_data.get('code')
+        code: Optional[str] = coupon_data.get('code')
         if not isinstance(code, str) or not bool(code.strip()):
             message: str = "coupon code is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -1795,7 +1793,7 @@ def get_coupon_data(func):
             message: str = "Expiration time cannot be Null or Zero"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        organization_id: typing.Union[str, None] = coupon_data.get("organization_id")
+        organization_id: Optional[str] = coupon_data.get("organization_id")
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "Please specify organization_id"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -1818,7 +1816,7 @@ class CouponsView(Validators):
     @get_coupon_data
     @use_context
     @handle_view_errors
-    def add_coupon(self, organization_id: typing.Union[str, None], code: typing.Union[str, None],
+    def add_coupon(self, organization_id: Optional[str], code: Optional[str],
                    discount: typing.Union[int, None],
                    expiration_time: typing.Union[int, None]) -> tuple:
         ***REMOVED***
@@ -1850,7 +1848,7 @@ class CouponsView(Validators):
     @get_coupon_data
     @use_context
     @handle_view_errors
-    async def add_coupon_async(self, organization_id: typing.Union[str, None], code: typing.Union[str, None],
+    async def add_coupon_async(self, organization_id: Optional[str], code: Optional[str],
                                discount: typing.Union[int, None], expiration_time: typing.Union[int, None]) -> tuple:
         ***REMOVED***
             creates new coupon
@@ -1879,7 +1877,7 @@ class CouponsView(Validators):
     @get_coupon_data
     @use_context
     @handle_view_errors
-    def update_coupon(self, organization_id: typing.Union[str, None], code: str, discount: int,
+    def update_coupon(self, organization_id: Optional[str], code: str, discount: int,
                       expiration_time: int) -> tuple:
         ***REMOVED***
             update coupons asynchronously
@@ -1923,7 +1921,7 @@ class CouponsView(Validators):
     @get_coupon_data
     @use_context
     @handle_view_errors
-    async def update_coupon_async(self, organization_id: typing.Union[str, None], code: str, discount: int,
+    async def update_coupon_async(self, organization_id: Optional[str], code: str, discount: int,
                                   expiration_time: typing.Union[int, None] = None) -> tuple:
         ***REMOVED***
             update coupons asynchronously
@@ -1974,8 +1972,8 @@ class CouponsView(Validators):
         :param coupon_data: contains coupon code and organization_id
         :return: cancelled coupon code
         ***REMOVED***
-        code: typing.Union[str, None] = coupon_data.get("code")
-        organization_id: typing.Union[str, None] = coupon_data.get('organization_id')
+        code: Optional[str] = coupon_data.get("code")
+        organization_id: Optional[str] = coupon_data.get('organization_id')
         if not isinstance(code, str) or not bool(code.strip()):
             message: str = "coupon code is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -2010,8 +2008,8 @@ class CouponsView(Validators):
         :param coupon_data: contains coupon code and organization_id
         :return:
         ***REMOVED***
-        code: typing.Union[str, None] = coupon_data.get("code")
-        organization_id: typing.Union[str, None] = coupon_data.get('organization_id')
+        code: Optional[str] = coupon_data.get("code")
+        organization_id: Optional[str] = coupon_data.get('organization_id')
 
         if not isinstance(code, str) or not bool(code.strip()):
             message: str = "coupon code is required"
@@ -2040,7 +2038,7 @@ class CouponsView(Validators):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    def get_all_coupons(self, organization_id: typing.Union[str, None]) -> tuple:
+    def get_all_coupons(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             returns a list of all coupons
         :param organization_id:
@@ -2065,7 +2063,7 @@ class CouponsView(Validators):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    async def get_all_coupons_async(self, organization_id: typing.Union[str, None]) -> tuple:
+    async def get_all_coupons_async(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             retrieve all coupons
         :param organization_id:
@@ -2090,7 +2088,7 @@ class CouponsView(Validators):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    def get_valid_coupons(self, organization_id: typing.Union[str, None]) -> tuple:
+    def get_valid_coupons(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             returns a list of expired coupon codes
         :param organization_id:
@@ -2116,7 +2114,7 @@ class CouponsView(Validators):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    async def get_valid_coupons_async(self, organization_id: typing.Union[str, None]) -> tuple:
+    async def get_valid_coupons_async(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             returns a list of valid coupon codes
         :param organization_id:
@@ -2142,7 +2140,7 @@ class CouponsView(Validators):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    def get_expired_coupons(self, organization_id: typing.Union[str, None]) -> tuple:
+    def get_expired_coupons(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             returns a list of expired coupon codes
         :param organization_id:
@@ -2168,7 +2166,7 @@ class CouponsView(Validators):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    async def get_expired_coupons_async(self, organization_id: typing.Union[str, None]) -> tuple:
+    async def get_expired_coupons_async(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             returns a list of expired coupon codes
         :param organization_id:
@@ -2201,13 +2199,13 @@ class CouponsView(Validators):
         :param coupon_data: dict containing code and organization_id as required parameters
         :return: coupon_data
         ***REMOVED***
-        code: typing.Union[str, None] = coupon_data.get("code")
+        code: Optional[str] = coupon_data.get("code")
 
         if not isinstance(code, str) or not bool(code.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        organization_id: typing.Union[str, None] = coupon_data.get('organization_id')
+        organization_id: Optional[str] = coupon_data.get('organization_id')
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -2227,13 +2225,13 @@ class CouponsView(Validators):
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
     async def get_coupon_async(self, coupon_data: dict) -> tuple:
-        code: typing.Union[str, None] = coupon_data.get("code")
+        code: Optional[str] = coupon_data.get("code")
 
         if not bool(code):
             message: str = "Coupon Code is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        organization_id: typing.Union[str, None] = coupon_data.get('organization_id')
+        organization_id: Optional[str] = coupon_data.get('organization_id')
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)

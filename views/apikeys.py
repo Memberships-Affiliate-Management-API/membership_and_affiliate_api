@@ -9,6 +9,7 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
 import typing
+from typing import Optional
 from flask import jsonify, current_app
 from config.exception_handlers import handle_view_errors
 from config.exceptions import DataServiceError, status_codes, InputError, error_codes, UnAuthenticatedError
@@ -16,7 +17,7 @@ from config.use_context import use_context
 from database.organization import OrgValidators, AuthUserValidators
 from database.apikeys import APIKeys
 from main import app_cache
-from utils.utils import create_id, return_ttl, can_cache
+from utils.utils import create_id, return_ttl
 from views.cache_manager import CacheManager
 
 
@@ -27,7 +28,7 @@ class APIKeysValidators(OrgValidators, AuthUserValidators):
         self._max_timeout = current_app.config.get('DATASTORE_TIMEOUT')
 
     @app_cache.memoize(timeout=return_ttl('short'))
-    def organization_exist(self, organization_id: typing.Union[str, None]) -> bool:
+    def organization_exist(self, organization_id: Optional[str]) -> bool:
         ***REMOVED***
             checks if an organization is in existence
         :param organization_id:
@@ -43,7 +44,7 @@ class APIKeysValidators(OrgValidators, AuthUserValidators):
         raise DataServiceError(status=500, description="Database Error: Unable to verify organization")
 
     @app_cache.memoize(timeout=return_ttl('short'))
-    def user_can_create_key(self, uid: typing.Union[str, None], organization_id: typing.Union[str, None]) -> bool:
+    def user_can_create_key(self, uid: Optional[str], organization_id: Optional[str]) -> bool:
         ***REMOVED***
             checks if user can create key
         :param uid:
@@ -84,8 +85,8 @@ class APIKeysView(APIKeysValidators, CacheManager):
 
     @use_context
     @handle_view_errors
-    def create_keys(self, domain: typing.Union[str, None],
-                    uid: typing.Union[str, None], organization_id: typing.Union[str, None]) -> tuple:
+    def create_keys(self, domain: Optional[str],
+                    uid: Optional[str], organization_id: Optional[str]) -> tuple:
         ***REMOVED***
                 create api_key secret combination
                 1. check if organization exist
@@ -128,7 +129,7 @@ class APIKeysView(APIKeysValidators, CacheManager):
 
     @use_context
     @handle_view_errors
-    def deactivate_key(self, key: typing.Union[str, None]) -> tuple:
+    def deactivate_key(self, key: Optional[str]) -> tuple:
         ***REMOVED***
             # admin only - this will de-activate the API Key rendering it not usable
 
@@ -159,7 +160,7 @@ class APIKeysView(APIKeysValidators, CacheManager):
 
     @use_context
     @handle_view_errors
-    def activate_key(self, key: typing.Union[str, None]) -> tuple:
+    def activate_key(self, key: Optional[str]) -> tuple:
         ***REMOVED***
             admin only function
         :param key: activate a given api-key
@@ -190,7 +191,7 @@ class APIKeysView(APIKeysValidators, CacheManager):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    def return_all_organization_keys(self, organization_id: typing.Union[str, None]) -> tuple:
+    def return_all_organization_keys(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             return a list of api-keys belonging to a specific organization
         :param organization_id:
@@ -203,7 +204,7 @@ class APIKeysView(APIKeysValidators, CacheManager):
         api_keys_list: typing.List[APIKeys] = APIKeys.query(APIKeys.organization_id == organization_id).fetch()
         payload: typing.List[dict] = [_key.to_dict() for _key in api_keys_list]
 
-        if len(payload) > 0:
+        if len(payload):
             message: str = 'organization api keys returned successfully'
             return jsonify({'status': True, 'payload': payload, 'message': message}), status_codes.status_ok_code
 
@@ -213,7 +214,7 @@ class APIKeysView(APIKeysValidators, CacheManager):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    def return_active_organization_keys(self, organization_id: typing.Union[str, None]) -> tuple:
+    def return_active_organization_keys(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             return_active_organization_keys returns all active organizational keys
         :param organization_id:
@@ -227,7 +228,7 @@ class APIKeysView(APIKeysValidators, CacheManager):
                                                             APIKeys.is_active == True).fetch()
         payload: typing.List[dict] = [_key.to_dict() for _key in api_keys_list]
 
-        if len(payload) > 0:
+        if len(payload):
             message: str = 'organization api keys returned successfully'
             return jsonify({'status': True, 'payload': payload, 'message': message}), status_codes.status_ok_code
 
@@ -237,7 +238,7 @@ class APIKeysView(APIKeysValidators, CacheManager):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    def get_api_key(self, api_key: typing.Union[str, None], organization_id: typing.Union[str, None]) -> tuple:
+    def get_api_key(self, api_key: Optional[str], organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             fetch a specific api key
         :param api_key:
