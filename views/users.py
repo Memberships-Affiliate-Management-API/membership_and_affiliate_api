@@ -195,6 +195,26 @@ class UserView(Validators, UserEmails):
         user_instance: UserModel = UserModel.query(UserModel.uid == _uid).get()
         return self._create_unique_uid() if isinstance(user_instance, UserModel) else _uid
 
+    # TODO - note that user manipulations invalidates organizations cache
+
+    @staticmethod
+    def __delete_user_cache(organization_id, uid, cell, email) -> None:
+        ***REMOVED***
+
+        :param organization_id:
+        :param uid:
+        :param cell:
+        :param email:
+        :return:
+        ***REMOVED***
+        app_cache.delete_memoized(UserView.get_active_users, UserView, organization_id)
+        app_cache.delete_memoized(UserView.get_active_users_async, UserView, organization_id)
+        app_cache.delete_memoized(UserView.get_all_users, UserView, organization_id)
+        app_cache.delete_memoized(UserView.get_all_users_async, UserView, organization_id)
+        app_cache.delete_memoized(UserView.get_user, UserView, organization_id, uid, cell, email)
+        app_cache.delete_memoized(UserView.get_user_async, UserView, organization_id, uid, cell, email)
+
+    # ----------------------------------------Main API Functions------------------------->
     @use_context
     @handle_view_errors
     def add_user(self,   organization_id: typing.Union[str, None], names:  typing.Union[str, None],
@@ -231,10 +251,7 @@ class UserView(Validators, UserEmails):
             message: str = "Unable to save database"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-        app_cache.delete_memoized(UserView.get_active_users, UserView, organization_id)
-        app_cache.delete_memoized(UserView.get_active_users_async, UserView, organization_id)
-        app_cache.delete_memoized(UserView.get_all_users, UserView, organization_id)
-        app_cache.delete_memoized(UserView.get_all_users_async, UserView, organization_id)
+        self.__delete_user_cache(organization_id=organization_id, uid=uid, email=email, cell=cell)
 
         return jsonify({'status': True,
                         "message": "Successfully created new user",
@@ -277,10 +294,7 @@ class UserView(Validators, UserEmails):
             message: str = "Unable to save user database"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-        app_cache.delete_memoized(UserView.get_active_users, UserView, organization_id)
-        app_cache.delete_memoized(UserView.get_active_users_async, UserView, organization_id)
-        app_cache.delete_memoized(UserView.get_all_users, UserView, organization_id)
-        app_cache.delete_memoized(UserView.get_all_users_async, UserView, organization_id)
+        self.__delete_user_cache(organization_id=organization_id, uid=uid, email=email, cell=cell)
 
         return jsonify({'status': True,
                         "message": "Successfully created new user",
@@ -329,12 +343,7 @@ class UserView(Validators, UserEmails):
                 message: str = "Unable to save user database"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-            app_cache.delete_memoized(UserView.get_active_users, UserView, organization_id)
-            app_cache.delete_memoized(UserView.get_active_users_async, UserView, organization_id)
-            app_cache.delete_memoized(UserView.get_all_users, UserView, organization_id)
-            app_cache.delete_memoized(UserView.get_all_users_async, UserView, organization_id)
-            app_cache.delete_memoized(UserView.get_user, UserView, organization_id, uid, cell, email)
-            app_cache.delete_memoized(UserView.get_user_async, UserView, organization_id, uid, cell, email)
+            self.__delete_user_cache(organization_id=organization_id, uid=uid, email=email, cell=cell)
 
             return jsonify({'status': True, 'message': 'successfully updated user details',
                             'payload': user_instance.to_dict()}), status_codes.successfully_updated_code
@@ -382,12 +391,7 @@ class UserView(Validators, UserEmails):
                 message: str = "Unable to save user database"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-            app_cache.delete_memoized(UserView.get_active_users, UserView, organization_id)
-            app_cache.delete_memoized(UserView.get_active_users_async, UserView, organization_id)
-            app_cache.delete_memoized(UserView.get_all_users, UserView, organization_id)
-            app_cache.delete_memoized(UserView.get_all_users_async, UserView, organization_id)
-            app_cache.delete_memoized(UserView.get_user, UserView, organization_id, uid, cell, email)
-            app_cache.delete_memoized(UserView.get_user_async, UserView, organization_id, uid, cell, email)
+            self.__delete_user_cache(organization_id=organization_id, uid=uid, email=email, cell=cell)
 
             return jsonify({'status': True, 'message': 'successfully updated user details',
                             'payload': user_instance.to_dict()}), status_codes.successfully_updated_code
@@ -427,6 +431,12 @@ class UserView(Validators, UserEmails):
             if not bool(key):
                 message: str = "Database Error: unable to update names"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
+            cell: str = user_instance.cell
+            email: str = user_instance.email
+
+            self.__delete_user_cache(organization_id=organization_id, uid=uid, email=email, cell=cell)
+
             message: str = "Successfully updated user names"
             return jsonify({'status': True, 'payload': user_instance.to_dict(),
                             'message': message}), status_codes.successfully_updated_code
@@ -453,12 +463,19 @@ class UserView(Validators, UserEmails):
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.uid == uid).get()
         if isinstance(user_instance, UserModel):
+            old_cell: str = user_instance.cell
             user_instance.cell = cell
             # TODO - run a function to send verification sms if available_funds
             key = user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             if not bool(key):
                 message: str = "Database Error: unable to save updated user record"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
+            # Note that the old cache needs to be removed as it has now an entry relating to the old cell
+            cell: str = old_cell
+            email: str = user_instance.email
+            self.__delete_user_cache(organization_id=organization_id, uid=uid, email=email, cell=cell)
+
             message: str = "Successfully Updated Cell Number"
             return jsonify({'status': True, 'payload': user_instance.to_dict(),
                             'message': message}), status_codes.successfully_updated_code
@@ -485,12 +502,17 @@ class UserView(Validators, UserEmails):
                                                    UserModel.uid == uid).get()
         if isinstance(user_instance, UserModel):
             if user_instance.email != email:
+                old_email: str = user_instance.emai
                 user_instance.email = email
                 # TODO send verification email and mark email as not verified
                 key = user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
                 if not bool(key):
                     message: str = "Database Error: Unable to update user record"
                     raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
+                cell: str = user_instance.cell
+                email: str = old_email
+                self.__delete_user_cache(organization_id=organization_id, uid=uid, email=email, cell=cell)
 
                 message: str = "Successfully Updated Email Record please check your email inbox for verification email"
                 return jsonify({'status': True, 'payload': user_instance.to_dict(),
@@ -541,6 +563,11 @@ class UserView(Validators, UserEmails):
                 message: str = "Database Error: unable to update password"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
+            cell: str = user_instance.cell
+            email: str = user_instance.email
+
+            self.__delete_user_cache(organization_id=organization_id, uid=uid, email=email, cell=cell)
+
             # TODO - logoff the user
             message: str = "Successfully Updated Password - please login again"
             return jsonify({'status': True,
@@ -580,6 +607,11 @@ class UserView(Validators, UserEmails):
             else:
                 self.send_goodbye_admin_email(organization_id=organization_id, uid=uid)
 
+            cell: str = user_instance.cell
+            email: str = user_instance.email
+
+            self.__delete_user_cache(organization_id=organization_id, uid=uid, email=email, cell=cell)
+
             message: str = "Successfully Update admin status"
             return jsonify({'status': True, 'payload': user_instance.to_dict(),
                             'message': message}), status_codes.successfully_updated_code
@@ -613,6 +645,10 @@ class UserView(Validators, UserEmails):
                 self.send_welcome_to_support_email(organization_id=organization_id, uid=uid)
             else:
                 self.send_goodbye_support_email(email=user_instance.email)
+
+            cell: str = user_instance.cell
+            email: str = user_instance.email
+            self.__delete_user_cache(organization_id=organization_id, uid=uid, email=email, cell=cell)
 
             message: str = "Successfully Update support status"
             return jsonify({'status': True, 'payload': user_instance.to_dict(),
@@ -670,6 +706,12 @@ class UserView(Validators, UserEmails):
             if not bool(user_key):
                 message: str = "Database Error: unable to update user"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
+            cell: str = user_instance.cell
+            email: str = user_instance.email
+
+            self.__delete_user_cache(organization_id=organization_id, uid=uid, email=email, cell=cell)
+
             message: str = "Successfully updated user address"
             return jsonify({'status': True, 'payload': user_instance.to_dict(),
                             'message': message}), status_codes.successfully_updated_code
@@ -712,8 +754,15 @@ class UserView(Validators, UserEmails):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.cell == cell).get()
             if isinstance(user_instance, UserModel):
+
+                cell: str = user_instance.cell
+                email: str = user_instance.email
+
+                self.__delete_user_cache(organization_id=organization_id, uid=uid, email=email, cell=cell)
+
                 # TODO- rather mark user as deleted
                 user_instance.key.delete()
+
                 return jsonify({'status': True,
                                 'message': 'successfully deleted user'}), status_codes.successfully_updated_code
 
@@ -756,6 +805,11 @@ class UserView(Validators, UserEmails):
                                                        UserModel.cell == cell).get_async().get_result()
             if isinstance(user_instance, UserModel):
                 # TODO- rather mark user as deleted
+                cell: str = user_instance.cell
+                email: str = user_instance.email
+
+                self.__delete_user_cache(organization_id=organization_id, uid=uid, email=email, cell=cell)
+
                 user_instance.key.delete()
                 return jsonify({'status': True,
                                 'message': 'successfully deleted user'}), status_codes.data_not_found_code
@@ -1096,6 +1150,12 @@ class UserView(Validators, UserEmails):
         if isinstance(user_instance, UserModel):
             user_instance.is_active = False
             user_instance.put()
+
+            cell: str = user_instance.cell
+            email: str = user_instance.email
+
+            self.__delete_user_cache(organization_id=organization_id, uid=uid, email=email, cell=cell)
+
             return jsonify({'status': True, 'message': 'user deactivated'}), status_codes.status_ok_code
 
         return jsonify({'status': False, 'message': 'user not found'}), status_codes.data_not_found_code
@@ -1123,6 +1183,11 @@ class UserView(Validators, UserEmails):
         if isinstance(user_instance, UserModel):
             user_instance.is_active = False
             user_instance.put_async().get_result()
+            cell: str = user_instance.cell
+            email: str = user_instance.email
+
+            self.__delete_user_cache(organization_id=organization_id, uid=uid, email=email, cell=cell)
+
             return jsonify({'status': True, 'message': 'user deactivated'}), status_codes.status_ok_code
 
         return jsonify({'status': False, 'message': 'user not found'}), status_codes.data_not_found_code
