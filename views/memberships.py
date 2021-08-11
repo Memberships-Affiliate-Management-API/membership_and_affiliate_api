@@ -1007,29 +1007,6 @@ class MembershipsView(Validators, MembershipsEmails):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    async def return_plan_members_async(self, organization_id: typing.Union[str, None],
-                                        plan_id: typing.Union[str, None]) -> tuple:
-        ***REMOVED***
-            return all members of a plan
-        ***REMOVED***
-        if not isinstance(plan_id, str) or not bool(plan_id.strip()):
-            message: str = "plan_id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        membership_list: typing.List[Memberships] = Memberships.query(
-            Memberships.organization_id == organization_id, Memberships.plan_id == plan_id).fetch_async().get_result()
-
-        if isinstance(membership_list, list) and len(membership_list):
-            response_data: typing.List[dict] = [member.to_dict() for member in membership_list]
-            message: str = 'successfully fetched members'
-            return jsonify({'status': True, 'payload': response_data, 'message': message}), status_codes.status_ok_code
-        else:
-            message: str = "Unable to find members of plan {}"
-            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
-
-    @use_context
-    @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'))
     def is_member_off(self, organization_id: typing.Union[str, None], uid: typing.Union[str, None]) -> tuple:
         ***REMOVED***
             returns user membership details

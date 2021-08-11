@@ -61,3 +61,29 @@ class CacheManager:
         app_cache.delete_memoized(wallet_view.return_all_wallets, wallet_view, organization_id)
         app_cache.delete_memoized(wallet_view.return_all_wallets_async, wallet_view, organization_id)
         return True
+
+    @staticmethod
+    def __delete_membership_cache(membership_view, organization_id, uid, plan_id, status) -> bool:
+        ***REMOVED***
+            **__delete_membership_cache**
+                delete cache items for memberships view
+
+        :param organization_id:
+        :param uid:
+        :param plan_id:
+        :param status:
+        :return:
+        ***REMOVED***
+
+        return True
+
+    @staticmethod
+    def __delete_api_keys_cache(api_keys_view, organization_id) -> bool:
+        ***REMOVED***
+
+        :return:
+        ***REMOVED***
+        app_cache.delete_memoized(api_keys_view.return_all_organization_keys, api_keys_view, organization_id)
+        app_cache.delete_memoized(api_keys_view.return_active_organization_keys, api_keys_view, organization_id)
+
+        return True

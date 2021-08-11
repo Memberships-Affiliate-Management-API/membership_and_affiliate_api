@@ -17,6 +17,7 @@ from database.organization import OrgValidators, AuthUserValidators
 from database.apikeys import APIKeys
 from main import app_cache
 from utils.utils import create_id, return_ttl, can_cache
+from views.cache_manager import CacheManager
 
 
 class APIKeysValidators(OrgValidators, AuthUserValidators):
@@ -64,7 +65,7 @@ class APIKeysValidators(OrgValidators, AuthUserValidators):
         raise DataServiceError(status=500, description="Database Error: Unable to verify user")
 
 
-class APIKeysView(APIKeysValidators):
+class APIKeysView(APIKeysValidators, CacheManager):
     ***REMOVED***
         a view class for APIKeys
     ***REMOVED***
@@ -116,8 +117,7 @@ class APIKeysView(APIKeysValidators):
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
             # Deleting Memoized items which will need this item as part of the results
-            app_cache.delete_memoized(APIKeysView.return_all_organization_keys, APIKeysView, organization_id)
-            app_cache.delete_memoized(APIKeysView.return_active_organization_keys, APIKeysView, organization_id)
+            self.__delete_api_keys_cache(api_keys_view=APIKeysView, organization_id=organization_id)
 
             message: str = "successfully created api_key secret_token combo"
             return jsonify({'status': True, 'payload': api_key_instance.to_dict(),
@@ -148,7 +148,8 @@ class APIKeysView(APIKeysValidators):
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
             organization_id: str = api_key_instance.organization_id
-            app_cache.delete_memoized(APIKeysView.return_active_organization_keys, APIKeysView, organization_id)
+            # Deleting Memoized items which will need this item as part of the results
+            self.__delete_api_keys_cache(api_keys_view=APIKeysView, organization_id=organization_id)
 
             message: str = "successfully deactivated api_key"
             return jsonify({'status': True, 'payload': api_key_instance.to_dict(),
@@ -177,7 +178,8 @@ class APIKeysView(APIKeysValidators):
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
             organization_id: str = api_key_instance.organization_id
-            app_cache.delete_memoized(APIKeysView.return_active_organization_keys, APIKeysView, organization_id)
+            # Deleting Memoized items which will need this item as part of the results
+            self.__delete_api_keys_cache(api_keys_view=APIKeysView, organization_id=organization_id)
 
             message: str = "successfully activated api_key"
             return jsonify({'status': True, 'payload': api_key_instance.to_dict(),
