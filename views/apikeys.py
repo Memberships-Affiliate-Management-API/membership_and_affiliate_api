@@ -115,6 +115,10 @@ class APIKeysView(APIKeysValidators):
                 message: str = "database error: unable to create api_key"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
+            # Deleting Memoized items which will need this item as part of the results
+            app_cache.delete_memoized(APIKeysView.return_all_organization_keys, APIKeysView, organization_id)
+            app_cache.delete_memoized(APIKeysView.return_active_organization_keys, APIKeysView, organization_id)
+
             message: str = "successfully created api_key secret_token combo"
             return jsonify({'status': True, 'payload': api_key_instance.to_dict(),
                             'message': message}), status_codes.successfully_updated_code
@@ -143,6 +147,9 @@ class APIKeysView(APIKeysValidators):
                 message: str = "database error: unable to deactivate_key"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
+            organization_id: str = api_key_instance.organization_id
+            app_cache.delete_memoized(APIKeysView.return_active_organization_keys, APIKeysView, organization_id)
+
             message: str = "successfully deactivated api_key"
             return jsonify({'status': True, 'payload': api_key_instance.to_dict(),
                             'message': message}), status_codes.status_ok_code
@@ -168,6 +175,9 @@ class APIKeysView(APIKeysValidators):
             if not bool(key):
                 message: str = "database error: unable to activate_key"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
+            organization_id: str = api_key_instance.organization_id
+            app_cache.delete_memoized(APIKeysView.return_active_organization_keys, APIKeysView, organization_id)
 
             message: str = "successfully activated api_key"
             return jsonify({'status': True, 'payload': api_key_instance.to_dict(),
