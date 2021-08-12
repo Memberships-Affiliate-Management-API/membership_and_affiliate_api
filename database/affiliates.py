@@ -11,6 +11,7 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
 import typing
+from typing import Optional
 from google.cloud import ndb
 from datetime import date, datetime
 from config.exception_handlers import handle_store_errors

@@ -30,7 +30,7 @@ class BaseModel(ndb.Model):
     @property
     def id(self):
         ***REMOVED***int: The index ID.***REMOVED***
-        return self._id
+        return self.key.id() if self.key else None
 
     @property
     def urlsafe_key(self) -> bytes:
