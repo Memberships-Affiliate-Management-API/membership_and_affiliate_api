@@ -69,13 +69,12 @@ def memberships_main_routes(current_user, path: str) -> tuple:
         return github.authorize_redirect(redirect_url)
 
     if path == "github-authorize":
-        # http://memberships-affiliates-man-api.herokuapp.com/github-authorize?error=redirect_uri_mismatch&error_description=The+redirect_uri+MUST+match+the+registered+callback+URL+for+this+application.&error_uri=https%3A%2F%2Fdocs.github.com%2Fapps%2Fmanaging-oauth-apps%2Ftroubleshooting-authorization-request-errors%2F%23redirect-uri-mismatch&state=gw78C27avcmdK03es0v6XRO1BZdVWo
-        print(" i am here")
         token = github.authorize_access_token()
         resp = github.get('user', token=token)
         profile = resp.json()
         # do something with the token and profile
         print(profile, token)
+        # with profile and token create new user once done redirect to main page
         return redirect('/')
 
     elif path == 'logout' or path == "logout.html":
