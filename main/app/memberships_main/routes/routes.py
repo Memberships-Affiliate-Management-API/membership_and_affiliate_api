@@ -35,7 +35,7 @@ def memberships_main(current_user) -> tuple:
 # @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
 def memberships_main_routes(current_user, path: str) -> tuple:
     ***REMOVED***
-        @app_cache.memoize() caching the results of this function based on function
+        @app_cache.memoize( ) caching the results of this function based on function
         parameters current user and path.
 
     :param current_user: user who has logged in, or None if no User has logged in
