@@ -1,12 +1,11 @@
 import os
-
 from _cron.scheduler import schedule
 from config import config_instance
 from main import create_app
 from utils.utils import is_development
 
 app = create_app(config_class=config_instance)
-clocker = schedule.start()
+scheduled_task = schedule.start()
 
 debug = is_development() and config_instance.DEBUG
 # Press the green button in the gutter to run the script.

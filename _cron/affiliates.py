@@ -12,3 +12,20 @@ __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
+from flask import Blueprint
+
+cron_affiliate_bp = Blueprint('cron_affiliate', __name__)
+
+
+@cron_affiliate_bp.route('/_cron/v1/affiliates', methods=['POST', 'GET'])
+def cron_affiliate_jobs():
+    ***REMOVED***
+        **cron_affiliate_jobs**
+            affiliate related cron jobs - for checking and
+                1. finalizing affiliate payments.
+                2. sending finalized amounts to wallets
+                3. sending affiliate report - recruitments & earnings
+    :return:
+    ***REMOVED***
+    pass
+

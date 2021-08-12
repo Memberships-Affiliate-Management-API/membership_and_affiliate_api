@@ -11,3 +11,18 @@ __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
+from flask import Blueprint
+
+cron_memberships_bp = Blueprint('cron_memberships', __name__)
+
+
+@cron_memberships_bp.route('/_cron/v1/memberships', methods=['GET', 'POST'])
+def cron_memberships_jobs():
+    ***REMOVED***
+        **cron_memberships_jobs**
+            memberships cron jobs, will be responsible for the following:
+                1. check payment status for each plan -
+                if not paid check grace period if expired then expire membership
+    :return:
+    ***REMOVED***
+    pass
