@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_caching import Cache
 from config import config_instance
-
+from authlib.integrations.flask_client import OAuth
 # TODO: consider upgrading the cache service from version 2 of this api
 from utils import clear_cache
 
@@ -13,12 +13,27 @@ app_cache: Cache = Cache(config=config_instance.cache_dict())
 default_timeout: int = 60 * 60 * 6
 
 
+oauth = OAuth()
+# NOTE github auth callback http://memberships-affiliates-man-api.herokuapp.com/_auth/github/authenticate
+github = oauth.register(
+    name='github',
+    client_id=config_instance.GITHUB_CLIENT_ID,
+    client_secret=config_instance.GITHUB_CLIENT_SECRET,
+    access_token_url='https://github.com/login/oauth/access_token',
+    access_token_params=None,
+    authorize_url='https://github.com/login/oauth/authorize',
+    authorize_params=None,
+    api_base_url='https://api.github.com/',
+    client_kwargs={'scope': 'user:email'},
+)
+
+
 def create_app(config_class=config_instance):
     app = Flask(__name__, static_folder="app/resources/static", template_folder="app/resources/templates")
     app.config.from_object(config_class)
 
     app_cache.init_app(app=app, config=config_class.cache_dict())
-
+    oauth.init_app(app=app, cache=app_cache)
     from _api.affiliates.routes import affiliates_bp
     from _api.users.routes import users_bp
     from _api.memberships.routes import memberships_bp

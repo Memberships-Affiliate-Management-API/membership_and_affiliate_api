@@ -69,6 +69,8 @@ class Config:
         self.ENV: str = "production"
         self.TEMPLATES_AUTO_RELOAD: bool = True
         self.PREFERRED_URL_SCHEME: str = "https"
+        self.GITHUB_CLIENT_ID: str = os.environ.get("GITHUB_CLIENT_ID") or config("GITHUB_CLIENT_ID")
+        self.GITHUB_CLIENT_SECRET: str = os.environ.get("GITHUB_CLIENT_SECRET") or config("GITHUB_CLIENT_SECRET")
 
         # NOTE : setting IS_PRODUCTION here - could find a better way of doing this rather
         # than depending on the OS

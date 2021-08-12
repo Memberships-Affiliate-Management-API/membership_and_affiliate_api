@@ -3,7 +3,7 @@
 ***REMOVED***
 from flask import Blueprint, render_template, get_flashed_messages, make_response, redirect, url_for
 from config.exceptions import status_codes
-from main import app_cache
+from main import app_cache, github
 from security.users_authenticator import logged_user
 from utils.utils import return_ttl, can_cache
 
@@ -59,10 +59,22 @@ def memberships_main_routes(current_user, path: str) -> tuple:
         return render_template('main/contact.html'), status_codes.status_ok_code
 
     elif path == 'login' or path == "login.html":
-
         if current_user and current_user.uid:
             return redirect(url_for('memberships_main.memberships_main_routes', path='logout'))
         return render_template('main/login.html'), status_codes.status_ok_code
+
+    elif path == 'login-with-github':
+        redirect_url = url_for("memberships_main.memberships_main_routes", path="github-authorize", _external=True)
+        return github.authorize_redirect(redirect_url)
+
+    if path == "github-authorize":
+        print(" i am here")
+        token = github.authorize_access_token()
+        resp = github.get('user', token=token)
+        profile = resp.json()
+        # do something with the token and profile
+        print(profile, token)
+        return redirect('/')
 
     elif path == 'logout' or path == "logout.html":
         if not current_user:

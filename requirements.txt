@@ -30,3 +30,4 @@ pytest_cov
 pytest_mock
 phonenumbers
 APScheduler==3.0.0
+Authlib
