@@ -32,7 +32,7 @@ def memberships_main(current_user) -> tuple:
 # noinspection PyTypeChecker
 @memberships_main_bp.route('/<path:path>', methods=["GET"])
 @logged_user
-@app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+# @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
 def memberships_main_routes(current_user, path: str) -> tuple:
     ***REMOVED***
         @app_cache.memoize() caching the results of this function based on function
@@ -65,9 +65,11 @@ def memberships_main_routes(current_user, path: str) -> tuple:
 
     elif path == 'login-with-github':
         redirect_url = url_for("memberships_main.memberships_main_routes", path="github-authorize", _external=True)
+        print("redirect uri : {}".format(redirect_url))
         return github.authorize_redirect(redirect_url)
 
     if path == "github-authorize":
+        # http://memberships-affiliates-man-api.herokuapp.com/github-authorize?error=redirect_uri_mismatch&error_description=The+redirect_uri+MUST+match+the+registered+callback+URL+for+this+application.&error_uri=https%3A%2F%2Fdocs.github.com%2Fapps%2Fmanaging-oauth-apps%2Ftroubleshooting-authorization-request-errors%2F%23redirect-uri-mismatch&state=gw78C27avcmdK03es0v6XRO1BZdVWo
         print(" i am here")
         token = github.authorize_access_token()
         resp = github.get('user', token=token)
