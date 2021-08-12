@@ -14,7 +14,9 @@ cron_withdrawals_bp = Blueprint('cron_withdrawals', __name__)
 @cron_withdrawals_bp.route('/_cron/v1/withdrawals', methods=['POST', 'GET'])
 def cron_withdrawals_jobs():
     ***REMOVED***
-
+        **cron_withdrawals_jobs**
+            Manages Approved withdrawals
+            actually sends approved withdrawals to users paypal wallets
     :return:
     ***REMOVED***
     pass

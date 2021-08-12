@@ -28,4 +28,3 @@ def cron_affiliate_jobs():
     :return:
     ***REMOVED***
     pass
-
