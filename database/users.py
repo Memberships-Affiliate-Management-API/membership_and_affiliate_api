@@ -245,3 +245,25 @@ class UserModel(BaseModel):
         # excluding password from dict
         exclude: typing.List[str] = ['password']
         return super().to_dict(include=include, exclude=exclude)
+
+
+class GithubDetails(BaseModel):
+    ***REMOVED***
+        used to stored login with github client details
+    ***REMOVED***
+    uid: str = ndb.StringProperty(required=True, validator=property_.set_id)
+    github_name: str = ndb.StringProperty(required=True, validator=property_.set_string)
+    email: str = ndb.StringProperty(required=True, validator=property_.set_email)
+    twitter_username: str = ndb.StringProperty(validator=property_.set_string)
+    access_token: str = ndb.StringProperty(required=True, validator=property_.set_string)
+    avatar_url: str = ndb.StringProperty(required=True, validator=property_.set_domain)
+    api_url: str = ndb.StringProperty(required=True, validator=property_.set_domain)
+    html_url: str = ndb.StringProperty(required=True, validator=property_.set_domain)
+    followers_url: str = ndb.StringProperty(required=True, validator=property_.set_domain)
+    following_url: str = ndb.StringProperty(required=True, validator=property_.set_domain)
+    gists_url: str = ndb.StringProperty(required=True, validator=property_.set_domain)
+    repos_url: str = ndb.StringProperty(required=True, validator=property_.set_domain)
+
+
+
+
