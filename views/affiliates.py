@@ -194,10 +194,11 @@ class AffiliatesView(Validator, CacheManager):
     @handle_view_errors
     def delete_affiliate(self, affiliate_data: dict) -> tuple:
         ***REMOVED***
-            the function soft delete an affiliate record.
+            **delete_affiliate**
+                the function soft delete an affiliate record.
 
-            affiliate_id: is the id of the affiliate to be marked as deletedItem
-            organization_id: is the id of the organization from which the affiliate is to be deleted
+                affiliate_id: is the id of the affiliate to be marked as deletedItem
+                organization_id: is the id of the organization from which the affiliate is to be deleted
 
             :param affiliate_data: dict containing affiliate_id and organization_id
             :return: tuple containing the record of the deleted affiliate
@@ -238,8 +239,9 @@ class AffiliatesView(Validator, CacheManager):
     @handle_view_errors
     def mark_active(self, affiliate_data: dict, is_active: bool) -> tuple:
         ***REMOVED***
-            affiliate_id of the affiliate to be marked as active.
-            this action will not have an effect if the affiliate has been soft-deleted
+            **mark_active**
+                affiliate_id of the affiliate to be marked as active.
+                this action will not have an effect if the affiliate has been soft-deleted
         :param affiliate_data: contains affiliate_id and organization_id
         :param is_active:
         :return:
@@ -286,8 +288,9 @@ class AffiliatesView(Validator, CacheManager):
     @app_cache.memoize(timeout=return_ttl('short'))
     def get_affiliate(self, affiliate_data: dict) -> tuple:
         ***REMOVED***
-            obtains a record of one affiliate from the store. given either uid or affiliate_id, organization_id
-            must be valid
+            **get_affiliate**
+                obtains a record of one affiliate from the store. given either uid or affiliate_id, organization_id
+                must be valid
         :param affiliate_data: contains affiliate_id and organization_id the affiliate must belong to the organization
         :return: response contain affiliate record
         ***REMOVED***
@@ -332,7 +335,8 @@ class AffiliatesView(Validator, CacheManager):
     @app_cache.memoize(timeout=return_ttl('short'))
     def get_all_affiliates(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
-            returns a list of all affiliates that belongs to the organization
+            **get_all_affiliates**
+                returns a list of all affiliates that belongs to the organization
             :param organization_id: the organization id to return affiliates off
             :return: response containing the list of affiliates as payload
             status code ${status_codes.status_ok_code}

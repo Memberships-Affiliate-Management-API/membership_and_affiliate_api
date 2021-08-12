@@ -216,7 +216,9 @@ class APIKeysView(APIKeysValidators, CacheManager):
     @app_cache.memoize(timeout=return_ttl('short'))
     def return_active_organization_keys(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
-            return_active_organization_keys returns all active organizational keys
+            **return_active_organization_keys**
+                return_active_organization_keys returns all active organizational keys
+
         :param organization_id:
         :return:
         ***REMOVED***

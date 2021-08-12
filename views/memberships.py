@@ -22,7 +22,7 @@ from database.mixins import AmountMixin
 from database.users import UserValidators as UserValid
 from database.memberships import MembershipValidators as MemberValid
 from database.memberships import CouponsValidator as CouponValid
-from utils.utils import return_ttl, timestamp, can_cache, get_payment_methods
+from utils.utils import return_ttl, timestamp, get_payment_methods
 from main import app_cache
 from config.exception_handlers import handle_view_errors, handle_store_errors
 from config.use_context import use_context

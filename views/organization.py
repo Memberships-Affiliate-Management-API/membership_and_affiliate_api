@@ -8,8 +8,10 @@ __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
+import json
 import typing
 from typing import Optional
+import requests
 from flask import current_app, jsonify
 from _sdk._email import Mailgun
 from config.exception_handlers import handle_view_errors, handle_store_errors
@@ -121,22 +123,37 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
             self._create_org_id()
         return organization_id
 
-    def _create_org_wallet(self, organization_id: Optional[str]) -> str:
+    @staticmethod
+    def _create_org_wallet(organization_id: Optional[str], uid: Optional[str], currency: Optional[str],
+                           paypal_address: Optional[str]) -> str:
         ***REMOVED***
             _private function to facilitate the create of organizational wallet
             :param organization_id: id of the organization to create organization wallet
             :return: the wallet key of the created organization wallet
+
+            send request to : /api/v1/wallet/organization
+            with organization_id and uid on json body
+
         ***REMOVED***
-        _wallet_id: str = create_id()
-        # TODO verify ID through wallet api then send id
-        return _wallet_id
+        _endpoint: str = 'api/v1/wallet/organization'
+        base_url: str = current_app.config.get('BASE_URL')
+        request_url: str = "{}{}".format(base_url, _endpoint)
+
+        json_body = json.dumps(dict(organization_id=organization_id, uid=uid, currency=currency,
+                                    paypal_address=paypal_address))
+
+        response, _ = requests.post(url=request_url, json=json_body)
+        # NOTE no need to check status if the method continues execution wallet is created
+        return response.to_dict().get('payload')('wallet_id')
 
     @use_context
     @handle_view_errors
-    def create_organization(self, uid: Optional[str], organization_name: Optional[str],
-                            description: Optional[str]) -> tuple:
+    def create_organization(self, uid: Optional[str], organization_name: Optional[str], description: Optional[str],
+                            currency: Optional[str], paypal_address: Optional[str]) -> tuple:
         ***REMOVED***
 
+            :param paypal_address:
+            :param currency:
             :param uid: user_id of the user creating the organization
             :param organization_name: the name of the organization being created
             :param description: the description of the organization to be created
@@ -151,7 +168,8 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
             raise InputError(status=error_codes.input_error_code, description=message)
 
         # TODO- this function needs to be completed
-        wallet_id: Optional[str] = self._create_org_wallet(organization_id=organization_id)
+        wallet_id: Optional[str] = self._create_org_wallet(organization_id=organization_id, uid=uid, currency=currency,
+                                                           paypal_address=paypal_address)
 
         # if wallet_id is None
         if not bool(wallet_id):

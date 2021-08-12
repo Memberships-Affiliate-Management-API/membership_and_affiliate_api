@@ -6,10 +6,12 @@
 from main import app_cache
 from typing import Optional
 
+
 class CacheManager:
     ***REMOVED***
         **Class Cache CacheManager**
     ***REMOVED***
+
     def __init__(self):
         pass
 
@@ -80,7 +82,8 @@ class CacheManager:
     @staticmethod
     def __delete_api_keys_cache(api_keys_view, organization_id) -> bool:
         ***REMOVED***
-
+            **__delete_api_keys_cache**
+                delete stale api_keys cache instances
         :return:
         ***REMOVED***
         app_cache.delete_memoized(api_keys_view.return_all_organization_keys, api_keys_view, organization_id)
@@ -119,18 +122,12 @@ class CacheManager:
         :param recruit_data:
         :return:
         ***REMOVED***
-        if recruit_data:
-            app_cache.delete_memoized(recruits_view.get_recruit, recruits_view, recruit_data)
-        if isinstance(is_active, bool):
-            app_cache.delete_memoized(recruits_view.get_recruits_by_active_status, recruits_view,
-                                      organization_id, is_active)
-        if isinstance(is_deleted, bool):
-            app_cache.delete_memoized(recruits_view.get_recruits_by_deleted_status, recruits_view, organization_id,
-                                      is_deleted)
-
-        if affiliate_data:
-            app_cache.delete_memoized(recruits_view.get_recruits_by_affiliate, recruits_view, affiliate_data)
-
-        if affiliate_data and is_active:
-            app_cache.delete_memoized(recruits_view.get_recruits_by_active_affiliate, recruits_view, affiliate_data,
-                                      is_active)
+        app_cache.delete_memoized(recruits_view.get_recruit, recruits_view, recruit_data)
+        app_cache.delete_memoized(recruits_view.get_recruits_by_active_status, recruits_view,
+                                  organization_id, is_active)
+        app_cache.delete_memoized(recruits_view.get_recruits_by_deleted_status, recruits_view, organization_id,
+                                  is_deleted)
+        app_cache.delete_memoized(recruits_view.get_recruits_by_affiliate, recruits_view, affiliate_data)
+        app_cache.delete_memoized(recruits_view.get_recruits_by_active_affiliate, recruits_view, affiliate_data,
+                                  is_active)
+        return True
