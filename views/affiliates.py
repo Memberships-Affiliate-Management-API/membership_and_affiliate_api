@@ -525,6 +525,9 @@ class RecruitsView(Validator, CacheManager):
         :param recruit_data:
         :return: tuple as response
         ***REMOVED***
+        # TODO - the action of deleting a recruit also modifies the affiliate record who is recruiting
+        #  this means an update is also needed on the relevant affiliate record
+
         # Note: affiliate_id of the recruit
         affiliate_id: Optional[str] = recruit_data.get('affiliate_id')
         if not isinstance(affiliate_id, str) or not bool(affiliate_id.strip()):
