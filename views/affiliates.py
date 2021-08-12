@@ -22,6 +22,7 @@ from utils.utils import create_id, return_ttl, can_cache
 from config.exception_handlers import handle_view_errors
 from config.use_context import use_context
 from _sdk._email import Mailgun
+from views.cache_manager import CacheManager
 
 
 class AffiliatesEmails(Mailgun):
@@ -97,7 +98,7 @@ class Validator(ValidAffiliate, ValidRecruit, ValidEarnings):
 
 
 # noinspection DuplicatedCode
-class AffiliatesView(Validator):
+class AffiliatesView(Validator, CacheManager):
     ***REMOVED***
         **Class AffiliatesView**
             Enables the api to access methods to access data and create and update affiliates
@@ -139,11 +140,8 @@ class AffiliatesView(Validator):
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
         # Deleting related Cache
-        # TODO refactor or better handle the deletion process
-        app_cache.delete_memoized(AffiliatesView.get_all_affiliates, AffiliatesView, organization_id)
-        app_cache.delete_memoized(AffiliatesView.get_active_affiliates, AffiliatesView, organization_id)
-        app_cache.delete_memoized(AffiliatesView.get_deleted_affiliates, AffiliatesView, organization_id)
-        app_cache.delete_memoized(AffiliatesView.get_not_deleted_affiliates, AffiliatesView, organization_id)
+        self.__delete_affiliate_cache(affiliates_view=AffiliatesView, organization_id=organization_id,
+                                      affiliate_id=affiliate_id)
 
         return jsonify({'status': True,
                         'message': 'successfully registered an affiliate',
@@ -182,6 +180,10 @@ class AffiliatesView(Validator):
             if not bool(key):
                 message: str = "Something went wrong while updating affiliate"
                 raise DataServiceError(status=500, description=message)
+
+            # deleting affiliate Caches related to the updated record
+            self.__delete_affiliate_cache(affiliates_view=AffiliatesView, organization_id=organization_id,
+                                          affiliate_id=affiliate_id)
             return jsonify({'status': True,
                             'message': 'successfully incremented total recruits',
                             'payload': affiliate_instance.to_dict()}), status_codes.successfully_updated_code
@@ -221,14 +223,9 @@ class AffiliatesView(Validator):
                 message: str = 'something went wrong while deleting affiliate'
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-            # Deleting related Cache
-            # TODO refactor or better handle the deletion process
-            _dict: dict = dict(organization_id=organization_id, affiliate_id=affiliate_id)
-            app_cache.delete_memoized(AffiliatesView.get_affiliate, AffiliatesView, _dict)
-            app_cache.delete_memoized(AffiliatesView.get_all_affiliates, AffiliatesView, organization_id)
-            app_cache.delete_memoized(AffiliatesView.get_active_affiliates, AffiliatesView, organization_id)
-            app_cache.delete_memoized(AffiliatesView.get_deleted_affiliates, AffiliatesView, organization_id)
-            app_cache.delete_memoized(AffiliatesView.get_not_deleted_affiliates, AffiliatesView, organization_id)
+            # deleting affiliate Caches related to the updated record
+            self.__delete_affiliate_cache(affiliates_view=AffiliatesView, organization_id=organization_id,
+                                          affiliate_id=affiliate_id)
 
             return jsonify({'status': True,
                             'message': 'successfully deleted the affiliate',
@@ -274,9 +271,9 @@ class AffiliatesView(Validator):
                 message: str = "An Unknown Error occurred while trying to mark affiliate as in-active"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-            # deleting memoize function for get_active_affiliates for the organization_id
-            app_cache.delete_memoized(AffiliatesView.get_active_affiliates, AffiliatesView, organization_id)
-            app_cache.delete_memoized(AffiliatesView.get_in_active_affiliates, AffiliatesView, organization_id)
+            # deleting affiliate Caches related to the updated record
+            self.__delete_affiliate_cache(affiliates_view=AffiliatesView, organization_id=organization_id,
+                                          affiliate_id=affiliate_id)
 
             return jsonify({'status': True, 'message': 'successfully marked affiliate as inactive',
                             'payload': affiliate_instance.to_dict()}), status_codes.successfully_updated_code
@@ -350,7 +347,7 @@ class AffiliatesView(Validator):
 
         payload: typing.List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
 
-        if len(payload) > 0:
+        if len(payload):
             message: str = "Successfully returned all affiliates"
             return jsonify({'status': True,
                             'message': message,
@@ -377,7 +374,7 @@ class AffiliatesView(Validator):
             Affiliates.organization_id == organization_id,
             Affiliates.is_active == True, Affiliates.is_deleted == False).fetch()
         payload: typing.List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
-        if len(payload) > 0:
+        if len(payload):
             return jsonify({'status': True, 'message': 'successfully returned all affiliates',
                             'payload': payload}), status_codes.status_ok_code
 
@@ -404,7 +401,7 @@ class AffiliatesView(Validator):
             Affiliates.is_deleted == False).fetch()
 
         payload: typing.List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
-        if len(payload) > 0:
+        if len(payload):
             message: str = "successfully returned all affiliates"
             return jsonify({'status': True,
                             'message': message,
@@ -431,7 +428,7 @@ class AffiliatesView(Validator):
             Affiliates.is_deleted == True).fetch()
 
         payload: typing.List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
-        if len(payload) > 0:
+        if len(payload):
 
             message: str = "Successfully returned deleted affiliates"
             return jsonify({'status': True,
@@ -458,7 +455,7 @@ class AffiliatesView(Validator):
                                                                     Affiliates.is_deleted == False).fetch()
 
         payload: typing.List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
-        if len(payload) > 0:
+        if len(payload):
             message: str = "Successfully returned affiliates which are not deleted"
             return jsonify({'status': True,
                             'message': message,
@@ -469,7 +466,7 @@ class AffiliatesView(Validator):
 
 
 # noinspection DuplicatedCode
-class RecruitsView(Validator):
+class RecruitsView(Validator, CacheManager):
     ***REMOVED***
         View Manager for Recruits
         Used by affiliates to register newly recruited members
@@ -490,6 +487,9 @@ class RecruitsView(Validator):
         :param recruit_data:
         :return:
         ***REMOVED***
+        # TODO - the action of creating a recruit also modifies the affiliate record who is recruiting
+        #  this means an update is also needed on the relevant affiliate record
+
         referrer_uid: Optional[str] = recruit_data.get('referrer_uid')
         if not isinstance(referrer_uid, str) or not bool(referrer_uid.strip()):
             message: str = 'referrer_uid is required'
@@ -508,6 +508,10 @@ class RecruitsView(Validator):
         if not bool(key):
             message: str = "An Error occurred while adding new recruit"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
+        self.__delete_recruits_cache(recruits_view=RecruitsView, organization_id=organization_id,
+                                     is_active=recruit_instance.is_active, is_deleted=recruit_instance.is_deleted,
+                                     affiliate_data=None, recruit_data=recruit_data)
 
         return jsonify({'status': True, 'message': 'Successfully created new recruit',
                         'payload': recruit_instance.to_dict()}), status_codes.successfully_updated_code
@@ -544,6 +548,10 @@ class RecruitsView(Validator):
             if not bool(key):
                 message: str = "An Error occurred while deleting recruit"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
+            self.__delete_recruits_cache(recruits_view=RecruitsView, organization_id=organization_id,
+                                         is_active=recruit_instance.is_active, is_deleted=recruit_instance.is_deleted,
+                                         affiliate_data=None, recruit_data=recruit_data)
 
             return jsonify({'status': True, 'message': 'Successfully deleted recruit',
                             'payload': recruit_instance.to_dict()}), status_codes.successfully_updated_code
@@ -583,8 +591,14 @@ class RecruitsView(Validator):
             if not bool(key):
                 message: str = "An Error occurred while changing recruit active status"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
+            self.__delete_recruits_cache(recruits_view=RecruitsView, organization_id=organization_id,
+                                         is_active=is_active, is_deleted=recruit_instance.is_deleted,
+                                         affiliate_data=None, recruit_data=recruit_data)
+
             return jsonify({'status': True, 'message': 'Successfully deleted recruit',
                             'payload': recruit_instance.to_dict()}), status_codes.successfully_updated_code
+
         message: str = "Recruit does not exist"
         return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
@@ -693,7 +707,7 @@ class RecruitsView(Validator):
                                                               Recruits.affiliate_id == affiliate_id).fetch()
 
         payload: typing.List[dict] = [recruit.to_dict() for recruit in recruits_list]
-        if len(payload) > 0:
+        if len(payload):
             message: str = "{} recruits successfully fetched recruits by active status".format(str(len(recruits_list)))
             return jsonify({'status': True, 'message': message, 'payload': payload}), status_codes.status_ok_code
 
@@ -705,6 +719,7 @@ class RecruitsView(Validator):
     @app_cache.memoize(timeout=return_ttl('short'))
     def get_recruits_by_active_affiliate(self, affiliate_data: dict, is_active: bool) -> tuple:
         ***REMOVED***
+            # TODO this function may be irrelevant further refining is needed here
             return a list of recruits by is_active status
         :param affiliate_data:
         :param is_active:
@@ -729,7 +744,7 @@ class RecruitsView(Validator):
                                                               Recruits.is_active == is_active).fetch()
 
         payload: typing.List[dict] = [recruit.to_dict() for recruit in recruits_list]
-        if len(payload) > 0:
+        if len(payload):
             message: str = "{} recruits successfully fetched affiliate recruits by status".format(str(len(recruits_list)))
             return jsonify({'status': True, 'message': message, 'payload': payload}), status_codes.status_ok_code
 
