@@ -68,8 +68,15 @@
                                   <a href="{{ url_for('memberships_main.memberships_main_routes', path='forget') }}">
                                       I Forgot My Password
                                   </a>
+
                                 </div>
                                 <div class="card-footer">
+                                <a class="btn btn-secondary" href="{{ url_for('memberships_main.memberships_main_routes', path='login-with-github')}}"
+                                    >
+                                        <i class="fab fa-github"> &nbsp; </i>
+                                        login with GitHub
+                                </a>
+
                                     <!-- displaying event message in-case login was not successful -->
                                     <span id="message" class="card-text"></span>
                                 </div>
