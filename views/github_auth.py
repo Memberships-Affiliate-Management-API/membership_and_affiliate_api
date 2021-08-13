@@ -35,7 +35,7 @@ class Validators:
             return self._user_dict.get('uid')
 
         _url: str = "{}{}".format(self._base_url, self._admin_check_user_endpoint)
-        response, _ = requests.post(url=_url, json=json.dumps(dict(email=email)))
+        response, status = requests.post(url=_url, json=json.dumps(dict(email=email)))
         user_instance_dict: dict = response.to_dict()
         if user_instance_dict['status']:
             self._user_dict = user_instance_dict
@@ -51,7 +51,7 @@ class Validators:
         ***REMOVED***
         _uid: str = create_id()
         _url: str = "{}{}".format(self._base_url, self._admin_check_user_endpoint)
-        response, _ = requests.post(url=_url, json=json.dumps(dict(uid=_uid)))
+        response, status = requests.post(url=_url, json=json.dumps(dict(uid=_uid)))
         user_instance_dict: dict = response.to_dict()
         if not user_instance_dict['status']:
             return _uid
