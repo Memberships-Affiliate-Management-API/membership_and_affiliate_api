@@ -23,6 +23,7 @@ def admin_users(path: str) -> tuple:
     elif path == "is-user-unique":
         # checks if user exists based on either email or uid - used for administration purposes
         json_data: dict = request.get_json()
+        print('JSON DAT: ', json_data)
         email: Optional[str] = json_data.get("email")
         uid: Optional[str] = json_data.get("uid")
         user_view_instance: UserView = UserView()
