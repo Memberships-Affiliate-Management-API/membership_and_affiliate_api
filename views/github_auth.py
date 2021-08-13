@@ -119,15 +119,6 @@ class GithubAuthView(Validators):
         return jsonify({'status': True, 'payload': github_user_instance.to_dict(),
                         'message': message}), status_codes.successfully_updated_code
 
-
-
-
-
-
-
-
-
-
     def update_user(self, user_details: dict) -> tuple:
         ***REMOVED***
 
