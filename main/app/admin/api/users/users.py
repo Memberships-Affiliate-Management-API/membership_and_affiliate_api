@@ -1,7 +1,7 @@
 from flask import Blueprint, request
 from views.users import UserView
 from security.users_authenticator import logged_user, is_app_admin
-from typing import Union
+from typing import Union, Optional
 
 admin_users_api_bp = Blueprint("admin_users_api", __name__)
 
@@ -19,6 +19,14 @@ def admin_users(path: str) -> tuple:
         uid: Union[str, None] = json_data.get("uid")
         user_view_instance: UserView = UserView()
         return user_view_instance.get_user(uid=uid, organization_id=organization_id)
+
+    elif path == "is-user-unique":
+        # checks if user exists based on either email or uid - used for administration purposes
+        json_data: dict = request.get_json()
+        email: Optional[str] = json_data.get("email")
+        uid: Optional[str] = json_data.get("uid")
+        user_view_instance: UserView = UserView()
+        return user_view_instance._system_user_exist(email=email, uid=uid)
 
 
 

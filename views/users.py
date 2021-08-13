@@ -1236,3 +1236,26 @@ class UserView(Validators, UserEmails, CacheManager):
         ***REMOVED***
         # TODO: complete this by actually sending recovery email
         return jsonify({'status': False, 'message': 'Unable to send recovery email please try again later'}), 500
+
+    @use_context
+    @handle_view_errors
+    def _system_user_exist(self, email: Optional[str] = None, uid: Optional[str] = None) -> tuple:
+        ***REMOVED***
+
+        :param email:
+        :return:
+        ***REMOVED***
+        if isinstance(email, str) and bool(email.strip()):
+            users_instance: UserModel = UserModel.query(UserModel.email == email).get()
+            message: str = "user exist"
+            return jsonify({'status': True,
+                            'payload': users_instance.to_dict(), 'message': message}), status_codes.status_ok_code
+        elif isinstance(uid, str) and bool(uid.strip()):
+            users_instance: UserModel = UserModel.query(UserModel.uid == uid).get()
+            message: str = "user exist"
+            return jsonify({'status': True,
+                            'payload': users_instance.to_dict(), 'message': message}), status_codes.status_ok_code
+
+        message: str = "user not found"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+
