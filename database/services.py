@@ -111,9 +111,9 @@ class Services(BaseModel):
         return True
 
     def __str__(self) -> str:
-        return "<Service name: {}, description: {}, category: {}".format(self.name,
-                                                                         self.description,
-                                                                         self.category)
+        return "<Services: organization_id: {}, uid: {}, service_id: {}, Name: {}, description: {}, " \
+               "category: {}".format(self.organization_id, self.created_by_uid, self.service_id, self.name,
+                                     self.description, self.category)
 
     def __bool__(self) -> bool:
         return bool(self.service_id)
