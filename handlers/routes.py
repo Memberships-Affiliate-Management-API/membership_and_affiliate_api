@@ -188,7 +188,7 @@ def handle_remote_error(e: RequestError) -> tuple:
 
 
 @default_handlers_bp.app_errorhandler(OAuthError)
-def handle_auth_error(e:  OAuthError) -> None:
+def handle_auth_error(e:  OAuthError) -> tuple:
     ***REMOVED***
         **handles github authentication error**
             raised when something wrong happens during github authentication flow
@@ -197,5 +197,5 @@ def handle_auth_error(e:  OAuthError) -> None:
     ***REMOVED***
     # Note OAuthError is not compatible with my custom errors
     message: str = e.description
-    raise UnAuthenticatedError(status=error_codes.input_error_code, description=message)
+    return return_error(e=UnAuthenticatedError(status=error_codes.input_error_code, description=message))
 
