@@ -15,6 +15,9 @@ from utils import create_id
 
 
 class Validators:
+    ***REMOVED***
+        **Utilities and Validators for GithubAuthView Class**
+    ***REMOVED***
     def __init__(self):
         self._admin_check_user_endpoint = "_api/admin/users/is-user-unique"
         self._base_url = current_app.config.get('BASE_URL')
@@ -35,9 +38,14 @@ class Validators:
         _url: str = "{}{}".format(self._base_url, self._admin_check_user_endpoint)
         response, status = requests.post(url=_url, json=json.dumps(dict(email=email)))
         user_instance_dict: dict = response.to_dict()
+
+        # NOTE: if user is found it means there is a user with this record -
+        # then return the uid of this user
+        # TODO insure that one user can belong to multiple organizations with a single uid
         if user_instance_dict['status']:
             self._user_dict = user_instance_dict
             return self._user_dict.get('uid')
+
         return None
 
     def create_unique_id(self) -> str:
@@ -51,6 +59,7 @@ class Validators:
         _url: str = "{}{}".format(self._base_url, self._admin_check_user_endpoint)
         response, status = requests.post(url=_url, json=json.dumps(dict(uid=_uid)))
         user_instance_dict: dict = response.to_dict()
+        # if user not found then this means there is no user with such an ID
         if not user_instance_dict['status']:
             return _uid
         self.create_unique_id()

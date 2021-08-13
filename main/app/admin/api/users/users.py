@@ -1,6 +1,6 @@
 from flask import Blueprint, request
 from views.users import UserView
-from typing import Union, Optional
+from typing import Optional
 
 admin_users_api_bp = Blueprint("admin_users_api", __name__)
 
@@ -13,10 +13,11 @@ def admin_users(path: str) -> tuple:
     :return:
     ***REMOVED***
     # NOTE: only this application can call this endpoints-
+    # For Purposes of authentication check if the calling url belongs to this app
     if path == "get":
         json_data: dict = request.get_json()
-        organization_id: Union[str, None] = json_data.get("organization_id")
-        uid: Union[str, None] = json_data.get("uid")
+        organization_id: Optional[str] = json_data.get("organization_id")
+        uid: Optional[str] = json_data.get("uid")
         user_view_instance: UserView = UserView()
         return user_view_instance.get_user(uid=uid, organization_id=organization_id)
 

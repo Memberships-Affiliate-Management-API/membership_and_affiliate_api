@@ -2,6 +2,14 @@
     **ndb BaseModel **
         used as a superclass to define data models
 ***REMOVED***
+__author__ = "mobius-crypt"
+__email__ = "mobiusndou@gmail.com"
+__twitter__ = "@blueitserver"
+__github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
+__github_profile__ = "https://github.com/freelancing-solutions/"
+
+from typing import Optional
+
 from google.cloud import ndb
 
 
@@ -14,7 +22,7 @@ class BaseModel(ndb.Model):
     def __repr__(self) -> str:
         ***REMOVED***
             **__repr__**
-                equivalent to __str__
+                equivalent to __str__, but has to be unique for each instance
         :return: string rep of instance
         ***REMOVED***
         return "{} (id={} state={})".format(type(self).__name__, self.id, self.__str__())
@@ -28,19 +36,19 @@ class BaseModel(ndb.Model):
         return int(self.__bool__())
 
     @property
-    def id(self):
+    def id(self) -> Optional[str]:
         ***REMOVED***int: The index ID.***REMOVED***
-        return self.key.id() if self.key else None
+        return self.key.id() if isinstance(self.key, ndb.Key) else None
 
     @property
-    def urlsafe_key(self) -> bytes:
+    def urlsafe_key(self) -> Optional[bytes]:
         ***REMOVED***
             **urlsafe_key**
                 byte representation of key in order to enable
                 sending the key over requests calls
         :return: bytes representing datastore key
         ***REMOVED***
-        return self.key.urlsafe()
+        return self.key.urlsafe() if isinstance(self.key, ndb.Key) else None
 
     # Turns the class to dict and include instance key
     def to_dict(self, include=all, exclude=None) -> dict:

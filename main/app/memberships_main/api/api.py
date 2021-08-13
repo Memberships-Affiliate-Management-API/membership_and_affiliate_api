@@ -1,4 +1,4 @@
-import typing
+from typing import Optional
 from flask import Blueprint, jsonify, request, current_app, url_for, flash, redirect
 from database.users import UserModel
 from security.users_authenticator import logged_user
@@ -32,16 +32,17 @@ def auth(current_user: UserModel, path: str) -> tuple:
     elif path == 'subscribe':
         json_data: dict = request.get_json()
         # TODO - check data validity
-        names: str = json_data.get('names')
-        cell: str = json_data.get('cell')
-        email: str = json_data.get('email')
-        password: str = json_data.get('password')
-        organization_id = current_app.config.get('ORGANIZATION_ID')
+        names: Optional[str] = json_data.get('names')
+        cell: Optional[str] = json_data.get('cell')
+        email: Optional[str] = json_data.get('email')
+        password: Optional[str] = json_data.get('password')
+        # Note - parameter validity checks will be performed by add_user
+        organization_id: str = current_app.config.get('ORGANIZATION_ID')
         users_view_instance: UserView = UserView()
         name, surname = names.split(" ")
         response = users_view_instance.add_user(organization_id=organization_id, names=names, surname=surname,
                                                 cell=cell, email=email, password=password)
-        print(response)
+
         return response
 
     elif path == 'send-recovery-email':
@@ -63,13 +64,13 @@ def contact(current_user: UserModel) -> tuple:
     ***REMOVED***
     json_data: dict = request.get_json()
     # TODO: send contact data to contact database view
-    names: typing.Union[str, None] = json_data.get('names')
-    email: typing.Union[str, None] = json_data.get('email')
-    cell: typing.Union[str, None] = json_data.get('cell')
-    topic: typing.Union[str, None] = json_data.get('topic')
-    subject: typing.Union[str, None] = json_data.get('subject')
-    body: typing.Union[str, None] = json_data.get('body')
-    organization_id: typing.Union[str, None] = current_app.config.get('ORGANIZATION_ID')
+    names: Optional[str] = json_data.get('names')
+    email: Optional[str] = json_data.get('email')
+    cell: Optional[str] = json_data.get('cell')
+    topic: Optional[str] = json_data.get('topic')
+    subject: Optional[str] = json_data.get('subject')
+    body: Optional[str] = json_data.get('body')
+    organization_id: Optional[str] = current_app.config.get('ORGANIZATION_ID')
 
     print('Names: {}, Email: {}, Cell: {}, Topic: {}, Subject: {}, Body: {}'.format(names, email, cell, topic,
                                                                                     subject, body))

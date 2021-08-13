@@ -1,8 +1,16 @@
 ***REMOVED***
     **Cache Management Module**
-
-    Classes and methods to manage cache items
+        Classes and methods to manage cache items
+        delete cache items which are used in this application
+        on view functions
 ***REMOVED***
+__author__ = "mobius-crypt"
+__email__ = "mobiusndou@gmail.com"
+__twitter__ = "@blueitserver"
+__github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
+__github_profile__ = "https://github.com/freelancing-solutions/"
+
+
 from main import app_cache
 from typing import Optional
 
@@ -10,6 +18,33 @@ from typing import Optional
 class CacheManager:
     ***REMOVED***
         **Class Cache CacheManager**
+        .. note::
+
+            Flask-Caching uses inspect to order kwargs into positional args when
+            the function is memoized. If you pass a function reference into
+            ``fname``, Flask-Caching will be able to place the args/kwargs in
+            the proper order, and delete the positional cache.
+
+            However, if ``delete_memoized`` is just called with the name of the
+            function, be sure to pass in potential arguments in the same order
+            as defined in your function as args only, otherwise Flask-Caching
+            will not be able to compute the same cache key and delete all
+            memoized versions of it.
+
+        .. note::
+
+            Flask-Caching maintains an internal random version hash for
+            the function. Using delete_memoized will only swap out
+            the version hash, causing the memoize function to recompute
+            results and put them into another key.
+
+            This leaves any computed caches for this memoized function within
+            the caching backend.
+
+            It is recommended to use a very high timeout with memoize if using
+            this function, so that when the version hash is swapped, the old
+            cached results would eventually be reclaimed by the caching
+            backend.
     ***REMOVED***
 
     def __init__(self):
@@ -76,7 +111,7 @@ class CacheManager:
         :param status:
         :return:
         ***REMOVED***
-
+        # TODO- finish this up
         return True
 
     @staticmethod

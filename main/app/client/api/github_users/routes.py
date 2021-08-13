@@ -5,6 +5,7 @@
 
 ***REMOVED***
 from flask import Blueprint
+from views.github_auth import GithubAuthView
 
 github_users_api_bp = Blueprint('github_users_api', __name__)
 

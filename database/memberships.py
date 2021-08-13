@@ -311,8 +311,9 @@ class Memberships(BaseModel):
         return True
 
     def __str__(self) -> str:
-        return "<Memberships: status: {}, date_created: {}, start_date: {}".format(self.status, str(self.date_created),
-                                                                                   str(self.plan_start_date))
+        return "<Memberships: organization_id: {}, uid: {}, plan_id: {}, status: {}, date_created: {}, " \
+               "start_date: {}".format(self.organization_id, self.uid, self.plan_id, self.status, self.date_created,
+                                       self.plan_start_date)
 
     def __bool__(self) -> bool:
         return bool(self.uid)
@@ -376,9 +377,9 @@ class MembershipPlans(BaseModel):
         return True
 
     def __str__(self) -> str:
-        return "<MembershipPlans: plan_name: {}, description: {}, total_members: {}, schedule_day: {}, " \
-               "term : {}".format(self.plan_name, self.description, self.total_members,
-                                  self.schedule_day, self.schedule_term)
+        return "<MembershipPlans: organization_id: {}, uid: {}, plan_id:{}, plan_name: {}, description: {}, total_members: {}, schedule_day: {}, " \
+               "term : {}".format(self.organization_id, self.uid, self.plan_id, self.plan_name, self.description,
+                                  self.total_members, self.schedule_day, self.schedule_term)
 
     def __bool__(self) -> bool:
         return bool(self.plan_id)

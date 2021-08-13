@@ -168,8 +168,9 @@ class Affiliates(BaseModel):
         return True
 
     def __str__(self) -> str:
-        return "<Affiliates: date_recruited: {}, total_recruits: {}".format(self.datetime_recruited,
-                                                                            self.total_recruits)
+        return "<Affiliates: organization_id: {}, affiliate_id: {}, uid: {}, date_recruited: {}, " \
+               "total_recruits: {}".format(self.organization_id, self.affiliate_id, self.uid, self.datetime_recruited,
+                                           self.total_recruits)
 
     def __bool__(self) -> bool:
         return bool(self.affiliate_id)
@@ -206,7 +207,9 @@ class Recruits(BaseModel):
     is_deleted: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
 
     def __str__(self) -> str:
-        return "<Recruits: {}{}{}".format(self.affiliate_id, self.referrer_uid, self.datetime_recruited)
+        return "<Recruits: organization_id: {} , affiliate_id: {}, referrer_uid: {}, datetime_recruited: {}, " \
+               "plan_id: {}".format(self.organization_id, self.affiliate_id, self.referrer_uid, self.datetime_recruited,
+                                    self.recruit_plan_id)
 
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
@@ -256,8 +259,9 @@ class EarningsData(BaseModel):
         return True
 
     def __str__(self) -> str:
-        return "<EarningsClass start_date: {}, end_date: {}, total_earned: {}, is_paid: {}, on_hold: {}".format(
-            self.start_date, self.last_updated, self.total_earned, self.is_paid, self.on_hold)
+        return "<EarningsClass organization_id: {}, affiliate_id: {},  start_date: {}, end_date: {}, total_earned: {}, " \
+               "is_paid: {}, on_hold: {}".format(self.organization_id, self.affiliate_id, self.start_date,
+                                                 self.last_updated, self.total_earned, self.is_paid, self.on_hold)
 
     def __bool__(self) -> bool:
         # return True if self.affiliate_id else False
@@ -293,7 +297,8 @@ class AffiliateEarningsTransactions(BaseModel):
         return True
 
     def __str__(self) -> str:
-        return "<Total Earned: {} ".format(str(self.transactions_total))
+        return "<Total Earned: organization_id: {}, affiliate_id: {}, transactions_total: {}".format(
+            self.organization_id, self.affiliate_id, str(self.transactions_total))
 
     def __bool__(self) -> bool:
         # return True if self.affiliate_id else False
@@ -328,7 +333,8 @@ class AffiliateTransactionItems(BaseModel):
         return True
 
     def __str__(self) -> str:
-        return "<AffiliateTransactionItem Amount: {}, date: {}".format(str(self.amount), str(self.transaction_date))
+        return "<AffiliateTransactionItem: transaction_id: {}, Amount: {}, date: {}".format(
+            self.transaction_id, str(self.amount), str(self.transaction_date))
 
     def __bool__(self) -> bool:
         # return True if self.transaction_id else False
@@ -374,9 +380,9 @@ class AffiliateSettingsStats(BaseModel):
         return True
 
     def __str__(self) -> str:
-        return "Earnings Percent: {}, Recurring Earnings: {}, Total Affiliates Earnings: {}, " \
-               "Total Affiliates: {}".format(str(self.earnings_percent), str(self.recurring_earnings),
-                                             str(self.total_affiliates_earnings), str(self.total_affiliates))
+        return "<AffiliateSettingsStats organization_id: {},  Earnings Percent: {}, Recurring Earnings: {}, Total Affiliates Earnings: {}, " \
+               "Total Affiliates: {}".format(self.organization_id, self.earnings_percent, self.recurring_earnings,
+                                             str(self.total_affiliates_earnings), self.total_affiliates)
 
     def __bool__(self) -> bool:
         # return True if self.earnings_percent is not None else False

@@ -23,41 +23,42 @@ def handle_view_errors(func):
     ***REMOVED***
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
+        debug: bool = current_app.config.get('DEBUG')
         try:
             return func(*args, **kwargs)
         except ValueError as e:
             message: str = str(e)
-            if current_app.config.get('DEBUG'):
+            if debug:
                 print(message)
             raise InputError(status=500, description=message)
         except TypeError as e:
             message: str = str(e)
-            if current_app.config.get('DEBUG'):
+            if debug:
                 print(e)
             raise InputError(status=500, description=message)
         except BadRequestError as e:
-            if current_app.config.get('DEBUG'):
+            if debug:
                 print(e)
             message: str = '''<code>Bad Request:</code> while connecting to database'''
             raise RequestError(status=500, description=message)
         except BadQueryError as e:
-            if current_app.config.get('DEBUG'):
+            if debug:
                 print(e)
             message: str = '''<code>Database Query Error:</code> Error while querying database please inform admin'''
             raise DataServiceError(status=500, description=message)
         except ConnectionRefusedError as e:
-            if current_app.config.get('DEBUG'):
+            if debug:
                 print(e)
             message: str = '''<code>Connection Refused:</code> Unable to connect to database please try again later'''
             raise RequestError(status=500, description=message)
         except RetryError as e:
-            if current_app.config.get('DEBUG'):
+            if debug:
                 print(e)
             message: str = '''<code>Retries Exceeded:</code> Unable to connect to database please try again later 
             or inform the administrator'''
             raise RequestError(status=500, description=message)
         except Aborted as e:
-            if current_app.config.get('DEBUG'):
+            if debug:
                 print(e)
             message: str = '''<code>Abort Error:</code> due to some error on our servers your connection 
             was aborted try again later'''
@@ -72,26 +73,27 @@ def handle_store_errors(func):
     ***REMOVED***
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
+        debug: bool = current_app.config.get('DEBUG')
         try:
             return func(*args, **kwargs)
         except ConnectionRefusedError as e:
-            if current_app.config.get('DEBUG'):
+            if debug:
                 print(str(e))
             return None
         except RetryError as e:
-            if current_app.config.get('DEBUG'):
+            if debug:
                 print(str(e))
             return None
         except Aborted as e:
-            if current_app.config.get('DEBUG'):
+            if debug:
                 print(str(e))
             return None
         except BadQueryError as e:
-            if current_app.config.get('DEBUG'):
+            if debug:
                 print(str(e))
             return None
         except BadRequestError as e:
-            if current_app.config.get('DEBUG'):
+            if debug:
                 print(str(e))
             return None
 
