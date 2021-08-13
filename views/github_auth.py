@@ -5,9 +5,12 @@
 import json
 
 import requests
-from flask import current_app
+from flask import current_app, jsonify
 from typing import Optional
-from config.exceptions import InputError, error_codes
+
+from google.cloud import ndb
+
+from config.exceptions import InputError, error_codes, DataServiceError, status_codes
 from config.use_context import use_context
 from database.users import GithubUser
 from utils import create_id
@@ -63,6 +66,8 @@ class GithubAuthView(Validators):
     ***REMOVED***
     def __init__(self):
         super(GithubAuthView, self).__init__()
+        self._max_retries = current_app.config.get('DATASTORE_RETRIES')
+        self._max_timeout = current_app.config.get('DATASTORE_TIMEOUT')
 
     @use_context
     def create_user(self, user_details: dict) -> tuple:
@@ -83,8 +88,12 @@ class GithubAuthView(Validators):
             # TODO need to find a way to update the user record or let the user do it
             uid: str = self.create_unique_id()
 
-        organization_id: Optional[str] = user_details.get('organization_id')
+        # NOTE: the users registration here is for the client dashboard section only
+        # hence this is why we are using the organization_id of the main app
+        organization_id: Optional[str] = current_app.get('organization_id')
+
         access_token: Optional[str] = user_details.get('access_token')
+
         twitter_username: Optional[str] = user_details.get('twitter_username')
         github_name: Optional[str] = user_details.get('github_name')
         avatar_url: Optional[str] = user_details.get('avatar_url')
@@ -94,6 +103,24 @@ class GithubAuthView(Validators):
         following_url: Optional[str] = user_details.get('following_url')
         gists_url: Optional[str] = user_details.get('gists_url')
         repos_url: Optional[str] = user_details.get('repos_url')
+
+        github_user_instance: GithubUser = GithubUser(
+            uid=uid, organization_id=organization_id, access_token=access_token, email=email,
+            twitter_username=twitter_username, github_name=github_name, avatar_url=avatar_url, api_url=api_url,
+            html_url=html_url, following_url=following_url, followers_url=followers_url, gists_url=gists_url,
+            repos_url=repos_url)
+
+        key: Optional[ndb.Key] = github_user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+        if not bool(key):
+            message: str = "Database Error: while creating new User"
+            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
+        message: str = "Successfully created new user"
+        return jsonify({'status': True, 'payload': github_user_instance.to_dict(),
+                        'message': message}), status_codes.successfully_updated_code
+
+
+
 
 
 
