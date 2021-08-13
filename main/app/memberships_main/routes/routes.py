@@ -1,11 +1,12 @@
 ***REMOVED***
     Routes for requests related to main website for Memberships & Affiliates Management API.
 ***REMOVED***
-from flask import Blueprint, render_template, get_flashed_messages, make_response, redirect, url_for
+from flask import Blueprint, render_template, get_flashed_messages, make_response, redirect, url_for, flash
 from config.exceptions import status_codes
 from main import app_cache, github
 from security.users_authenticator import logged_user
 from utils.utils import return_ttl, can_cache
+from views.github_auth import GithubAuthView
 
 memberships_main_bp = Blueprint('memberships_main', __name__)
 
@@ -75,7 +76,15 @@ def memberships_main_routes(current_user, path: str) -> tuple:
         # do something with the token and profile
         print(profile, token)
         # with profile and token create new user once done redirect to main page
-        return redirect('/')
+        profile.update(dict(token=token))
+        github_user_view: GithubAuthView = GithubAuthView()
+        response, _ = github_user_view.create_user(user_details=profile)
+
+        # TODO remember to include flashed messages on templates
+        if response.to_dict()['status']:
+            message: str = "You have successfully logged in"
+            flash(message)
+            return redirect('/')
 
     elif path == 'logout' or path == "logout.html":
         if not current_user:
