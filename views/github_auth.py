@@ -22,7 +22,7 @@ class Validators:
         self._base_url = current_app.config.get('BASE_URL')
         self._user_dict: Optional[dict] = None
 
-    def account_lookup(self, email: str) -> Optional[str, None]:
+    def account_lookup(self, email: str) -> Optional[str]:
         ***REMOVED***
             **does_account_exist**
                 if the account with email address already exists on the users - records return the account uid
