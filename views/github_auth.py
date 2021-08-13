@@ -3,13 +3,11 @@
         allows clients to gain access to the api dashboard through github authorization
 ***REMOVED***
 import json
-
 import requests
 from flask import current_app, jsonify
-from typing import Optional
-
+from typing import Optional, List
 from google.cloud import ndb
-
+from config.exception_handlers import handle_view_errors
 from config.exceptions import InputError, error_codes, DataServiceError, status_codes
 from config.use_context import use_context
 from database.users import GithubUser
@@ -64,12 +62,14 @@ class GithubAuthView(Validators):
             view controller for github authorization for the client portal
 
     ***REMOVED***
+
     def __init__(self):
         super(GithubAuthView, self).__init__()
         self._max_retries = current_app.config.get('DATASTORE_RETRIES')
         self._max_timeout = current_app.config.get('DATASTORE_TIMEOUT')
 
     @use_context
+    @handle_view_errors
     def create_user(self, user_details: dict) -> tuple:
         ***REMOVED***
             **create_user**
@@ -119,6 +119,8 @@ class GithubAuthView(Validators):
         return jsonify({'status': True, 'payload': github_user_instance.to_dict(),
                         'message': message}), status_codes.successfully_updated_code
 
+    @use_context
+    @handle_view_errors
     def update_user(self, user_details: dict) -> tuple:
         ***REMOVED***
 
@@ -127,6 +129,8 @@ class GithubAuthView(Validators):
         ***REMOVED***
         pass
 
+    @use_context
+    @handle_view_errors
     def delete_user(self, organization_id: Optional[str], uid: Optional[str]) -> tuple:
         ***REMOVED***
 
@@ -136,6 +140,8 @@ class GithubAuthView(Validators):
         ***REMOVED***
         pass
 
+    @use_context
+    @handle_view_errors
     def get_user(self, organization_id: Optional[str], uid: Optional[str]) -> tuple:
         ***REMOVED***
 
@@ -143,13 +149,42 @@ class GithubAuthView(Validators):
         :param uid:
         :return:
         ***REMOVED***
-        pass
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = 'organization_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
 
+        if not isinstance(uid, str) or not bool(uid.strip()):
+            message: str = 'uid is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        github_user_instance: GithubUser = GithubUser.query(GithubUser.organization_id == organization_id,
+                                                            GithubUser.uid == uid).get()
+        if isinstance(github_user_instance, GithubUser):
+            message: str = 'user record found'
+            return jsonify({'status': True, 'payload': github_user_instance.to_dict(),
+                            'message': message}), status_codes.status_ok_code
+
+        message: str = 'Unable to find user'
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+
+    @use_context
+    @handle_view_errors
     def return_organization_users(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
 
         :param organization_id:
         :return:
         ***REMOVED***
-        pass
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = 'organization_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
 
+        github_users: List[dict] = [user.to_dict() for user in GithubUser.query(
+            GithubUser.organization_id == organization_id)]
+        if isinstance(github_users, list) and len(github_users):
+            message: str = 'users successfully fetched'
+            return jsonify({'status': True, 'payload': github_users,
+                            'message': message}), status_codes.status_ok_code
+
+        message: str = "user not found"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
