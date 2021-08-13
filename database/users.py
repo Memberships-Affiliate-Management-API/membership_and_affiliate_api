@@ -252,6 +252,7 @@ class GithubUser(BaseModel):
         used to stored login with github client details
     ***REMOVED***
     uid: str = ndb.StringProperty(required=True, validator=property_.set_id)
+    organization_id: str = ndb.StringProperty(required=True, validator=property_.set_id)
     access_token: str = ndb.StringProperty(required=True, validator=property_.set_string)
     email: str = ndb.StringProperty(required=True, validator=property_.set_email)
     twitter_username: str = ndb.StringProperty(validator=property_.set_string)
