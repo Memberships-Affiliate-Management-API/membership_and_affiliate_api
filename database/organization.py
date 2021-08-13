@@ -245,7 +245,8 @@ class PaymentResults(BaseModel):
     last_updated: datetime = ndb.DateTimeProperty(auto_now=True, validator=property_.set_datetime)
 
     def __str__(self) -> str:
-        return "<PaymentResults : PaymentResults {} ".format(self.payment_result)
+        return "<PaymentResults: Organization_id: {}, Transaction_id: {}, Payment_result: {}".format(
+            self.organization_id, self.transaction_id, self.payment_result)
 
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
