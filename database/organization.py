@@ -84,8 +84,10 @@ class Organization(BaseModel):
     date_updated: datetime = ndb.DateTimeProperty(auto_now=True, validator=property_.set_datetime)
 
     def __str__(self) -> str:
-        return "<Organization Name: {} Affiliates: {} Members: {}".format(self.organization_name, self.total_affiliates,
-                                                                          self.total_members)
+        return "<Organization organization_id: {}, owner_uid: {}, wallet_id: {}, Name: {} Description: {} " \
+               "Affiliates: {} Members: {}".format(self.organization_id, self.owner_uid, self.wallet_id,
+                                                   self.organization_name, self.description, self.total_affiliates,
+                                                   self.total_members)
 
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
@@ -177,7 +179,8 @@ class AuthorizedUsers(BaseModel):
     date_updated: datetime = ndb.DateTimeProperty(auto_now=True, validator=property_.set_datetime)
 
     def __str__(self) -> str:
-        return "<AuthorizedUser role: {}, is_active: {}".format(self.role, self.is_active)
+        return "<AuthorizedUser organization_id: {}, uid: {}, role: {}, is_active: {}".format(
+            self.organization_id, self.uid, self.role, self.is_active)
 
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
