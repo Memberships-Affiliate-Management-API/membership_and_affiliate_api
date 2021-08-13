@@ -8,10 +8,11 @@ __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
+from authlib.integrations.base_client import OAuthError
 from flask import Blueprint, jsonify
 from werkzeug.exceptions import BadRequest, Forbidden, NotFound, MethodNotAllowed, Unauthorized
 from config import config_instance
-from config.exceptions import DataServiceError, InputError, RemoteDataError
+from config.exceptions import DataServiceError, InputError, RemoteDataError, error_codes
 from config.exceptions import UnAuthenticatedError, RequestError
 
 default_handlers_bp = Blueprint('handlers', __name__)
@@ -31,6 +32,7 @@ def warmup() -> tuple:
 
 def return_error(e) -> tuple:
     ***REMOVED***Actually replying with the error and description of the error here***REMOVED***
+
     if config_instance.DEBUG:
         print(f"Description: {e.description} Error_Code: {e.code}")
     return jsonify({'status': False, 'message': e.description}), e.code
@@ -183,3 +185,17 @@ def handle_remote_error(e: RequestError) -> tuple:
     :return: tuple representing the error and status
     ***REMOVED***
     return return_error(e)
+
+
+@default_handlers_bp.app_errorhandler(OAuthError)
+def handle_auth_error(e:  OAuthError) -> None:
+    ***REMOVED***
+        **handles github authentication error**
+            raised when something wrong happens during github authentication flow
+    :param e:
+    :return:
+    ***REMOVED***
+    # Note OAuthError is not compatible with my custom errors
+    message: str = e.description
+    raise UnAuthenticatedError(status=error_codes.input_error_code, description=message)
+

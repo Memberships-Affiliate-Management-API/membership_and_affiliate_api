@@ -170,7 +170,7 @@ class UserModel(BaseModel):
         return True
 
     def __bool__(self) -> bool:
-        # return True if self.transaction_id else False
+        # return True if self.uid else False
         return bool(self.uid)
 
     @property
@@ -247,15 +247,15 @@ class UserModel(BaseModel):
         return super().to_dict(include=include, exclude=exclude)
 
 
-class GithubDetails(BaseModel):
+class GithubUser(BaseModel):
     ***REMOVED***
         used to stored login with github client details
     ***REMOVED***
     uid: str = ndb.StringProperty(required=True, validator=property_.set_id)
-    github_name: str = ndb.StringProperty(required=True, validator=property_.set_string)
+    access_token: str = ndb.StringProperty(required=True, validator=property_.set_string)
     email: str = ndb.StringProperty(required=True, validator=property_.set_email)
     twitter_username: str = ndb.StringProperty(validator=property_.set_string)
-    access_token: str = ndb.StringProperty(required=True, validator=property_.set_string)
+    github_name: str = ndb.StringProperty(required=True, validator=property_.set_string)
     avatar_url: str = ndb.StringProperty(required=True, validator=property_.set_domain)
     api_url: str = ndb.StringProperty(required=True, validator=property_.set_domain)
     html_url: str = ndb.StringProperty(required=True, validator=property_.set_domain)
@@ -264,6 +264,22 @@ class GithubDetails(BaseModel):
     gists_url: str = ndb.StringProperty(required=True, validator=property_.set_domain)
     repos_url: str = ndb.StringProperty(required=True, validator=property_.set_domain)
 
+    def __eq__(self, other) -> bool:
+        if self.__class__ != other.__class__:
+            return False
+        
+        if self.uid != other.uid:
+            return False
+        if self.email != other.email:
+            return False
+        if self.html_url != other.html_url:
+            return False
+        return True
 
+    def __str__(self) -> str:
+        return "<GitHubUser uid: {}, email: {}, twitter: {}, github_name: {}, avatar_url: {}, html_url: {}".format(
+            self.uid, self.email, self.twitter_username, self.github_name, self.avatar_url, self.html_url)
 
+    def __bool__(self) -> bool:
+        return bool(self.uid)
 

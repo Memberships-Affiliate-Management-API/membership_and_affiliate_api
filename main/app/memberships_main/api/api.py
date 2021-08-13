@@ -1,10 +1,8 @@
 import typing
 from flask import Blueprint, jsonify, request, current_app, url_for, flash, redirect
 from database.users import UserModel
-from main import github
 from security.users_authenticator import logged_user
 from views.users import UserView
-
 
 main_api_bp = Blueprint('main_api', __name__)
 
@@ -30,7 +28,6 @@ def auth(current_user: UserModel, path: str) -> tuple:
         password: str = json_data.get('password')
         organization_id = current_app.config.get('ORGANIZATION_ID')
         return users_view_instance.login(organization_id=organization_id, email=email, password=password)
-
 
     elif path == 'subscribe':
         json_data: dict = request.get_json()
