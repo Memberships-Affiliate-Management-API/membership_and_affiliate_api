@@ -214,7 +214,9 @@ class OrgAccounts(BaseModel):
     is_verified: bool = ndb.BooleanProperty(default=property_.set_bool)
 
     def __str__(self) -> str:
-        return "<OrgAccounts : Paypal {} ".format(self.paypal_email)
+        return "<OrgAccounts: organization_id: {}, Paypal Email {}, is_verified: {} ".format(self.organization_id,
+                                                                                             self.paypal_email,
+                                                                                             self.is_verified)
 
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
