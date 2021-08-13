@@ -445,10 +445,10 @@ class MembershipInvoices(BaseModel):
         return self.payment_amount.amount + other.payment_amount.amount
 
     def __str__(self) -> str:
-        return "<Invoice invoice_number: {} , date_created: {}, payment: {}, paid: {}".format(self.invoice_number,
-                                                                                              self.date_created,
-                                                                                              self.payment_amount,
-                                                                                              self.amount_paid)
+        return "<Invoice invoice_number: organization_id: {}, uid: {}, plan_id: {}, invoice_id: {}, " \
+               "invoice_number: {} date_created: {}, payment: {}, paid: {}".format(
+                self.organization_id, self.uid, self.plan_id, self.invoice_id, self.invoice_number, self.date_created,
+                self.payment_amount, self.amount_paid)
 
     def __bool__(self) -> bool:
         return bool(self.uid)
