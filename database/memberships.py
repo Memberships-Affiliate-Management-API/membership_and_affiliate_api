@@ -448,7 +448,7 @@ class MembershipInvoices(BaseModel):
         return "<Invoice invoice_number: organization_id: {}, uid: {}, plan_id: {}, invoice_id: {}, " \
                "invoice_number: {} date_created: {}, payment: {}, paid: {}".format(
                 self.organization_id, self.uid, self.plan_id, self.invoice_id, self.invoice_number, self.date_created,
-                self.payment_amount, self.amount_paid)
+                self.payment_amount.__str__(), self.amount_paid.__str__())
 
     def __bool__(self) -> bool:
         return bool(self.uid)
@@ -483,10 +483,9 @@ class Coupons(BaseModel):
     expiration_time: int = ndb.IntegerProperty(default=0, validator=property_.set_number)
 
     def __str__(self) -> str:
-        return "Code: {} Discount: {} Is Valid: {} Date Created: {} Expire at : {}".format(self.code, self.discount,
-                                                                                           self.is_valid,
-                                                                                           self.date_created,
-                                                                                           self.expiration_time)
+        return "<Coupons: organization_id: {}, Code: {}, Discount: {}, Is Valid: {}, Date Created: {}, " \
+               "Expire at : {}".format(self.organization_id, self.code, self.discount, self.is_valid, self.date_created,
+                                       self.expiration_time)
 
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:

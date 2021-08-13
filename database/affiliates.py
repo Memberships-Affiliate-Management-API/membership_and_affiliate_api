@@ -298,7 +298,7 @@ class AffiliateEarningsTransactions(BaseModel):
 
     def __str__(self) -> str:
         return "<Total Earned: organization_id: {}, affiliate_id: {}, transactions_total: {}".format(
-            self.organization_id, self.affiliate_id, str(self.transactions_total))
+            self.organization_id, self.affiliate_id, self.transactions_total.__str__())
 
     def __bool__(self) -> bool:
         # return True if self.affiliate_id else False
@@ -334,7 +334,7 @@ class AffiliateTransactionItems(BaseModel):
 
     def __str__(self) -> str:
         return "<AffiliateTransactionItem: transaction_id: {}, Amount: {}, date: {}".format(
-            self.transaction_id, str(self.amount), str(self.transaction_date))
+            self.transaction_id, self.amount.__str__(), str(self.transaction_date))
 
     def __bool__(self) -> bool:
         # return True if self.transaction_id else False
@@ -382,7 +382,7 @@ class AffiliateSettingsStats(BaseModel):
     def __str__(self) -> str:
         return "<AffiliateSettingsStats organization_id: {},  Earnings Percent: {}, Recurring Earnings: {}, Total Affiliates Earnings: {}, " \
                "Total Affiliates: {}".format(self.organization_id, self.earnings_percent, self.recurring_earnings,
-                                             str(self.total_affiliates_earnings), self.total_affiliates)
+                                             self.total_affiliates_earnings.__str__(), self.total_affiliates)
 
     def __bool__(self) -> bool:
         # return True if self.earnings_percent is not None else False
