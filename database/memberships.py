@@ -539,10 +539,9 @@ class MembershipDailyStats(BaseModel):
     date_created: date = ndb.DateProperty(validator=property_.set_date)
 
     def __str__(self) -> str:
-        return "<Stats Users: {} Members: {}  Earnings: {} Total: {}".format(self.total_users,
-                                                                             self.total_members,
-                                                                             self.expected_earnings_this_month,
-                                                                             self.total_earned_so_far)
+        return "<MembershipDailyStats organization_id: {},  Users: {}, Members: {}, Earnings: {}, Total: {}".format(
+                self.organization_id, self.daily_id, self.total_users, self.total_members,
+                self.expected_earnings_this_month, self.total_earned_so_far)
 
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
