@@ -165,6 +165,7 @@ class APIKeysView(APIKeysValidators, CacheManager):
     def activate_key(self, key: Optional[str], organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             admin only function
+        :param organization_id:
         :param key: activate a given api-key
         :return:
         ***REMOVED***
