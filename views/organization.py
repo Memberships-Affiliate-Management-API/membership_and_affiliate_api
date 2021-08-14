@@ -269,7 +269,17 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
         # of the system
         # TODO find out how i can authenticate this call for instance i need to ensure that the user is
         #  authorized to view organization details, using uid
-        organization_instance: Organization = Organization.query(Organization.organization_id == organization_id).get()
+
+        if not isinstance(uid, str) or not bool(uid.strip()):
+            message: str = "uid is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        organization_instance: Organization = Organization.query(Organization.organization_id == organization_id,
+                                                                 Organization.uid == uid).get()
         if isinstance(organization_instance, Organization):
             message: str = 'successfully fetched organization'
             return jsonify({'status': True,
@@ -285,7 +295,8 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
     def _return_all_organizations(self) -> tuple:
         ***REMOVED***
             **_return_all_organizations**
-                _private function to retrieve all organization details used by system and Application Administrator
+                _private (can be used by system or system admin) function to retrieve all
+                organization details used by system and Application Administrator
 
             :return: a list containing all organization details
         ***REMOVED***
@@ -296,6 +307,27 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
                             'payload': organizations_list, 'message': message}), status_codes.status_ok_code
 
         message: str = 'successfully retrieved organizations'
+        return jsonify({'status': True, 'message': message}), status_codes.data_not_found_code
+
+    @use_context
+    @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'))
+    def _get_organizations(self, organization_id: Optional[str]) -> tuple:
+        ***REMOVED***
+            **_return_all_organizations**
+                _private (can only be used by system and system admin)
+                retrieve a specific organization detail
+
+            :return: a list containing all organization details
+        ***REMOVED***
+        organization_instance: Organization = Organization.query(Organization.organization_id == organization_id).get()
+        if isinstance(organization_instance, Organization):
+            message: str = 'successfully retrieved organizations'
+            return jsonify({'status': True,
+                            'payload': organization_instance.to_dict(),
+                            'message': message}), status_codes.status_ok_code
+
+        message: str = 'successfully fetched organization'
         return jsonify({'status': True, 'message': message}), status_codes.data_not_found_code
 
     @use_context
