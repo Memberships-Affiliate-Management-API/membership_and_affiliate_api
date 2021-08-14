@@ -185,7 +185,7 @@ class GithubAuthView(Validators):
             message: str = "successfully updated user"
             return jsonify({'status': True,
                             'payload': github_user_instance.to_dict(),
-                            'message': message}), status_codes.status_ok_code
+                            'message': message}), status_codes.successfully_updated_code
         message: str = "user not found: Unable to update user"
         return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
@@ -198,7 +198,30 @@ class GithubAuthView(Validators):
         :param uid:
         :return:
         ***REMOVED***
-        pass
+        if isinstance(organization_id, str) and bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if isinstance(uid, str) and not bool(uid.strip()):
+            message: str = "uid is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        user_instance: GithubUser = GithubUser.query(GithubUser.organization_id == organization_id,
+                                                     GithubUser.uid == uid).get()
+        if isinstance(user_instance, GithubUser):
+            user_instance.is_deleted = True
+            key: Optional[ndb.Key] = user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+
+            if not isinstance(key, ndb.Key):
+                message: str = "Database Error: Unable to delete User"
+                raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
+            # TODO add cache_manager
+            message: str = "successfully deleted user"
+            return jsonify({'status': True, 'payload': user_instance.to_dict(),
+                            'message': message}), status_codes.successfully_updated_code
+        message: str = "Data Not Found: unable to delete user"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors

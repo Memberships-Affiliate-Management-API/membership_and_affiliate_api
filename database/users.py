@@ -264,6 +264,7 @@ class GithubUser(BaseModel):
     following_url: str = ndb.StringProperty(required=True, validator=property_.set_domain)
     gists_url: str = ndb.StringProperty(required=True, validator=property_.set_domain)
     repos_url: str = ndb.StringProperty(required=True, validator=property_.set_domain)
+    is_deleted: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
 
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
