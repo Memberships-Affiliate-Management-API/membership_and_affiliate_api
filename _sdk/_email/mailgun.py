@@ -25,8 +25,9 @@ import asyncio
 
 class Mailgun:
     ***REMOVED***
-        methods to integrate Mailgun Emailing rest API with Memberships & Affiliates APIKeys
-        for the purposes of sending notifications and emails on behalf of clients.
+        **MailGun**
+            methods to integrate Mailgun Emailing rest API with Memberships & Affiliates APIKeys
+            for the purposes of sending notifications and emails on behalf of clients.
         TODO - feature development add Mailgun Templates see Email-templates on Github Repos
     ***REMOVED***
     def __init__(self):
@@ -37,9 +38,9 @@ class Mailgun:
         self.api = config_instance.MAILGUN_API_KEY
         self.end_point = "https://api.mailgun.net/v3/{}/messages".format(config_instance.MAILGUN_DOMAIN)
         self.no_response = config_instance.MAILGUN_NO_RESPONSE
-        self._admin_get_user_endpoint = '_api/admin/users/get'
-        self._admin_get_membership_plan_endpoint = '_api/admin/membership-plans/get'
-        self._admin_get_organization_endpoint = '_api/admin/organizations/get'
+        self._admin_get_user_endpoint = '_api/v1/admin/users/get'
+        self._admin_get_membership_plan_endpoint = '_api/v1/admin/membership-plans/get'
+        self._admin_get_organization_endpoint = '_api/v1/admin/organizations/get'
 
     @staticmethod
     async def __async_request(_url, json_data, headers) -> typing.Union[dict, None]:
