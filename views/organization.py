@@ -256,16 +256,19 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    def get_organization(self, organization_id: Optional[str]) -> tuple:
+    def get_organization(self, organization_id: Optional[str], uid: Optional[str]) -> tuple:
         ***REMOVED***
             **get_organization**
                 function used to return the details of user organization,
+            :param uid:
             :param organization_id: required: the id of the organization to return
             :return: response object and status code, response contains ,
             response json {'status': True, 'payload': '{Organization}', 'message' : 'success'}, 200
         ***REMOVED***
         # NOTE: may not need to check if user can access organization details if the function is being called on behalf
         # of the system
+        # TODO find out how i can authenticate this call for instance i need to ensure that the user is
+        #  authorized to view organization details, using uid
         organization_instance: Organization = Organization.query(Organization.organization_id == organization_id).get()
         if isinstance(organization_instance, Organization):
             message: str = 'successfully fetched organization'
