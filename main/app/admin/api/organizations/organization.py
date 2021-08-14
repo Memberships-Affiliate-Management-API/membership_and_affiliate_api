@@ -7,6 +7,17 @@ admin_organization_api_bp = Blueprint("admin_organization_api", __name__)
 
 @admin_organization_api_bp.route('/_api/admin/organizations/<string:path>', methods=['GET', 'POST'])
 def organization_admin_api(path: str) -> tuple:
+    ***REMOVED***
+        **organization_admin_api**
+            organizations admin routes are only related to administration functions of
+            organizations
+
+        **NOTE**
+            for client routes see client admin api
+
+    :param path:
+    :return:
+    ***REMOVED***
 
     if path == "get":
         json_data: dict = request.get_json()
