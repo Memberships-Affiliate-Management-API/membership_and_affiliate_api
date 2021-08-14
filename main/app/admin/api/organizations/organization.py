@@ -59,7 +59,12 @@ def organization_admin_api(path: str) -> tuple:
         return org_view_instance._update_total_paid(organization_id=organization_id, add_amount=add_amount,
                                                     sub_amount=sub_amount)
 
+    elif path == "update-total-members":
+        organization_id: Optional[str] = json_data.get("organization_id")
+        add: int = int(json_data.get("add", 0))
+        sub: int = int(json_data.get("int", 0))
 
+        return org_view_instance._update_total_members(organization_id=organization_id, add=add, sub=sub)
 
 
 
