@@ -139,6 +139,7 @@ def logged_user(f):
         # NOTE: by passes authentication and returns admin user as authenticated
         # user on development
         if is_development():
+            # TODO use api here instead of user model
             current_user: UserModel = get_admin_user()
             return f(current_user, *args, **kwargs)
 

@@ -1,18 +1,19 @@
-import requests
 from typing import Optional
-from flask import Blueprint, jsonify, request, current_app, url_for, flash, redirect
-from database.users import UserModel
+from flask import Blueprint, jsonify, request, current_app
+
+from config.exceptions import error_codes, UnAuthenticatedError, status_codes
 from security.users_authenticator import logged_user
-from views.users import UserView
+from main.app.memberships_main.api.main_api_view import MainAPPAPIView
 
 main_api_bp = Blueprint('main_api', __name__)
 
 
 # TODO: insure the organization for Memberships & affiliates Management API is created before
 #  running any API's this can be done on app setup
+
 @main_api_bp.route('/api/v1/main/auth/<path:path>', methods=['POST'])
 @logged_user
-def auth(current_user: UserModel, path: str) -> tuple:
+def auth(current_user, path: str) -> tuple:
     ***REMOVED***
         **auth**
             for authentication based on password and email
@@ -20,53 +21,57 @@ def auth(current_user: UserModel, path: str) -> tuple:
             for membership & affiliates Management API, main app
     :return:
     ***REMOVED***
-    if current_user:
-        message: str = "User already logged in"
-        return jsonify({'status': False, 'message': message}), 500
+    main_app_view: MainAPPAPIView = MainAPPAPIView()
 
     if path == 'login':
+        if current_user:
+            message: str = "Access Forbidden: User already logged in"
+            raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
+
         json_data: dict = request.get_json()
-        users_view_instance: UserView = UserView()
         email: str = json_data.get('email')
         password: str = json_data.get('password')
-        organization_id = current_app.config.get('ORGANIZATION_ID')
-        # TODO- use API Calls here not view instance
-        return users_view_instance.login(organization_id=organization_id, email=email, password=password)
+        return main_app_view.send_login_request(email=email, password=password)
 
     elif path == 'subscribe':
+        if current_user:
+            message: str = "Access Forbidden: User already logged in"
+            raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
+
         json_data: dict = request.get_json()
-        # TODO - check data validity
         names: Optional[str] = json_data.get('names')
         cell: Optional[str] = json_data.get('cell')
         email: Optional[str] = json_data.get('email')
         password: Optional[str] = json_data.get('password')
-        # Note - parameter validity checks will be performed by add_user
-        organization_id: str = current_app.config.get('ORGANIZATION_ID')
-        users_view_instance: UserView = UserView()
         name, surname = names.split(" ")
-        # TODO- use API Calls here not view instance
-        response = users_view_instance.add_user(organization_id=organization_id, names=names, surname=surname,
-                                                cell=cell, email=email, password=password)
-
-        return response
+        return main_app_view.send_register_request(email=email, cell=cell, names=name, surname=surname,
+                                                   password=password)
 
     elif path == 'send-recovery-email':
+        if current_user:
+            message: str = "Access Forbidden: User already logged in"
+            raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
+
         json_data: dict = request.get_json()
-        # TODO: pass email address to a function to check its validity and then send a password recovery email
         email = json_data.get('email')
-        # Users here are logging into the main app not clients app
-        organization_id = current_app.config.get('ORGANIZATION_ID')
-        users_view_instance: UserView = UserView()
-        # TODO- use API Calls here not view instance
-        return users_view_instance.send_recovery_email(organization_id=organization_id, email=email)
+        return main_app_view.send_recovery_email(email=email)
+
+    # NOTE that if user is logged in then user details will be present on current_user
+    elif path == "get":
+        # NOTE: this route could be called by the main app just in-case the user is already logged-in
+        if current_user:
+            message: str = "user details successfully fetched"
+            return jsonify({'status': True, 'payload': current_user.to_dict(), 'message': message})
+        message: str = "unable to retrieve user details: please login"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
 
 @main_api_bp.route('/api/v1/main/contact', methods=['POST', 'GET', 'PUT', 'DELETE'])
 @logged_user
-def contact(current_user: UserModel) -> tuple:
+def contact(current_user) -> tuple:
     ***REMOVED***
         main contact api- handles everything related to contacts for both clients and admins
-    :return:
+        :return:
     ***REMOVED***
     json_data: dict = request.get_json()
     # TODO: send contact data to contact database view
