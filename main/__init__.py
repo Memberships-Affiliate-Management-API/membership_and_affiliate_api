@@ -28,8 +28,9 @@ def create_app(config_class=config_instance):
 
     app_cache.init_app(app=app, config=config_class.cache_dict())
     oauth.init_app(app=app, cache=app_cache)
+    # user facing or public facing api's
     from _api.users_api.affiliates.routes import affiliates_bp
-    from _api.users_api.users import users_bp
+    from _api.users_api.users.routes import users_bp
     from _api.users_api.memberships.routes import memberships_bp
     from _api.users_api.coupons.routes import coupons_bp
     from _api.users_api.wallet.routes import wallet_bp
@@ -49,8 +50,8 @@ def create_app(config_class=config_instance):
 
     # importing client api blueprints
     from _api.client_api.api.apikeys.routes import client_api_keys_bp
-    from _api.client_api.api.github_users import client_github_users_api_bp
-    from _api.client_api.api.organization import client_organizations_api_bp
+    from _api.client_api.api.github_users.routes import client_github_users_api_bp
+    from _api.client_api.api.organization.routes import client_organizations_api_bp
 
     # import main app blueprints
     from main.app.memberships_main.routes.routes import memberships_main_bp
@@ -60,8 +61,8 @@ def create_app(config_class=config_instance):
 
     # admin api
     from _api.admin_api.api.users.users import admin_users_api_bp
-    from _api.admin_api.api import admin_organization_api_bp
-    from _api.admin_api.api.memberships import membership_plans_admin_api_bp
+    from _api.admin_api.api.organizations.organization import admin_organization_api_bp
+    from _api.admin_api.api.memberships.memberships import membership_plans_admin_api_bp
 
     # Routes registrations
     app.register_blueprint(affiliates_bp)

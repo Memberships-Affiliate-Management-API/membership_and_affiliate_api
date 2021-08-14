@@ -48,7 +48,6 @@ class MainAPIView:
         ***REMOVED***
         pass
 
-
     def send_register_request(self, email: Optional[str], cell: Optional[str], password:  Optional[str],
                               names: Optional[str], surname:  Optional[str]):
         ***REMOVED***
