@@ -41,3 +41,6 @@ def create_client_api_key() -> tuple:
     domain: Optional[str] = json_data.get('domain')
     uid: Optional[str] = json_data.get('uid')
     organization_id: Optional[str] = json_data.get('organization_id')
+
+    api_view_instance: APIKeysView = APIKeysView()
+    return api_view_instance.create_keys(domain=domain, uid=uid, organization_id=organization_id)
