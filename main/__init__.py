@@ -4,18 +4,22 @@ from config import config_instance
 from authlib.integrations.flask_client import OAuth
 # TODO: consider upgrading the cache service from version 2 of this api
 from utils import clear_cache
-from security.git_auth import git_auth_defaults
 app_cache: Cache = Cache(config=config_instance.cache_dict())
-# TODO: problems will arise with a simple cache implementation where there are moreEl
-#  than one instance of this api, as one of the instance may or will hold different
-#  or stale data on cache and serve this data to the clients, and users.
 
 default_timeout: int = 60 * 60 * 6
 
-
+# github authenticate - enables developers to easily sign-up to our api
 oauth = OAuth()
-# NOTE github auth callback http://memberships-affiliates-man-api.herokuapp.com/_auth/github/authenticate
-github = oauth.register(git_auth_defaults.to_dict())
+github_authorize = oauth.register(
+    name='github',
+    client_id=config_instance.GITHUB_CLIENT_ID,
+    client_secret=config_instance.GITHUB_CLIENT_SECRET,
+    access_token_url='https://github.com/login/oauth/access_token',
+    access_token_params=None,
+    authorize_url='https://github.com/login/oauth/authorize',
+    authorize_params=None,
+    api_base_url='https://api.github.com/',
+    client_kwargs={'scope': 'user:email'})
 
 
 def create_app(config_class=config_instance):

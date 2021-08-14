@@ -3,7 +3,7 @@
 ***REMOVED***
 from flask import Blueprint, render_template, get_flashed_messages, make_response, redirect, url_for, flash
 from config.exceptions import status_codes
-from main import app_cache, github
+from main import app_cache, github_authorize
 from security.users_authenticator import logged_user
 from utils.utils import return_ttl, can_cache
 from views.github_auth import GithubAuthView
@@ -67,11 +67,11 @@ def memberships_main_routes(current_user, path: str) -> tuple:
     elif path == 'login-with-github':
         redirect_url = url_for("memberships_main.memberships_main_routes", path="github-authorize", _external=True)
         print("redirect uri : {}".format(redirect_url))
-        return github.authorize_redirect(redirect_url)
+        return github_authorize.authorize_redirect(redirect_url)
 
     if path == "github-authorize":
-        token = github.authorize_access_token()
-        resp = github.get('user', token=token)
+        token = github_authorize.authorize_access_token()
+        resp = github_authorize.get('user', token=token)
         profile = resp.json()
         # do something with the token and profile
         print(profile, token)
