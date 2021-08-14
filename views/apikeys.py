@@ -11,6 +11,8 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 import typing
 from typing import Optional
 from flask import jsonify, current_app
+from google.cloud import ndb
+
 from config.exception_handlers import handle_view_errors
 from config.exceptions import DataServiceError, status_codes, InputError, error_codes, UnAuthenticatedError
 from config.use_context import use_context
@@ -118,7 +120,7 @@ class APIKeysView(APIKeysValidators, CacheManager):
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
             # Deleting Memoized items which will need this item as part of the results
-            self.__delete_api_keys_cache(api_keys_view=APIKeysView, organization_id=organization_id)
+            self.__delete_api_keys_cache(api_keys_view=APIKeysView, api_key=key, organization_id=organization_id)
 
             message: str = "successfully created api_key secret_token combo"
             return jsonify({'status': True, 'payload': api_key_instance.to_dict(),
@@ -150,7 +152,7 @@ class APIKeysView(APIKeysValidators, CacheManager):
 
             organization_id: str = api_key_instance.organization_id
             # Deleting Memoized items which will need this item as part of the results
-            self.__delete_api_keys_cache(api_keys_view=APIKeysView, organization_id=organization_id)
+            self.__delete_api_keys_cache(api_keys_view=APIKeysView, api_key=key, organization_id=organization_id)
 
             message: str = "successfully deactivated api_key"
             return jsonify({'status': True, 'payload': api_key_instance.to_dict(),
@@ -160,7 +162,7 @@ class APIKeysView(APIKeysValidators, CacheManager):
 
     @use_context
     @handle_view_errors
-    def activate_key(self, key: Optional[str]) -> tuple:
+    def activate_key(self, key: Optional[str], organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             admin only function
         :param key: activate a given api-key
@@ -170,17 +172,21 @@ class APIKeysView(APIKeysValidators, CacheManager):
             message: str = "key is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        api_key_instance: APIKeys = APIKeys.query(APIKeys.key == key).get()
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        api_key_instance: APIKeys = APIKeys.query(APIKeys.key == key, APIKeys.organization_id == organization_id).get()
         if isinstance(api_key_instance, APIKeys):
             api_key_instance.is_active = True
-            key = api_key_instance.put()
-            if not bool(key):
+            key: Optional[ndb.Key] = api_key_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+            if not isinstance(key, ndb.Key):
                 message: str = "database error: unable to activate_key"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
             organization_id: str = api_key_instance.organization_id
             # Deleting Memoized items which will need this item as part of the results
-            self.__delete_api_keys_cache(api_keys_view=APIKeysView, organization_id=organization_id)
+            self.__delete_api_keys_cache(api_keys_view=APIKeysView, api_key=key, organization_id=organization_id)
 
             message: str = "successfully activated api_key"
             return jsonify({'status': True, 'payload': api_key_instance.to_dict(),
