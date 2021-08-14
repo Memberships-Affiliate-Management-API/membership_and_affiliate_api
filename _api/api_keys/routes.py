@@ -30,7 +30,7 @@ def return_api_key(key: str, organization_id) -> tuple:
     raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
 
-@api_keys_bp.route('/_api/client/keys/create', methods=['POST'])
+@api_keys_bp.route('/_api/client/api-keys/create', methods=['POST'])
 def create_client_api_key() -> tuple:
     ***REMOVED***
         **create_client_api_key**
@@ -50,10 +50,11 @@ def create_client_api_key() -> tuple:
     raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
 
-@api_keys_bp.route('/_api/client/keys/deactivate', methods=['POST'])
+@api_keys_bp.route('/_api/client/api-keys/deactivate', methods=['POST'])
 def deactivate_key() -> tuple:
     ***REMOVED***
-
+        **deactivate_key**
+            used on behalf of clients to de-activate their api keys
     :return:
     ***REMOVED***
     json_data: dict = request.get_json()
@@ -66,3 +67,11 @@ def deactivate_key() -> tuple:
     message: str = "User not Authorized: you are not authorized to call this API"
     raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
+
+@api_keys_bp.route('/_api/client/api-keys/activate-key', methods=['POST'])
+def activate_key() -> tuple:
+    ***REMOVED***
+        **activate_key**
+            used on behalf of clients to de-activate their api keys
+    :return:
+    ***REMOVED***
