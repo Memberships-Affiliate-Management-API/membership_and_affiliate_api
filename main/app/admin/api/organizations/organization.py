@@ -20,6 +20,9 @@ def organization_admin_api(path: str) -> tuple:
     :param path:
     :return:
     ***REMOVED***
+    # TODO - verify this uid against system admin user id
+    org_view_instance: OrganizationView = OrganizationView()
+
     # NOTE: here the system admin is actually requesting client or developers organizations
     if path == "get":
         json_data: dict = request.get_json()
@@ -27,13 +30,20 @@ def organization_admin_api(path: str) -> tuple:
         uid: Optional[str] = json_data.get("uid")
         secret_key: Optional[str] = json_data.get('SECRET_KEY')
         if isinstance(secret_key, str) and secret_key == current_app.config.get('SECRET_KEY'):
-            org_view_instance: OrganizationView = OrganizationView()
-            return org_view_instance.get_organization(uid=uid, organization_id=organization_id)
+            return org_view_instance._get_organizations(organization_id=organization_id)
 
         message: str = 'User Not Authorized: cannot fetch organization'
         raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
 
     # NOTE: here the system is requesting records of all clients organizations
     elif path == "get-all":
-        pass
+        json_data: dict = request.get_json()
+        secret_key: Optional[str] = json_data.get('SECRET_KEY')
+        if isinstance(secret_key, str) and secret_key == current_app.config.get('SECRET_KEY'):
+            return org_view_instance._return_all_organizations()
+
+        message: str = 'User Not Authorized: cannot fetch organizations'
+        raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
+
+
 
