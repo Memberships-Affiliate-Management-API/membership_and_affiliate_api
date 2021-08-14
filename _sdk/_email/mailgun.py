@@ -15,7 +15,7 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 
 import requests
 import typing
-from flask import jsonify
+from flask import jsonify, current_app
 from config import config_instance
 from config.exceptions import status_codes, error_codes
 from typing import List
@@ -42,6 +42,7 @@ class Mailgun:
         self._admin_get_user_endpoint = '_api/v1/admin/users/get'
         self._admin_get_membership_plan_endpoint = '_api/v1/admin/membership-plans/get'
         self._admin_get_organization_endpoint = '_api/v1/admin/organizations/get'
+        self._secret_key: str = current_app.config.get('SECRET_KEY')
 
     @staticmethod
     async def __async_request(_url, json_data, headers) -> typing.Union[dict, None]:
@@ -62,32 +63,34 @@ class Mailgun:
         :return:
         ***REMOVED***
         _url: str = "{}{}".format(config_instance.BASE_URL, self._admin_get_user_endpoint)
-        json_data = jsonify({'organization_id': organization_id, 'uid': uid})
+        json_data = jsonify({'organization_id': organization_id, 'uid': uid, 'SECRET_KEY': self._secret_key})
         # TODO replace requests to make this async
         headers = {'content-type': 'application/json'}
         return asyncio.run(self.__async_request(_url=_url, json_data=json_data, headers=headers))
 
     async def __get_membership_data_async(self, organization_id: str, uid: str) -> typing.Union[dict, None]:
         ***REMOVED***
-            from an api obtain membership plan details related to the parameters
+            **__get_membership_data_async**
+                asynchronously from an api obtain membership plan details related to the parameters
         :param organization_id:
         :param uid:
         :return:
         ***REMOVED***
         _url: str = "{}{}".format(config_instance.BASE_URL, self._admin_get_membership_plan_endpoint)
-        json_data = jsonify({'organization_id': organization_id, 'uid': uid})
+        json_data = jsonify({'organization_id': organization_id, 'uid': uid, 'SECRET_KEY': self._secret_key})
         headers = {'content-type': 'application/json'}
         return asyncio.run(self.__async_request(_url=_url, json_data=json_data, headers=headers))
 
     async def __get_organization_data_async(self, organization_id: str, uid: str) -> typing.Union[dict, None]:
         ***REMOVED***
-            returns the organization details based on the organization id and uid
+            **__get_organization_data_async**
+                asynchronously returns the organization details based on the organization id and uid
         :param organization_id:
         :param uid:
         :return:
         ***REMOVED***
         _url: str = "{}{}".format(config_instance.BASE_URL, self._admin_get_organization_endpoint)
-        json_data = jsonify({'organization_id': organization_id, 'uid': uid})
+        json_data = jsonify({'organization_id': organization_id, 'uid': uid, 'SECRET_KEY': self._secret_key})
         headers = {'content-type': 'application/json'}
         return asyncio.run(self.__async_request(_url=_url, json_data=json_data, headers=headers))
 
