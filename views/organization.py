@@ -400,11 +400,14 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
         organization_instance: Organization = Organization.query(Organization.organization_id == organization_id).get()
 
         if isinstance(organization_instance, Organization):
+            calculated: bool = False
             if isinstance(add_amount, AmountMixin):
                 organization_instance.total_paid += add_amount
-            elif isinstance(sub_amount, AmountMixin):
-                organization_instance.total_paid -= add_amount
-            else:
+                calculated = True
+            if isinstance(sub_amount, AmountMixin):
+                organization_instance.total_paid -= sub_amount
+                calculated = True
+            if not calculated:
                 raise InputError(status=500, description="Please enter either the amount to add or subtract")
 
             key: Optional[str] = organization_instance.put(retries=self._max_retries, timeout=self._max_timeout)
