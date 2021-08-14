@@ -28,3 +28,16 @@ def return_api_key(key: str, organization_id) -> tuple:
 
     message: str = "User not Authorized: you are not authorized to call this API"
     raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
+
+
+@api_keys_bp.route('/_api/client/keys/create', methods=['POST'])
+def create_client_api_key() -> tuple:
+    ***REMOVED***
+        **create_client_api_key**
+            used on behalf of clients to register new api keys
+    :return:
+    ***REMOVED***
+    json_data: dict = request.get_json()
+    domain: Optional[str] = json_data.get('domain')
+    uid: Optional[str] = json_data.get('uid')
+    organization_id: Optional[str] = json_data.get('organization_id')
