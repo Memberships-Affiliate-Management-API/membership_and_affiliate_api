@@ -115,7 +115,7 @@ class CacheManager:
         return True
 
     @staticmethod
-    def __delete_api_keys_cache(api_keys_view, organization_id) -> bool:
+    def __delete_api_keys_cache(api_keys_view, api_key, organization_id) -> bool:
         ***REMOVED***
             **__delete_api_keys_cache**
                 delete stale api_keys cache instances
@@ -123,6 +123,7 @@ class CacheManager:
         ***REMOVED***
         app_cache.delete_memoized(api_keys_view.return_all_organization_keys, api_keys_view, organization_id)
         app_cache.delete_memoized(api_keys_view.return_active_organization_keys, api_keys_view, organization_id)
+        app_cache.delete_memoized(api_keys_view.get_api_key, api_keys_view, api_key, organization_id)
 
         return True
 
