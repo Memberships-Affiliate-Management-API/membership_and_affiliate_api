@@ -1,10 +1,10 @@
 ***REMOVED***
     **Mailgun Emails Integration SDK**
-    *Python ^3.8
-***REMOVED***
+        *Python ^3.8
     ***REMOVED***
-    ***REMOVED***
-    ***REMOVED***
+        ***REMOVED***
+        ***REMOVED***
+        ***REMOVED***
 
 ***REMOVED***
 __author__ = "mobius-crypt"
@@ -28,6 +28,7 @@ class Mailgun:
         **MailGun**
             methods to integrate Mailgun Emailing rest API with Memberships & Affiliates APIKeys
             for the purposes of sending notifications and emails on behalf of clients.
+
         TODO - feature development add Mailgun Templates see Email-templates on Github Repos
     ***REMOVED***
     def __init__(self):

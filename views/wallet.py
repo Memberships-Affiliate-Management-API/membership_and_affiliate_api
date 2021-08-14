@@ -24,15 +24,16 @@ from views.cache_manager import CacheManager
 
 class WalletEmails(Mailgun):
     ***REMOVED***
-        Class used to send Wallet related Emails and Notifications
+        **Class WalletEmails**
+            Class used to send Wallet related Emails and Notifications
     ***REMOVED***
     def __init__(self):
         super(WalletEmails, self).__init__()
 
     def __do_send_mail(self, to_email: str, subject: str, text: str, html: str) -> None:
         ***REMOVED***
-            **__do_send_mail
-                  **If possible this method should be run asynchronously**
+            **__do_send_mail**
+                  If possible this method should be run asynchronously**
                   a method to actually send email
 
         :param to_email: email address to send the email to
