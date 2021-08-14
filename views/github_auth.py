@@ -136,7 +136,58 @@ class GithubAuthView(Validators):
         :param user_details:
         :return:
         ***REMOVED***
-        pass
+        email: Optional[str] = user_details.get('email')
+        if not isinstance(email, str) or not bool(email.strip()):
+            message: str = 'Email is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        uid: Optional[str] = user_details.get('uid')
+        if not isinstance(uid, str) or not bool(uid.strip()):
+            message: str = "uid is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        # TODO create a function to get this data
+        organization_id: Optional[str] = user_details.get('organization_id')
+        access_token: Optional[str] = user_details.get('access_token')
+
+        twitter_username: Optional[str] = user_details.get('twitter_username')
+        github_name: Optional[str] = user_details.get('github_name')
+        avatar_url: Optional[str] = user_details.get('avatar_url')
+        api_url: Optional[str] = user_details.get('api_url')
+        html_url: Optional[str] = user_details.get('html_url')
+        followers_url: Optional[str] = user_details.get('followers_url')
+        following_url: Optional[str] = user_details.get('following_url')
+        gists_url: Optional[str] = user_details.get('gists_url')
+        repos_url: Optional[str] = user_details.get('repos_url')
+
+        github_user_instance: Optional[GithubUser] = GithubUser.query(
+            GithubUser.uid == GithubUser.uid, GithubUser.organization_id == organization_id).get()
+
+        if isinstance(github_user_instance, GithubUser):
+            github_user_instance.email = email
+            github_user_instance.twitter_username = twitter_username
+            github_user_instance.github_name = github_name
+            github_user_instance.access_token = access_token
+            github_user_instance.avatar_url = avatar_url
+            github_user_instance.api_url = api_url
+            github_user_instance.html_url = html_url
+            github_user_instance.followers_url = followers_url
+            github_user_instance.following_url = following_url
+            github_user_instance.gists_url = gists_url
+            github_user_instance.repos_url = repos_url
+
+            key: Optional[ndb.Key] = github_user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+            if not isinstance(key, ndb.Key):
+                message: str = "Database Error: Unable to update github user"
+                raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
+            # TODO - update cache_manager
+            message: str = "successfully updated user"
+            return jsonify({'status': True,
+                            'payload': github_user_instance.to_dict(),
+                            'message': message}), status_codes.status_ok_code
+        message: str = "user not found: Unable to update user"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
