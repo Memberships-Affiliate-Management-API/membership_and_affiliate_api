@@ -1,6 +1,7 @@
 from flask import Blueprint, request, current_app
 
 from config.exceptions import UnAuthenticatedError, error_codes
+from database.mixins import AmountMixin
 from views.organization import OrganizationView
 from typing import Union, Optional
 
@@ -22,28 +23,44 @@ def organization_admin_api(path: str) -> tuple:
     ***REMOVED***
     # TODO - verify this uid against system admin user id
     org_view_instance: OrganizationView = OrganizationView()
+    json_data: dict = request.get_json()
+    secret_key: Optional[str] = json_data.get('SECRET_KEY')
+
+    if not isinstance(secret_key, str) or secret_key != current_app.config.get('SECRET_KEY'):
+        message: str = 'User Not Authorized: you cannot perform this action'
+        raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
+
 
     # NOTE: here the system admin is actually requesting client or developers organizations
     if path == "get":
-        json_data: dict = request.get_json()
         organization_id: Optional[str] = json_data.get("organization_id")
-        uid: Optional[str] = json_data.get("uid")
-        secret_key: Optional[str] = json_data.get('SECRET_KEY')
-        if isinstance(secret_key, str) and secret_key == current_app.config.get('SECRET_KEY'):
-            return org_view_instance._get_organizations(organization_id=organization_id)
-
-        message: str = 'User Not Authorized: cannot fetch organization'
-        raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
+        return org_view_instance._get_organizations(organization_id=organization_id)
 
     # NOTE: here the system is requesting records of all clients organizations
     elif path == "get-all":
-        json_data: dict = request.get_json()
-        secret_key: Optional[str] = json_data.get('SECRET_KEY')
-        if isinstance(secret_key, str) and secret_key == current_app.config.get('SECRET_KEY'):
-            return org_view_instance._return_all_organizations()
+        return org_view_instance._return_all_organizations()
 
-        message: str = 'User Not Authorized: cannot fetch organizations'
-        raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
+    # NOTE: this allows the system to update affiliate count
+    elif path == "update-affiliate-count":
+        organization_id: Optional[str] = json_data.get("organization_id")
+        add: int = int(json_data.get("add", 0))
+        sub: int = int(json_data.get("int", 0))
+        return org_view_instance._update_affiliate_count(organization_id=organization_id, add=add, sub=sub)
+
+    # Updates the total amount paid by this organization
+    elif path == "update-total-paid":
+        organization_id: Optional[str] = json_data.get("organization_id")
+        add: int = int(json_data.get("add", 0))
+        sub: int = int(json_data.get("int", 0))
+        currency: Optional[str] = json_data.get("currency")
+
+        add_amount: AmountMixin = AmountMixin(amount=add, currency=currency)
+        sub_amount: AmountMixin = AmountMixin(amount=sub, currency=currency)
+        return org_view_instance._update_total_paid(organization_id=organization_id, add_amount=add_amount,
+                                                    sub_amount=sub_amount)
+
+
+
 
 
 
