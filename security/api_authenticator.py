@@ -2,26 +2,42 @@
     **API Authenticator Module**
         authorize client api calls
 ***REMOVED***
+import json
+
+import requests
 from flask import request
-from config.exception_handlers import handle_view_errors
+from config import config_instance
 from config.exceptions import UnAuthenticatedError
-from config.use_context import use_context
 import functools
 from database.apikeys import APIKeys
 from main import app_cache
 from utils.utils import return_ttl
 
 
-@use_context
-@handle_view_errors
 @app_cache.memoize(timeout=return_ttl('short'))
 def is_api_key_valid(api_key: str, secret: str, domain: str) -> bool:
+    ***REMOVED***
+        **is_api_key_valid**
+            validates api keys on behalf of client api calls
+
+    :param api_key:
+    :param secret:
+    :param domain:
+    :return:
+    ***REMOVED***
     # TODO: Use api call to api keys
-    api_instance: APIKeys = APIKeys.query(APIKeys.api_key == api_key).get()
-    if isinstance(api_instance, APIKeys):
-        if (api_instance.secret_token == secret) and (api_instance.domain == domain):
-            return api_instance.is_active
-    return False
+    organization_id: str = config_instance.ORGANIZATION_ID
+    _endpoint = '_api/admin/api-keys/{}/org/{}'.format(api_key, organization_id)
+    _url: str = "{}{}".format(config_instance.BASE_URL, _endpoint)
+
+    response, status = requests.post(url=_url, json=json.dumps(dict(SECRET_KEY=config_instance.SECRET_KEY)))
+
+    if response['status']:
+        api_instance: dict = response['payload']
+        if isinstance(api_instance, dict):
+            if (api_instance['secret_token'] == secret) and (api_instance['domain'] == domain):
+                return api_instance['is_active']
+        return False
 
 
 def handle_api_auth(func):
