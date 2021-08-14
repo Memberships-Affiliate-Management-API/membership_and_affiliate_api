@@ -32,3 +32,4 @@ def admin_users(path: str) -> tuple:
         uid: Optional[str] = json_data.get("uid")
         user_view_instance: UserView = UserView()
         return user_view_instance._system_user_exist(email=email, uid=uid)
+

@@ -1,3 +1,4 @@
+import requests
 from typing import Optional
 from flask import Blueprint, jsonify, request, current_app, url_for, flash, redirect
 from database.users import UserModel
@@ -13,8 +14,10 @@ main_api_bp = Blueprint('main_api', __name__)
 @logged_user
 def auth(current_user: UserModel, path: str) -> tuple:
     ***REMOVED***
-        authentication api, handles login, password recovery, and user subscriptions,
-        for membership & affiliates Management API, main app
+        **auth**
+            for authentication based on password and email
+            authentication api, handles login, password recovery, and user subscriptions,
+            for membership & affiliates Management API, main app
     :return:
     ***REMOVED***
     if current_user:
@@ -27,6 +30,7 @@ def auth(current_user: UserModel, path: str) -> tuple:
         email: str = json_data.get('email')
         password: str = json_data.get('password')
         organization_id = current_app.config.get('ORGANIZATION_ID')
+        # TODO- use API Calls here not view instance
         return users_view_instance.login(organization_id=organization_id, email=email, password=password)
 
     elif path == 'subscribe':
@@ -40,6 +44,7 @@ def auth(current_user: UserModel, path: str) -> tuple:
         organization_id: str = current_app.config.get('ORGANIZATION_ID')
         users_view_instance: UserView = UserView()
         name, surname = names.split(" ")
+        # TODO- use API Calls here not view instance
         response = users_view_instance.add_user(organization_id=organization_id, names=names, surname=surname,
                                                 cell=cell, email=email, password=password)
 
@@ -52,6 +57,7 @@ def auth(current_user: UserModel, path: str) -> tuple:
         # Users here are logging into the main app not clients app
         organization_id = current_app.config.get('ORGANIZATION_ID')
         users_view_instance: UserView = UserView()
+        # TODO- use API Calls here not view instance
         return users_view_instance.send_recovery_email(organization_id=organization_id, email=email)
 
 

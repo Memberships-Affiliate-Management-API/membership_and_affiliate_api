@@ -28,11 +28,11 @@ def create_app(config_class=config_instance):
 
     app_cache.init_app(app=app, config=config_class.cache_dict())
     oauth.init_app(app=app, cache=app_cache)
-    from _api.affiliates.routes import affiliates_bp
-    from _api.users.routes import users_bp
-    from _api.memberships.routes import memberships_bp
-    from _api.coupons.routes import coupons_bp
-    from _api.wallet.routes import wallet_bp
+    from _api.users_api.affiliates.routes import affiliates_bp
+    from _api.users_api.users import users_bp
+    from _api.users_api.memberships.routes import memberships_bp
+    from _api.users_api.coupons.routes import coupons_bp
+    from _api.users_api.wallet.routes import wallet_bp
     from handlers.routes import default_handlers_bp
     # importing IPN
     from _ipn.email import email_ipn_bp
@@ -48,9 +48,9 @@ def create_app(config_class=config_instance):
     from main.app.client.routes.home import client_home_bp
 
     # importing client api blueprints
-    from main.app.client.api.apikeys.routes import client_api_keys_bp
-    from main.app.client.api.github_users.routes import client_github_users_api_bp
-    from main.app.client.api.organization.routes import client_organizations_api_bp
+    from _api.client_api.api.apikeys.routes import client_api_keys_bp
+    from _api.client_api.api.github_users import client_github_users_api_bp
+    from _api.client_api.api.organization import client_organizations_api_bp
 
     # import main app blueprints
     from main.app.memberships_main.routes.routes import memberships_main_bp
@@ -59,9 +59,9 @@ def create_app(config_class=config_instance):
     from main.app.memberships_main.api.api import main_api_bp
 
     # admin api
-    from main.app.admin.api.users.users import admin_users_api_bp
-    from main.app.admin.api.organizations.organization import admin_organization_api_bp
-    from main.app.admin.api.memberships.memberships import membership_plans_admin_api_bp
+    from _api.admin_api.api.users.users import admin_users_api_bp
+    from _api.admin_api.api import admin_organization_api_bp
+    from _api.admin_api.api.memberships import membership_plans_admin_api_bp
 
     # Routes registrations
     app.register_blueprint(affiliates_bp)
