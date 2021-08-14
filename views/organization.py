@@ -447,10 +447,10 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
         organization_instance: Organization = Organization.query(Organization.organization_id == organization_id).get()
 
         if isinstance(organization_instance, Organization):
-            if isinstance(sub, int):
-                organization_instance.total_members += add
-            elif isinstance(add, int):
-                organization_instance.total_members -= sub
+            if sub:
+                organization_instance.total_members += sub
+            elif add:
+                organization_instance.total_members -= add
             else:
                 raise InputError(status=error_codes.input_error_code,
                                  description="Please Enter either the amount to add or subtract")
