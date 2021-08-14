@@ -1,6 +1,6 @@
 ***REMOVED***
     **Module Wallet View Controller**
-    **Class Definitions for handling Wallet data input and validations **
+        Class Definitions for handling Wallet data input and validations
 ***REMOVED***
 __author__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
@@ -791,9 +791,10 @@ class WalletView(Validator, WalletEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    def wallet_withdraw_funds(self, organization_id: Optional[str], uid: str, amount: int) -> tuple:
+    def _wallet_withdraw_funds(self, organization_id: Optional[str], uid: str, amount: int) -> tuple:
         ***REMOVED***
             **wallet_withdraw_funds**
+                ** for system admin or system calls only
                 organization must contain settings for funds withdrawals
                 i.e from which paypal account may the withdrawal occur
                 and so on.
