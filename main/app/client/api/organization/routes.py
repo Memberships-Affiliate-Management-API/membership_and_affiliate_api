@@ -9,10 +9,10 @@ from flask import request, Blueprint, current_app
 from config.exceptions import UnAuthenticatedError, error_codes
 from views.organization import OrganizationView
 
-organizations_api_bp = Blueprint('organizations_api', __name__)
+client_organizations_api_bp = Blueprint('client_organizations_api', __name__)
 
 
-@organizations_api_bp.route('/_api/v1/client-admin/organization/<string:path>', methods=['POST'])
+@client_organizations_api_bp.route('/_api/v1/client-admin/organization/<string:path>', methods=['POST'])
 def client_organization_main(path: str) -> tuple:
     ***REMOVED***
         **client_organization_main**

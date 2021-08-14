@@ -8,10 +8,10 @@ from flask import Blueprint, request, current_app
 from config.exceptions import UnAuthenticatedError, error_codes
 from views.apikeys import APIKeysView
 
-api_keys_bp = Blueprint('api-keys', __name__)
+client_api_keys_bp = Blueprint('api-keys', __name__)
 
 
-@api_keys_bp.route('/_api/admin/api-keys/<string:key>/org/<string:organization_id>', methods=["POST"])
+@client_api_keys_bp.route('/_api/admin/api-keys/<string:key>/org/<string:organization_id>', methods=["POST"])
 def return_api_key(key: str, organization_id) -> tuple:
     ***REMOVED***
         **return api_key**
@@ -30,7 +30,7 @@ def return_api_key(key: str, organization_id) -> tuple:
     raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
 
-@api_keys_bp.route('/_api/client/api-keys/create', methods=['POST'])
+@client_api_keys_bp.route('/_api/client/api-keys/create', methods=['POST'])
 def create_client_api_key() -> tuple:
     ***REMOVED***
         **create_client_api_key**
@@ -50,7 +50,7 @@ def create_client_api_key() -> tuple:
     raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
 
-@api_keys_bp.route('/_api/v1/client/api-keys/deactivate', methods=['POST'])
+@client_api_keys_bp.route('/_api/v1/client/api-keys/deactivate', methods=['POST'])
 def deactivate_key() -> tuple:
     ***REMOVED***
         **deactivate_key**
@@ -68,7 +68,7 @@ def deactivate_key() -> tuple:
     raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
 
-@api_keys_bp.route('/_api/v1/client/api-keys/activate-key', methods=['POST'])
+@client_api_keys_bp.route('/_api/v1/client/api-keys/activate-key', methods=['POST'])
 def activate_key() -> tuple:
     ***REMOVED***
         **activate_key**

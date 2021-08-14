@@ -53,6 +53,11 @@ def create_app(config_class=config_instance):
     from main.app.client.routes.dashboard import client_dashboard_bp
     from main.app.client.routes.home import client_home_bp
 
+    # importing client api blueprints
+    from main.app.client.api.apikeys.routes import client_api_keys_bp
+    from main.app.client.api.github_users.routes import client_github_users_api_bp
+    from main.app.client.api.organization.routes import client_organizations_api_bp
+
     # import main app blueprints
     from main.app.memberships_main.routes.routes import memberships_main_bp
 
@@ -64,6 +69,7 @@ def create_app(config_class=config_instance):
     from main.app.admin.api.organizations.organization import admin_organization_api_bp
     from main.app.admin.api.memberships.memberships import membership_plans_admin_api_bp
 
+    # Routes registrations
     app.register_blueprint(affiliates_bp)
     app.register_blueprint(users_bp)
     app.register_blueprint(memberships_bp)
@@ -82,6 +88,11 @@ def create_app(config_class=config_instance):
     # client app default_handlers_bp
     app.register_blueprint(client_dashboard_bp)
     app.register_blueprint(client_home_bp)
+
+    # client app api handlers
+    app.register_blueprint(client_api_keys_bp)
+    app.register_blueprint(client_github_users_api_bp)
+    app.register_blueprint(client_organizations_api_bp)
 
     # main app handlers
     app.register_blueprint(memberships_main_bp)
