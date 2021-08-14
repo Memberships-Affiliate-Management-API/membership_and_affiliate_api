@@ -30,7 +30,6 @@ def organization_admin_api(path: str) -> tuple:
         message: str = 'User Not Authorized: you cannot perform this action'
         raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
 
-
     # NOTE: here the system admin is actually requesting client or developers organizations
     if path == "get":
         organization_id: Optional[str] = json_data.get("organization_id")
@@ -65,6 +64,26 @@ def organization_admin_api(path: str) -> tuple:
         sub: int = int(json_data.get("int", 0))
 
         return org_view_instance._update_total_members(organization_id=organization_id, add=add, sub=sub)
+
+    elif path == "update-projected-payments":
+        # TODO learn the best way to calculate projected payments - maybe use property on databases
+        pass
+
+    elif path == "update-total-membership-payments":
+        organization_id: Optional[str] = json_data.get("organization_id")
+        add: int = int(json_data.get("add", 0))
+        sub: int = int(json_data.get("int", 0))
+        currency: Optional[str] = json_data.get("currency")
+        add_amount: Optional[AmountMixin] = None
+        sub_amount: Optional[AmountMixin] = None
+        if add:
+            add_amount: AmountMixin = AmountMixin(amount=add, currency=currency)
+        if sub:
+            sub_amount: AmountMixin = AmountMixin(amount=sub, currency=currency)
+        return org_view_instance._update_total_membership_payments(organization_id=organization_id,
+                                                                   sub_total_membership_payment=sub_amount,
+                                                                   add_total_membership_amount=add_amount)
+
 
 
 

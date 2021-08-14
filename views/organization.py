@@ -472,6 +472,8 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
                                               sub_payment: Optional[str] = None) -> tuple:
 
         ***REMOVED***
+            # TODO update projected memberships payments may need revision - or can be implemented as a property
+
             **_update_projected_membership_payments**
                 to update projected_membership_payments supply either the amount to add or subtract but not both
 
