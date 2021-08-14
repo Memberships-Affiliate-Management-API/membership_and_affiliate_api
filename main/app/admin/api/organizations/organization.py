@@ -1,6 +1,5 @@
 from flask import Blueprint, request
 from views.organization import OrganizationView
-from security.users_authenticator import logged_user, is_app_admin
 from typing import Union
 
 admin_organization_api_bp = Blueprint("admin_organization_api", __name__)
