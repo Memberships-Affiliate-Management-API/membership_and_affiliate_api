@@ -1,5 +1,6 @@
 ***REMOVED***
-    authorize api calls
+    **API Authenticator Module**
+        authorize client api calls
 ***REMOVED***
 from flask import request
 from config.exception_handlers import handle_view_errors
@@ -8,13 +9,14 @@ from config.use_context import use_context
 import functools
 from database.apikeys import APIKeys
 from main import app_cache
-from utils.utils import return_ttl, can_cache
+from utils.utils import return_ttl
 
 
 @use_context
 @handle_view_errors
-@app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+@app_cache.memoize(timeout=return_ttl('short'))
 def is_api_key_valid(api_key: str, secret: str, domain: str) -> bool:
+    # TODO: Use api call to api keys
     api_instance: APIKeys = APIKeys.query(APIKeys.api_key == api_key).get()
     if isinstance(api_instance, APIKeys):
         if (api_instance.secret_token == secret) and (api_instance.domain == domain):
