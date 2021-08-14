@@ -1,11 +1,13 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, current_app
+
+from config.exceptions import UnAuthenticatedError, error_codes
 from views.organization import OrganizationView
-from typing import Union
+from typing import Union, Optional
 
 admin_organization_api_bp = Blueprint("admin_organization_api", __name__)
 
 
-@admin_organization_api_bp.route('/_api/admin/organizations/<string:path>', methods=['GET', 'POST'])
+@admin_organization_api_bp.route('/_api/v1/admin/organizations/<string:path>', methods=['GET', 'POST'])
 def organization_admin_api(path: str) -> tuple:
     ***REMOVED***
         **organization_admin_api**
@@ -18,11 +20,20 @@ def organization_admin_api(path: str) -> tuple:
     :param path:
     :return:
     ***REMOVED***
-
+    # NOTE: here the system admin is actually requesting client or developers organizations
     if path == "get":
         json_data: dict = request.get_json()
-        organization_id: Union[str, None] = json_data.get("organization_id")
-        uid: Union[str, None] = json_data.get("uid")
-        org_view_instance: OrganizationView = OrganizationView()
-        return org_view_instance.get_organization(uid=uid, organization_id=organization_id)
+        organization_id: Optional[str] = json_data.get("organization_id")
+        uid: Optional[str] = json_data.get("uid")
+        secret_key: Optional[str] = json_data.get('SECRET_KEY')
+        if isinstance(secret_key, str) and secret_key == current_app.config.get('SECRET_KEY'):
+            org_view_instance: OrganizationView = OrganizationView()
+            return org_view_instance.get_organization(uid=uid, organization_id=organization_id)
+
+        message: str = 'User Not Authorized: cannot fetch organization'
+        raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
+
+    # NOTE: here the system is requesting records of all clients organizations
+    elif path == "get-all":
+        pass
 
