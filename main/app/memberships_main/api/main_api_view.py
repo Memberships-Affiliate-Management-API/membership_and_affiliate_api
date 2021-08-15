@@ -5,7 +5,7 @@
 import json
 import requests
 from typing import Optional
-from flask import current_app
+from flask import current_app, jsonify
 
 
 class MainAPPAPIView:
@@ -24,7 +24,7 @@ class MainAPPAPIView:
         self._register_user_endpoint: str = "_api/v1/client/users/register"
         self._login_user_endpoint: str = "_api/v1/client/users/login"
         self._logout_user_endpoint: str = "_api/v1/client/users/logout"
-        self._send_contact_message_endpoint: str = "_api/v1/client/contact"
+        self._send_contact_message_endpoint: str = "_api/v1/client/contact/create"
 
     def send_login_request(self, email: Optional[str], password: Optional[str]) -> tuple:
         ***REMOVED***
@@ -35,10 +35,12 @@ class MainAPPAPIView:
         :return: login auth-token
         ***REMOVED***
         _url: Optional[str] = "{}{}".format(self._base_url, self._login_user_endpoint)
-        json_data = json.dumps(dict(email=email, password=password, organization_id=self._organization_id,
-                                    SECRET_KEY=self._secret_key))
-        response, status = requests.post(url=_url, json=json_data)
-        return response, status
+        user_data: dict = dict(email=email, password=password, organization_id=self._organization_id,
+                               SECRET_KEY=self._secret_key)
+
+        response = requests.post(url=_url, json=user_data)
+
+        return response.json(), response.status_code
 
     def send_logout_request(self, email: Optional[str], token: Optional[str]) -> tuple:
         ***REMOVED***
@@ -49,11 +51,11 @@ class MainAPPAPIView:
         :return:
         ***REMOVED***
         _url: Optional[str] = "{}{}".format(self._base_url, self._logout_user_endpoint)
-        json_data = json.dumps(dict(email=email, token=token, organization_id=self._organization_id,
-                                    SECRET_KEY=self._secret_key))
+        user_data: dict = dict(email=email, token=token, organization_id=self._organization_id,
+                               SECRET_KEY=self._secret_key)
 
-        response, status = requests.post(url=_url, json=json_data)
-        return response, status
+        response = requests.post(url=_url, json=user_data)
+        return response.json(), response.status_code
 
     def send_register_request(self, email: Optional[str], cell: Optional[str], password:  Optional[str],
                               names: Optional[str], surname:  Optional[str]) -> tuple:
@@ -68,11 +70,11 @@ class MainAPPAPIView:
         :return: response as dict
         ***REMOVED***
         _url: Optional[str] = "{}{}".format(self._base_url, self._logout_user_endpoint)
-        json_data = json.dumps(dict(email=email, cell=cell, password=password, names=names, surname=surname,
-                                    organization_id=self._organization_id, SECRET_KEY=self._secret_key))
+        user_data = dict(email=email, cell=cell, password=password, names=names, surname=surname,
+                         organization_id=self._organization_id, SECRET_KEY=self._secret_key)
 
-        response, status = requests.post(url=_url, json=json_data)
-        return response, status
+        response = requests.post(url=_url, json=user_data)
+        return response.json(), response.status_code
 
     def send_recovery_email(self, email: Optional[str]) -> tuple:
         ***REMOVED***
@@ -89,13 +91,17 @@ class MainAPPAPIView:
         :return:
         ***REMOVED***
         _url: str = "{}{}".format(self._base_url, self._send_contact_message_endpoint)
-        json_data = json.dumps(contact_message.update(organization_id=self._organization_id))
-        response, status = requests.post(url=_url, json=json_data)
-        return response, status
+
+        contact_message.update(organization_id=self._organization_id, SECRET_KEY=self._secret_key)
+        # json_data = json.dumps(contact_message)
+        # just pass dict without any modifications
+        response = requests.post(url=_url, json=contact_message)
+        return response.json(), response.status_code
 
     def get_contact_message(self):
         ***REMOVED***
 
         :return:
         ***REMOVED***
-        pass
+        _url: str = "{}{}".format(self._base_url, self._send_contact_message_endpoint)
+
