@@ -273,6 +273,7 @@ class CouponsValidator:
 class Memberships(BaseModel):
     ***REMOVED***
         **Class Memberships**
+            **AKA Subscriptions**
             NOTE: Tracks down which user belongs to which plan from which organization_id  and if the user is paid up or unpaid
             for the month it also captures the payment_method selected for the plan
 
@@ -285,14 +286,16 @@ class Memberships(BaseModel):
             5. property date_created: the date the membership has been created
             6. property plan_start_date: the date the plan has been activated
             7. property payment_method: method of payment for the membership plan
+            8. property is_active_subscription: is user still actively subscribed or not
     ***REMOVED***
     organization_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
     uid: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
     plan_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
-    status: str = ndb.StringProperty(default="unpaid", validator=property_.set_status, required=True)  # Paid/ Unpaid
+    payment_status: str = ndb.StringProperty(default="unpaid", validator=property_.set_status, required=True)  # Paid/ Unpaid
     date_created: date = ndb.DateTimeProperty(auto_now_add=True, validator=property_.set_date)
     plan_start_date: date = ndb.DateProperty(validator=property_.set_datetime)  # the date this plan will
     payment_method: str = ndb.StringProperty(default="paypal", validator=property_.set_payment_method)
+    is_active_subscription: bool = ndb.BooleanProperty(default=True, validator=property_.set_bool)
 
     # become active
 
@@ -312,7 +315,7 @@ class Memberships(BaseModel):
 
     def __str__(self) -> str:
         return "<Memberships: organization_id: {}, uid: {}, plan_id: {}, status: {}, date_created: {}, " \
-               "start_date: {}".format(self.organization_id, self.uid, self.plan_id, self.status, self.date_created,
+               "start_date: {}".format(self.organization_id, self.uid, self.plan_id, self.payment_status, self.date_created,
                                        self.plan_start_date)
 
     def __bool__(self) -> bool:

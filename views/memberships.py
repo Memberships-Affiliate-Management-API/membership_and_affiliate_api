@@ -14,6 +14,9 @@ from typing import Optional
 from google.api_core.exceptions import RetryError, Aborted
 from flask import jsonify, current_app
 from datetime import datetime, date
+
+from google.cloud import ndb
+
 from config.exceptions import (DataServiceError, InputError, error_codes, status_codes,
                                UnAuthenticatedError, RequestError)
 from database.memberships import MembershipPlans, AccessRights, Memberships, Coupons
@@ -430,23 +433,23 @@ class MembershipsView(Validators, MembershipsEmails):
                 membership_instance.organization_id = organization_id
                 new_member = True
 
-            membership_instance.status = 'unpaid'
+            membership_instance.payment_status = 'unpaid'
             membership_instance.plan_start_date = plan_start_date
             membership_instance.plan_id = plan_id
             membership_instance.payment_method = payment_method
-            key = membership_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+            key: Optional[ndb.Key] = membership_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             if not bool(key):
-                message: str = "Unable to save membership instance to database, please try again"
+                message: str = "Database Error: Unable to save membership instance to database, please try again"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
             if new_member:
                 # Note only sending welcome emails for new members
                 self.send_memberships_welcome_email(organization_id=organization_id, uid=uid)
 
-            return jsonify({'status': True, 'message': 'successfully updated membership',
+            return jsonify({'status': True, 'message': 'successfully subscribed to membership',
                             'payload': membership_instance.to_dict()}), status_codes.successfully_updated_code
 
-        message: str = ***REMOVED***You are not authorized to perform this action consider contacting your admin***REMOVED***
+        message: str = ***REMOVED***User Un-Authorized: You cannot perform this action consider contacting your admin***REMOVED***
         raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
     @use_context
@@ -478,7 +481,7 @@ class MembershipsView(Validators, MembershipsEmails):
                 membership_instance.uid = uid
                 membership_instance.organization_id = organization_id
 
-            membership_instance.status = 'unpaid'
+            membership_instance.payment_status = 'unpaid'
             membership_instance.plan_id = plan_id
             membership_instance.plan_start_date = plan_start_date
             membership_instance.payment_method = payment_method
@@ -496,6 +499,7 @@ class MembershipsView(Validators, MembershipsEmails):
                        plan_id: Optional[str], plan_start_date: date,
                        payment_method: Optional[str] = "paypal") -> tuple:
         ***REMOVED***
+
             **add_membership**
                 add new membership
 
@@ -569,7 +573,7 @@ class MembershipsView(Validators, MembershipsEmails):
 
     @use_context
     @handle_view_errors
-    def set_membership_status(self, organization_id: Optional[str], uid: Optional[str], status: Optional[str]) -> tuple:
+    def set_membership_payment_status(self, organization_id: Optional[str], uid: Optional[str], status: Optional[str]) -> tuple:
         ***REMOVED***
             **set_membership_status**
                 set membership status
@@ -597,7 +601,7 @@ class MembershipsView(Validators, MembershipsEmails):
                                                              Memberships.uid == uid).get()
 
         if isinstance(membership_instance, Memberships):
-            membership_instance.status = status
+            membership_instance.payment_status = status
             key = membership_instance.put(retries=self._max_retries, timeout=self._max_timeout)
 
             if not bool(key):
@@ -642,7 +646,7 @@ class MembershipsView(Validators, MembershipsEmails):
                                                              Memberships.uid == uid).get_async().get_result()
 
         if isinstance(membership_instance, Memberships):
-            membership_instance.status = status
+            membership_instance.payment_status = status
             key = membership_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
             if not bool(key):
                 message: str = "Unable to save membership instance to database, please try again"
@@ -843,7 +847,7 @@ class MembershipsView(Validators, MembershipsEmails):
 
         membership_list: typing.List[Memberships] = Memberships.query(Memberships.organization_id == organization_id,
                                                                       Memberships.plan_id == plan_id,
-                                                                      Memberships.status == status).fetch()
+                                                                      Memberships.payment_status == status).fetch()
 
         if isinstance(membership_list, list) and len(membership_list):
             response_data: typing.List[dict] = [member.to_dict() for member in membership_list]
@@ -881,7 +885,7 @@ class MembershipsView(Validators, MembershipsEmails):
 
         membership_list: typing.List[Memberships] = Memberships.query(
             Memberships.organization_id == organization_id, Memberships.plan_id == plan_id,
-            Memberships.status == status).fetch_async().get_result()
+            Memberships.payment_status == status).fetch_async().get_result()
 
         if isinstance(membership_list, list) and len(membership_list):
             response_data: typing.List[dict] = [member.to_dict() for member in membership_list]
@@ -910,7 +914,7 @@ class MembershipsView(Validators, MembershipsEmails):
             raise InputError(status=error_codes.input_error_code, description=message)
 
         membership_list: typing.List[Memberships] = Memberships.query(Memberships.organization_id == organization_id,
-                                                                      Memberships.status == status).fetch()
+                                                                      Memberships.payment_status == status).fetch()
 
         if isinstance(membership_list, list) and len(membership_list):
             response_data: typing.List[dict] = [member.to_dict() for member in membership_list]
@@ -940,7 +944,7 @@ class MembershipsView(Validators, MembershipsEmails):
             raise InputError(status=error_codes.input_error_code, description=message)
 
         membership_list: typing.List[Memberships] = Memberships.query(
-            Memberships.organization_id == organization_id, Memberships.status == status).fetch_async().get_result()
+            Memberships.organization_id == organization_id, Memberships.payment_status == status).fetch_async().get_result()
 
         if isinstance(membership_list, list) and len(membership_list):
             response_data: typing.List[dict] = [member.to_dict() for member in membership_list]
@@ -1033,6 +1037,14 @@ class MembershipsView(Validators, MembershipsEmails):
         ***REMOVED***
             returns user membership details
         ***REMOVED***
+        if not isinstance(organization_id, str) or bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(uid, str) or not bool(uid.strip()):
+            message: str = "uid is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         member_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                          Memberships.uid == uid).get_async().get_result()
 
@@ -1051,7 +1063,14 @@ class MembershipsView(Validators, MembershipsEmails):
         ***REMOVED***
             for a specific user return payment amount
         ***REMOVED***
-        # TODO this function has to be secured
+        if not isinstance(organization_id, str) or bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(uid, str) or not bool(uid.strip()):
+            message: str = "uid is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                              Memberships.uid == uid).get()
 
@@ -1084,6 +1103,13 @@ class MembershipsView(Validators, MembershipsEmails):
         ***REMOVED***
             for a specific user return payment amount
         ***REMOVED***
+        if not isinstance(organization_id, str) or bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(uid, str) or not bool(uid.strip()):
+            message: str = "uid is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                              Memberships.uid == uid).get_async().get_result()
@@ -1111,52 +1137,42 @@ class MembershipsView(Validators, MembershipsEmails):
 
     @use_context
     @handle_view_errors
-    def set_payment_status(self, organization_id: Optional[str], uid: Optional[str], status: Optional[str]) -> tuple:
+    def un_subscribe(self, organization_id: Optional[str], uid: Optional[str], plan_id: Optional[str]) -> tuple:
+        ***REMOVED***
 
+        :param organization_id:
+        :param uid:
+        :param plan_id:
+        :return:
         ***REMOVED***
-            # status is paid or unpaid
-            for a specific user set payment status
-        ***REMOVED***
+        if not isinstance(organization_id, str) or bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(uid, str) or not bool(uid.strip()):
+            message: str = "uid is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(plan_id, str) or not bool(plan_id.strip()):
+            message: str = "plan_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                              Memberships.uid == uid).get()
-
         if isinstance(membership_instance, Memberships):
-            membership_instance.status = status
-            key = membership_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+            membership_instance.is_active_subscription = False
+            key: Optional[ndb.Key] = membership_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             if not bool(key):
-                message: str = 'for some reason we are unable to set payment status'
+                message: str = "Database Error: Unable to un-subscribe please try again later"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-            message: str = 'payment status has been successfully set'
-            return jsonify({'status': True, 'message': message,
-                            'payload': membership_instance.to_dict()}), status_codes.status_ok_code
-        message: str = "Membership not found"
-        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+            # TODO please update cache
+            message: str = "Successfully un-subscribed from your membership plan"
+            return jsonify({'status': True,
+                            'payload': membership_instance.to_dict(),
+                            'message': message}), status_codes.successfully_updated_code
 
-    @use_context
-    @handle_view_errors
-    async def set_payment_status_async(self, organization_id: Optional[str], uid: Optional[str],
-                                       status: Optional[str]) -> tuple:
-
-        ***REMOVED***
-            # status is paid or unpaid
-            for a specific user set payment status
-        ***REMOVED***
-
-        membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
-                                                             Memberships.uid == uid).get_async().get_result()
-
-        if isinstance(membership_instance, Memberships):
-            membership_instance.status = status
-            key = membership_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
-            if not bool(key):
-                message: str = 'for some reason we are unable to set payment status'
-                raise DataServiceError(status=error_codes.data_service_error_code, description=message)
-
-            message: str = 'payment status has been successfully set'
-            return jsonify({'status': True, 'message': message,
-                            'payload': membership_instance.to_dict()}), status_codes.status_ok_code
-        message: str = "Membership not found"
+        message: str = "Data Error: Unable to find membership record"
         return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
 

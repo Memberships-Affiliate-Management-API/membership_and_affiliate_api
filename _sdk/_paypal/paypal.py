@@ -71,7 +71,7 @@ class PayPalOrders(PayPalClient):
         if debug:
             print('Order With Minimum Payload:')
             print('Status Code:', response.status_code)
-            print('Status:', response.result.status)
+            print('Status:', response.result.payment_status)
             print('Order ID:', response.result.id)
             print('Intent:', response.result.intent)
             print('Links:')
@@ -107,7 +107,7 @@ class PayPalOrders(PayPalClient):
         response = self.client.execute(auth_order_request)
         if debug:
             print('Status Code: ', response.status_code)
-            print('Status: ', response.result.status)
+            print('Status: ', response.result.payment_status)
             print('Order ID: ', response.result.id)
             print('Authorization ID:', response.result.purchase_units[0].payments.authorizations[0].id)
             print('Links:')
@@ -138,7 +138,7 @@ class PayPalOrders(PayPalClient):
         response = self.client.execute(capture_request)
         if debug:
             print('Status Code: ', response.status_code)
-            print('Status: ', response.result.status)
+            print('Status: ', response.result.payment_status)
             print('Capture ID: ', response.result.id)
             print('Links: ')
             for link in response.result.links:
@@ -382,7 +382,7 @@ class PayPalRecurring(PayPalClient):
             print("Plan ID: {}".format(response.result.id))
             print("Product ID: {}".format(response.result.product_id))
             print("Plan Name: {}".format(response.result.name))
-            print("Status: {}".format(response.result.status))
+            print("Status: {}".format(response.result.payment_status))
             print("LINKS : ")
             for link in response.result.links:
                 print('\t{}: {}\tCall Type: {}'.format(link.rel, link.href, link.method))
@@ -558,7 +558,7 @@ class PayPalRecurring(PayPalClient):
             print("Plan_ID: {}".format(response.result.plan_id))
             print("Start Time: {}".format(response.result.start_time))
             print("Create Time: {}".format(response.result.create_time))
-            print("STATUS : {}".format(response.result.status))
+            print("STATUS : {}".format(response.result.payment_status))
             print("STATUS UPDATE TIME: {}".format(response.results.status_update_time))
             print("Subscription Link :")
 

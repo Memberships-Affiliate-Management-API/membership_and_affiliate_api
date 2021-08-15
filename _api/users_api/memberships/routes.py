@@ -67,7 +67,7 @@ def get_update_status(path: str) -> tuple:
             return jsonify({'status': True, 'message': message}), 500
         uid, organization_id = path.split("@")
         membership_view_instance: MembershipsView = MembershipsView()
-        return membership_view_instance.set_membership_status(organization_id=organization_id, uid=uid, status=status)
+        return membership_view_instance.set_membership_payment_status(organization_id=organization_id, uid=uid, status=status)
     elif request.method == "GET":
         ***REMOVED***
             return membership record    
