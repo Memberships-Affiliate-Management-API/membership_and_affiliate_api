@@ -80,4 +80,12 @@ def client_memberships_management(path: str) -> tuple:
     :param path:
     :return:
     ***REMOVED***
-    pass
+    if_bad_request_raise(request)
+    json_data: dict = request.get_json()
+    memberships_view_instance: MembershipsView = MembershipsView()
+
+    # this endpoint allows users to create their own membership plan should be called after service
+    # has been created and with the service or product id
+
+
+
