@@ -68,6 +68,9 @@ class Organization(BaseModel):
             8. total_members: int -> total number of users or clients belonging to this organization
             9. projected_membership_payments : AmountMixin -> total expected earnings for this month
             10. total_membership_payments: AmountMixin -> total payments to the organization which came from memberships
+            11. home_url: String -> Home page for the organization being registered
+            12. login_callback_url: string -> login page url - the page to redirect the user to after successfull authentication
+            13. recovery_callback_url: string -> recovery page callback url - specify where the user must be redirected to in order to complete password recovery process
 
     ***REMOVED***
     owner_uid: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
@@ -82,6 +85,9 @@ class Organization(BaseModel):
     total_membership_payments: AmountMixin = ndb.StructuredProperty(AmountMixin)
     date_created: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=property_.set_datetime)
     date_updated: datetime = ndb.DateTimeProperty(auto_now=True, validator=property_.set_datetime)
+    home_url: str = ndb.StringProperty(validator=property_.set_domain)
+    login_callback_url: str = ndb.StringProperty(validator=property_.set_domain)
+    recovery_callback_url: str = ndb.StringProperty(validator=property_.set_domain)
 
     def __str__(self) -> str:
         return "<Organization organization_id: {}, owner_uid: {}, wallet_id: {}, Name: {} Description: {} " \
