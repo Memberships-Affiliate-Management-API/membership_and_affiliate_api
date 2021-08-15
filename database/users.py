@@ -155,6 +155,7 @@ class UserModel(BaseModel):
     is_admin: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
     is_support: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
     address: AddressMixin = ndb.StructuredProperty(AddressMixin)
+    recovery_code: str = ndb.StringProperty(validator=property_.set_string)
 
     def __str__(self) -> str:
         return "<User: UID: {}, Names: {}, Surname: {}, Email: {}, Cell: {}".format(self.uid, self.names, self.surname,

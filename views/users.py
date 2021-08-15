@@ -12,6 +12,7 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 import typing
 from typing import Optional
 from flask import jsonify, current_app
+from google.cloud import ndb
 from werkzeug.security import check_password_hash
 from _sdk._email import Mailgun
 from config.exceptions import error_codes, status_codes, InputError, UnAuthenticatedError, DataServiceError
@@ -97,14 +98,24 @@ class UserEmails(Mailgun):
         ***REMOVED***
         pass
 
-    def send_recovery_email(self, email) -> None:
+    def send_recovery_email(self, organization_id: Optional[str],  email: Optional[str], recovery_code: str) -> None:
         ***REMOVED***
             **send_recovery_email**
                 send an email informing the user a recovery action has been activated on their account
         :param email:
+        :param organization_id:
+        :param recovery_code
         :return:
         ***REMOVED***
-        pass
+        # TODO - actually send recovery email through MailGun here
+        response: Optional[dict] = self.__get_organization_data(organization_id=organization_id)
+        # NOTE response here will already be a dict containing payload
+        if response:
+            organization_name: str = response['organization_name']
+            text_body = ''' '''
+            html_body = ''' '''
+            self.__do_send_mail(to_email=email, subject=f"{organization_name}Email Recovery Email",
+                                text=text_body, html=html_body)
 
 
 class Validators(UserValidators, OrgValidators):
@@ -1234,8 +1245,25 @@ class UserView(Validators, UserEmails, CacheManager):
         :param email:
         :return:
         ***REMOVED***
-        # TODO: complete this by actually sending recovery email
-        return jsonify({'status': False, 'message': 'Unable to send recovery email please try again later'}), 500
+
+        user_model: UserModel = UserModel.query(UserModel.organization_id == organization_id,
+                                                UserModel.email == email).get()
+        if isinstance(user_model, UserModel):
+            user_model.recovery_code = create_id()
+            key: Optional[ndb.Key] = user_model.put(retries=self._max_retries, timeout=self._max_timeout)
+            if not bool(key):
+                message: str = "Database Error: Unable to create recovery code please try again later"
+                raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
+            # TODO - remove cache values for this User
+
+            # Using super method to send recovery email
+            response = super().send_recovery_email(organization_id=organization_id, email=email,
+                                                   recovery_code=user_model.recovery_code)
+
+        # NOTE cannot send failure messages as it will give attackers more information than necessary
+        message: str = "If your email is registered please check your inbox"
+        return jsonify({'status': True, 'message': message}), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors

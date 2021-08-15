@@ -52,17 +52,14 @@ class Config:
         self.PAYPAL_CLIENT_ID: str = os.environ.get("PAYPAL_CLIENT_ID") or config("PAYPAL_CLIENT_ID")
         self.PAYPAL_CLIENT_SECRET: str = os.environ.get("PAYPAL_CLIENT_SECRET") or config("PAYPAL_CLIENT_SECRET")
         self.PAYPAL_CLIENT_ID_SAND: str = os.environ.get("PAYPAL_CLIENT_ID_SAND") or config("PAYPAL_CLIENT_ID_SAND")
-        self.PAYPAL_CLIENT_SECRET_SAND: str = os.environ.get("PAYPAL_CLIENT_SECRET_SAND") or config(
-            "PAYPAL_CLIENT_SECRET_SAND")
+        self.PAYPAL_CLIENT_SECRET_SAND: str = os.environ.get("PAYPAL_CLIENT_SECRET_SAND") or config("PAYPAL_CLIENT_SECRET_SAND")
         self.IS_PRODUCTION: bool = True
         self.SECRET_KEY: str = os.environ.get("SECRET_KEY") or config("SECRET_KEY")
         self.DEBUG: bool = False
         self.CACHE_TYPE: str = "simple"
         self.CACHE_DEFAULT_TIMEOUT: int = 60 * 60 * 6
         self.MEM_CACHE_SERVER_URI: str = ""
-        self.GOOGLE_APPLICATION_CREDENTIALS: str = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS") or config(
-            "GOOGLE_APPLICATION_CREDENTIALS")
-
+        self.GOOGLE_APPLICATION_CREDENTIALS: str = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS") or config("GOOGLE_APPLICATION_CREDENTIALS")
         self.PAYMENT_PLANS_SCHEDULES: typing.List[str] = ['monthly', 'quarterly', 'annually']
         self.PAYMENT_PLANS_PAYMENT_DAYS: typing.List[int] = [1, 2, 3, 4, 5]
         self.MINIMUM_WITHDRAWAL_AMOUNT_USD: int = 3000  # amount is in cents

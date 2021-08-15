@@ -44,8 +44,8 @@ def get_admin_user() -> UserModel:
     password: str = config_instance.ADMIN_PASSWORD
     cell: str = config_instance.ADMIN_CELL
 
-    return UserModel(organization_id=organization_id, uid=uid, email=admin_email, names=names, surname=surname,
-                     cell=cell, password=password, is_admin=True)
+    # return UserModel(organization_id=organization_id, uid=uid, email=admin_email, names=names, surname=surname,
+    #                  cell=cell, password=password, is_admin=True)
 
 
 def is_app_admin(current_user: UserModel) -> bool:

@@ -81,7 +81,7 @@ class Mailgun:
         headers = {'content-type': 'application/json'}
         return asyncio.run(self.__async_request(_url=_url, json_data=json_data, headers=headers))
 
-    async def __get_organization_data_async(self, organization_id: str, uid: str) -> typing.Union[dict, None]:
+    def __get_organization_data(self, organization_id: str) -> typing.Union[dict, None]:
         ***REMOVED***
             **__get_organization_data_async**
                 asynchronously returns the organization details based on the organization id and uid
@@ -90,7 +90,7 @@ class Mailgun:
         :return:
         ***REMOVED***
         _url: str = "{}{}".format(config_instance.BASE_URL, self._admin_get_organization_endpoint)
-        json_data = jsonify({'organization_id': organization_id, 'uid': uid, 'SECRET_KEY': self._secret_key})
+        json_data = jsonify({'organization_id': organization_id, 'SECRET_KEY': self._secret_key})
         headers = {'content-type': 'application/json'}
         return asyncio.run(self.__async_request(_url=_url, json_data=json_data, headers=headers))
 

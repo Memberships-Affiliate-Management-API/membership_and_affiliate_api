@@ -25,6 +25,7 @@ class MainAPPAPIView:
         self._login_user_endpoint: str = "_api/v1/client/users/login"
         self._logout_user_endpoint: str = "_api/v1/client/users/logout"
         self._send_contact_message_endpoint: str = "_api/v1/client/contact/create"
+        self._send_email_recovery_endpoint: str = "_api/v1/client/users/send-email-recovery"
 
     def send_login_request(self, email: Optional[str], password: Optional[str]) -> tuple:
         ***REMOVED***
@@ -82,7 +83,10 @@ class MainAPPAPIView:
         :param email:
         :return:
         ***REMOVED***
-        pass
+        _url: str = f"{self._base_url}{self._send_email_recovery_endpoint}"
+        user_data: dict = dict(email=email, organization_id=self._organization_id, SECRET_KEY=self._secret_key)
+        response = requests.post(url=_url, json=user_data)
+        return response.json(), response.status_code
 
     def send_contact_message_request(self, contact_message: Optional[dict]) -> tuple:
         ***REMOVED***

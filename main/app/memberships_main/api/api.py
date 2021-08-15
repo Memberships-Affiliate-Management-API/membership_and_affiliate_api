@@ -30,7 +30,8 @@ def auth(current_user, path: str) -> tuple:
         json_data: dict = request.get_json()
         email: str = json_data.get('email')
         password: str = json_data.get('password')
-        return main_app_view.send_login_request(email=email, password=password)
+        response, status_code = main_app_view.send_login_request(email=email, password=password)
+        return jsonify(response), status_code
 
     elif path == 'subscribe':
         if current_user:
@@ -43,8 +44,9 @@ def auth(current_user, path: str) -> tuple:
         email: Optional[str] = json_data.get('email')
         password: Optional[str] = json_data.get('password')
         name, surname = names.split(" ")
-        return main_app_view.send_register_request(email=email, cell=cell, names=name, surname=surname,
-                                                   password=password)
+        response, status_code = main_app_view.send_register_request(email=email, cell=cell, names=name, surname=surname,
+                                                                    password=password)
+        return jsonify(response), status_code
 
     elif path == 'send-recovery-email':
         if current_user:
@@ -53,7 +55,9 @@ def auth(current_user, path: str) -> tuple:
 
         json_data: dict = request.get_json()
         email = json_data.get('email')
-        return main_app_view.send_recovery_email(email=email)
+        print(f"sending recovery email : {email}")
+        response, status_code = main_app_view.send_recovery_email(email=email)
+        return jsonify(response), status_code
 
     # NOTE that if user is logged in then user details will be present on current_user
     elif path == "get":
