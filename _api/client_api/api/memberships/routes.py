@@ -72,7 +72,7 @@ def memberships_client_api(path: str) -> tuple:
             return memberships_view_instance.un_subscribe(organization_id=organization_id, uid=uid, plan_id=plan_id)
 
 
-@memberships_client_api_bp.route('_api/v1/client/admin/memberships/<string:path>', methods=["POST"])
+@memberships_client_api_bp.route('/_api/v1/client/admin/memberships/<string:path>', methods=["POST"])
 def client_memberships_management(path: str) -> tuple:
     ***REMOVED***
         **client_memberships_management**
@@ -111,7 +111,10 @@ def client_memberships_management(path: str) -> tuple:
         term_payment: Optional[int] = json_data.get('term_payment')
         registration_amount: Optional[int] = json_data.get('registration_amount')
         currency: Optional[str] = json_data.get('currency')
+
+        # NOTE : relevant to update membership plan
         is_active: Optional[bool] = json_data.get('is_active')
+        plan_id: Optional[str] = json_data.get('plan_id')
 
         if path == "create-membership-plan":
             # NOTE: All monetary amounts are in cents - USD cents
@@ -122,9 +125,15 @@ def client_memberships_management(path: str) -> tuple:
                                                   currency=currency)
 
         elif path == "update-membership-plan":
-            return memberships_plan_view.update_plan(organization_id=organization_id, service_id=service_id,
-                                                     plan_name=plan_name, description=description,
+            return memberships_plan_view.update_plan(organization_id=organization_id, plan_id=plan_id,
+                                                     service_id=service_id, plan_name=plan_name, description=description,
                                                      schedule_day=schedule_day, schedule_term=schedule_term,
                                                      term_payment=term_payment, registration_amount=registration_amount,
                                                      currency=currency, is_active=is_active)
 
+        elif path == "get-plan":
+            return memberships_plan_view.return_plan(organization_id=organization_id, plan_id=plan_id)
+
+        elif path == "return-all-plans":
+            # NOTE this will return all main membership plans for subscribing to this API
+            return memberships_plan_view.return_all_plans(organization_id=organization_id)
