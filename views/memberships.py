@@ -1076,7 +1076,7 @@ class MembershipsView(Validators, MembershipsEmails):
 
         if isinstance(membership_instance, Memberships):
             plan_id: str = membership_instance.plan_id
-            membership_plan_instance: MembershipPlans = MembershipPlansView().get_plan(
+            membership_plan_instance: MembershipPlans = MembershipPlansView()._get_plan(
                 organization_id=organization_id, plan_id=plan_id)
 
             if not bool(membership_plan_instance):
@@ -1116,7 +1116,7 @@ class MembershipsView(Validators, MembershipsEmails):
 
         if isinstance(membership_instance, Memberships):
             plan_id: str = membership_instance.plan_id
-            membership_plan_instance: MembershipPlans = await MembershipPlansView().get_plan_async(
+            membership_plan_instance: MembershipPlans = await MembershipPlansView()._get_plan_async(
                 organization_id=organization_id, plan_id=plan_id)
 
             if not bool(membership_plan_instance):
@@ -1586,9 +1586,14 @@ class MembershipPlansView(Validators):
 
     @staticmethod
     @handle_store_errors
-    def get_plan(organization_id: str, plan_id: str) -> typing.Union[MembershipPlans, None]:
+    def _get_plan(organization_id: str, plan_id: str) -> typing.Union[MembershipPlans, None]:
         ***REMOVED***
-            this utility will be used by other views to obtain information about membershipPlans
+            **_get_plan_async**
+                this utility will be used by other views to obtain information about membershipPlans
+
+            **NOTE**
+                do not directly call this function
+
         :param organization_id:
         :param plan_id:
         :return:
@@ -1603,9 +1608,17 @@ class MembershipPlansView(Validators):
 
     @staticmethod
     @handle_store_errors
-    async def get_plan_async(organization_id: str, plan_id: str) -> typing.Union[MembershipPlans, None]:
+    async def _get_plan_async(organization_id: str, plan_id: str) -> typing.Union[MembershipPlans, None]:
         ***REMOVED***
-            this utility will be used by other views to obtain information about membershipPlans
+            **_get_plan_async**
+
+                this utility will be used by other views to obtain information about membershipPlans
+            **NOTE**
+                do not directly call this function
+
+        :param organization_id:
+        :param plan_id:
+        :return:
         ***REMOVED***
         if isinstance(plan_id, str):
             membership_plan_instance: MembershipPlans = MembershipPlans.query(
@@ -1627,7 +1640,7 @@ class MembershipPlansView(Validators):
         :return: plan details
         ***REMOVED***
 
-        plan_instance = self.get_plan(organization_id=organization_id, plan_id=plan_id)
+        plan_instance = self._get_plan(organization_id=organization_id, plan_id=plan_id)
         if bool(plan_instance):
             message: str = "successfully fetched plan"
             return jsonify({'status': True, 'payload': plan_instance.to_dict(),
@@ -1646,7 +1659,7 @@ class MembershipPlansView(Validators):
         :return: plan details
         ***REMOVED***
 
-        plan_instance = await self.get_plan_async(organization_id=organization_id, plan_id=plan_id)
+        plan_instance = await self._get_plan_async(organization_id=organization_id, plan_id=plan_id)
         if bool(plan_instance):
             message: str = "successfully fetched plan"
             return jsonify({'status': True, 'payload': plan_instance.to_dict(),
@@ -1670,7 +1683,7 @@ class MembershipPlansView(Validators):
                                                              Memberships.uid == uid).get()
 
         if bool(membership_instance):
-            plan_instance = self.get_plan(organization_id=organization_id, plan_id=membership_instance.plan_id)
+            plan_instance = self._get_plan(organization_id=organization_id, plan_id=membership_instance.plan_id)
             message: str = "successfully fetched user plan"
             return jsonify({'status': True, 'payload': plan_instance.to_dict(),
                             'message': message}), status_codes.status_ok_code

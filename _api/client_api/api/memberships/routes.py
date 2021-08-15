@@ -18,6 +18,14 @@ from views.memberships import MembershipsView, MembershipPlansView
 memberships_client_api_bp = Blueprint('memberships_client_api', __name__)
 
 
+def get_params(json_data : dict) -> tuple:
+    ***REMOVED***
+
+    :param json_data:
+    :return:
+    ***REMOVED***
+
+
 @memberships_client_api_bp.route('/_api/v1/client/memberships/<string:path>', methods=['POST'])
 def memberships_client_api(path: str) -> tuple:
     ***REMOVED***
@@ -92,20 +100,31 @@ def client_memberships_management(path: str) -> tuple:
             message: str = 'User Not Authorized: you cannot perform this action'
             raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code,
                                        description=message)
+
         # NOTE: creates a new membership plan
-        elif path == "create-membership-plan":
-            organization_id: Optional[str] = current_app.config.get('ORGANIZATION_ID')
-            service_id: Optional[str] = json_data.get('service_id')
-            plan_name: Optional[str] = json_data.get('plan_name')
-            description: Optional[str] = json_data.get('description')
-            schedule_day: Optional[int] = json_data.get('schedule_day')
-            schedule_term: Optional[str] = json_data.get('schedule_term')
-            term_payment: Optional[int] = json_data.get('term_payment')
-            registration_amount: Optional[int] = json_data.get('registration_amount')
-            currency: Optional[str] = json_data.get('currency')
+        organization_id: Optional[str] = current_app.config.get('ORGANIZATION_ID')
+        service_id: Optional[str] = json_data.get('service_id')
+        plan_name: Optional[str] = json_data.get('plan_name')
+        description: Optional[str] = json_data.get('description')
+        schedule_day: Optional[int] = json_data.get('schedule_day')
+        schedule_term: Optional[str] = json_data.get('schedule_term')
+        term_payment: Optional[int] = json_data.get('term_payment')
+        registration_amount: Optional[int] = json_data.get('registration_amount')
+        currency: Optional[str] = json_data.get('currency')
+        is_active: Optional[bool] = json_data.get('is_active')
+
+        if path == "create-membership-plan":
             # NOTE: All monetary amounts are in cents - USD cents
-            return memberships_plan_view.add_plan(organization_id=organization_id, service_id=service_id, plan_name=plan_name,
-                                                  description=description, schedule_day=schedule_day,
-                                                  schedule_term=schedule_term, term_payment=term_payment,
-                                                  registration_amount=registration_amount, currency=currency)
+            return memberships_plan_view.add_plan(organization_id=organization_id, service_id=service_id,
+                                                  plan_name=plan_name, description=description,
+                                                  schedule_day=schedule_day, schedule_term=schedule_term,
+                                                  term_payment=term_payment, registration_amount=registration_amount,
+                                                  currency=currency)
+
+        elif path == "update-membership-plan":
+            return memberships_plan_view.update_plan(organization_id=organization_id, service_id=service_id,
+                                                     plan_name=plan_name, description=description,
+                                                     schedule_day=schedule_day, schedule_term=schedule_term,
+                                                     term_payment=term_payment, registration_amount=registration_amount,
+                                                     currency=currency, is_active=is_active)
 
