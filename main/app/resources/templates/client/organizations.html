@@ -12,7 +12,7 @@
               <div class="inner">
                 <h3>150</h3>
 
-                <p>New Recruits</p>
+                <p>New Subscriptions</p>
               </div>
               <div class="icon">
                 <i class="ion ion-bag"></i>
@@ -27,7 +27,7 @@
               <div class="inner">
                 <h3>53<sup style="font-size: 20px">%</sup></h3>
 
-                <p>Total Recruits</p>
+                <p>Total Subscriptions</p>
               </div>
               <div class="icon">
                 <i class="ion ion-stats-bars"></i>
@@ -69,11 +69,25 @@
         </div>
         <!-- /.row -->
         <div class="row">
-            <h2>Client Organization</h2>
-        </div>
+            <div class="card col-md-8">
+                <div class="card-header">
+                  <h1 class="card-title"> Organizations</h1>
+                              <div class="card-tools">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
+                                  <i class="fas fa-minus"></i></button>
+                                <button type="button" class="btn btn-tool" data-card-widget="remove" data-toggle="tooltip" title="Remove">
+                                  <i class="fas fa-times"></i></button>
+                              </div>
+                </div>
 
+                <div class="body">
+                    <!-- include organizations list here -->
+                    {% include "client/organizations/list.html" %}
+                </div>
+
+            </div>
+        </div>
       </div><!-- /.container-fluid -->
     </section>
 <!-- /.content -->
-
 {% endblock content %}

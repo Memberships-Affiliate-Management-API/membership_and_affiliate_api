@@ -1,0 +1,25 @@
+
+<table class="table table-responsive">
+    <!-- this table contains organizations list which would have passed when organizations.html was called -->
+    <thead>
+        <tr>
+            <td>Organization Name</td>
+            <td>Description</td>
+        </tr>
+    </thead>
+        <tbody>
+
+                {% for organization in organizations_list %}
+                    <tr>
+                        <td>{{ organization.organization_name }}</td>
+                        <td>{{ organization.description }}</td>
+                    </tr>
+                {% endfor %}
+        </tbody>
+    <tfoot>
+        <tr>
+            <td>Organization Name</td>
+            <td>Description</td>
+        </tr>
+    </tfoot>
+</table>

@@ -50,14 +50,6 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="{{ url_for('client_dashboard.client_dashboard_routes', path='api-keys') }}" class="nav-link">
-              <i class="nav-icon fas fa-server"></i>
-              <p>
-                API
-              </p>
-            </a>
-          </li>
-          <li class="nav-item">
             <a href="{{ url_for('client_dashboard.client_dashboard_routes', path='affiliates') }}" class="nav-link">
               <i class="nav-icon fas fa-chart-line"></i>
               <p>
@@ -69,7 +61,15 @@
             <a href="{{ url_for('client_dashboard.client_dashboard_routes', path='accounts') }}" class="nav-link">
               <i class="nav-icon fas fa-user-md"></i>
               <p>
-                Accounts
+                Subscriptions
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{{ url_for('client_dashboard.client_dashboard_routes', path='api-keys') }}" class="nav-link">
+              <i class="nav-icon fas fa-server"></i>
+              <p>
+                API
               </p>
             </a>
           </li>
