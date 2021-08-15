@@ -15,7 +15,7 @@ memberships_main_bp = Blueprint('memberships_main', __name__)
 # noinspection PyTypeChecker
 @memberships_main_bp.route('/', methods=["GET"])
 @logged_user
-@app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+@app_cache.cached(timeout=return_ttl('short'), unless=can_cache())
 def memberships_main(current_user) -> tuple:
     ***REMOVED***
         Basic Main route for Memberships & Affiliates Management API Admin APP
@@ -34,7 +34,7 @@ def memberships_main(current_user) -> tuple:
 # noinspection PyTypeChecker
 @memberships_main_bp.route('/<path:path>', methods=["GET"])
 @logged_user
-# @app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+@app_cache.cached(timeout=return_ttl('short'), unless=can_cache())
 def memberships_main_routes(current_user, path: str) -> tuple:
     ***REMOVED***
         @app_cache.memoize( ) caching the results of this function based on function
@@ -132,7 +132,7 @@ def memberships_main_routes(current_user, path: str) -> tuple:
 # noinspection PyTypeChecker
 @memberships_main_bp.route('/demos/api/<path:path>', methods=["GET"])
 @logged_user
-@app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+@app_cache.cached(timeout=return_ttl('short'), unless=can_cache())
 def api_demos(current_user, path: str) -> tuple:
     ***REMOVED***
        @app_cache.memoize() this will enable caching based on function arguments in this case current_user, and path
@@ -189,7 +189,7 @@ def api_demos(current_user, path: str) -> tuple:
 # noinspection PyTypeChecker
 @memberships_main_bp.route('/examples/sdk/<path:path>', methods=["GET"])
 @logged_user
-@app_cache.memoize(timeout=return_ttl('short'), unless=can_cache())
+@app_cache.cached(timeout=return_ttl('short'), unless=can_cache())
 def sdk_examples(current_user, path: str) -> tuple:
     ***REMOVED***
         @app_cache.memoize() will cache the results of the function based on current_user and path

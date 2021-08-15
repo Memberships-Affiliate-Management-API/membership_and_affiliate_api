@@ -18,14 +18,6 @@ from views.memberships import MembershipsView, MembershipPlansView
 memberships_client_api_bp = Blueprint('memberships_client_api', __name__)
 
 
-def get_params(json_data : dict) -> tuple:
-    ***REMOVED***
-
-    :param json_data:
-    :return:
-    ***REMOVED***
-
-
 @memberships_client_api_bp.route('/_api/v1/client/memberships/<string:path>', methods=['POST'])
 def memberships_client_api(path: str) -> tuple:
     ***REMOVED***
