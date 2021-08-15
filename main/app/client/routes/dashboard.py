@@ -44,7 +44,8 @@ def client_dashboard(current_user: UserModel) -> tuple:
         flash('Please login or register to start using this app')
         return redirect(url_for('memberships_main.memberships_main_routes', path='login'))
 
-    # TODO - retrive a list of organizations here
+    # TODO - retrieve a list of organizations here
+
     return render_template('client/dashboard.html', current_user=current_user,
                            organizations_list=temp_organizations), status_codes.status_ok_code
 
@@ -61,7 +62,9 @@ def client_dashboard_routes(current_user: UserModel, path: str) -> tuple:
         return render_template('client/dashboard.html', current_user=current_user,
                                organizations_list=temp_organizations), status_codes.status_ok_code
     elif path == "organizations":
-        return render_template('client/organizations.html', current_user=current_user), status_codes.status_ok_code
+        # print(f"organizations list : {temp_organizations}")
+        return render_template('client/organizations.html', current_user=current_user,
+                               organizations_list=temp_organizations), status_codes.status_ok_code
     elif path == "affiliates":
         return render_template('client/affiliates.html', current_user=current_user), status_codes.status_ok_code
     elif path == "users":
