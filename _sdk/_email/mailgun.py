@@ -36,6 +36,7 @@ class Mailgun:
             mailgun_domain : domain name registered with mailgun
             MAILGUN_API_KEY : can be found from mailgun control panel
         ***REMOVED***
+        self._base_url: str = config_instance.BASE_URL
         self.api = config_instance.MAILGUN_API_KEY
         self.end_point = "https://api.mailgun.net/v3/{}/messages".format(config_instance.MAILGUN_DOMAIN)
         self.no_response = config_instance.MAILGUN_NO_RESPONSE
@@ -62,7 +63,7 @@ class Mailgun:
         :param uid: uid of the user
         :return:
         ***REMOVED***
-        _url: str = "{}{}".format(config_instance.BASE_URL, self._admin_get_user_endpoint)
+        _url: str = "{}{}".format(self._base_url, self._admin_get_user_endpoint)
         json_data = jsonify({'organization_id': organization_id, 'uid': uid, 'SECRET_KEY': self._secret_key})
         # TODO replace requests to make this async
         headers = {'content-type': 'application/json'}
@@ -76,7 +77,7 @@ class Mailgun:
         :param uid:
         :return:
         ***REMOVED***
-        _url: str = "{}{}".format(config_instance.BASE_URL, self._admin_get_membership_plan_endpoint)
+        _url: str = "{}{}".format(self._base_url, self._admin_get_membership_plan_endpoint)
         json_data = jsonify({'organization_id': organization_id, 'uid': uid, 'SECRET_KEY': self._secret_key})
         headers = {'content-type': 'application/json'}
         return asyncio.run(self.__async_request(_url=_url, json_data=json_data, headers=headers))
@@ -89,6 +90,7 @@ class Mailgun:
         :param uid:
         :return:
         ***REMOVED***
+        # TODO ensure this endpoints works
         _url: str = "{}{}".format(config_instance.BASE_URL, self._admin_get_organization_endpoint)
         json_data = jsonify({'organization_id': organization_id, 'SECRET_KEY': self._secret_key})
         headers = {'content-type': 'application/json'}

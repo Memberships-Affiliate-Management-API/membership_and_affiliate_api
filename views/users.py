@@ -41,7 +41,7 @@ class UserEmails(Mailgun):
         ***REMOVED***
         super(UserEmails, self).__init__()
 
-    def __do_send_mail(self, to_email: str, subject: str, text: str, html: str) -> None:
+    def __do_send_mail(self, to_email: str, subject: str, text: str, html: str) -> tuple:
         ***REMOVED***
             **__do_send_mail**
                 If possible this method should be run asynchronously a method to actually send email
@@ -52,7 +52,7 @@ class UserEmails(Mailgun):
         :param html: body in html format
         :return: does not return anything
         ***REMOVED***
-        self.__send_with_mailgun_rest_api(to_list=[to_email], subject=subject, text=text, html=html)
+        return self.__send_with_mailgun_rest_api(to_list=[to_email], subject=subject, text=text, html=html)
 
     def send_welcome_to_admins_email(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
@@ -98,7 +98,7 @@ class UserEmails(Mailgun):
         ***REMOVED***
         pass
 
-    def send_recovery_email(self, organization_id: Optional[str],  email: Optional[str], recovery_code: str) -> None:
+    def send_recovery_email(self, organization_id: Optional[str],  email: Optional[str], recovery_code: str) -> tuple:
         ***REMOVED***
             **send_recovery_email**
                 send an email informing the user a recovery action has been activated on their account
@@ -112,10 +112,27 @@ class UserEmails(Mailgun):
         # NOTE response here will already be a dict containing payload
         if response:
             organization_name: str = response['organization_name']
-            text_body = ''' '''
-            html_body = ''' '''
-            self.__do_send_mail(to_email=email, subject=f"{organization_name}Email Recovery Email",
-                                text=text_body, html=html_body)
+            # NOTE during password recovery the link display should fit the look of the user of the api
+            password_reset_link: str = f'{self._base_url}{recovery_code}'
+            text_body = f'''
+            Hi
+             You are receiving this email because you requested
+             a password reset please click on the following link to reset your password 
+             and proceed: 
+             
+             {password_reset_link}
+             
+             '''
+            html_body = f'''
+            Hi
+             You are receiving this email because you requested
+             a password reset please click on the following link to reset your password 
+             and proceed:
+              
+             {password_reset_link}             
+             '''
+            return self.__do_send_mail(to_email=email, subject=f"{organization_name}Email Recovery Email",
+                                       text=text_body, html=html_body)
 
 
 class Validators(UserValidators, OrgValidators):
@@ -1240,7 +1257,8 @@ class UserView(Validators, UserEmails, CacheManager):
     def send_recovery_email(self, organization_id: Optional[str],
                             email: Optional[str]) -> tuple:
         ***REMOVED***
-            # Use the email sdk to send recovery email and return
+            **send_recovery_email**
+                sends a recovery email on behalf of users
         :param organization_id:
         :param email:
         :return:
@@ -1258,8 +1276,8 @@ class UserView(Validators, UserEmails, CacheManager):
             # TODO - remove cache values for this User
 
             # Using super method to send recovery email
-            response = super().send_recovery_email(organization_id=organization_id, email=email,
-                                                   recovery_code=user_model.recovery_code)
+            return super().send_recovery_email(organization_id=organization_id, email=email,
+                                               recovery_code=user_model.recovery_code)
 
         # NOTE cannot send failure messages as it will give attackers more information than necessary
         message: str = "If your email is registered please check your inbox"
