@@ -6,7 +6,7 @@
 from typing import Optional
 from flask import request, Blueprint, current_app
 
-from config.exceptions import UnAuthenticatedError, error_codes
+from config.exceptions import UnAuthenticatedError, error_codes, if_bad_request_raise
 from views.organization import OrganizationView
 
 client_organizations_api_bp = Blueprint('client_organizations_api', __name__)
@@ -25,6 +25,7 @@ def client_organization_main(path: str) -> tuple:
             that means no users for clients will make requests to this endpoint
     :return:
     ***REMOVED***
+    if_bad_request_raise(request)
     org_view_instance: OrganizationView = OrganizationView()
     # NOTE: client admin request to create organization
     if path == "create":

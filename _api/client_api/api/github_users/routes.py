@@ -5,6 +5,8 @@
 
 ***REMOVED***
 from flask import Blueprint
+
+from config.exceptions import if_bad_request_raise
 from views.github_auth import GithubAuthView
 
 client_github_users_api_bp = Blueprint('client_github_users_api', __name__)
@@ -17,4 +19,5 @@ def github_users_api() -> tuple:
 
     :return:
     ***REMOVED***
+    if_bad_request_raise(request)
     pass

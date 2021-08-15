@@ -5,7 +5,7 @@
 ***REMOVED***
 from typing import Optional
 from flask import Blueprint, request, current_app
-from config.exceptions import UnAuthenticatedError, error_codes
+from config.exceptions import UnAuthenticatedError, error_codes, if_bad_request_raise
 from views.apikeys import APIKeysView
 
 client_api_keys_bp = Blueprint('api-keys', __name__)
@@ -20,6 +20,7 @@ def return_api_key(key: str, organization_id) -> tuple:
     :param organization_id: the organization_id of the organization the api key belongs to
     :return:
     ***REMOVED***
+    if_bad_request_raise(request)
     json_data: dict = request.get_json()
     secret_key: Optional[str] = json_data.get('SECRET_KEY')
     if isinstance(secret_key, str) and secret_key == current_app.config.get('SECRET_KEY'):
