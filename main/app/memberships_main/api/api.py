@@ -1,5 +1,5 @@
 from typing import Optional
-from flask import Blueprint, jsonify, request, current_app
+from flask import Blueprint, jsonify, request
 from config.exceptions import error_codes, UnAuthenticatedError, status_codes
 from security.users_authenticator import logged_user
 from main.app.memberships_main.api.main_api_view import MainAPPAPIView
@@ -74,6 +74,12 @@ def contact(current_user) -> tuple:
             contacts for both clients and admins
         :return:
     ***REMOVED***
-    main_app_view: MainAPPAPIView = MainAPPAPIView()
     json_data: dict = request.get_json()
-    return main_app_view.send_contact_message_request(contact_message=json_data)
+    if current_user and current_user.uid:
+        # NOTE: if user is logged in add the user id in the message
+        json_data.update(uid=current_user.uid)
+
+    main_app_view: MainAPPAPIView = MainAPPAPIView()
+    response, status_code = main_app_view.send_contact_message_request(contact_message=json_data)
+
+    return jsonify(response), status_code
