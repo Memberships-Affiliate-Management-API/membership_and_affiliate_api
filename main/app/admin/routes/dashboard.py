@@ -10,8 +10,13 @@ admin_dashboard_bp = Blueprint("admin_dashboard", __name__)
 @admin_dashboard_bp.route("/admin/dashboard", methods=["GET"])
 @logged_user
 def admin_dashboard(current_user: UserModel) -> tuple:
+    ***REMOVED***
+        **admin_dashboard**
+            home route for system admin dashboard
+    :param current_user:
+    :return:
+    ***REMOVED***
     get_flashed_messages()
-
     if is_app_admin(current_user=current_user):
         return render_template('admin/dashboard.html', current_user=current_user), status_codes.status_ok_code
 
@@ -23,6 +28,15 @@ def admin_dashboard(current_user: UserModel) -> tuple:
 @admin_dashboard_bp.route("/admin/dashboard/<path:path>", methods=["GET"])
 @logged_user
 def admin_dashboard_routes(current_user: UserModel, path: str) -> tuple:
+    ***REMOVED***
+            **admin_dashboard_routes**
+                home route for system admin dashboard
+
+        :param current_user:
+        :param path:
+        :return:
+    ***REMOVED***
+
     get_flashed_messages()
 
     if is_app_admin(current_user=current_user):

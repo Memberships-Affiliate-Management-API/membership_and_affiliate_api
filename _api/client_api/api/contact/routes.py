@@ -14,7 +14,9 @@ contact_api_bp = Blueprint('contact-api', __name__)
 @logged_user
 def contact(current_user: UserModel) -> tuple:
     ***REMOVED***
-        main contact api- handles everything related to contacts for both clients and admins
+        **contact**
+            main contact api- handles everything related to contacts
+            for both clients and admins
     :return:
     ***REMOVED***
     json_data: dict = request.get_json()

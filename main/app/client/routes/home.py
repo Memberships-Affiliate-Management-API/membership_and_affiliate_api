@@ -13,7 +13,7 @@ client_home_bp = Blueprint('client_home', __name__)
 
 @client_home_bp.route('/client', methods=["GET"])
 @logged_user
-@app_cache.cached(timeout=return_ttl('short'), unless=can_cache())
+@app_cache.cached(timeout=return_ttl('short'))
 def client_home(current_user: UserModel) -> tuple:
     get_flashed_messages()
     if current_user and current_user.uid:

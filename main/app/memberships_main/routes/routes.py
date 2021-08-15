@@ -1,5 +1,6 @@
 ***REMOVED***
-    Routes for requests related to main website for Memberships & Affiliates Management API.
+    **Main Memberships & Affiliates Management API Website Routes**
+        Routes for requests related to main website for Memberships & Affiliates Management API.
 ***REMOVED***
 from flask import Blueprint, render_template, get_flashed_messages, make_response, redirect, url_for, flash
 from config.exceptions import status_codes

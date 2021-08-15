@@ -1,6 +1,5 @@
 from typing import Optional
 from flask import Blueprint, jsonify, request, current_app
-
 from config.exceptions import error_codes, UnAuthenticatedError, status_codes
 from security.users_authenticator import logged_user
 from main.app.memberships_main.api.main_api_view import MainAPPAPIView
