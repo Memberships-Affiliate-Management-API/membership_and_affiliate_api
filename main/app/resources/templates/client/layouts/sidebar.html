@@ -74,6 +74,15 @@
             </a>
           </li>
           <li class="nav-item">
+            <a href="{{ url_for('client_dashboard.client_dashboard_routes', path='my-account') }}" class="nav-link">
+              <i class="nav-icon fa fa-user-plus"></i>
+              <p>
+                My Account
+              </p>
+            </a>
+          </li>
+
+          <li class="nav-item">
             <a href="{{ url_for('client_dashboard.client_dashboard_routes', path='help-desk') }}" class="nav-link">
               <i class="nav-icon fas fa-info"></i>
               <p>
@@ -81,9 +90,11 @@
               </p>
             </a>
           </li>
+
           <li class="nav-item">
 
           </li>
+
           <li class="nav-item">
             <a href="{{ url_for('memberships_main.memberships_main_routes', path='logout') }}" class="nav-link">
               <i class="nav-icon fas fa-sign-out-alt"></i>
@@ -92,9 +103,6 @@
               </p>
             </a>
           </li>
-
-
-
         </ul>
       </nav>
       <!-- /.sidebar-menu -->

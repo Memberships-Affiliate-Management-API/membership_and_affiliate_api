@@ -58,9 +58,8 @@ def client_dashboard_routes(current_user: UserModel, path: str) -> tuple:
         flash('Please login or register to start using this app')
         return redirect(url_for('memberships_main.memberships_main_routes', path='login'))
 
-    if path == "dashboard":
-        return render_template('client/dashboard.html', current_user=current_user,
-                               organizations_list=temp_organizations), status_codes.status_ok_code
+    if path == "my-account":
+        return render_template('client/my_account.html', current_user=current_user), status_codes.status_ok_code
     elif path == "organizations":
         # print(f"organizations list : {temp_organizations}")
         return render_template('client/organizations.html', current_user=current_user,
@@ -72,7 +71,7 @@ def client_dashboard_routes(current_user: UserModel, path: str) -> tuple:
     elif path == "api-keys":
         return render_template('client/api_keys.html', current_user=current_user), status_codes.status_ok_code
     elif path == "accounts":
-        return render_template('client/accounts.html', current_user=current_user), status_codes.status_ok_code
+        return render_template('client/subscriptions.html', current_user=current_user), status_codes.status_ok_code
     elif path == "help-desk":
         return render_template('client/helpdesk.html', current_user=current_user), status_codes.status_ok_code
 
