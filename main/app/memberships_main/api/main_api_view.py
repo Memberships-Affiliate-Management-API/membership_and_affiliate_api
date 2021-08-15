@@ -24,6 +24,7 @@ class MainAPPAPIView:
         self._register_user_endpoint: str = "_api/v1/client/users/register"
         self._login_user_endpoint: str = "_api/v1/client/users/login"
         self._logout_user_endpoint: str = "_api/v1/client/users/logout"
+        self._send_contact_message_endpoint: str = "_api/v1/client/contact"
 
     def send_login_request(self, email: Optional[str], password: Optional[str]) -> tuple:
         ***REMOVED***
@@ -81,13 +82,16 @@ class MainAPPAPIView:
         ***REMOVED***
         pass
 
-
-    def add_contact_message(self):
+    def send_contact_message_request(self, contact_message: Optional[dict]) -> tuple:
         ***REMOVED***
-            adds contact message
+            **send_contact_message_request**
+                send contact message to the api through an api request
         :return:
         ***REMOVED***
-        pass
+        _url: str = "{}{}".format(self._base_url, self._send_contact_message_endpoint)
+        json_data = json.dumps(contact_message.update(organization_id=self._organization_id))
+        response, status = requests.post(url=_url, json=json_data)
+        return response, status
 
     def get_contact_message(self):
         ***REMOVED***

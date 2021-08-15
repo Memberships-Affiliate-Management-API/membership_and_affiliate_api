@@ -151,7 +151,11 @@ def de_activate_user() -> tuple:
 @users_bp.route("/api/v1/auth/login", methods=["POST"])
 @handle_api_auth
 def login() -> tuple:
-
+    ***REMOVED***
+        **login**
+            called by main application in order to login
+    :return:
+    ***REMOVED***
     user_view_instance: UserView = UserView()
     user_data: dict = request.get_json()
     email: typing.Union[str, None] = user_data.get("email")

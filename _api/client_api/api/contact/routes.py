@@ -10,7 +10,7 @@ from database.users import UserModel
 contact_api_bp = Blueprint('contact-api', __name__)
 
 
-@contact_api_bp.route('/api/v1/main/contact', methods=['POST', 'GET', 'PUT', 'DELETE'])
+@contact_api_bp.route('/_api/v1/client/contact', methods=['POST', 'GET', 'PUT', 'DELETE'])
 @logged_user
 def contact(current_user: UserModel) -> tuple:
     ***REMOVED***
@@ -27,10 +27,8 @@ def contact(current_user: UserModel) -> tuple:
     topic: Optional[str] = json_data.get('topic')
     subject: Optional[str] = json_data.get('subject')
     body: Optional[str] = json_data.get('body')
-    organization_id: Optional[str] = current_app.config.get('ORGANIZATION_ID')
+    organization_id: Optional[str] = json_data.get('organization_id')
 
-    print('Names: {}, Email: {}, Cell: {}, Topic: {}, Subject: {}, Body: {}'.format(names, email, cell, topic,
-                                                                                    subject, body))
+    print(f'Names: {names}, Email: {email}, Cell: {cell}, Topic: {topic}, Subject: {subject}, Body: {body}')
 
-    # TODO - add contact database view call here
     return jsonify({'status': False, 'message': 'Unable to send request please try again later'}), 200
