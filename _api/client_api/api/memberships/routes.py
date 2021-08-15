@@ -13,7 +13,7 @@ from typing import Optional
 from flask import Blueprint, request, current_app
 from config.exceptions import if_bad_request_raise, UnAuthenticatedError, error_codes
 from utils import today
-from views.memberships import MembershipsView
+from views.memberships import MembershipsView, MembershipPlansView
 
 memberships_client_api_bp = Blueprint('memberships_client_api', __name__)
 
@@ -63,8 +63,6 @@ def memberships_client_api(path: str) -> tuple:
             organization_id: Optional[str] = json_data.get('organization_id')
             return memberships_view_instance.un_subscribe(organization_id=organization_id, uid=uid, plan_id=plan_id)
 
-    return "OK", 200
-
 
 @memberships_client_api_bp.route('_api/v1/client/admin/memberships/<string:path>', methods=["POST"])
 def client_memberships_management(path: str) -> tuple:
@@ -74,7 +72,7 @@ def client_memberships_management(path: str) -> tuple:
             public - this api will also be called from client dashboard app
 
             **USE CASES**
-                1. create and update services or products
+                1. create and update services or products - NOT HERE
                 2. create and update membership plans / payment plans for services or products
 
     :param path:
@@ -82,10 +80,32 @@ def client_memberships_management(path: str) -> tuple:
     ***REMOVED***
     if_bad_request_raise(request)
     json_data: dict = request.get_json()
-    memberships_view_instance: MembershipsView = MembershipsView()
+    memberships_plan_view: MembershipPlansView = MembershipPlansView()
 
     # this endpoint allows users to create their own membership plan should be called after service
     # has been created and with the service or product id
 
+    if isinstance(json_data, dict):
+        secret_key: Optional[str] = json_data.get('SECRET_KEY')
 
+        if not isinstance(secret_key, str) or secret_key != current_app.config.get('SECRET_KEY'):
+            message: str = 'User Not Authorized: you cannot perform this action'
+            raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code,
+                                       description=message)
+        # NOTE: creates a new membership plan
+        elif path == "create-membership-plan":
+            organization_id: Optional[str] = current_app.config.get('ORGANIZATION_ID')
+            service_id: Optional[str] = json_data.get('service_id')
+            plan_name: Optional[str] = json_data.get('plan_name')
+            description: Optional[str] = json_data.get('description')
+            schedule_day: Optional[int] = json_data.get('schedule_day')
+            schedule_term: Optional[str] = json_data.get('schedule_term')
+            term_payment: Optional[int] = json_data.get('term_payment')
+            registration_amount: Optional[int] = json_data.get('registration_amount')
+            currency: Optional[str] = json_data.get('currency')
+            # NOTE: All monetary amounts are in cents - USD cents
+            return memberships_plan_view.add_plan(organization_id=organization_id, service_id=service_id, plan_name=plan_name,
+                                                  description=description, schedule_day=schedule_day,
+                                                  schedule_term=schedule_term, term_payment=term_payment,
+                                                  registration_amount=registration_amount, currency=currency)
 

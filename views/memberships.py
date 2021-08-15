@@ -1273,11 +1273,16 @@ class MembershipPlansView(Validators):
     def add_plan(self, organization_id: str, service_id: str, plan_name: str, description: str, schedule_day: int,
                  schedule_term: str, term_payment: int, registration_amount: int, currency: str) -> tuple:
         ***REMOVED***
-            checks to see if the plan actually exists and the new plan name wont cause a conflict with
-            an existing name
-             plan_name: str, description: str, schedule_day: int, schedule_term: str,
-                 term_payment: int, registration_amount: int, currency: str, is_active: bool) -> tuple:
+            **add_plan**
+                checks to see if the plan actually exists and the new plan name wont cause a conflict with
+                an existing name
+                 plan_name: str, description: str, schedule_day: int, schedule_term: str,
+                     term_payment: int, registration_amount: int, currency: str, is_active: bool) -> tuple:
+            **NOTE**
+                plan_id: will be created by paypal subscriptions
+                service_id: has already been created from paypal
 
+            The Client chooses an option to create a new payment plan from a list of available services
         ***REMOVED***
 
         is_active = True
@@ -1315,7 +1320,7 @@ class MembershipPlansView(Validators):
 
             key = plan_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             if not bool(key):
-                message: str = 'for some reason we are unable to create a new plan'
+                message: str = 'Database Error: error creating plan please try again later'
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
             return jsonify({'status': True, 'message': 'successfully created new membership plan',
