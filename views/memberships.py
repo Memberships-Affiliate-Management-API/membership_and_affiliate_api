@@ -1252,10 +1252,13 @@ class MembershipsView(Validators, MembershipsEmails):
 
 def plan_data_wrapper(func):
     ***REMOVED***
-        wraps add plan in order to check validity of the input data,
-        throws InputError in-case of an error in Input
-        :param func:
-        :return: func with correct variables
+        **plan_data_wrapper**
+            --use on membership_plans only--
+            wraps add plan in order to check validity of the input data,
+            throws InputError in-case of an error in Input
+        **PARAMETERS**
+            :param func:
+            :return: func with correct variables
     ***REMOVED***
 
     @functools.wraps(func)
