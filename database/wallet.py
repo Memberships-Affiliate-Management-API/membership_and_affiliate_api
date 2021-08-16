@@ -67,19 +67,19 @@ class WalletValidator:
 
 class WalletModel(BaseModel):
     ***REMOVED***
-        WALLET Documentations:
+        **WALLET Documentations:**
 
-        `Wallet Class`
+        **Wallet Class**
             1. Represents a wallet for clients and organizations
             2. validates data through setters defined on module setters
 
-        NOTE:
+        **NOTE:**
             1. When a wallet belongs to an organization is_org_wallet will be true, else False.
             2. organization_id indicates the user organization or the organization the wallet belongs to depending
             on the value of is_org_wallet
             3. On a monthly basis reset monthly_withdrawal_allowance
 
-        `Wallet Properties`
+        **Wallet Properties**
             1. organization_id : id of the organization for this wallet
             2. is_org_wallet : True if wallet belongs to an organization
             3. uid : id of the user who owns this wallet if is_org_wallet is false
