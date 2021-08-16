@@ -756,7 +756,7 @@ class MembershipsView(Validators, MembershipsEmails):
                                                     timeout=self._max_timeout).get_result()
 
             if not (bool(key)):
-                message: str = "Unable to Change Membership, please try again later"
+                message: str = "Database Errror: Unable to update Membership, please try again later"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
             self.send_change_of_membership_notification_email(organization_id=organization_id, uid=uid)
@@ -764,7 +764,7 @@ class MembershipsView(Validators, MembershipsEmails):
             return jsonify({'status': True, 'message': 'successfully updated membership',
                             'payload': membership_instance.to_dict()}), status_codes.successfully_updated_code
 
-        message: str = "Unable to change membership, cannot find original membership record"
+        message: str = "Data Not Found: Unable to update membership"
         return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
@@ -772,7 +772,9 @@ class MembershipsView(Validators, MembershipsEmails):
     def set_payment_method(self, organization_id: Optional[str], uid: Optional[str],
                            payment_method: Optional[str] = "paypal") -> tuple:
         ***REMOVED***
-            set payment method default is paypal
+            **set_payment_method**
+                default is payment method is paypal
+
         :param organization_id:
         :param uid:
         :param payment_method:
@@ -812,7 +814,12 @@ class MembershipsView(Validators, MembershipsEmails):
     @handle_view_errors
     def send_welcome_email(self, organization_id: Optional[str], uid: Optional[str], plan_id: Optional[str]) -> tuple:
         ***REMOVED***
-            just send a request to the email service to send emails
+            **send_welcome_email**
+                just send a request to the email service to send emails
+            :param organization_id -> string unique organization id
+            :param uid -> string : unique user id
+            :param plan_id -> string : unique plan_id
+            :return : tuple indicating if sending email as a success or failed
         ***REMOVED***
         return "Ok", status_codes.status_ok_code
 
@@ -822,7 +829,14 @@ class MembershipsView(Validators, MembershipsEmails):
     async def send_welcome_email_async(self, organization_id: Optional[str], uid: Optional[str],
                                        plan_id: Optional[str]) -> tuple:
         ***REMOVED***
-            just send a request to the email service to send emails
+            **send_welcome_email_async**
+                just send a request to the email service to send emails
+
+            :param organization_id -> string unique organization id
+            :param uid -> string : unique user id
+            :param plan_id -> string : unique plan_id
+            :return : tuple indicating if sending email as a success or failed        
+            
         ***REMOVED***
         # TODO- complete this and add email sending capability
         return "Ok", status_codes.status_ok_code
@@ -833,7 +847,9 @@ class MembershipsView(Validators, MembershipsEmails):
     def return_plan_members_by_payment_status(self, organization_id: Optional[str], plan_id: Optional[str],
                                               status: Optional[str]) -> tuple:
         ***REMOVED***
-            return plan members with a certain status
+            **return_plan_members_by_payment_status**
+                return plan members with a certain status
+
         :param organization_id:
         :param plan_id:
         :param status:
@@ -869,6 +885,7 @@ class MembershipsView(Validators, MembershipsEmails):
     async def return_plan_members_by_payment_status_async(self, organization_id: Optional[str], plan_id: Optional[str],
                                                           status: Optional[str]) -> tuple:
         ***REMOVED***
+        **return_plan_members_by_payment_status_async
             for members of this plan_id return members by payment_status
             payment status should either be paid or unpaid
 
@@ -906,7 +923,9 @@ class MembershipsView(Validators, MembershipsEmails):
     @app_cache.memoize(timeout=return_ttl('short'))
     def return_members_by_payment_status(self, organization_id: Optional[str], status: Optional[str]) -> tuple:
         ***REMOVED***
+        **return_members_by_payment_status**
             return members by payment status
+
         :param organization_id:
         :param status: payment status
         :return:
@@ -936,10 +955,12 @@ class MembershipsView(Validators, MembershipsEmails):
     async def return_members_by_payment_status_async(self, organization_id: Optional[str],
                                                      status: Optional[str]) -> tuple:
         ***REMOVED***
+        **return_members_by_payment_status_async**
             async return members by payment status
+
         :param organization_id:
         :param status: payment status
-        :return:
+        :return: 
         ***REMOVED***
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "Organization_id is required"
@@ -966,7 +987,11 @@ class MembershipsView(Validators, MembershipsEmails):
     def return_plan_members(self, organization_id: Optional[str], plan_id: Optional[str]) -> tuple:
 
         ***REMOVED***
-            return all members of a plan
+            **return_plan_members**
+                return all members of a plan
+            :param organization_id
+            :param plan_id
+            :return -> tuple with response , status_code
         ***REMOVED***
         if not isinstance(plan_id, str) or not bool(plan_id.strip()):
             message: str = "plan_id is required"
@@ -992,7 +1017,11 @@ class MembershipsView(Validators, MembershipsEmails):
     @app_cache.memoize(timeout=return_ttl('short'))
     async def return_plan_members_async(self, organization_id: Optional[str], plan_id: Optional[str]) -> tuple:
         ***REMOVED***
-            return all members of a plan
+            **return_plan_members_async**
+                return all members of a plan
+            :param organization_id -> string : unique organization identifier
+            :param plan_id -> string : unique user identifier
+            :return -> tuple response, status_code 
         ***REMOVED***
         if not isinstance(plan_id, str) or not bool(plan_id.strip()):
             message: str = "plan_id is required"
@@ -1014,7 +1043,11 @@ class MembershipsView(Validators, MembershipsEmails):
     @app_cache.memoize(timeout=return_ttl('short'))
     def is_member_off(self, organization_id: Optional[str], uid: Optional[str]) -> tuple:
         ***REMOVED***
-            returns user membership details
+            **is_member_off**
+                returns user membership details
+            :param organization_id -> string 
+            :param uid -> string 
+            :return -> tuple : response, status_code 
         ***REMOVED***
         if not isinstance(organization_id, str) or bool(organization_id.strip()):
             message: str = "organization_id is required"
