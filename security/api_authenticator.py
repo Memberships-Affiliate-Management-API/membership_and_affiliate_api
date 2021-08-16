@@ -2,6 +2,14 @@
     **API Authenticator Module**
         authorize client api calls
 ***REMOVED***
+__author__ = "mobius-crypt"
+__email__ = "mobiusndou@gmail.com"
+__twitter__ = "@blueitserver"
+__github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
+__github_profile__ = "https://github.com/freelancing-solutions/"
+
+from typing import Optional
+
 import requests
 from flask import request
 from config import config_instance
@@ -32,7 +40,7 @@ def is_api_key_valid(api_key: str, secret: str, domain: str) -> bool:
     if response_dict['status']:
         api_instance: dict = response_dict['payload']
         if isinstance(api_instance, dict):
-            if (api_instance['secret_token'] == secret) and (api_instance['domain'] == domain):
+            if (api_instance['secret_token'] == secret) and (api_instance['domain'] == domain.lower().strip()):
                 return api_instance['is_active']
     return False
 
@@ -46,9 +54,10 @@ def handle_api_auth(func):
     ***REMOVED***
     @functools.wraps(func)
     def auth_wrapper(*args, **kwargs):
-        api_key: str = request.headers.get('api-key')
-        secret_token: str = request.headers.get('secret-token')
-        domain: str = request.base_url
+        api_key: Optional[str] = request.headers.get('api-key')
+        secret_token: Optional[str] = request.headers.get('secret-token')
+        domain: Optional[str] = request.base_url
+        # TODO - check which domain is making the request - this may not be True
 
         if is_api_key_valid(api_key=api_key, secret=secret_token, domain=domain):
             return func(*args, **kwargs)
