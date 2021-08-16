@@ -193,10 +193,15 @@ def get_scheduled_term_days() -> typing.List[int]:
 
 def can_cache() -> bool:
     ***REMOVED***
+        **can_cache**
+            this function evaluates if the conditions to cache routes is ok
+            basically it wont allow cache when in development and also when DEBUG is active
+
         NOTE: Returns True if cache can be used or is supported,  in-case of debug 
         or development the cache
+
     ***REMOVED***
-    return is_development() or not config_instance.DEBUG
+    return is_development() or config_instance.DEBUG
 
 
 def clear_cache(app, cache: Cache) -> bool:
@@ -225,12 +230,15 @@ def task_counter(timer_limit: int = 1000000) -> any:
         yield y
 
 
+# Counter Generator
 counter = task_counter()
 
 
 def get_counter() -> int:
     ***REMOVED***
+    **get_counter**
         # NOTE: get counter - to use the generator
+    : return -> integer from counter generator
     ***REMOVED***
     return next(counter)
 
