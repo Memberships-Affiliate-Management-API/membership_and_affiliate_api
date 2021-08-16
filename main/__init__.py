@@ -29,11 +29,11 @@ def create_app(config_class=config_instance):
     app_cache.init_app(app=app, config=config_class.cache_dict())
     oauth.init_app(app=app, cache=app_cache)
     # user facing or public facing api's
-    from _api.users_api.affiliates.routes import affiliates_bp
-    from _api.users_api.users.routes import users_bp
-    from _api.users_api.memberships.routes import memberships_bp
-    from _api.users_api.coupons.routes import coupons_bp
-    from _api.users_api.wallet.routes import wallet_bp
+    from _api.public_api.affiliates.routes import affiliates_bp
+    from _api.public_api.users.routes import users_bp
+    from _api.public_api.memberships.routes import memberships_bp
+    from _api.public_api.coupons.routes import coupons_bp
+    from _api.public_api.wallet.routes import wallet_bp
     from handlers.routes import default_handlers_bp
     # importing IPN
     from _ipn.email import email_ipn_bp
