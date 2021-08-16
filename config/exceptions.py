@@ -236,6 +236,14 @@ class EnvironNotSet(Exception):
 
 
 def if_bad_request_raise(request) -> None:
+    ***REMOVED***
+        **if_bad_request_raise**
+            checks if request headers contains application/json
+            if not raises request Error
+
+    :param request: client request
+    :return: None
+    ***REMOVED***
     content_type: str = request.headers.get('content-type')
     if not content_type.lower() == 'application/json':
-        raise BadRequest(description="parameters for this end-point may only be in json format")
+        raise RequestError(description="parameters for this end-point may only be in json format")

@@ -25,39 +25,39 @@ affiliates_bp = Blueprint('affiliates', __name__)
 @handle_api_auth
 def affiliate(path: str) -> tuple:
     ***REMOVED***
+    **affiliate**
         returns information to clients / users relating to affiliates management
         required parameter is organization_id must be a part of the request body supplied as json
+
+    **PARAMETERS**
         :param path: path indicating the resource to return
         :return: response as tuple of Response and Status code
 
-        `Path Values`
-            path == "get"
-                this obtains a record of one affiliate from the database the required valuables must be passed in
-                json format as a body of a request in this format
-                the required variables are as follows:
-                organization_id : required
-                and either affiliate_id or uid - this means the affiliate record can be obtained by either providing
-                an affiliate_id or uid.
+        path == "get"
+            this obtains a record of one affiliate from the database the required valuables must be passed in
+            json format as a body of a request in this format
+            the required variables are as follows:
+            organization_id : required
+            and either affiliate_id or uid - this means the affiliate record can be obtained by either providing
+            an affiliate_id or uid.
 
-            path == "get-all"
-                **Method: POST**
-                **Body: {"organization_id": "x"} as json**
-                fetches all affiliate records belonging to an organization indicated by the supplied
-                parameter organization_id.
-                organization_id : must be passed in json format as a body of the request
+        path == "get-all"
+            **Method: POST**
+            **Body: {"organization_id": "x"} as json**
+            fetches all affiliate records belonging to an organization indicated by the supplied
+            parameter organization_id.
+            organization_id : must be passed in json format as a body of the request
 
-            path == "get-active"
-                **Method: POST**
-                **BODY: {"organization_id": "value"} as json**
-                fetches active affiliate records belonging to a specific organization,
-                organization_id must be specified in the call as json body
+        path == "get-active"
+            **Method: POST**
+            **BODY: {"organization_id": "value"} as json**
+            fetches active affiliate records belonging to a specific organization,
+            organization_id must be specified in the call as json body
 
-            path == "get-not-active"
-                **Method: POST**
-                **BODY: {"organization_id": "value"} as json**
-                returns in-active affiliate records for your organization
-
-
+        path == "get-not-active"
+            **Method: POST**
+            **BODY: {"organization_id": "value"} as json**
+            returns in-active affiliate records for your organization
     ***REMOVED***
     # Raises Bad Request error if request is not in json format
     if_bad_request_raise(request)
@@ -102,8 +102,16 @@ def affiliate(path: str) -> tuple:
 @handle_api_auth
 def recruits(path: str) -> tuple:
     ***REMOVED***
-        Allows Users and Clients to recruit other users and clients to
-        their organizations.
+        **recruits**
+            Allows Users and Clients to recruit other users and clients to
+            their organizations.
+
+        **PATH PARAMETERS**
+            1. get -> retrieve a single recruit, expects organization_id and affiliate_id on recruit_data,
+               user may supply the data as json body
+               
+            2. register -> used to register a single recruit, data as json must contain referrer_uid and
+               organization_id, this allows multiple ways by which recruiters may recruit their affiliates
 
     :param path: route to retrieve
     :return:
