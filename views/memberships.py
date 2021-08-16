@@ -1109,7 +1109,15 @@ class MembershipsView(Validators, MembershipsEmails):
     @app_cache.memoize(timeout=return_ttl('short'))
     def payment_amount(self, organization_id: Optional[str], uid: Optional[str]) -> tuple:
         ***REMOVED***
-            for a specific user return payment amount
+            **payment_amount**
+                for a specific user return payment amount
+            **NOTE**
+                response is dict in json format 
+                the dict contains amount_data -- see AmountMixin for parameters
+                
+            :param organization_id -> string : 
+            :param uid -> string
+            :return tuple -> as response, status_code 
         ***REMOVED***
         if not isinstance(organization_id, str) or bool(organization_id.strip()):
             message: str = "organization_id is required"
