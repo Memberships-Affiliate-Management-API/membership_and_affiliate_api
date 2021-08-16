@@ -116,7 +116,9 @@ def date_string_to_date(date_str: str) -> date:
 
 def end_of_month() -> bool:
     ***REMOVED***
-        NOTE: True if the present date can be considered end of month or near end of month
+        **end_of_month**
+            True if the present date can be considered end of month or near end of month
+        :return boolean -> True if end of month
     ***REMOVED***
     return today().day in [30, 31, 1]
 
@@ -124,13 +126,14 @@ def end_of_month() -> bool:
 # Used to control cache ttl
 def return_ttl(name: str) -> int:
     ***REMOVED***
-       NOTE:  returns ttl for cache depending on long, short, and medium
-    :param name:
-    :return:
+        **return_ttl**
+            returns ttl for cache depending on long, short, and medium
+    :param name: string -> period = short, medium, long
+    :return: int -> time to live
     ***REMOVED***
-    cache_ttl_short: int = int(60 * 60 * 0.5)  # 30 minutes
-    cache_ttl_medium: int = int(60 * 60 * 1)  # 1 hour
-    cache_ttl_long: int = int(60 * 60 * 1.5)  # 1 hour 30 minutes
+    cache_ttl_short: int = 1800  # (60*60 * 0.5) 30 minutes
+    cache_ttl_medium: int = 3600  # (60 * 60) 1 hour
+    cache_ttl_long: int = 5400  # (60 * 60 * 1.5) 1 hour 30 minutes
 
     if name == "long":
         return cache_ttl_long
@@ -143,50 +146,70 @@ def return_ttl(name: str) -> int:
 
 def today() -> date:
     ***REMOVED***
-        NOTE: returns todays date
+    **today**
+        returns today's date
+
+    :return present date
     ***REMOVED***
     return datetime.datetime.now().date()
 
 
 def time_now() -> time_class:
     ***REMOVED***
-        NOTE: Returns the present time
+        **time_now**
+            NOTE: Returns the present time
+        :return present time
     ***REMOVED***
     return datetime.datetime.now().time()
 
 
 def datetime_now() -> datetime:
     ***REMOVED***
-        NOTE: Returns the present datetime
+        **datetime_now**
+            NOTE: Returns the present datetime
+        :return: present datetime
     ***REMOVED***
     return datetime.datetime.now()
 
 
 def date_days_ago(days: int) -> date:
     ***REMOVED***
-        NOTE: returns a date indicated by days in the past
+        **date_days_ago**
+            NOTE: returns a date indicated by days in the past
+
+        :param days -> int number of days to go backwards
+        :return previous date counted by days before
     ***REMOVED***
     return (datetime.datetime.now() - datetime.timedelta(days=days)).date()
 
 
 def get_payment_methods() -> typing.List[str]:
     ***REMOVED***
-        NOTE: returns the present supported payment method
+        **get_payment_methods**
+            NOTE: returns the present supported payment method
+        :return list of usable payment methods
     ***REMOVED***
     return ['eft', 'paypal']
 
 
 def get_plan_scheduled_terms() -> typing.List[str]:
     ***REMOVED***
-        NOTE: fetches payment plan schedules from config_instance
+        **get_plan_scheduled_terms**
+            NOTE: fetches payment plan schedules from config_instance
+
+        :return list -> list of usable scheduled terms e.g monthly ...
     ***REMOVED***
+    # TODO - ensure scheduled terms matches those in paypal
     return config_instance.PAYMENT_PLANS_SCHEDULES
 
 
 def get_scheduled_term_days() -> typing.List[int]:
     ***REMOVED***
-        NOTE: returns the days the transactions can be made once scheduled term 
-        has been reached for payment
+        **get_scheduled_term_days**
+            NOTE: returns the days the transactions can be made once scheduled term
+            has been reached for payment
+
+        :return list -> list of usable payment plan days
     ***REMOVED***
     return config_instance.PAYMENT_PLANS_PAYMENT_DAYS
 
