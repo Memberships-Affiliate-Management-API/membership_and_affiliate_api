@@ -1320,6 +1320,11 @@ def plan_data_wrapper(func):
 
 # noinspection DuplicatedCode
 class MembershipPlansView(Validators):
+    ***REMOVED***
+        **Class MembershipPlansView**
+            this class controls access to membership plans database
+            also checks for input data validity
+    ***REMOVED***
     def __init__(self):
         super(MembershipPlansView, self).__init__()
 
@@ -1330,17 +1335,20 @@ class MembershipPlansView(Validators):
                                        schedule_day: int, schedule_term: str, term_payment: int,
                                        registration_amount: int, currency: str) -> Optional[str]:
         ***REMOVED***
-            creates this plan in paypal services first
-        :param service_id:
-        :param organization_id:
-        :param plan_name:
-        :param description:
-        :param schedule_day:
-        :param schedule_term:
-        :param term_payment:
-        :param registration_amount:
-        :param currency:
-        :return: a string representing payment plan_id or None
+            **create_plan_in_paypal_services**
+                creates this plan in paypal services first
+
+            **PARAMETERS**
+                :param service_id:
+                :param organization_id:
+                :param plan_name:
+                :param description:
+                :param schedule_day:
+                :param schedule_term:
+                :param term_payment:
+                :param registration_amount:
+                :param currency:
+                :return: a string representing payment plan_id or None
         ***REMOVED***
         pass
 
