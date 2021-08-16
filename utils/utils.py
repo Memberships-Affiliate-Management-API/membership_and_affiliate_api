@@ -19,7 +19,6 @@ from datetime import time as time_class
 from flask_caching import Cache
 from config import config_instance
 
-
 # NOTE set of characters to use when generating Unique ID
 _char_set = string.ascii_lowercase + string.ascii_uppercase + string.digits
 
@@ -47,13 +46,11 @@ def is_valid_chars(value: str, chars: str = _input_character_set) -> bool:
     return True
 
 
-
 def is_development() -> bool:
     ***REMOVED***
         NOTE : Cannot use current_app - is_development is opposite of IS_PRODUCTION
     ***REMOVED***
     return not config_instance.IS_PRODUCTION
-
 
 
 def is_heroku() -> bool:
@@ -69,7 +66,6 @@ def timestamp() -> int:
         Returns he timestamp in milliseconds
     ***REMOVED***
     return int(float(time.time()) * 1000)
-
 
 
 def get_days(days: int) -> int:
@@ -152,7 +148,6 @@ def today() -> date:
     return datetime.datetime.now().date()
 
 
-
 def time_now() -> time_class:
     ***REMOVED***
         NOTE: Returns the present time
@@ -174,21 +169,18 @@ def date_days_ago(days: int) -> date:
     return (datetime.datetime.now() - datetime.timedelta(days=days)).date()
 
 
-
-def get_payment_methods() -> typing.List[str]: 
+def get_payment_methods() -> typing.List[str]:
     ***REMOVED***
         NOTE: returns the present supported payment method
     ***REMOVED***
     return ['eft', 'paypal']
 
 
-
-def get_plan_scheduled_terms() -> typing.List[str]: 
+def get_plan_scheduled_terms() -> typing.List[str]:
     ***REMOVED***
         NOTE: fetches payment plan schedules from config_instance
     ***REMOVED***
     return config_instance.PAYMENT_PLANS_SCHEDULES
-
 
 
 def get_scheduled_term_days() -> typing.List[int]:
@@ -199,8 +191,7 @@ def get_scheduled_term_days() -> typing.List[int]:
     return config_instance.PAYMENT_PLANS_PAYMENT_DAYS
 
 
-
-def can_cache() -> bool: 
+def can_cache() -> bool:
     ***REMOVED***
         NOTE: Returns True if cache can be used or is supported,  in-case of debug 
         or development the cache
@@ -211,6 +202,8 @@ def can_cache() -> bool:
 def clear_cache(app, cache: Cache) -> bool:
     ***REMOVED***
         totally clears application cache upon restart
+    :param app -> present application
+    :param cache -> cache instance to clear
     ***REMOVED***
     with app.app_context():
         cache.clear()
@@ -228,17 +221,14 @@ def task_counter(timer_limit: int = 1000000) -> any:
     :param timer_limit:
     :return:
     ***REMOVED***
-    y = 0
-    while y < timer_limit:
+    for y in range(timer_limit):
         yield y
-        y += 1
 
 
 counter = task_counter()
 
 
-
-def get_counter() -> int: 
+def get_counter() -> int:
     ***REMOVED***
         # NOTE: get counter - to use the generator
     ***REMOVED***
