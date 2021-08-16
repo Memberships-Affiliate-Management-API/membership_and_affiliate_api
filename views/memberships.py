@@ -1206,11 +1206,18 @@ class MembershipsView(Validators, MembershipsEmails):
     @handle_view_errors
     def un_subscribe(self, organization_id: Optional[str], uid: Optional[str], plan_id: Optional[str]) -> tuple:
         ***REMOVED***
-
-        :param organization_id:
-        :param uid:
-        :param plan_id:
-        :return:
+            **un_subscribe**
+                enables the client to un-subscribe from a plan
+            
+            **NOTE**
+                when successful the payload dict will contain contents of Memberships 
+                see Memberships Class for parameters
+            
+            **PARAMETERS**
+                :param organization_id:
+                :param uid:
+                :param plan_id:
+                :return: tuple -> as response, status_code 
         ***REMOVED***
         if not isinstance(organization_id, str) or bool(organization_id.strip()):
             message: str = "organization_id is required"
