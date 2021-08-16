@@ -1,6 +1,6 @@
 ***REMOVED***
     **Wrapper to handle application and ndb context**
-    Should be used everytime a method which access ndb databases is being created or updated
+        Should be used everytime a method which access ndb databases is being created or updated
 ***REMOVED***
 __author__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
@@ -10,7 +10,7 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 
 import functools
 import json
-from flask import current_app, jsonify
+from flask import current_app
 from main import create_app
 from config import config_instance
 from google.cloud import ndb
@@ -25,6 +25,15 @@ if is_development():
 
 
 def use_context(func):
+    ***REMOVED***
+        **use_context**
+            will insert ndb context for working with ndb. Cloud Databases
+        **NOTE**
+            functions/ methods needs to be wrapped by this wrapper when they interact with the database somehow
+
+    :param func: function to wrap
+    :return: function wrapped with ndb.context
+    ***REMOVED***
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         if not current_app:

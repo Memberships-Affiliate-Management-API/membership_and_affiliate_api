@@ -28,6 +28,14 @@ _input_character_set = string.printable
 
 # Creates an ID for use as a unique ID
 def create_id(size: int = 64, chars: str = _char_set) -> str:
+    ***REMOVED***
+        **create_id**
+            create a random unique id for use as indexes in Database Models
+
+    :param size: size of string - leave as default if you can
+    :param chars: character set to create Unique identifier from leave as default
+    :return: uuid -> randomly generated id
+    ***REMOVED***
     return ''.join(random.choice(chars) for _ in range(size))
 
 
