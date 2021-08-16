@@ -1242,6 +1242,7 @@ class MembershipsView(Validators, MembershipsEmails):
 
             # TODO please update cache
             message: str = "Successfully un-subscribed from your membership plan"
+            # TODO important please also un-subscribe from paypal services
             return jsonify({'status': True,
                             'payload': membership_instance.to_dict(),
                             'message': message}), status_codes.successfully_updated_code
