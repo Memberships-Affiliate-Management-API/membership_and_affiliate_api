@@ -118,26 +118,31 @@ class WalletModel(BaseModel):
     @property
     def can_withdraw(self) -> bool:
         ***REMOVED***
-            Documentation:
+            **Property**
+                True if withdrawals can be undertaken - this is dependent on amount availability and also
+                if paypal address is present and also verified
+
+            **Documentation**
                 will check if available_funds meets the recommended minimum withdrawal amount if yes returns True
 
-            :return: Returns True if there is enough funds on the wallet in order to create a withdrawal transaction
+            :return: bool ->if True: there is enough funds on the wallet in order to create a withdrawal transaction
                     otherwise False
         ***REMOVED***
         minimum_withdrawal: int = currency_util.return_minimum_withdrawal_by_currency(
             currency_symbol=self.available_funds.currency)
 
-        return minimum_withdrawal <= self.available_funds.amount
+        return minimum_withdrawal <= self.available_funds.amount if self.paypal_address and self.is_verified else False
 
     @property
     def drawable_amount(self) -> AmountMixin:
         ***REMOVED***
-            `Property`
-            Amount that can be withdrawn right now
+            **Property**
+                Amount that can be withdrawn right now
 
-            Documentation
+            **Documentation**
                 1. If available funds is more than withdrawal limit return withdrawal limit lest return available_funds
                 2. returns the maximum amount of money that can be withdrawn in one transaction
+
         :return: AmountMixin Representing the Maximum Amount of Money which can be withdrawn
         ***REMOVED***
         if not self.can_withdraw:
