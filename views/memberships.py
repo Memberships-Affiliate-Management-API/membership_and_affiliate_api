@@ -1110,14 +1110,16 @@ class MembershipsView(Validators, MembershipsEmails):
     def payment_amount(self, organization_id: Optional[str], uid: Optional[str]) -> tuple:
         ***REMOVED***
             **payment_amount**
-                for a specific user return payment amount
+                for a specific user return payment amount - dict from AmountMixin
+
             **NOTE**
                 response is dict in json format 
                 the dict contains amount_data -- see AmountMixin for parameters
-                
-            :param organization_id -> string : 
-            :param uid -> string
-            :return tuple -> as response, status_code 
+
+            **PARAMETERS**
+                :param organization_id -> string : 
+                :param uid -> string
+                :return tuple -> as response, status_code 
         ***REMOVED***
         if not isinstance(organization_id, str) or bool(organization_id.strip()):
             message: str = "organization_id is required"
@@ -1157,7 +1159,16 @@ class MembershipsView(Validators, MembershipsEmails):
     async def payment_amount_async(self, organization_id: Optional[str], uid: Optional[str]) -> tuple:
 
         ***REMOVED***
-            for a specific user return payment amount
+            **payment_amount_async**
+                for a specific user return payment amount
+            **NOTE**
+                response is dict in json format 
+                the dict contains amount_data -- see AmountMixin for parameters
+
+            **PARAMETERS**
+                :param organization_id -> string : 
+                :param uid -> string
+                :return tuple -> as response, status_code 
         ***REMOVED***
         if not isinstance(organization_id, str) or bool(organization_id.strip()):
             message: str = "organization_id is required"
