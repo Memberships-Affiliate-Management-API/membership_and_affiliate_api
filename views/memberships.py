@@ -202,11 +202,13 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         ***REMOVED***
             **can_add_member_async**
                 asynchronous version of can_add_member
-        :param organization_id:
-        :param uid:
-        :param plan_id:
-        :param start_date:
-        :return:
+
+            **PARAMETERS**
+                :param organization_id:
+                :param uid:
+                :param plan_id:
+                :param start_date:
+                :return: boolean -> indicating if member can be added or not
         ***REMOVED***
         user_valid: Optional[bool] = await self.is_user_valid_async(organization_id=organization_id, uid=uid)
         plan_exist: Optional[bool] = await self.plan_exist_async(organization_id=organization_id,
@@ -225,9 +227,10 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
             **can_add_plan**
                 check if a new plan can be added
 
-        :param organization_id:
-        :param plan_name:
-        :return:
+            **PARAMETERS**
+                :param organization_id:
+                :param plan_name:
+                :return: boolean -> indicating if plan can be addded or not
         ***REMOVED***
         name_exist: Optional[bool] = self.plan_name_exist(organization_id=organization_id,
                                                                     plan_name=plan_name)
@@ -243,9 +246,10 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
             **can_add_plan_async**
                 checks if user can add plan
 
-        :param organization_id:
-        :param plan_name:
-        :return:
+        **PARAMETERS**
+            :param organization_id:
+            :param plan_name:
+            :return: boolean -> user can add plan or not
         ***REMOVED***
         name_exist: Optional[bool] = await self.plan_name_exist_async(
             organization_id=organization_id, plan_name=plan_name)
