@@ -1074,7 +1074,16 @@ class MembershipsView(Validators, MembershipsEmails):
     async def is_member_off_async(self, organization_id: Optional[str], uid: Optional[str]) -> tuple:
 
         ***REMOVED***
-            returns user membership details
+            **is_member_off_async**
+                returns user membership details - membership details will be returned on payload 
+                as a dict -- see Memberships for full documentations on parameters
+
+            **Note**
+                response format json {'status': True/False, 'payload': dict, 'message': '**what happened**'}
+
+            :param organization_id -> string 
+            :param uid -> string
+            :return -> tuple response, status_code : 
         ***REMOVED***
         if not isinstance(organization_id, str) or bool(organization_id.strip()):
             message: str = "organization_id is required"
