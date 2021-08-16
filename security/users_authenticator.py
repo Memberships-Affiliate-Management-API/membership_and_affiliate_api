@@ -47,16 +47,18 @@ def get_admin_user() -> UserModel:
     surname: str = config_instance.ADMIN_SURNAME
     password: str = config_instance.ADMIN_PASSWORD
     cell: str = config_instance.ADMIN_CELL
-
-    return UserModel(organization_id=organization_id, uid=uid, email=admin_email, names=names, surname=surname,
-                     cell=cell, password=password, is_admin=True)
+    # TODO use api to get admin user
+    return UserModel(organization_id=organization_id, uid=uid, email=admin_email, names=names, 
+    surname=surname, cell=cell, password=password, is_admin=True)
 
 
 def is_app_admin(current_user: any) -> bool:
     ***REMOVED***
-        checks if user is app admin - meaning admin for main organization for the API
+        **is_app_admin**
+            checks if user is app admin - meaning admin for main organization for the API
+
     :param current_user:
-    :return:
+    :return: boolean indicating if current user is admin or not
     ***REMOVED***
     if isinstance(current_user, dict):
         return current_user and current_user['uid'] and (current_user['organization_id'] == config_instance.ORGANIZATION_ID)
@@ -65,8 +67,12 @@ def is_app_admin(current_user: any) -> bool:
 
 def encode_auth_token(uid: str) -> str:
     ***REMOVED***
-    Generates the Auth Token
-    :return: string
+    **encode_auth_token**
+        Generates the Auth Token for JWT Authentication
+
+    **PARAMETERS**
+        :param: uid -> string - unique user id
+        :return: string -> auth-token
     ***REMOVED***
     try:
         payload = {
@@ -82,9 +88,12 @@ def encode_auth_token(uid: str) -> str:
 
 def decode_auth_token(auth_token):
     ***REMOVED***
-    Decodes the auth token
-    :param auth_token:
-    :return: integer|string
+    **decode_auth_token**
+        Decodes the auth token
+
+    **PARAMETERS**
+        :param auth_token:
+        :return: string -> uid
     ***REMOVED***
     try:
         payload = jwt.decode(jwt=auth_token, key=current_app.config.get('SECRET_KEY'), algorithms=['HS256'])

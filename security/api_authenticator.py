@@ -20,18 +20,18 @@ from main import app_cache
 @app_cache.memoize(timeout=15*60)  # timeout equals fifteen minutes // 900 seconds
 def is_api_key_valid(api_key: str, secret: str, domain: str) -> bool:
     ***REMOVED***
-        **is_api_key_valid**
-            validates api keys on behalf of client api calls
+    **is_api_key_valid**
+        validates api keys on behalf of client api calls
 
     :param api_key:
     :param secret:
     :param domain:
     :return:
     ***REMOVED***
-    # TODO: Use api call to api keys
+    # TODO Use api call to api keys
     organization_id: str = config_instance.ORGANIZATION_ID
-    _endpoint = '_api/admin/api-keys/{}/org/{}'.format(api_key, organization_id)
-    _url: str = "{}{}".format(config_instance.BASE_URL, _endpoint)
+    _endpoint = f'_api/admin/api-keys/{api_key}/org/{organization_id}'
+    _url: str = f'{config_instance.BASE_URL}{_endpoint}'
 
     response = requests.post(url=_url, json=dict(SECRET_KEY=config_instance.SECRET_KEY))
     response_dict: dict = response.json()
@@ -39,15 +39,17 @@ def is_api_key_valid(api_key: str, secret: str, domain: str) -> bool:
     if response_dict['status']:
         api_instance: dict = response_dict['payload']
         if isinstance(api_instance, dict):
-            if (api_instance['secret_token'] == secret) and (api_instance['domain'] == domain.lower().strip()):
+            domain: str = domain.lower().strip()
+            if (api_instance['secret_token'] == secret) and (api_instance['domain'] == domain):
                 return api_instance['is_active']
     return False
 
 
 def handle_api_auth(func):
     ***REMOVED***
-        **handle_api_auth**
-            wrapper to handle public api calls authentications
+    **handle_api_auth**
+        wrapper to handle public api calls authentications
+
     :param func:
     :return:
     ***REMOVED***
@@ -56,7 +58,7 @@ def handle_api_auth(func):
         api_key: Optional[str] = request.headers.get('api-key')
         secret_token: Optional[str] = request.headers.get('secret-token')
         domain: Optional[str] = request.base_url
-        # TODO - check which domain is making the request - this may not be True
+        # TODO check which domain is making the request - this may not be True
 
         if is_api_key_valid(api_key=api_key, secret=secret_token, domain=domain):
             return func(*args, **kwargs)

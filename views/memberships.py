@@ -9,7 +9,6 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
 import functools
-import typing
 from typing import Optional
 from google.api_core.exceptions import RetryError, Aborted
 from flask import jsonify, current_app
@@ -236,7 +235,7 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
                                                                     plan_name=plan_name)
         if isinstance(name_exist, bool):
             return not name_exist
-        message: str = "Unable to verify input data, due to database error, please try again later"
+        message: str = "Database Error: Unable to verify input data, please try again later"
         raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
     @app_cache.memoize(timeout=return_ttl('short'))
@@ -256,7 +255,7 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
 
         if isinstance(name_exist, bool):
             return not name_exist
-        message: str = "Unable to verify input data, due to database error, please try again later"
+        message: str = "Database Error: Unable to verify input data, please try again later"
         raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
     @app_cache.memoize(timeout=return_ttl('short'))
@@ -278,7 +277,7 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
 
         if isinstance(plan_exist, bool) and isinstance(plan_name_exist, bool):
             return plan_exist and plan_name_exist
-        message: str = "Unable to verify input data, due to database error, please try again later"
+        message: str = "Database Error: Unable to verify input data, please try again later"
         raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
     @app_cache.memoize(timeout=return_ttl('short'))
