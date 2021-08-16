@@ -2,8 +2,10 @@
     handle users and admin authentication
 ***REMOVED***
 import datetime
+import os
 from typing import Optional
 import jwt
+import requests
 from flask import current_app, request, redirect, url_for, flash
 from functools import wraps
 from config import config_instance
@@ -91,6 +93,22 @@ def decode_auth_token(auth_token):
         return None
 
 
+def send_get_user_request(uid: str) -> Optional[dict]:
+    ***REMOVED***
+        **send_get_user_request**
+            send request for user over api and return user dict
+    :param uid:
+    :return:
+    ***REMOVED***
+    _base_url: str = os.environ.get("BASE_URL")
+    _user_endpoint: str = "_api/v1/client/users/get-user"
+    response = requests.post(url=f"{_base_url}{_user_endpoint}", json=dict(uid=uid))
+    response_data: dict = response.json()
+    if response_data['status']:
+        return response_data['payload']
+    return None
+
+
 def handle_users_auth(f):
     # noinspection PyBroadException
     @wraps(f)
@@ -112,15 +130,16 @@ def handle_users_auth(f):
 
             uid: Optional[str] = decode_auth_token(auth_token=token)
             if bool(uid):
-                current_user: Optional[UserModel] = UserModel.query(uid=uid).get()
-                if not isinstance(current_user, UserModel):
+                current_user: Optional[dict] = send_get_user_request(uid=uid)
+                # TODO use api
+                if not isinstance(current_user, dict):
                     message = '''Error connecting to database or user does not exist'''
                     flash(message, 'warning')
-                    current_user: Optional[UserModel] = None
+                    current_user: Optional[dict] = None
             else:
                 message: str = '''to access restricted areas of this web application please login'''
                 flash(message, 'warning')
-                current_user: Optional[UserModel] = None
+                current_user: Optional[dict] = None
         except jwt.DecodeError:
             flash('Error decoding your token please login again', 'warning')
             return redirect(url_for('memberships_main.memberships_main_routes', path='login'))
@@ -149,9 +168,9 @@ def logged_user(f):
                 try:
                     uid: Optional[str] = decode_auth_token(auth_token=token)
                     if bool(uid):
-                        user_instance: Optional[UserModel] = UserModel.query(uid=uid).get()
-                        if isinstance(user_instance, UserModel):
-                            current_user: UserModel = user_instance
+                        user_instance: Optional[dict] = send_get_user_request(uid=uid)
+                        if isinstance(user_instance, dict):
+                            current_user: dict = user_instance
                     else:
                         pass
                 except jwt.DecodeError:

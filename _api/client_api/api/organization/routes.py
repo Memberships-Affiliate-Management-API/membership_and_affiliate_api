@@ -5,7 +5,6 @@
 ***REMOVED***
 from typing import Optional
 from flask import request, Blueprint, current_app
-
 from config.exceptions import UnAuthenticatedError, error_codes, if_bad_request_raise
 from views.organization import OrganizationView
 

@@ -4,8 +4,7 @@
 
 
 ***REMOVED***
-from flask import Blueprint
-
+from flask import Blueprint, request
 from config.exceptions import if_bad_request_raise
 from views.github_auth import GithubAuthView
 

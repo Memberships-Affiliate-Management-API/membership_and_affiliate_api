@@ -1,5 +1,6 @@
 ***REMOVED***
-    **Module - Common Application Utilities*
+    **Module - Common Application Utilities**
+
 ***REMOVED***
 __author__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"

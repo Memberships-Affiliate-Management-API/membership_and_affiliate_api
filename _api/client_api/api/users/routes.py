@@ -53,3 +53,5 @@ def client_users(path: str) -> tuple:
         organization_id: Optional[str] = user_data.get("organization_id")
         print(email, organization_id)
         return user_view_instance.send_recovery_email(email=email, organization_id=organization_id)
+    elif path == "get-user":
+        pass

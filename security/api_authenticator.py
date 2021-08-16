@@ -30,10 +30,11 @@ def is_api_key_valid(api_key: str, secret: str, domain: str) -> bool:
     _endpoint = '_api/admin/api-keys/{}/org/{}'.format(api_key, organization_id)
     _url: str = "{}{}".format(config_instance.BASE_URL, _endpoint)
 
-    response, status = requests.post(url=_url, json=json.dumps(dict(SECRET_KEY=config_instance.SECRET_KEY)))
+    response = requests.post(url=_url, json=dict(SECRET_KEY=config_instance.SECRET_KEY))
+    response_dict: dict = response.json()
 
-    if response['status']:
-        api_instance: dict = response['payload']
+    if response_dict['status']:
+        api_instance: dict = response_dict['payload']
         if isinstance(api_instance, dict):
             if (api_instance['secret_token'] == secret) and (api_instance['domain'] == domain):
                 return api_instance['is_active']
@@ -44,10 +45,10 @@ def handle_api_auth(func):
     @functools.wraps(func)
     def auth_wrapper(*args, **kwargs):
         api_key: str = request.headers.get('api-key')
-        secret: str = request.headers.get('secret')
+        secret_token: str = request.headers.get('secret-token')
         domain: str = request.base_url
-        print(f"domain: {domain} secret: {secret} api key: {api_key}")
-        if is_api_key_valid(api_key=api_key, secret=secret, domain=domain):
+
+        if is_api_key_valid(api_key=api_key, secret=secret_token, domain=domain):
             return func(*args, **kwargs)
         message: str = "request not authorized"
         raise UnAuthenticatedError(status=401, description=message)

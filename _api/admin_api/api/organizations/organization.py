@@ -1,5 +1,4 @@
 from flask import Blueprint, request, current_app
-
 from config.exceptions import UnAuthenticatedError, error_codes
 from database.mixins import AmountMixin
 from views.organization import OrganizationView
