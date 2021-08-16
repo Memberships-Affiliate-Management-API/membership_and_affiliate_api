@@ -9,7 +9,6 @@ from flask import request
 from config import config_instance
 from config.exceptions import UnAuthenticatedError
 import functools
-from database.apikeys import APIKeys
 from main import app_cache
 from utils.utils import return_ttl
 
