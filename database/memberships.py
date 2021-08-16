@@ -18,7 +18,7 @@ from config.exception_handlers import handle_store_errors
 from config.exceptions import InputError, error_codes
 from database.mixins import AmountMixin
 from database.setters import property_
-from utils.utils import get_days, today
+from utils.utils import get_days_in_milliseconds, today
 from database.basemodel import BaseModel
 
 
@@ -226,7 +226,7 @@ class CouponsValidator:
             message: str = "expiration_time can only be an integer"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        return not expiration_time < get_days(days=1)
+        return not expiration_time < get_days_in_milliseconds(days=1)
 
     @staticmethod
     async def expiration_valid_async(expiration_time: int) -> bool:
@@ -240,7 +240,7 @@ class CouponsValidator:
             message: str = "expiration_time can only be an integer"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        return not expiration_time < get_days(days=1)
+        return not expiration_time < get_days_in_milliseconds(days=1)
 
     @staticmethod
     def discount_valid(discount_valid: int) -> bool:

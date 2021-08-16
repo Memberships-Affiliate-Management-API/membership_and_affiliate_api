@@ -68,23 +68,30 @@ def timestamp() -> int:
     return int(float(time.time()) * 1000)
 
 
-def get_days(days: int) -> int:
+def get_days_in_milliseconds(days: int) -> int:
     ***REMOVED***
-        Returns the number of days in milliseconds
+        **get_days**
+            Returns the number of days in milliseconds
     ***REMOVED***
     return int(days * 24 * 60 * 60 * 1000)
 
 
 def timestamp_difference(stamp1: int, stamp2: int) -> int:
     ***REMOVED***
-        Returns the difference in milliseconds between two timestamps
+        **timestamp_difference**
+            Returns the absolute difference in milliseconds between two timestamps
+        :param stamp1 -> integer timestamp 1
+        :param stamp2 -> integer timestamp 2
+        :return the difference between the two timestamps
     ***REMOVED***
     return int(stamp1 - stamp2) if stamp1 > stamp2 else int(stamp2 - stamp1)
 
 
 def date_string_to_date(date_str: str) -> date:
     ***REMOVED***
-        Turns a string representation of a date into python date object
+        **date_string_to_date**
+            Turns a string representation of a date into python date object representing the date
+
     :param date_str: string representation of date
     :return: returns a python date object
     ***REMOVED***

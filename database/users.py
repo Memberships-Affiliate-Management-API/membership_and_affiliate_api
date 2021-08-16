@@ -13,7 +13,7 @@ from google.cloud import ndb
 from config.exception_handlers import handle_store_errors
 from config.exceptions import InputError, error_codes
 from database.mixins import AddressMixin
-from utils.utils import timestamp, get_days
+from utils.utils import timestamp, get_days_in_milliseconds
 from database.setters import property_
 from database.basemodel import BaseModel
 
@@ -200,7 +200,7 @@ class UserModel(BaseModel):
             checks to see if email is verified if yes checks to see if seven days haven't passed since registered
         :return: boolean indicating if the account is locked
         ***REMOVED***
-        return self.email_verified and (self.time_registered > (timestamp() - get_days(days=7)))
+        return self.email_verified and (self.time_registered > (timestamp() - get_days_in_milliseconds(days=7)))
 
     @property
     def access_rights(self) -> dict:
