@@ -16,21 +16,23 @@ import time
 import typing
 from datetime import date
 from datetime import time as time_class
-from config import config_instance
 from flask_caching import Cache
+from config import config_instance
+
 
 # NOTE set of characters to use when generating Unique ID
-char_set = string.ascii_lowercase + string.ascii_uppercase + string.digits
+_char_set = string.ascii_lowercase + string.ascii_uppercase + string.digits
 
 # NOTE input character set
-input_character_set = string.printable
+_input_character_set = string.printable
 
 
 # Creates an ID for use as a unique ID
-def create_id(size: int = 64, chars: str = char_set) -> str: return ''.join(random.choice(chars) for _ in range(size))
+def create_id(size: int = 64, chars: str = _char_set) -> str:
+    return ''.join(random.choice(chars) for _ in range(size))
 
 
-def is_valid_chars(value: str, chars: str = input_character_set) -> bool:
+def is_valid_chars(value: str, chars: str = _input_character_set) -> bool:
     ***REMOVED***
         **is_valid_chars**
             checks if all characters are valid
@@ -45,29 +47,48 @@ def is_valid_chars(value: str, chars: str = input_character_set) -> bool:
     return True
 
 
-# NOTE : Cannot use current_app - is_development is opposite of IS_PRODUCTION
-def is_development() -> bool: return not config_instance.IS_PRODUCTION
+
+def is_development() -> bool:
+    ***REMOVED***
+        NOTE : Cannot use current_app - is_development is opposite of IS_PRODUCTION
+    ***REMOVED***
+    return not config_instance.IS_PRODUCTION
 
 
-# NOTE this environment variable is only found on Heroku - will return True of is_heroku is present
-def is_heroku() -> bool: return bool(os.environ.get("IS_HEROKU"))
+
+def is_heroku() -> bool:
+    ***REMOVED***
+        NOTE this environment variable is only found on Heroku - 
+        will return True of is_heroku is present
+    ***REMOVED***
+    return bool(os.environ.get("IS_HEROKU"))
 
 
-# Returns he timestamp in milliseconds
-def timestamp() -> int: return int(float(time.time()) * 1000)
+def timestamp() -> int:
+    ***REMOVED***
+        Returns he timestamp in milliseconds
+    ***REMOVED***
+    return int(float(time.time()) * 1000)
 
 
-# Returns the number of days in milliseconds
-def get_days(days: int) -> int: return int(days * 24 * 60 * 60 * 1000)
+
+def get_days(days: int) -> int:
+    ***REMOVED***
+        Returns the number of days in milliseconds
+    ***REMOVED***
+    return int(days * 24 * 60 * 60 * 1000)
 
 
-# Returns the difference in milliseconds between two timestamps
-def timestamp_difference(stamp1: int, stamp2: int) -> int: return int(stamp1 - stamp2)
+def timestamp_difference(stamp1: int, stamp2: int) -> int:
+    ***REMOVED***
+        Returns the difference in milliseconds between two timestamps
+    ***REMOVED***
+    return int(stamp1 - stamp2) if stamp1 > stamp2 else int(stamp2 - stamp1)
 
 
-# Turns a string representation of a date into python date object
 def date_string_to_date(date_str: str) -> date:
     ***REMOVED***
+        Turns a string representation of a date into python date object
     :param date_str: string representation of date
     :return: returns a python date object
     ***REMOVED***
@@ -97,8 +118,11 @@ def date_string_to_date(date_str: str) -> date:
         raise ValueError('Date format invalid')
 
 
-# NOTE: True if the present date can be considered end of month or near end of month
-def end_of_month() -> bool: return today().day in [30, 31, 1]
+def end_of_month() -> bool:
+    ***REMOVED***
+        NOTE: True if the present date can be considered end of month or near end of month
+    ***REMOVED***
+    return today().day in [30, 31, 1]
 
 
 # Used to control cache ttl
@@ -121,39 +145,73 @@ def return_ttl(name: str) -> int:
     return cache_ttl_short
 
 
-# returns today's date
-def today() -> date: return datetime.datetime.now().date()
+def today() -> date:
+    ***REMOVED***
+        NOTE: returns todays date
+    ***REMOVED***
+    return datetime.datetime.now().date()
 
 
-# Returns the present time
-def time_now() -> time_class: return datetime.datetime.now().time()
+
+def time_now() -> time_class:
+    ***REMOVED***
+        NOTE: Returns the present time
+    ***REMOVED***
+    return datetime.datetime.now().time()
 
 
-# NOTE: Returns the present datetime
-def datetime_now() -> datetime: return datetime.datetime.now()
+def datetime_now() -> datetime:
+    ***REMOVED***
+        NOTE: Returns the present datetime
+    ***REMOVED***
+    return datetime.datetime.now()
 
 
-# NOTE: returns a date indicated by days in the past
-def date_days_ago(days: int) -> date: return (datetime.datetime.now() - datetime.timedelta(days=days)).date()
+def date_days_ago(days: int) -> date:
+    ***REMOVED***
+        NOTE: returns a date indicated by days in the past
+    ***REMOVED***
+    return (datetime.datetime.now() - datetime.timedelta(days=days)).date()
 
 
-# NOTE: returns the present supported payment method
-def get_payment_methods() -> typing.List[str]: return ['eft', 'paypal']
+
+def get_payment_methods() -> typing.List[str]: 
+    ***REMOVED***
+        NOTE: returns the present supported payment method
+    ***REMOVED***
+    return ['eft', 'paypal']
 
 
-# NOTE: fetches payment plan schedules from config_instance
-def get_plan_scheduled_terms() -> typing.List[str]: return config_instance.PAYMENT_PLANS_SCHEDULES
+
+def get_plan_scheduled_terms() -> typing.List[str]: 
+    ***REMOVED***
+        NOTE: fetches payment plan schedules from config_instance
+    ***REMOVED***
+    return config_instance.PAYMENT_PLANS_SCHEDULES
 
 
-# NOTE: returns the days the transactions can be made once scheduled term has been reached for payment
-def get_scheduled_term_days() -> typing.List[int]: return config_instance.PAYMENT_PLANS_PAYMENT_DAYS
+
+def get_scheduled_term_days() -> typing.List[int]:
+    ***REMOVED***
+        NOTE: returns the days the transactions can be made once scheduled term 
+        has been reached for payment
+    ***REMOVED***
+    return config_instance.PAYMENT_PLANS_PAYMENT_DAYS
 
 
-# NOTE: Returns True if cache can be used or is supported,  in-case of debug or development the cache
-def can_cache() -> bool: return is_development() or not config_instance.DEBUG
+
+def can_cache() -> bool: 
+    ***REMOVED***
+        NOTE: Returns True if cache can be used or is supported,  in-case of debug 
+        or development the cache
+    ***REMOVED***
+    return is_development() or not config_instance.DEBUG
 
 
 def clear_cache(app, cache: Cache) -> bool:
+    ***REMOVED***
+        totally clears application cache upon restart
+    ***REMOVED***
     with app.app_context():
         cache.clear()
         return True
@@ -179,8 +237,12 @@ def task_counter(timer_limit: int = 1000000) -> any:
 counter = task_counter()
 
 
-# NOTE: get counter - to use the generator
-def get_counter() -> int: return next(counter)
+
+def get_counter() -> int: 
+    ***REMOVED***
+        # NOTE: get counter - to use the generator
+    ***REMOVED***
+    return next(counter)
 
 
 if __name__ == '__main__':

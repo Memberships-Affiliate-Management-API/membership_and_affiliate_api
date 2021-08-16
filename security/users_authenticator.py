@@ -160,7 +160,7 @@ def handle_users_auth(func):
                 message: str = '''to access restricted areas of this web application please login'''
                 flash(message, 'warning')
                 current_user: Optional[dict] = None
-                
+
         except jwt.DecodeError:
             flash('Error decoding your token please login again', 'warning')
             return redirect(url_for('memberships_main.memberships_main_routes', path='login'))
@@ -182,7 +182,9 @@ def logged_user(func):
         # NOTE: by passes authentication and returns admin user as authenticated
         # user on development
         if is_development():
+
             # TODO use api here instead of user model
+
             current_user: UserModel = get_admin_user()
             return func(current_user, *args, **kwargs)
 
