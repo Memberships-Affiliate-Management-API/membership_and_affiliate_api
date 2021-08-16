@@ -1,6 +1,6 @@
 ***REMOVED***
     **Module - Common Application Utilities**
-
+        utilities for commonly performed tasks
 ***REMOVED***
 __author__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
