@@ -91,12 +91,14 @@ class MembershipsEmails(Mailgun):
             :return:
             ***REMOVED***
             # TODO find a way to format the email body wonderfully
-            _text_body = '''
-            Welcome to : {}
-            You have recently subscribe to : {}
+            _text_body = f'''
+            Welcome to : {organization_name}
+            You have recently subscribe to : {plan_name}
             
-            '''.format(organization_name, plan_name)
-            _html_body = '''
+            '''
+            _html_body = f'''
+            Welcome to : {organization_name}
+            You have recently subscribe to : {plan_name}
             
             '''
             return _text_body, _html_body
@@ -108,9 +110,9 @@ class MembershipsEmails(Mailgun):
                                     self.__get_organization_data_async(organization_id=organization_id, uid=uid))
 
         results = loop.run_until_complete(data_tasks)
-        user_data: typing.Union[dict, None] = results[0]
-        membership_data: typing.Union[dict, None] = results[1]
-        organization_data: typing.Union[dict, None] = results[2]
+        user_data: Optional[dict] = results[0]
+        membership_data: Optional[dict] = results[1]
+        organization_data: Optional[dict] = results[2]
 
         if user_data:
             email: str = user_data.get('email')
@@ -132,7 +134,9 @@ class MembershipsEmails(Mailgun):
 
     def send_change_of_membership_notification_email(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
+            **send_change_of_membership_notification_email**
                 once a user membership plan details changes send a notification to the client with the details
+
             :param: organization_id
             :param: uid
             :return:
@@ -143,9 +147,11 @@ class MembershipsEmails(Mailgun):
 
     def send_payment_method_changed_email(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
+            **send_payment_method_changed_email**
                 send an email notifying the user that their payment method changed
                 TODO - call user api to fetch user details
                 TODO - with user details compile the payment changed email and send
+
             :param organization_id : required
             :param uid: required
             :return:
@@ -179,10 +185,10 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         :param start_date:
         :return:
         ***REMOVED***
-        user_valid: typing.Union[None, bool] = self.is_user_valid(organization_id=organization_id, uid=uid)
+        user_valid: Optional[bool] = self.is_user_valid(organization_id=organization_id, uid=uid)
         # TODO - may need to revise this, there is no reason to check if a plan_exist - just if a membership exist
-        plan_exist: typing.Union[None, bool] = self.plan_exist(organization_id=organization_id, plan_id=plan_id)
-        date_valid: typing.Union[None, bool] = self.start_date_valid(start_date=start_date)
+        plan_exist: Optional[bool] = self.plan_exist(organization_id=organization_id, plan_id=plan_id)
+        date_valid: Optional[bool] = self.start_date_valid(start_date=start_date)
 
         if isinstance(user_valid, bool) and isinstance(plan_exist, bool) and isinstance(date_valid, bool):
             return user_valid and not plan_exist and date_valid
@@ -203,10 +209,10 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         :param start_date:
         :return:
         ***REMOVED***
-        user_valid: typing.Union[None, bool] = await self.is_user_valid_async(organization_id=organization_id, uid=uid)
-        plan_exist: typing.Union[None, bool] = await self.plan_exist_async(organization_id=organization_id,
+        user_valid: Optional[bool] = await self.is_user_valid_async(organization_id=organization_id, uid=uid)
+        plan_exist: Optional[bool] = await self.plan_exist_async(organization_id=organization_id,
                                                                            plan_id=plan_id)
-        date_valid: typing.Union[None, bool] = await self.start_date_valid_async(start_date=start_date)
+        date_valid: Optional[bool] = await self.start_date_valid_async(start_date=start_date)
 
         if isinstance(user_valid, bool) and isinstance(plan_exist, bool) and isinstance(date_valid, bool):
             return user_valid and not plan_exist and date_valid
@@ -224,7 +230,7 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         :param plan_name:
         :return:
         ***REMOVED***
-        name_exist: typing.Union[None, bool] = self.plan_name_exist(organization_id=organization_id,
+        name_exist: Optional[bool] = self.plan_name_exist(organization_id=organization_id,
                                                                     plan_name=plan_name)
         if isinstance(name_exist, bool):
             return not name_exist
@@ -242,7 +248,7 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         :param plan_name:
         :return:
         ***REMOVED***
-        name_exist: typing.Union[None, bool] = await self.plan_name_exist_async(
+        name_exist: Optional[bool] = await self.plan_name_exist_async(
             organization_id=organization_id, plan_name=plan_name)
 
         if isinstance(name_exist, bool):
@@ -262,9 +268,9 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         :param plan_name:
         :return:
         ***REMOVED***
-        plan_exist: typing.Union[None, bool] = self.plan_exist(organization_id=organization_id, plan_id=plan_id)
+        plan_exist: Optional[bool] = self.plan_exist(organization_id=organization_id, plan_id=plan_id)
         # TODO - verify if checking of plan_name_exist is really needed
-        plan_name_exist: typing.Union[None, bool] = self.plan_name_exist(
+        plan_name_exist: Optional[bool] = self.plan_name_exist(
             organization_id=organization_id, plan_name=plan_name)
 
         if isinstance(plan_exist, bool) and isinstance(plan_name_exist, bool):
@@ -285,10 +291,10 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         :return:
         ***REMOVED***
 
-        plan_exist: typing.Union[None, bool] = await self.plan_exist_async(
+        plan_exist: Optional[bool] = await self.plan_exist_async(
             organization_id=organization_id, plan_id=plan_id)
 
-        plan_name_exist: typing.Union[None, bool] = await self.plan_name_exist_async(
+        plan_name_exist: Optional[bool] = await self.plan_name_exist_async(
             organization_id=organization_id, plan_name=plan_name)
 
         if isinstance(plan_exist, bool) and isinstance(plan_name_exist, bool):
@@ -311,9 +317,9 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         :return:
         ***REMOVED***
 
-        coupon_exist: typing.Union[None, bool] = self.coupon_exist(organization_id=organization_id, code=code)
-        expiration_valid: typing.Union[None, bool] = self.expiration_valid(expiration_time=expiration_time)
-        discount_valid: typing.Union[None, bool] = self.discount_valid(discount_valid=discount)
+        coupon_exist: Optional[bool] = self.coupon_exist(organization_id=organization_id, code=code)
+        expiration_valid: Optional[bool] = self.expiration_valid(expiration_time=expiration_time)
+        discount_valid: Optional[bool] = self.discount_valid(discount_valid=discount)
 
         if isinstance(coupon_exist, bool) and isinstance(expiration_valid, bool) and isinstance(discount_valid, bool):
             return (not coupon_exist) and expiration_valid and discount_valid
@@ -334,11 +340,11 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         :param discount:
         :return:
         ***REMOVED***
-        coupon_exist: typing.Union[None, bool] = await self.coupon_exist_async(organization_id=organization_id,
+        coupon_exist: Optional[bool] = await self.coupon_exist_async(organization_id=organization_id,
                                                                                code=code)
 
-        expiration_valid: typing.Union[None, bool] = await self.expiration_valid_async(expiration_time=expiration_time)
-        discount_valid: typing.Union[None, bool] = await self.discount_valid_async(discount_valid=discount)
+        expiration_valid: Optional[bool] = await self.expiration_valid_async(expiration_time=expiration_time)
+        discount_valid: Optional[bool] = await self.discount_valid_async(discount_valid=discount)
 
         if isinstance(coupon_exist, bool) and isinstance(expiration_valid, bool) and isinstance(discount_valid, bool):
             return (not coupon_exist) and expiration_valid and discount_valid
@@ -360,9 +366,9 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         :return:
         ***REMOVED***
 
-        coupon_exist: typing.Union[None, bool] = self.coupon_exist(organization_id=organization_id, code=code)
-        expiration_valid: typing.Union[None, bool] = self.expiration_valid(expiration_time=expiration_time)
-        discount_valid: typing.Union[None, bool] = self.discount_valid(discount_valid=discount)
+        coupon_exist: Optional[bool] = self.coupon_exist(organization_id=organization_id, code=code)
+        expiration_valid: Optional[bool] = self.expiration_valid(expiration_time=expiration_time)
+        discount_valid: Optional[bool] = self.discount_valid(discount_valid=discount)
 
         if isinstance(coupon_exist, bool) and isinstance(expiration_valid, bool) and isinstance(discount_valid, bool):
             return coupon_exist and expiration_valid and discount_valid
@@ -384,10 +390,10 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         :return:
         ***REMOVED***
 
-        coupon_exist: typing.Union[None, bool] = await self.coupon_exist_async(organization_id=organization_id,
+        coupon_exist: Optional[bool] = await self.coupon_exist_async(organization_id=organization_id,
                                                                                code=code)
-        expiration_valid: typing.Union[None, bool] = await self.expiration_valid_async(expiration_time=expiration_time)
-        discount_valid: typing.Union[None, bool] = await self.discount_valid_async(discount_valid=discount)
+        expiration_valid: Optional[bool] = await self.expiration_valid_async(expiration_time=expiration_time)
+        discount_valid: Optional[bool] = await self.discount_valid_async(discount_valid=discount)
 
         if isinstance(coupon_exist, bool) and isinstance(expiration_valid, bool) and isinstance(discount_valid, bool):
             return coupon_exist and expiration_valid and discount_valid
@@ -1187,7 +1193,7 @@ def plan_data_wrapper(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
 
-        membership_plan_data: typing.Union[dict, None] = kwargs.get('membership_plan_data')
+        membership_plan_data: Optional[dict] = kwargs.get('membership_plan_data')
         if not bool(membership_plan_data):
             message: str = "Input is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -1794,7 +1800,7 @@ def get_coupon_data(func):
 
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        coupon_data: typing.Union[dict, None] = kwargs.get('coupon_data')
+        coupon_data: Optional[dict] = kwargs.get('coupon_data')
         # either its dict in which case it may contain our data and we will find out below
         # or coupon_data is Null in which case it will raise an InputError
         if not bool(coupon_data):
