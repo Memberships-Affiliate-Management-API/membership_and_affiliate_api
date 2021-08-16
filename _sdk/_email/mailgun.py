@@ -84,10 +84,9 @@ class Mailgun:
 
     def __get_organization_data(self, organization_id: str) -> typing.Union[dict, None]:
         ***REMOVED***
-            **__get_organization_data_async**
+            **__get_organization_data**
                 asynchronously returns the organization details based on the organization id and uid
         :param organization_id:
-        :param uid:
         :return:
         ***REMOVED***
         # TODO ensure this endpoints works

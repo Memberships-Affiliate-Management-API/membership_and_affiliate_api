@@ -2,7 +2,7 @@ from flask import Blueprint, request, current_app
 from config.exceptions import UnAuthenticatedError, error_codes
 from database.mixins import AmountMixin
 from views.organization import OrganizationView
-from typing import Union, Optional
+from typing import Optional
 
 admin_organization_api_bp = Blueprint("admin_organization_api", __name__)
 

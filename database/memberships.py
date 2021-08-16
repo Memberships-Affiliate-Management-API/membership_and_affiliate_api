@@ -460,22 +460,23 @@ class MembershipInvoices(BaseModel):
 # noinspection DuplicatedCode
 class Coupons(BaseModel):
     ***REMOVED***
-        Class for the management and storage of Coupons in the Database
-        applied on checkout of memberships
-        front end should read coupons on checkout and apply the code to registration fees only ...
-        the admin app should setup the coupon codes.
-        endpoints should be provided via view and api
+        **Coupons**
+            Class for the management and storage of Coupons in the Database
+            applied on checkout of memberships
+            front end should read coupons on checkout and apply the code to registration fees only ...
+            the admin app should setup the coupon codes.
+            endpoints should be provided via view and api
 
         `Coupons properties`
-        :property: organization_id: string: the string relating the organization which created the Coupon Code
-        for application in its services
-        :property: code: string(12): the coupon code which must be applied in order for the coupon to be
-        applied on memberships
-        :property: discount_percent: int : the percentage to apply to the price in case a client or user supplies
-        the coupon code (see code).
-        :property: is_valid: bool : when true the coupon_code can be used
-        :property: date_created: datetime: the date and time the coupon code was created
-        :property: expiration_time: int: time in milliseconds when the coupon code will expire
+            1. property: organization_id: string: the string relating the organization which created the Coupon Code
+               for application in its services
+            2. property: code: string(12): the coupon code which must be applied in order for the coupon to be
+               applied on memberships
+            3. property: discount_percent: int : the percentage to apply to the price in case a client or user supplies
+               the coupon code (see code).
+            4. property: is_valid: bool : when true the coupon_code can be used
+            5. property: date_created: datetime: the date and time the coupon code was created
+            6. property: expiration_time: int: time in milliseconds when the coupon code will expire
 
     ***REMOVED***
     organization_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True)

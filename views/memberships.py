@@ -9,7 +9,7 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
 import functools
-from typing import Optional
+from typing import Optional, List
 from google.api_core.exceptions import RetryError, Aborted
 from flask import jsonify, current_app
 from datetime import datetime, date
@@ -73,30 +73,38 @@ class MembershipsEmails(Mailgun):
         # TODO find out how to create templates and allow clients to create their email templates
         # TODO: fetching user data over API -- all this must be done asynchronously
 
-        def email_body_composer(names: str, surname: str, plan_name: str, plan_description: str, organization_name: str,
-                                organization_description: str) -> tuple:
+        def email_body_composer(_names: str, _surname: str, _plan_name: str, _plan_description: str, _organization_name: str,
+                                _organization_description: str) -> tuple:
             # Include Powered by Message on the Footer of the Email Message
             ***REMOVED***
                 **Email body Composer**
                     compose the two email bodies given the above variables
 
-            :param names:
-            :param surname:
-            :param plan_name:
-            :param plan_description:
-            :param organization_name:
-            :param organization_description:
+            :param _names:
+            :param _surname:
+            :param _plan_name:
+            :param _plan_description:
+            :param _organization_name:
+            :param _organization_description:
             :return:
             ***REMOVED***
             # TODO find a way to format the email body wonderfully
             _text_body = f'''
-            Welcome to : {organization_name}
-            You have recently subscribe to : {plan_name}
-            
+                Hi {_names} {_surname}
+                
+                Welcome to : {_organization_name}
+                
+                You have recently subscribe to : {_plan_name}
+                {_plan_description}
+                        
             '''
             _html_body = f'''
-            Welcome to : {organization_name}
-            You have recently subscribe to : {plan_name}
+                Hi {_names} {_surname}
+                
+                Welcome to : {_organization_name}
+                
+                You have recently subscribe to : {_plan_name}
+                {_plan_description}
             
             '''
             return _text_body, _html_body
@@ -105,7 +113,7 @@ class MembershipsEmails(Mailgun):
 
         data_tasks = asyncio.gather(self.__get_user_data_async(organization_id=organization_id, uid=uid),
                                     self.__get_membership_data_async(organization_id=organization_id, uid=uid),
-                                    self.__get_organization_data_async(organization_id=organization_id, uid=uid))
+                                    self.__get_organization_data(organization_id=organization_id))
 
         results = loop.run_until_complete(data_tasks)
         user_data: Optional[dict] = results[0]
@@ -122,10 +130,10 @@ class MembershipsEmails(Mailgun):
             description: str = organization_data.get('description')
 
             # Note: composes and returns email body given membership and organization details the member joined
-            text_body, html_body = email_body_composer(names=names, surname=surname, plan_name=plan_name,
-                                                       plan_description=plan_description,
-                                                       organization_name=organization_name,
-                                                       organization_description=description)
+            text_body, html_body = email_body_composer(_names=names, _surname=surname, _plan_name=plan_name,
+                                                       _plan_description=plan_description,
+                                                       _organization_name=organization_name,
+                                                       _organization_description=description)
 
             subject: str = 'Welcome to : {}'.format(organization_name)
             self.__do_send_mail(to_email=email, subject=subject, text=text_body, html=html_body)
@@ -211,7 +219,7 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         ***REMOVED***
         user_valid: Optional[bool] = await self.is_user_valid_async(organization_id=organization_id, uid=uid)
         plan_exist: Optional[bool] = await self.plan_exist_async(organization_id=organization_id,
-                                                                           plan_id=plan_id)
+                                                                 plan_id=plan_id)
         date_valid: Optional[bool] = await self.start_date_valid_async(start_date=start_date)
 
         if isinstance(user_valid, bool) and isinstance(plan_exist, bool) and isinstance(date_valid, bool):
@@ -229,10 +237,10 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
             **PARAMETERS**
                 :param organization_id:
                 :param plan_name:
-                :return: boolean -> indicating if plan can be addded or not
+                :return: boolean -> indicating if plan can be added or not
         ***REMOVED***
         name_exist: Optional[bool] = self.plan_name_exist(organization_id=organization_id,
-                                                                    plan_name=plan_name)
+                                                          plan_name=plan_name)
         if isinstance(name_exist, bool):
             return not name_exist
         message: str = "Database Error: Unable to verify input data, please try again later"
@@ -343,7 +351,7 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         :return:
         ***REMOVED***
         coupon_exist: Optional[bool] = await self.coupon_exist_async(organization_id=organization_id,
-                                                                               code=code)
+                                                                     code=code)
 
         expiration_valid: Optional[bool] = await self.expiration_valid_async(expiration_time=expiration_time)
         discount_valid: Optional[bool] = await self.discount_valid_async(discount_valid=discount)
@@ -393,7 +401,7 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         ***REMOVED***
 
         coupon_exist: Optional[bool] = await self.coupon_exist_async(organization_id=organization_id,
-                                                                               code=code)
+                                                                     code=code)
         expiration_valid: Optional[bool] = await self.expiration_valid_async(expiration_time=expiration_time)
         discount_valid: Optional[bool] = await self.discount_valid_async(discount_valid=discount)
 
@@ -493,7 +501,8 @@ class MembershipsView(Validators, MembershipsEmails):
             membership_instance.plan_id = plan_id
             membership_instance.plan_start_date = plan_start_date
             membership_instance.payment_method = payment_method
-            key: Optional[ndb.Key] = membership_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
+            key: Optional[ndb.Key] = membership_instance.put_async(retries=self._max_retries,
+                                                                   timeout=self._max_timeout).get_result()
             if not bool(key):
                 message: str = "Unable to save membership instance to database, please try again"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
@@ -581,7 +590,8 @@ class MembershipsView(Validators, MembershipsEmails):
 
     @use_context
     @handle_view_errors
-    def set_membership_payment_status(self, organization_id: Optional[str], uid: Optional[str], status: Optional[str]) -> tuple:
+    def set_membership_payment_status(self, organization_id: Optional[str], uid: Optional[str],
+                                      status: Optional[str]) -> tuple:
         ***REMOVED***
             **set_membership_status**
                 set membership status
@@ -655,7 +665,8 @@ class MembershipsView(Validators, MembershipsEmails):
 
         if isinstance(membership_instance, Memberships):
             membership_instance.payment_status = status
-            key: Optional[ndb.Key] = membership_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
+            key: Optional[ndb.Key] = membership_instance.put_async(retries=self._max_retries,
+                                                                   timeout=self._max_timeout).get_result()
             if not bool(key):
                 message: str = "Unable to save membership instance to database, please try again"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
@@ -704,12 +715,12 @@ class MembershipsView(Validators, MembershipsEmails):
             if self.plan_exist(organization_id=organization_id, plan_id=dest_plan_id) is True:
                 membership_instance.plan_id = dest_plan_id
                 key: Optional[ndb.Key] = membership_instance.put(retries=self._max_retries,
-                                              timeout=self._max_timeout)
+                                                                 timeout=self._max_timeout)
             else:
                 # This maybe be because the original plan is deleted but its a rare case
                 membership_instance.plan_id = dest_plan_id
                 key: Optional[ndb.Key] = membership_instance.put(retries=self._max_retries,
-                                              timeout=self._max_timeout)
+                                                                 timeout=self._max_timeout)
             if not bool(key):
                 message: str = "Unable to Change Membership, please try again later"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
@@ -750,15 +761,15 @@ class MembershipsView(Validators, MembershipsEmails):
             if await self.plan_exist_async(organization_id=organization_id, plan_id=dest_plan_id) is True:
                 membership_instance.plan_id = dest_plan_id
                 key: Optional[ndb.Key] = membership_instance.put_async(retries=self._max_retries,
-                                                    timeout=self._max_timeout).get_result()
+                                                                       timeout=self._max_timeout).get_result()
             else:
                 # This maybe be because the original plan is deleted but its a rare case
                 membership_instance.plan_id = dest_plan_id
                 key: Optional[ndb.Key] = membership_instance.put_async(retries=self._max_retries,
-                                                    timeout=self._max_timeout).get_result()
+                                                                       timeout=self._max_timeout).get_result()
 
             if not (bool(key)):
-                message: str = "Database Errror: Unable to update Membership, please try again later"
+                message: str = "Database Error: Unable to update Membership, please try again later"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
             self.send_change_of_membership_notification_email(organization_id=organization_id, uid=uid)
@@ -818,9 +829,9 @@ class MembershipsView(Validators, MembershipsEmails):
         ***REMOVED***
             **send_welcome_email**
                 just send a request to the email service to send emails
-            :param organization_id -> string unique organization id
-            :param uid -> string : unique user id
-            :param plan_id -> string : unique plan_id
+            :param organization_id: -> str: unique organization id
+            :param uid: -> str: unique user id
+            :param plan_id: -> str: unique plan_id
             :return : tuple indicating if sending email as a success or failed
         ***REMOVED***
         return "Ok", status_codes.status_ok_code
@@ -834,9 +845,9 @@ class MembershipsView(Validators, MembershipsEmails):
             **send_welcome_email_async**
                 just send a request to the email service to send emails
 
-            :param organization_id -> string unique organization id
-            :param uid -> string : unique user id
-            :param plan_id -> string : unique plan_id
+            :param organization_id: -> str: unique organization id
+            :param uid: -> str: unique user id
+            :param plan_id: -> str: unique plan_id
             :return : tuple indicating if sending email as a success or failed        
             
         ***REMOVED***
@@ -869,12 +880,12 @@ class MembershipsView(Validators, MembershipsEmails):
             message: str = "status is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        membership_list: typing.List[Memberships] = Memberships.query(Memberships.organization_id == organization_id,
-                                                                      Memberships.plan_id == plan_id,
-                                                                      Memberships.payment_status == status).fetch()
+        membership_list: List[Memberships] = Memberships.query(Memberships.organization_id == organization_id,
+                                                               Memberships.plan_id == plan_id,
+                                                               Memberships.payment_status == status).fetch()
 
         if isinstance(membership_list, list) and len(membership_list):
-            response_data: typing.List[dict] = [member.to_dict() for member in membership_list]
+            response_data: List[dict] = [member.to_dict() for member in membership_list]
             message: str = 'successfully fetched members'
             return jsonify({'status': True, 'payload': response_data, 'message': message}), status_codes.status_ok_code
         else:
@@ -908,12 +919,12 @@ class MembershipsView(Validators, MembershipsEmails):
             message: str = "status is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        membership_list: typing.List[Memberships] = Memberships.query(
+        membership_list: List[Memberships] = Memberships.query(
             Memberships.organization_id == organization_id, Memberships.plan_id == plan_id,
             Memberships.payment_status == status).fetch_async().get_result()
 
         if isinstance(membership_list, list) and len(membership_list):
-            response_data: typing.List[dict] = [member.to_dict() for member in membership_list]
+            response_data: List[dict] = [member.to_dict() for member in membership_list]
             message: str = 'successfully fetched members'
             return jsonify({'status': True, 'payload': response_data, 'message': message}), status_codes.status_ok_code
         else:
@@ -940,11 +951,11 @@ class MembershipsView(Validators, MembershipsEmails):
             message: str = "status is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        membership_list: typing.List[Memberships] = Memberships.query(Memberships.organization_id == organization_id,
-                                                                      Memberships.payment_status == status).fetch()
+        membership_list: List[Memberships] = Memberships.query(Memberships.organization_id == organization_id,
+                                                               Memberships.payment_status == status).fetch()
 
         if isinstance(membership_list, list) and len(membership_list):
-            response_data: typing.List[dict] = [member.to_dict() for member in membership_list]
+            response_data: List[dict] = [member.to_dict() for member in membership_list]
             message: str = 'successfully fetched members'
             return jsonify({'status': True, 'payload': response_data, 'message': message}), status_codes.status_ok_code
         else:
@@ -972,11 +983,12 @@ class MembershipsView(Validators, MembershipsEmails):
             message: str = "status is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        membership_list: typing.List[Memberships] = Memberships.query(
-            Memberships.organization_id == organization_id, Memberships.payment_status == status).fetch_async().get_result()
+        membership_list: List[Memberships] = Memberships.query(
+            Memberships.organization_id == organization_id,
+            Memberships.payment_status == status).fetch_async().get_result()
 
         if isinstance(membership_list, list) and len(membership_list):
-            response_data: typing.List[dict] = [member.to_dict() for member in membership_list]
+            response_data: List[dict] = [member.to_dict() for member in membership_list]
             message: str = 'successfully fetched members'
             return jsonify({'status': True, 'payload': response_data, 'message': message}), status_codes.status_ok_code
         else:
@@ -1003,11 +1015,11 @@ class MembershipsView(Validators, MembershipsEmails):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        membership_list: typing.List[Memberships] = Memberships.query(Memberships.organization_id == organization_id,
-                                                                      Memberships.plan_id == plan_id).fetch()
+        membership_list: List[Memberships] = Memberships.query(Memberships.organization_id == organization_id,
+                                                               Memberships.plan_id == plan_id).fetch()
 
         if isinstance(membership_list, list) and len(membership_list):
-            response_data: typing.List[dict] = [member.to_dict() for member in membership_list]
+            response_data: List[dict] = [member.to_dict() for member in membership_list]
             message: str = 'successfully fetched members'
             return jsonify({'status': True, 'payload': response_data, 'message': message}), status_codes.status_ok_code
         else:
@@ -1021,19 +1033,19 @@ class MembershipsView(Validators, MembershipsEmails):
         ***REMOVED***
             **return_plan_members_async**
                 return all members of a plan
-            :param organization_id -> string : unique organization identifier
-            :param plan_id -> string : unique user identifier
+            :param organization_id: -> str : unique organization identifier
+            :param plan_id: -> str : unique user identifier
             :return -> tuple response, status_code 
         ***REMOVED***
         if not isinstance(plan_id, str) or not bool(plan_id.strip()):
             message: str = "plan_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        membership_list: typing.List[Memberships] = Memberships.query(
+        membership_list: List[Memberships] = Memberships.query(
             Memberships.organization_id == organization_id, Memberships.plan_id == plan_id).fetch_async().get_result()
 
         if isinstance(membership_list, list) and len(membership_list):
-            response_data: typing.List[dict] = [member.to_dict() for member in membership_list]
+            response_data: List[dict] = [member.to_dict() for member in membership_list]
             message: str = 'successfully fetched members'
             return jsonify({'status': True, 'payload': response_data, 'message': message}), status_codes.status_ok_code
         else:
@@ -1119,7 +1131,7 @@ class MembershipsView(Validators, MembershipsEmails):
                 the dict contains amount_data -- see AmountMixin for parameters
 
             **PARAMETERS**
-                :param organization_id -> string : 
+                :param organization_id: -> str
                 :param uid -> string
                 :return tuple -> as response, status_code 
         ***REMOVED***
@@ -1168,9 +1180,9 @@ class MembershipsView(Validators, MembershipsEmails):
                 the dict contains amount_data -- see AmountMixin for parameters
 
             **PARAMETERS**
-                :param organization_id -> string : 
-                :param uid -> string
-                :return tuple -> as response, status_code 
+                :param organization_id:
+                :param uid: -> string
+                :return tuple: -> as response, status_code
         ***REMOVED***
         if not isinstance(organization_id, str) or bool(organization_id.strip()):
             message: str = "organization_id is required"
@@ -1328,6 +1340,7 @@ class MembershipPlansView(Validators):
             this class controls access to membership plans database
             also checks for input data validity
     ***REMOVED***
+
     def __init__(self):
         super(MembershipPlansView, self).__init__()
 
@@ -1465,7 +1478,8 @@ class MembershipPlansView(Validators):
                                                              is_active=is_active,
                                                              date_created=datetime.now().date())
 
-            key: Optional[ndb.Key] = plan_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
+            key: Optional[ndb.Key] = plan_instance.put_async(retries=self._max_retries,
+                                                             timeout=self._max_timeout).get_result()
             if not bool(key):
                 message: str = 'for some reason we are unable to create a new plan'
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
@@ -1500,7 +1514,8 @@ class MembershipPlansView(Validators):
                 membership_plans_instance.registration_amount = curr_registration_amount
                 membership_plans_instance.is_active = is_active
 
-                key: Optional[ndb.Key] = membership_plans_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+                key: Optional[ndb.Key] = membership_plans_instance.put(retries=self._max_retries,
+                                                                       timeout=self._max_timeout)
 
                 if not bool(key):
                     message: str = 'for some reason we are unable to create a new plan'
@@ -1554,7 +1569,7 @@ class MembershipPlansView(Validators):
                 membership_plans_instance.registration_amount = curr_registration_amount
                 membership_plans_instance.is_active = is_active
                 key: Optional[ndb.Key] = membership_plans_instance.put_async(retries=self._max_retries,
-                                                          timeout=self._max_timeout).get_result()
+                                                                             timeout=self._max_timeout).get_result()
                 if not bool(key):
                     message: str = 'for some reason we are unable to create a new plan'
                     raise DataServiceError(status=error_codes.data_service_error_code, description=message)
@@ -1616,7 +1631,8 @@ class MembershipPlansView(Validators):
         if isinstance(membership_plans_instance, MembershipPlans):
             membership_plans_instance.is_active = is_active
             # TODO- this action has to be updated also in PayPal
-            key: Optional[ndb.Key] = membership_plans_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
+            key: Optional[ndb.Key] = membership_plans_instance.put_async(retries=self._max_retries,
+                                                                         timeout=self._max_timeout).get_result()
             if not bool(key):
                 message: str = 'for some reason we are unable to create a new plan'
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
@@ -1637,10 +1653,10 @@ class MembershipPlansView(Validators):
         :return:
         ***REMOVED***
 
-        membership_plan_list: typing.List[MembershipPlans] = MembershipPlans.query(
+        membership_plan_list: List[MembershipPlans] = MembershipPlans.query(
             MembershipPlans.organization_id == organization_id, MembershipPlans.schedule_term == schedule_term).fetch()
 
-        payload: typing.List[dict] = [membership.to_dict() for membership in membership_plan_list]
+        payload: List[dict] = [membership.to_dict() for membership in membership_plan_list]
         if len(payload):
             return jsonify({'status': True, 'payload': payload,
                             'message': 'successfully retrieved monthly plans'}), status_codes.status_ok_code
@@ -1659,11 +1675,11 @@ class MembershipPlansView(Validators):
         :return:
         ***REMOVED***
 
-        membership_plan_list: typing.List[MembershipPlans] = MembershipPlans.query(
+        membership_plan_list: List[MembershipPlans] = MembershipPlans.query(
             MembershipPlans.organization_id == organization_id,
             MembershipPlans.schedule_term == schedule_term).fetch_async().get_result()
 
-        payload: typing.List[dict] = [membership.to_dict() for membership in membership_plan_list]
+        payload: List[dict] = [membership.to_dict() for membership in membership_plan_list]
 
         if len(payload):
             return jsonify({'status': True, 'payload': payload,
@@ -1674,7 +1690,7 @@ class MembershipPlansView(Validators):
 
     @staticmethod
     @handle_store_errors
-    def _get_plan(organization_id: str, plan_id: str) -> typing.Union[MembershipPlans, None]:
+    def _get_plan(organization_id: str, plan_id: str) -> Optional[MembershipPlans]:
         ***REMOVED***
             **_get_plan_async**
                 this utility will be used by other views to obtain information about membershipPlans
@@ -1696,7 +1712,7 @@ class MembershipPlansView(Validators):
 
     @staticmethod
     @handle_store_errors
-    async def _get_plan_async(organization_id: str, plan_id: str) -> typing.Union[MembershipPlans, None]:
+    async def _get_plan_async(organization_id: str, plan_id: str) -> Optional[MembershipPlans]:
         ***REMOVED***
             **_get_plan_async**
 
@@ -1790,10 +1806,10 @@ class MembershipPlansView(Validators):
             :return: memberships plans
         ***REMOVED***
 
-        membership_plan_list: typing.List[MembershipPlans] = MembershipPlans.query(
+        membership_plan_list: List[MembershipPlans] = MembershipPlans.query(
             MembershipPlans.organization_id == organization_id).fetch()
 
-        plan_list: typing.List[dict] = [plan.to_dict() for plan in membership_plan_list]
+        plan_list: List[dict] = [plan.to_dict() for plan in membership_plan_list]
 
         if len(plan_list):
             return jsonify({'status': True, 'payload': plan_list,
@@ -1813,10 +1829,10 @@ class MembershipPlansView(Validators):
             :return: memberships plans
         ***REMOVED***
 
-        membership_plan_list: typing.List[MembershipPlans] = MembershipPlans.query(
+        membership_plan_list: List[MembershipPlans] = MembershipPlans.query(
             MembershipPlans.organization_id == organization_id).fetch_async().get_result()
 
-        plan_list: typing.List[dict] = [plan.to_dict() for plan in membership_plan_list]
+        plan_list: List[dict] = [plan.to_dict() for plan in membership_plan_list]
         if len(plan_list):
             return jsonify({'status': True, 'payload': plan_list,
                             'message': 'successfully fetched all memberships'}), status_codes.status_ok_code
@@ -1834,7 +1850,7 @@ class AccessRightsView:
         pass
 
     @use_context
-    def get_access_rights(self, organization_id: str, plan_id: str) -> typing.Union[None, AccessRights]:
+    def get_access_rights(self, organization_id: str, plan_id: str) -> Optional[AccessRights]:
         if isinstance(plan_id, str):
             try:
                 access_rights_instance: AccessRights = AccessRights.query(
@@ -1852,7 +1868,7 @@ class AccessRightsView:
         return None
 
     @use_context
-    async def get_access_rights_async(self, organization_id: str, plan_id: str) -> typing.Union[AccessRights, None]:
+    async def get_access_rights_async(self, organization_id: str, plan_id: str) -> Optional[AccessRights]:
         if isinstance(plan_id, str):
             try:
                 access_rights_instance: AccessRights = AccessRights.query(
@@ -1977,9 +1993,10 @@ class CouponsView(Validators):
             coupons_instance: Coupons = Coupons(organization_id=organization_id, code=code,
                                                 discount=discount, expiration_time=expiration_time)
 
-            key: Optional[ndb.Key] = coupons_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
+            key: Optional[ndb.Key] = coupons_instance.put_async(retries=self._max_retries,
+                                                                timeout=self._max_timeout).get_result()
             if not bool(key):
-                message: str = "an error occured while creating coupon"
+                message: str = "an error occurred while creating coupon"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
             return jsonify({'status': True, 'message': 'successfully created coupon code',
@@ -2064,7 +2081,8 @@ class CouponsView(Validators):
             # Discount a percentage indicating how much of the original price should be knocked off
             coupon_instance.discount_percent = discount
             coupon_instance.expiration_time = expiration_time
-            key: Optional[ndb.Key] = coupon_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
+            key: Optional[ndb.Key] = coupon_instance.put_async(retries=self._max_retries,
+                                                               timeout=self._max_timeout).get_result()
             if not bool(key):
                 message: str = "Database Error: Error updating coupon"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
@@ -2136,7 +2154,8 @@ class CouponsView(Validators):
 
         if isinstance(coupon_instance, Coupons):
             coupon_instance.is_valid = False
-            key: Optional[ndb.Key] = coupon_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
+            key: Optional[ndb.Key] = coupon_instance.put_async(retries=self._max_retries,
+                                                               timeout=self._max_timeout).get_result()
             if not bool(key):
                 message: str = "Unable to cancel coupon"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
@@ -2160,9 +2179,9 @@ class CouponsView(Validators):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        coupons_list: typing.List[Coupons] = Coupons.query(Coupons.organization_id == organization_id).fetch()
+        coupons_list: List[Coupons] = Coupons.query(Coupons.organization_id == organization_id).fetch()
 
-        payload: typing.List[dict] = [coupon.to_dict() for coupon in coupons_list]
+        payload: List[dict] = [coupon.to_dict() for coupon in coupons_list]
         if len(payload):
             message: str = "coupons successfully created"
             return jsonify({'status': True, 'payload': payload,
@@ -2185,9 +2204,9 @@ class CouponsView(Validators):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        coupons_list: typing.List[Coupons] = Coupons.query(
+        coupons_list: List[Coupons] = Coupons.query(
             Coupons.organization_id == organization_id).fetch_async().get_result()
-        payload: typing.List[dict] = [coupon.to_dict() for coupon in coupons_list]
+        payload: List[dict] = [coupon.to_dict() for coupon in coupons_list]
         if len(payload):
             message: str = "coupons successfully retrieved"
             return jsonify({'status': True, 'payload': payload,
@@ -2210,9 +2229,9 @@ class CouponsView(Validators):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        coupons_list: typing.List[Coupons] = Coupons.query(
+        coupons_list: List[Coupons] = Coupons.query(
             Coupons.organization_id == organization_id, Coupons.is_valid == True).fetch()
-        payload: typing.List[dict] = [coupon.to_dict() for coupon in coupons_list]
+        payload: List[dict] = [coupon.to_dict() for coupon in coupons_list]
 
         if len(payload):
             message: str = "valid successfully retrieved"
@@ -2236,10 +2255,10 @@ class CouponsView(Validators):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        coupons_list: typing.List[Coupons] = Coupons.query(Coupons.organization_id == organization_id,
-                                                           Coupons.is_valid == True).fetch_async().get_result()
+        coupons_list: List[Coupons] = Coupons.query(Coupons.organization_id == organization_id,
+                                                    Coupons.is_valid == True).fetch_async().get_result()
 
-        payload: typing.List[dict] = [coupon.to_dict() for coupon in coupons_list]
+        payload: List[dict] = [coupon.to_dict() for coupon in coupons_list]
         if len(payload):
             message: str = "coupons successfully retrieved"
             return jsonify({'status': True, 'payload': payload,
@@ -2262,10 +2281,10 @@ class CouponsView(Validators):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        coupons_list: typing.List[Coupons] = Coupons.query(Coupons.organization_id == organization_id,
-                                                           Coupons.expiration_time < timestamp()).fetch()
+        coupons_list: List[Coupons] = Coupons.query(Coupons.organization_id == organization_id,
+                                                    Coupons.expiration_time < timestamp()).fetch()
 
-        payload: typing.List[dict] = [coupon.to_dict() for coupon in coupons_list]
+        payload: List[dict] = [coupon.to_dict() for coupon in coupons_list]
         if len(payload):
             message: str = "expired coupons successfully retrieved"
             return jsonify({'status': True, 'payload': payload,
@@ -2288,11 +2307,11 @@ class CouponsView(Validators):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        coupons_list: typing.List[Coupons] = Coupons.query(
+        coupons_list: List[Coupons] = Coupons.query(
             Coupons.organization_id == organization_id,
             Coupons.expiration_time < timestamp()).fetch_async().get_result()
 
-        payload: typing.List[dict] = [coupon.to_dict() for coupon in coupons_list]
+        payload: List[dict] = [coupon.to_dict() for coupon in coupons_list]
         if len(payload):
             message: str = "successfully fetched expired coupon codes"
             return jsonify({'status': True, 'payload': payload,
