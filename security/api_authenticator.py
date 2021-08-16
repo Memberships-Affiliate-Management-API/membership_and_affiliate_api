@@ -2,18 +2,15 @@
     **API Authenticator Module**
         authorize client api calls
 ***REMOVED***
-import json
-
 import requests
 from flask import request
 from config import config_instance
-from config.exceptions import UnAuthenticatedError
+from config.exceptions import UnAuthenticatedError, error_codes
 import functools
 from main import app_cache
-from utils.utils import return_ttl
 
 
-@app_cache.memoize(timeout=return_ttl('short'))
+@app_cache.memoize(timeout=15*60)  # timeout equals fifteen minutes // 900 seconds
 def is_api_key_valid(api_key: str, secret: str, domain: str) -> bool:
     ***REMOVED***
         **is_api_key_valid**
@@ -37,10 +34,16 @@ def is_api_key_valid(api_key: str, secret: str, domain: str) -> bool:
         if isinstance(api_instance, dict):
             if (api_instance['secret_token'] == secret) and (api_instance['domain'] == domain):
                 return api_instance['is_active']
-        return False
+    return False
 
 
 def handle_api_auth(func):
+    ***REMOVED***
+        **handle_api_auth**
+            wrapper to handle public api calls authentications
+    :param func:
+    :return:
+    ***REMOVED***
     @functools.wraps(func)
     def auth_wrapper(*args, **kwargs):
         api_key: str = request.headers.get('api-key')
@@ -50,7 +53,7 @@ def handle_api_auth(func):
         if is_api_key_valid(api_key=api_key, secret=secret_token, domain=domain):
             return func(*args, **kwargs)
         message: str = "request not authorized"
-        raise UnAuthenticatedError(status=401, description=message)
+        raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
     return auth_wrapper
 
