@@ -108,10 +108,12 @@ def decode_auth_token(auth_token):
 
 def send_get_user_request(uid: str) -> Optional[dict]:
     ***REMOVED***
-        **send_get_user_request**
-            send request for user over api and return user dict
-    :param uid:
-    :return:
+    **send_get_user_request**
+        send request for user over api and return user dict
+
+    **PARAMETERS**
+        :param uid:
+        :return: dict -> user record
     ***REMOVED***
     _base_url: str = os.environ.get("BASE_URL")
     _user_endpoint: str = "_api/v1/client/users/get-user"
@@ -122,9 +124,14 @@ def send_get_user_request(uid: str) -> Optional[dict]:
     return None
 
 
-def handle_users_auth(f):
+def handle_users_auth(func):
+    ***REMOVED***
+        **handle_users_auth**
+            handles authentication on html routes for users on client dashboard
+            and admin dashboard        
+    ***REMOVED***
     # noinspection PyBroadException
-    @wraps(f)
+    @wraps(func)
     def decorated(*args, **kwargs):
         token: Optional[str] = None
         # print('token headers: {}'.format(request.headers))
@@ -135,7 +142,7 @@ def handle_users_auth(f):
 
         if is_development():
             current_user: Optional[UserModel] = get_admin_user()
-            return f(current_user, *args, **kwargs)
+            return func(current_user, *args, **kwargs)
 
         if not token:
             return redirect(url_for('memberships_main.memberships_main_routes', path='login'))
@@ -143,8 +150,8 @@ def handle_users_auth(f):
 
             uid: Optional[str] = decode_auth_token(auth_token=token)
             if bool(uid):
-                current_user: Optional[dict] = send_get_user_request(uid=uid)
-                # TODO use api
+                # NOTE: using client api to access user details
+                current_user: Optional[dict] = send_get_user_request(uid=uid)             
                 if not isinstance(current_user, dict):
                     message = '''Error connecting to database or user does not exist'''
                     flash(message, 'warning')
@@ -153,19 +160,23 @@ def handle_users_auth(f):
                 message: str = '''to access restricted areas of this web application please login'''
                 flash(message, 'warning')
                 current_user: Optional[dict] = None
+                
         except jwt.DecodeError:
             flash('Error decoding your token please login again', 'warning')
             return redirect(url_for('memberships_main.memberships_main_routes', path='login'))
+        
+        # TODO fix this with an exception that relates to the operations here
+
         except Exception:
             flash('Unable to locate your account please create a new account', 'warning')
             return redirect(url_for('memberships_main.memberships_main_routes', path='register'))
-        return f(current_user, *args, **kwargs)
+        return func(current_user, *args, **kwargs)
 
     return decorated
 
 
-def logged_user(f):
-    @wraps(f)
+def logged_user(func):
+    @wraps(func)
     def decorated(*args, **kwargs):
         current_user: Optional[UserModel] = None
         # NOTE: by passes authentication and returns admin user as authenticated
@@ -173,7 +184,7 @@ def logged_user(f):
         if is_development():
             # TODO use api here instead of user model
             current_user: UserModel = get_admin_user()
-            return f(current_user, *args, **kwargs)
+            return func(current_user, *args, **kwargs)
 
         if 'x-access-token' in request.headers:
             token: Optional[str] = request.headers['x-access-token']
@@ -191,7 +202,7 @@ def logged_user(f):
                     pass
             else:
                 pass
-        return f(current_user, *args, **kwargs)
+        return func(current_user, *args, **kwargs)
 
     return decorated
 
