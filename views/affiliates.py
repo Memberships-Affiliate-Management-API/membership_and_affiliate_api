@@ -34,18 +34,24 @@ class AffiliatesEmails(Mailgun):
         **Class Methods**
             1. __do_send_mail -> actually send emails to users - through mailgun api
     ***REMOVED***
+
     def __init__(self):
         super(AffiliatesEmails, self).__init__()
+        self._send_with: str = 'mailgun'
+        # TODO add more email providers here
 
     def __do_send_mail(self, to_email: str, subject: str, text: str, html: str) -> None:
         ***REMOVED***
+            **__do_send_mail**
+                send email with mailgun or another email provider
 
         :param subject:
         :param text:
         :param html:
         :return:
         ***REMOVED***
-        self.__send_with_mailgun_rest_api(to_list=[to_email], subject=subject, text=text, html=html)
+        if self._send_with == "mailgun":
+            self.__send_with_mailgun_rest_api(to_list=[to_email], subject=subject, text=text, html=html)
 
 
 # TODO Create Test Cases for Affiliates View and Documentations
@@ -115,8 +121,9 @@ class AffiliatesView(Validator, CacheManager):
     @handle_view_errors
     def register_affiliate(self, affiliate_data: dict) -> tuple:
         ***REMOVED***
-            Register new affiliate, affiliate_data must contain the uid of the affiliate
-            being recruited and organization_id of the organization recruiting the affiliate.
+            **register_affiliate**
+                Register new affiliate, affiliate_data must contain the uid of the affiliate
+                being recruited and organization_id of the organization recruiting the affiliate.
 
         :param affiliate_data:
         :return: tuple with registered affiliate
@@ -151,7 +158,9 @@ class AffiliatesView(Validator, CacheManager):
     @handle_view_errors
     def total_recruits(self, affiliate_data: dict, add: int = 0) -> tuple:
         ***REMOVED***
+            **total_recruits**
             given an existing affiliate update total recruits field in the affiliate record
+
         :param affiliate_data:
         :param add:
         :return:
@@ -242,6 +251,7 @@ class AffiliatesView(Validator, CacheManager):
             **mark_active**
                 affiliate_id of the affiliate to be marked as active.
                 this action will not have an effect if the affiliate has been soft-deleted
+
         :param affiliate_data: contains affiliate_id and organization_id
         :param is_active:
         :return:
@@ -291,6 +301,7 @@ class AffiliatesView(Validator, CacheManager):
             **get_affiliate**
                 obtains a record of one affiliate from the store. given either uid or affiliate_id, organization_id
                 must be valid
+
         :param affiliate_data: contains affiliate_id and organization_id the affiliate must belong to the organization
         :return: response contain affiliate record
         ***REMOVED***
@@ -337,6 +348,7 @@ class AffiliatesView(Validator, CacheManager):
         ***REMOVED***
             **get_all_affiliates**
                 returns a list of all affiliates that belongs to the organization
+
             :param organization_id: the organization id to return affiliates off
             :return: response containing the list of affiliates as payload
             status code ${status_codes.status_ok_code}
@@ -365,8 +377,10 @@ class AffiliatesView(Validator, CacheManager):
     @app_cache.memoize(timeout=return_ttl('short'))
     def get_active_affiliates(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
-            NOTE: active affiliates but not deleted
-            returns a list of active affiliates in an organization
+            **get_active_affiliates**
+                NOTE: active affiliates but not deleted
+                returns a list of active affiliates in an organization
+
         :param organization_id: the organization id of the organization to return the affiliates
         :return: response containing the list of active affiliates
         ***REMOVED***
@@ -391,7 +405,8 @@ class AffiliatesView(Validator, CacheManager):
     @app_cache.memoize(timeout=return_ttl('short'))
     def get_in_active_affiliates(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
-            returns a list of affiliates who are not active - but not deleted
+            **get_in_active_affiliates**
+                returns a list of affiliates who are not active - but not deleted
 
         :param organization_id: the organization_id of the organization to return affiliates of
         :return: a response tuple with a payload of in-active affiliates from the organization
@@ -419,7 +434,9 @@ class AffiliatesView(Validator, CacheManager):
     @app_cache.memoize(timeout=return_ttl('short'))
     def get_deleted_affiliates(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
-            return deleted affiliates by organization_id
+            **get_deleted_affiliates**
+                return deleted affiliates by organization_id
+
         :param organization_id:
         :return: response containing the list of affiliates who are deleted
         ***REMOVED***
@@ -433,7 +450,6 @@ class AffiliatesView(Validator, CacheManager):
 
         payload: typing.List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
         if len(payload):
-
             message: str = "Successfully returned deleted affiliates"
             return jsonify({'status': True,
                             'message': message,
@@ -446,10 +462,11 @@ class AffiliatesView(Validator, CacheManager):
     @app_cache.memoize(timeout=return_ttl('short'))
     def get_not_deleted_affiliates(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
-            # NOTE: this function may be redundant
-            returns a list of affiliates which are not deleted by  ORGANIZATION_ID
-            :param : organization_id: the organization to return deleted affiliates from
-            :return : response containing the list of deleted affiliates
+            **get_not_deleted_affiliates**
+                # NOTE: this function may be redundant
+                returns a list of affiliates which are not deleted by  ORGANIZATION_ID
+        :param : organization_id: the organization to return deleted affiliates from
+        :return : response containing the list of deleted affiliates
         ***REMOVED***
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
@@ -752,7 +769,8 @@ class RecruitsView(Validator, CacheManager):
 
         payload: typing.List[dict] = [recruit.to_dict() for recruit in recruits_list]
         if len(payload):
-            message: str = "{} recruits successfully fetched affiliate recruits by status".format(str(len(recruits_list)))
+            message: str = "{} recruits successfully fetched affiliate recruits by status".format(
+                str(len(recruits_list)))
             return jsonify({'status': True, 'message': message, 'payload': payload}), status_codes.status_ok_code
 
         message: str = "recruits by is_active status not found"

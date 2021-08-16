@@ -31,7 +31,9 @@ def create_id(size: int = 64, chars: str = char_set) -> str: return ''.join(rand
 
 def is_valid_chars(value: str, chars: str = input_character_set) -> bool:
     ***REMOVED***
-        checks if all characters are valid
+        **is_valid_chars**
+            checks if all characters are valid
+
     :param value: value to check
     :param chars: valid characters
     :return: bool indicating if characters are valid or not
