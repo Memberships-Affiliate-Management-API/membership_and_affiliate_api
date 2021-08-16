@@ -1,7 +1,8 @@
 ***REMOVED***
-    **Custom Exception Definitions, Error Codes and Status Codes **
-    for handling application flow and enable the application to throw errors
-
+    **Custom Exception Definitions**
+        for handling application flow and enable the application to throw errors
+    **Error Codes and Status Codes **
+        named error codes and status codes to use on the application
 ***REMOVED***
 __author__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
