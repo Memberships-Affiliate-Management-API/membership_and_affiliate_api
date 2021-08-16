@@ -35,7 +35,9 @@ def check_firebase_uid(uid: str) -> bool:
 
 def get_admin_user() -> UserModel:
     ***REMOVED***
-        return admin_user - uses include on development server
+        **get_admin_user**
+            return admin_user - uses include on development server
+
         :return: UserModel
     ***REMOVED***
     uid: str = config_instance.ADMIN_UID
@@ -50,12 +52,14 @@ def get_admin_user() -> UserModel:
                      cell=cell, password=password, is_admin=True)
 
 
-def is_app_admin(current_user: UserModel) -> bool:
+def is_app_admin(current_user: any) -> bool:
     ***REMOVED***
         checks if user is app admin - meaning admin for main organization for the API
     :param current_user:
     :return:
     ***REMOVED***
+    if isinstance(current_user, dict):
+        return current_user and current_user['uid'] and (current_user['organization_id'] == config_instance.ORGANIZATION_ID)
     return current_user and current_user.uid and (current_user.organization_id == config_instance.ORGANIZATION_ID)
 
 
