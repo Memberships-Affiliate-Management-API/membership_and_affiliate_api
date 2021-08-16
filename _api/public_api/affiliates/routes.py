@@ -50,14 +50,19 @@ def affiliate(path: str) -> tuple:
 
         path == "get-active"
             **Method: POST**
-            **BODY: {"organization_id": "value"} as json**
+            **BODY: {"organization_id": "value"} as json** required
             fetches active affiliate records belonging to a specific organization,
             organization_id must be specified in the call as json body
 
         path == "get-not-active"
             **Method: POST**
-            **BODY: {"organization_id": "value"} as json**
+            **BODY: {"organization_id": "value"} as json** required
             returns in-active affiliate records for your organization
+
+        path == "get-deleted"
+
+        # TODO finish documentation
+
     ***REMOVED***
     # Raises Bad Request error if request is not in json format
     if_bad_request_raise(request)
@@ -109,9 +114,21 @@ def recruits(path: str) -> tuple:
         **PATH PARAMETERS**
             1. get -> retrieve a single recruit, expects organization_id and affiliate_id on recruit_data,
                user may supply the data as json body
-               
+
             2. register -> used to register a single recruit, data as json must contain referrer_uid and
                organization_id, this allows multiple ways by which recruiters may recruit their affiliates
+
+            3. delete -> soft delete a recruit by affiliate_id , organization_id is required
+
+            4. activate -> mark recruit as active  : required parameters organization_id and affiliate_id
+
+            5. de-activate -> de-activate recruit : required parameters organization_id and affiliate_id
+
+            6. get-active -> returns active recruits : required parameters organization_id
+
+            7. get-in-active -> get in-active recruits : required parameters organization_id
+
+            # TODO finish documentation
 
     :param path: route to retrieve
     :return:
@@ -135,13 +152,13 @@ def recruits(path: str) -> tuple:
     elif path == "delete":
         # Soft Delete a recruit by affiliate_id
         return recruits_view_instance.delete_recruit(recruit_data=recruit_data)
-    elif path == "mark-active":
+    elif path == "activate":
         return recruits_view_instance.mark_active(recruit_data=recruit_data, is_active=True)
-    elif path == "mark-not-active":
+    elif path == "de-activate":
         return recruits_view_instance.mark_active(recruit_data=recruit_data, is_active=False)
     elif path == "get-active":
         return recruits_view_instance.get_recruits_by_active_status(recruit_data=recruit_data, is_active=True)
-    elif path == "get-not-active":
+    elif path == "get-in-active":
         return recruits_view_instance.get_recruits_by_active_status(recruit_data=recruit_data, is_active=False)
     elif path == "get-deleted":
         return recruits_view_instance.get_recruits_by_deleted_status(recruit_data=recruit_data, is_deleted=True)
