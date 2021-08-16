@@ -14,7 +14,6 @@ from typing import Optional
 from google.api_core.exceptions import RetryError, Aborted
 from flask import jsonify, current_app
 from datetime import datetime, date
-
 from google.cloud import ndb
 
 from config.exceptions import (DataServiceError, InputError, error_codes, status_codes,
@@ -491,7 +490,7 @@ class MembershipsView(Validators, MembershipsEmails):
             membership_instance.plan_id = plan_id
             membership_instance.plan_start_date = plan_start_date
             membership_instance.payment_method = payment_method
-            key = membership_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
+            key: Optional[ndb.Key] = membership_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
             if not bool(key):
                 message: str = "Unable to save membership instance to database, please try again"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
@@ -608,7 +607,7 @@ class MembershipsView(Validators, MembershipsEmails):
 
         if isinstance(membership_instance, Memberships):
             membership_instance.payment_status = status
-            key = membership_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+            key: Optional[ndb.Key] = membership_instance.put(retries=self._max_retries, timeout=self._max_timeout)
 
             if not bool(key):
                 message: str = "Unable to save membership instance to database, please try again"
@@ -653,7 +652,7 @@ class MembershipsView(Validators, MembershipsEmails):
 
         if isinstance(membership_instance, Memberships):
             membership_instance.payment_status = status
-            key = membership_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
+            key: Optional[ndb.Key] = membership_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
             if not bool(key):
                 message: str = "Unable to save membership instance to database, please try again"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
@@ -701,12 +700,12 @@ class MembershipsView(Validators, MembershipsEmails):
 
             if self.plan_exist(organization_id=organization_id, plan_id=dest_plan_id) is True:
                 membership_instance.plan_id = dest_plan_id
-                key = membership_instance.put(retries=self._max_retries,
+                key: Optional[ndb.Key] = membership_instance.put(retries=self._max_retries,
                                               timeout=self._max_timeout)
             else:
                 # This maybe be because the original plan is deleted but its a rare case
                 membership_instance.plan_id = dest_plan_id
-                key = membership_instance.put(retries=self._max_retries,
+                key: Optional[ndb.Key] = membership_instance.put(retries=self._max_retries,
                                               timeout=self._max_timeout)
             if not bool(key):
                 message: str = "Unable to Change Membership, please try again later"
@@ -747,12 +746,12 @@ class MembershipsView(Validators, MembershipsEmails):
         if isinstance(membership_instance, Memberships) and (membership_instance.plan_id == origin_plan_id):
             if await self.plan_exist_async(organization_id=organization_id, plan_id=dest_plan_id) is True:
                 membership_instance.plan_id = dest_plan_id
-                key = membership_instance.put_async(retries=self._max_retries,
+                key: Optional[ndb.Key] = membership_instance.put_async(retries=self._max_retries,
                                                     timeout=self._max_timeout).get_result()
             else:
                 # This maybe be because the original plan is deleted but its a rare case
                 membership_instance.plan_id = dest_plan_id
-                key = membership_instance.put_async(retries=self._max_retries,
+                key: Optional[ndb.Key] = membership_instance.put_async(retries=self._max_retries,
                                                     timeout=self._max_timeout).get_result()
 
             if not (bool(key)):
@@ -795,7 +794,7 @@ class MembershipsView(Validators, MembershipsEmails):
                                                              Memberships.uid == uid).get()
         if isinstance(membership_instance, Memberships):
             membership_instance.payment_method = payment_method
-            key = membership_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+            key: Optional[ndb.Key] = membership_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             if not bool(key):
                 message: str = "Database Error: Unable to update payment method"
                 raise InputError(status=error_codes.input_error_code, description=message)
@@ -1404,7 +1403,7 @@ class MembershipPlansView(Validators):
                                                              is_active=is_active,
                                                              date_created=datetime.now().date())
 
-            key = plan_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+            key: Optional[ndb.Key] = plan_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             if not bool(key):
                 message: str = 'Database Error: error creating plan please try again later'
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
@@ -1463,7 +1462,7 @@ class MembershipPlansView(Validators):
                                                              is_active=is_active,
                                                              date_created=datetime.now().date())
 
-            key = plan_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
+            key: Optional[ndb.Key] = plan_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
             if not bool(key):
                 message: str = 'for some reason we are unable to create a new plan'
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
@@ -1498,7 +1497,7 @@ class MembershipPlansView(Validators):
                 membership_plans_instance.registration_amount = curr_registration_amount
                 membership_plans_instance.is_active = is_active
 
-                key = membership_plans_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+                key: Optional[ndb.Key] = membership_plans_instance.put(retries=self._max_retries, timeout=self._max_timeout)
 
                 if not bool(key):
                     message: str = 'for some reason we are unable to create a new plan'
@@ -1551,7 +1550,7 @@ class MembershipPlansView(Validators):
                 membership_plans_instance.term_payment_amount = curr_term_payment
                 membership_plans_instance.registration_amount = curr_registration_amount
                 membership_plans_instance.is_active = is_active
-                key = membership_plans_instance.put_async(retries=self._max_retries,
+                key: Optional[ndb.Key] = membership_plans_instance.put_async(retries=self._max_retries,
                                                           timeout=self._max_timeout).get_result()
                 if not bool(key):
                     message: str = 'for some reason we are unable to create a new plan'
@@ -1583,7 +1582,7 @@ class MembershipPlansView(Validators):
 
         if isinstance(membership_plans_instance, MembershipPlans):
             membership_plans_instance.is_active = is_active
-            key = membership_plans_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+            key: Optional[ndb.Key] = membership_plans_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             if not bool(key):
                 message: str = 'for some reason we are unable to create a new plan'
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
@@ -1614,7 +1613,7 @@ class MembershipPlansView(Validators):
         if isinstance(membership_plans_instance, MembershipPlans):
             membership_plans_instance.is_active = is_active
             # TODO- this action has to be updated also in PayPal
-            key = membership_plans_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
+            key: Optional[ndb.Key] = membership_plans_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
             if not bool(key):
                 message: str = 'for some reason we are unable to create a new plan'
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
@@ -1945,7 +1944,7 @@ class CouponsView(Validators):
             coupons_instance: Coupons = Coupons(organization_id=organization_id, code=code, discount=discount,
                                                 expiration_time=expiration_time)
 
-            key = coupons_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+            key: Optional[ndb.Key] = coupons_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             if not bool(key):
                 message: str = "an error occurred while creating coupon"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
@@ -1975,7 +1974,7 @@ class CouponsView(Validators):
             coupons_instance: Coupons = Coupons(organization_id=organization_id, code=code,
                                                 discount=discount, expiration_time=expiration_time)
 
-            key = coupons_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
+            key: Optional[ndb.Key] = coupons_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
             if not bool(key):
                 message: str = "an error occured while creating coupon"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
@@ -2016,7 +2015,7 @@ class CouponsView(Validators):
             coupon_instance.discount_percent = discount
             # timestamp indicating the time the coupon will expire
             coupon_instance.expiration_time = expiration_time
-            key = coupon_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+            key: Optional[ndb.Key] = coupon_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             if not bool(key):
                 message: str = "Error updating coupon"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
@@ -2062,7 +2061,7 @@ class CouponsView(Validators):
             # Discount a percentage indicating how much of the original price should be knocked off
             coupon_instance.discount_percent = discount
             coupon_instance.expiration_time = expiration_time
-            key = coupon_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
+            key: Optional[ndb.Key] = coupon_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
             if not bool(key):
                 message: str = "Database Error: Error updating coupon"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
@@ -2097,7 +2096,7 @@ class CouponsView(Validators):
 
         if isinstance(coupon_instance, Coupons):
             coupon_instance.is_valid = False
-            key = coupon_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+            key: Optional[ndb.Key] = coupon_instance.put(retries=self._max_retries, timeout=self._max_timeout)
 
             if not bool(key):
                 message: str = "Unable to cancel coupon"
@@ -2134,7 +2133,7 @@ class CouponsView(Validators):
 
         if isinstance(coupon_instance, Coupons):
             coupon_instance.is_valid = False
-            key = coupon_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
+            key: Optional[ndb.Key] = coupon_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
             if not bool(key):
                 message: str = "Unable to cancel coupon"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
