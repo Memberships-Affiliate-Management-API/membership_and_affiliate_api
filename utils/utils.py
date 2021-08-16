@@ -48,22 +48,29 @@ def is_valid_chars(value: str, chars: str = _input_character_set) -> bool:
 
 def is_development() -> bool:
     ***REMOVED***
-        NOTE : Cannot use current_app - is_development is opposite of IS_PRODUCTION
+        **is_development**
+            is_development is opposite of IS_PRODUCTION
+        :return bool -> True if running on development server
     ***REMOVED***
     return not config_instance.IS_PRODUCTION
 
 
 def is_heroku() -> bool:
     ***REMOVED***
-        NOTE this environment variable is only found on Heroku - 
-        will return True of is_heroku is present
+        **is_heroku**
+            NOTE this environment variable is only found on Heroku -
+            will return True of is_heroku is present
+        :return bool -> True if the application is running on heroku
     ***REMOVED***
     return bool(os.environ.get("IS_HEROKU"))
 
 
 def timestamp() -> int:
     ***REMOVED***
-        Returns he timestamp in milliseconds
+        **timestamp**
+            Returns the time as timestamp in milliseconds
+
+        :return present time in milliseconds
     ***REMOVED***
     return int(float(time.time()) * 1000)
 
