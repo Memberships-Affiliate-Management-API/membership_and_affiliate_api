@@ -114,7 +114,7 @@ class UserValidators:
 
 class UserModel(BaseModel):
     ***REMOVED***
-        Documentation
+        **Documentation**
             `Class UserModel`
                 1. class UserModels allows to store user details to database and also organize the information in an
                 easy to use manner
@@ -177,16 +177,20 @@ class UserModel(BaseModel):
     @property
     def full_names(self) -> str:
         ***REMOVED***
-            represents a users full_names meaning surnames and name together
-        :return: users full names
+            **property -> full_names**
+                represents a users full_names meaning surnames and name together
+
+        :return: {names}{surname}
         ***REMOVED***
-        return '{} {}'.format(self.names, self.surname)
+        return f'{self.names} {self.surname}'
 
     @property
     def user_auth(self) -> dict:
         ***REMOVED***
-            user authentication provide user uid, email and hashed password
-        :return: organization_id, uid, email , password
+            **property user_auth**
+                user authentication provide user uid, email and hashed password
+
+        :return: dict -> organization_id, uid, email , password
         ***REMOVED***
         return {
             'organization_id': self.organization_id,
@@ -197,7 +201,9 @@ class UserModel(BaseModel):
     @property
     def account_locked(self) -> bool:
         ***REMOVED***
-            checks to see if email is verified if yes checks to see if seven days haven't passed since registered
+            **property account_locked**
+                checks to see if email is verified if yes checks to see if seven days haven't passed since registered
+
         :return: boolean indicating if the account is locked
         ***REMOVED***
         return self.email_verified and (self.time_registered > (timestamp() - get_days_in_milliseconds(days=7)))
@@ -205,8 +211,10 @@ class UserModel(BaseModel):
     @property
     def access_rights(self) -> dict:
         ***REMOVED***
-            property indicating what a user can and cannot do together with the organization_id and uid
-        :return: a dict with a full list of user access_rights
+            **property access_rights**
+                property indicating what a user can and cannot do together with the organization_id and uid
+
+        :return: dict -> organization_id, uid, is_admin, is_active, email_verified, account_locked
         ***REMOVED***
         return {
             'organization_id': self.organization_id,
@@ -220,8 +228,9 @@ class UserModel(BaseModel):
     @property
     def user_details(self) -> dict:
         ***REMOVED***
-            user personal details
-        :return: user personal details contains organization_id, uid, names, surname, cell, email
+            **property user_details**
+                user personal details
+        :return: dict -> organization_id, uid, names, surname, cell, email
         ***REMOVED***
         return {
             'organization_id': self.organization_id,
@@ -234,7 +243,8 @@ class UserModel(BaseModel):
     @property
     def organization_details(self) -> dict:
         ***REMOVED***
-            fetches organization_details belonging to the user
+            **property organization_details**
+                fetches organization_details belonging to the user
         :return: organization name and description
         ***REMOVED***
         # TODO fetch organization details from an API
@@ -243,7 +253,14 @@ class UserModel(BaseModel):
             'description': ''}
 
     def to_dict(self, include=all, exclude=None) -> dict:
-        # excluding password from dict
+        ***REMOVED***
+            **to_dict method**
+                returns a full dict representing user except password property
+
+        :param include: all
+        :param exclude: password
+        :return: dict -> all user properties excluding password
+        ***REMOVED***
         exclude: typing.List[str] = ['password']
         return super().to_dict(include=include, exclude=exclude)
 
