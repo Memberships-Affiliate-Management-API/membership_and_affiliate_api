@@ -15,8 +15,9 @@ from werkzeug.exceptions import HTTPException, BadRequest
 
 class ErrorCodes:
     ***REMOVED***
-        definitions of error codes, for errors that can be raised in Memberships & Affiliates Management API
-        this is in-case requests are not completed successfully
+        **Class ErrorCodes**
+            definitions of error codes, for errors that can be raised in Memberships & Affiliates Management API
+            this is in-case requests are not completed successfully
     ***REMOVED***
 
     def __init__(self) -> None:
@@ -45,7 +46,8 @@ class ErrorCodes:
 
 class StatusCodes:
     ***REMOVED***
-        a list of status codes to be returned when request was successfully completed
+        **Class StatusCodes**
+            a list of status codes to be returned when request was successfully completed
     ***REMOVED***
 
     def __init__(self):
@@ -59,10 +61,12 @@ status_codes: StatusCodes = StatusCodes()
 
 
 class DataServiceError(HTTPException):
-    ***REMOVED****401*
+    ***REMOVED***
+    **DataServiceError**
         raised when user has been performing an update or edit operation on their resource and the application
-        is unable to complete such an operation.
+        is unable to complete such an operation. due to database errors
 
+    **CODE: 512**
     ***REMOVED***
     code: int = error_codes.data_service_error_code
     description: str = 'We have a problem connection to the Database'
@@ -83,9 +87,12 @@ class DataServiceError(HTTPException):
 
 
 class InputError(Exception):
-    ***REMOVED****422*
+    ***REMOVED***
+    **InputError**
         raised when a user has supplied bad data or invalid arguments, for example supplying a None / Null value instead
         of a string will result in this error being thrown
+
+    **CODE 422**
     ***REMOVED***
     code: int = error_codes.input_error_code
     description: str = "Unable to process input"
@@ -106,7 +113,9 @@ class InputError(Exception):
 
 class UnAuthenticatedError(HTTPException):
     ***REMOVED***
-        in-case of an authentication error throw this error
+        **UnAuthenticatedError**
+            in-case of an authentication error throw this error
+        **CODE 401**
     ***REMOVED***
     code: int = error_codes.un_auth_error_code
     description: str = "You are not authorized to use this resource"
@@ -129,12 +138,14 @@ class UnAuthenticatedError(HTTPException):
 
 
 class RequestError(HTTPException):
-    ***REMOVED****404*
-       raised when the server has created a request which succeeded but the response
-       isn't what is expected or the remote server returns an error.
     ***REMOVED***
-    code: int = error_codes.request_not_found_error_code
-    description: str = "Request unsuccessful"
+    **RequestError**
+        when raised it simply means there was an error with the request
+        and client/ user may need to verify their request
+    **CODE: 400**
+    ***REMOVED***
+    code: int = error_codes.bad_request_error_code
+    description: str = "Bad Request Error: cannot proceed"
 
     def __init__(self, status: typing.Union[int, None] = None, description: typing.Union[str, None] = None,
                  url: typing.Union[str, None] = None):
@@ -160,10 +171,12 @@ class RequestError(HTTPException):
 # Errors
 
 class RemoteDataError(IOError):
-    ***REMOVED*** *406*
-        raised when the server is trying to access a remote server or service in order
-        to complete the users transaction but is unable to . the proper response
-        would be to retry the action that lead to this error.
+    ***REMOVED***
+        **RemoteDataError**
+            raised when the server is trying to access a remote server or service in order
+            to complete the users transaction but is unable to . the proper response
+            would be to retry the action that lead to this error.
+        ** CODE 406**
     ***REMOVED***
     code: int = error_codes.remote_data_error
     description: str = 'Error connecting to remote server'
