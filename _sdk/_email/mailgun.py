@@ -83,7 +83,7 @@ class Mailgun:
         headers = {'content-type': 'application/json'}
         return asyncio.run(self.__async_request(_url=_url, json_data=json_data, headers=headers))
 
-    def __get_organization_data(self, organization_id: str) -> typing.Union[dict, None]:
+    async def __get_organization_data_async(self, organization_id: str) -> typing.Union[dict, None]:
         ***REMOVED***
             **__get_organization_data**
                 asynchronously returns the organization details based on the organization id and uid
