@@ -51,14 +51,20 @@ class Util:
     @staticmethod
     def return_class_name(prop: ndb.Property) -> str:
         ***REMOVED***
-            Returns the name of the ndb property
+            **return_class_name**
+                Returns the name of the ndb property
+
+            :param prop: -> ndb.Property
+            :return str: -> name of class
         ***REMOVED***
         return prop.__class__.__name__
 
     @staticmethod
     def regex_check_email(email: str) -> bool:
         ***REMOVED***
-            checking if email is valid with regex_pattern
+            **regex_check_email**
+                checking if email is valid with regex_pattern
+
         :param email: email address being checked
         :return: bool True if Valid
         ***REMOVED***
@@ -70,7 +76,11 @@ class Util:
     @staticmethod
     def password_complexity(password: str) -> bool:
         ***REMOVED***
-            password contains upper-case and lower-case characters, numbers and at least 8 characters in length
+            **password_complexity**
+                1. enforces password complexity
+                2. password contains upper-case and lower-case characters,
+                   numbers and at least 8 characters in length
+
         :param password: -> text format of the password to be checked
         :return: bool -> True if password is complex enough
         ***REMOVED***
@@ -82,10 +92,12 @@ class Util:
     def regex_check_domain(domain: str) -> bool:
         ***REMOVED***
             **Check a Domain Name**
-                checks a domain name for validity with regex pattern
-                return True if pattern matches
-        :param domain:
-        :return:
+                1. checks a domain name for validity with regex pattern
+                   r'^[a-z0-9]([a-z0-9-]+\.){1,}[a-z0-9]+\Z'
+                2. return True if pattern matches
+
+        :param domain: str -> domain name to check
+        :return: bool: True -> if pattern matches
         ***REMOVED***
         regex_pattern = r'^[a-z0-9]([a-z0-9-]+\.){1,}[a-z0-9]+\Z'
         pattern = re.compile(regex_pattern)
@@ -94,8 +106,10 @@ class Util:
     @staticmethod
     def resolve_domain_name(domain: str) -> bool:
         ***REMOVED***
-            checks if domain resolves to an IP address
-        :param domain:
+            **resolve_domain_name**
+                checks if domain resolves to a valid IP address e.g (102.103.100.01)
+
+        :param domain: str -> domain name example : google.com
         :return: True if domain resolves else False
         ***REMOVED***
         try:
@@ -105,6 +119,13 @@ class Util:
 
     @staticmethod
     def format_cell_number(cell: str) -> str:
+        ***REMOVED***
+            **format_cell_number**
+                returns an internationally formatted cell_number
+
+        :param cell: str -> cell number with international code
+        :return: cell: str -> formatted cell number
+        ***REMOVED***
         try:
             cell_number = phonenumbers.parse(cell.strip(), None)
             return str(phonenumbers.format_number(cell_number, phonenumbers.PhoneNumberFormat.INTERNATIONAL))
@@ -114,9 +135,11 @@ class Util:
     @staticmethod
     def regex_check_cell(cell: str) -> bool:
         ***REMOVED***
-            regex check cell number
-        :param cell:
-        :return:
+            **regex_check_cell**
+                regex check cell number
+
+        :param cell: str -> cell number in international format
+        :return: bool -> true if number is valid
         ***REMOVED***
         try:
             cell_object = phonenumbers.parse(cell, None)
