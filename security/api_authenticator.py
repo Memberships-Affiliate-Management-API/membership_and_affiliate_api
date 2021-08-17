@@ -23,10 +23,10 @@ def is_api_key_valid(api_key: str, secret: str, domain: str) -> bool:
     **is_api_key_valid**
         validates api keys on behalf of client api calls
 
-    :param api_key:
-    :param secret:
-    :param domain:
-    :return:
+    :param api_key: str -> api_key to check
+    :param secret: str -> secret token
+    :param domain: str -> domain registered for the api_key and secret_token
+    :return: bool -> True if api_key is valid
     ***REMOVED***
     # TODO Use api call to api keys
     organization_id: str = config_instance.ORGANIZATION_ID
@@ -50,8 +50,8 @@ def handle_api_auth(func):
     **handle_api_auth**
         wrapper to handle public api calls authentications
 
-    :param func:
-    :return:
+    :param func: a function to be wrapped
+    :return: wrapped function
     ***REMOVED***
     @functools.wraps(func)
     def auth_wrapper(*args, **kwargs):
