@@ -13,6 +13,8 @@ import typing
 from typing import Optional
 import requests
 from flask import current_app, jsonify
+from google.cloud import ndb
+
 from _sdk._email import Mailgun
 from config.exception_handlers import handle_view_errors, handle_store_errors
 from config.exceptions import InputError, DataServiceError, error_codes, status_codes, UnAuthenticatedError
@@ -198,7 +200,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
                                                                home_url=home_url, login_callback_url=login_callback_url,
                                                                recovery_callback_url=recovery_callback_url)
 
-            key: Optional[str] = organization_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+            key: Optional[ndb.Key] = organization_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             if not bool(key):
                 message: str = "An Unspecified Error has occurred creating database"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
@@ -249,7 +251,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
                 org_instance.login_callback_url = login_callback_url
                 org_instance.recovery_callback_url = recovery_callback_url
 
-                key = org_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+                key: Optional[ndb.Key] = org_instance.put(retries=self._max_retries, timeout=self._max_timeout)
                 if not bool(key):
                     message: str = "An Unspecified Error has occurred"
                     raise DataServiceError(status=error_codes.data_service_error_code, description=message)
@@ -373,7 +375,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
             else:
                 raise InputError(status=500, description="Please either enter the amount to subtract or add")
 
-            key: Optional[str] = organization_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+            key: Optional[ndb.Key] = organization_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             if not bool(key):
                 message: str = "An Unspecified error occurred while adding to or subtract from affiliate count"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
@@ -424,7 +426,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
             if not calculated:
                 raise InputError(status=500, description="Please enter either the amount to add or subtract")
 
-            key: Optional[str] = organization_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+            key: Optional[ndb.Key] = organization_instance.put(retries=self._max_retries, timeout=self._max_timeout)
 
             if not bool(key):
                 message: str = 'for some reason we are unable to add to total_amount'
