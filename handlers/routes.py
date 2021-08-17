@@ -170,31 +170,38 @@ def handle_input_error(e: InputError) -> tuple:
         **CODE: 422**
 
     :param e: error_instance
-    :return: tuple representing the error and status
+    :return: tuple -> response, status_code
     ***REMOVED***
     return return_error(e)
 
 
 @default_handlers_bp.app_errorhandler(RemoteDataError)
 def handle_remote_error(e: RemoteDataError) -> tuple:
-    ***REMOVED****406*
-        raised when the server is trying to access a remote server or service in order
-        to complete the users transaction but is unable to . the proper response
-        would be to retry the action that lead to this error.
+    ***REMOVED***
+        **handle_remote_error**
+            raised when the server is trying to access a remote server or service in order
+            to complete the users transaction but is unable to . the proper response
+            would be to retry the action that lead to this error.
+
+        **CODE: 406**
+
         :param  e: error_instance
-        :return : tuple representing the error and status code
+        :return : tuple -> response, status_code
     ***REMOVED***
     return return_error(e)
 
 
 @default_handlers_bp.app_errorhandler(RequestError)
 def handle_remote_error(e: RequestError) -> tuple:
-    ***REMOVED****404*
+    ***REMOVED***
+    **handle_remote_error**
        raised when the server has created a request which succeeded but the response
        isn't what is expected or the remote server returns an error.
 
+    **CODE: 404**
+
     :param e: error_instance
-    :return: tuple representing the error and status
+    :return: tuple response, status_code
     ***REMOVED***
     return return_error(e)
 
@@ -202,10 +209,13 @@ def handle_remote_error(e: RequestError) -> tuple:
 @default_handlers_bp.app_errorhandler(OAuthError)
 def handle_auth_error(e:  OAuthError) -> tuple:
     ***REMOVED***
-        **handles github authentication error**
-            raised when something wrong happens during github authentication flow
-    :param e:
-    :return:
+        **handle_auth_error**
+            1. handles github authentication error**
+            2. raised when something wrong happens during github authentication flow
+
+        **CODE: 422 **
+    :param e: exception instance
+    :return: tuple -> response, status_code
     ***REMOVED***
     # Note OAuthError is not compatible with my custom errors
     message: str = e.description
