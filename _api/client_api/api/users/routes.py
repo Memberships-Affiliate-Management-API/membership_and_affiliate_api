@@ -1,5 +1,6 @@
 from flask import Blueprint, request, current_app
 from config.exceptions import error_codes, UnAuthenticatedError, if_bad_request_raise
+from security.apps_authenticator import handle_apps_authentication
 from views.users import UserView
 from typing import Optional
 
@@ -8,6 +9,7 @@ client_users_api_bp = Blueprint("client_users_api", __name__)
 
 
 @client_users_api_bp.route('/_api/v1/client/users/<string:path>', methods=["POST"])
+@handle_apps_authentication
 def client_users(path: str) -> tuple:
     ***REMOVED***
         **client_users**

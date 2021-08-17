@@ -1,6 +1,7 @@
 from flask import Blueprint, request, current_app
 from config.exceptions import UnAuthenticatedError, error_codes
 from database.mixins import AmountMixin
+from security.apps_authenticator import handle_apps_authentication
 from views.organization import OrganizationView
 from typing import Optional
 
@@ -8,6 +9,7 @@ admin_organization_api_bp = Blueprint("admin_organization_api", __name__)
 
 
 @admin_organization_api_bp.route('/_api/v1/admin/organizations/<string:path>', methods=['GET', 'POST'])
+@handle_apps_authentication
 def organization_admin_api(path: str) -> tuple:
     ***REMOVED***
         **organization_admin_api**

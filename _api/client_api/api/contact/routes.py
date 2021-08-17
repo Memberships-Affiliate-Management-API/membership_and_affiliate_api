@@ -5,11 +5,13 @@
 from typing import Optional
 from flask import Blueprint, request, current_app, jsonify
 from config.exceptions import UnAuthenticatedError, error_codes, if_bad_request_raise
+from security.apps_authenticator import handle_apps_authentication
 
 contact_api_bp = Blueprint('contact-api', __name__)
 
 
 @contact_api_bp.route('/_api/v1/client/contact/<string:path>', methods=['POST'])
+@handle_apps_authentication
 def contact(path: str) -> tuple:
     ***REMOVED***
         **contact**

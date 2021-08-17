@@ -6,12 +6,14 @@
 from typing import Optional
 from flask import Blueprint, request, current_app
 from config.exceptions import UnAuthenticatedError, error_codes, if_bad_request_raise
+from security.apps_authenticator import handle_apps_authentication
 from views.apikeys import APIKeysView
 
 client_api_keys_bp = Blueprint('api-keys', __name__)
 
 
 @client_api_keys_bp.route('/_api/v1/admin/api-keys/<string:key>/org/<string:organization_id>', methods=["POST"])
+@handle_apps_authentication
 def return_api_key(key: str, organization_id) -> tuple:
     ***REMOVED***
         **return api_key**
@@ -32,6 +34,7 @@ def return_api_key(key: str, organization_id) -> tuple:
 
 
 @client_api_keys_bp.route('/_api/v1/client/api-keys/create', methods=['POST'])
+@handle_apps_authentication
 def create_client_api_key() -> tuple:
     ***REMOVED***
         **create_client_api_key**
@@ -52,6 +55,7 @@ def create_client_api_key() -> tuple:
 
 
 @client_api_keys_bp.route('/_api/v1/client/api-keys/deactivate', methods=['POST'])
+@handle_apps_authentication
 def deactivate_key() -> tuple:
     ***REMOVED***
         **deactivate_key**
@@ -70,6 +74,7 @@ def deactivate_key() -> tuple:
 
 
 @client_api_keys_bp.route('/_api/v1/client/api-keys/activate-key', methods=['POST'])
+@handle_apps_authentication
 def activate_key() -> tuple:
     ***REMOVED***
         **activate_key**

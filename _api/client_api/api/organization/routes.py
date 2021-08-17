@@ -6,12 +6,14 @@
 from typing import Optional
 from flask import request, Blueprint, current_app
 from config.exceptions import UnAuthenticatedError, error_codes, if_bad_request_raise
+from security.apps_authenticator import handle_apps_authentication
 from views.organization import OrganizationView
 
 client_organizations_api_bp = Blueprint('client_organizations_api', __name__)
 
 
 @client_organizations_api_bp.route('/_api/v1/client-admin/organization/<string:path>', methods=['POST'])
+@handle_apps_authentication
 def client_organization_main(path: str) -> tuple:
     ***REMOVED***
         **client_organization_main**

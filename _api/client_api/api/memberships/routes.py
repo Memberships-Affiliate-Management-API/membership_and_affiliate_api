@@ -12,6 +12,7 @@ from datetime import date
 from typing import Optional
 from flask import Blueprint, request, current_app
 from config.exceptions import if_bad_request_raise, UnAuthenticatedError, error_codes
+from security.apps_authenticator import handle_apps_authentication
 from utils import today
 from views.memberships import MembershipsView, MembershipPlansView
 
@@ -19,6 +20,7 @@ memberships_client_api_bp = Blueprint('memberships_client_api', __name__)
 
 
 @memberships_client_api_bp.route('/_api/v1/client/memberships/<string:path>', methods=['POST'])
+@handle_apps_authentication
 def memberships_client_api(path: str) -> tuple:
     ***REMOVED***
         **memberships_client_api**
@@ -65,6 +67,7 @@ def memberships_client_api(path: str) -> tuple:
 
 
 @memberships_client_api_bp.route('/_api/v1/client/admin/memberships/<string:path>', methods=["POST"])
+@handle_apps_authentication
 def client_memberships_management(path: str) -> tuple:
     ***REMOVED***
         **client_memberships_management**

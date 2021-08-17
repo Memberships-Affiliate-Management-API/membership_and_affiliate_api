@@ -1,5 +1,6 @@
 from flask import Blueprint, request, current_app
 from config.exceptions import error_codes, UnAuthenticatedError
+from security.apps_authenticator import handle_apps_authentication
 from views.users import UserView
 from typing import Optional
 
@@ -7,6 +8,7 @@ admin_users_api_bp = Blueprint("admin_users_api", __name__)
 
 
 @admin_users_api_bp.route('/_api/v1/admin/users/<string:path>', methods=["GET", "POST"])
+@handle_apps_authentication
 def admin_users(path: str) -> tuple:
     ***REMOVED***
     :param  path: indicates what route to follow for admin users

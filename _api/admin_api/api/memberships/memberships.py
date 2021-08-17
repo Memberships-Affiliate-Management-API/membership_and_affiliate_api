@@ -1,6 +1,7 @@
 from flask import Blueprint, request, current_app
 
 from config.exceptions import UnAuthenticatedError, error_codes
+from security.apps_authenticator import handle_apps_authentication
 from views.memberships import MembershipPlansView, MembershipsView
 from security.users_authenticator import logged_user, is_app_admin, handle_users_auth
 from typing import Union, Optional
@@ -9,6 +10,7 @@ membership_plans_admin_api_bp = Blueprint('memberships_admin_api', __name__)
 
 
 @membership_plans_admin_api_bp.route('/_api/v1/admin/membership-plans/<string:path>', methods=['GET', 'POST'])
+@handle_apps_authentication
 def memberships_admin_api(path: str) -> tuple:
     ***REMOVED***
         this endpoint is for purposes of user administration only not for admin purposes
