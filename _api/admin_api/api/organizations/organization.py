@@ -18,7 +18,7 @@ def organization_admin_api(path: str) -> tuple:
 
         **NOTE**
             for client routes see client admin api
-
+        TODO - complete documentation
     :param path:
     :return:
     ***REMOVED***
