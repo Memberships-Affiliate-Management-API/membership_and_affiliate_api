@@ -39,7 +39,7 @@ def client_dashboard(current_user: Optional[dict]) -> tuple:
     :return:
     ***REMOVED***
     get_flashed_messages()
-    if not current_user or not bool(current_user.get('uid')):
+    if not isinstance(current_user, dict) or not bool(current_user.get('uid')):
         # TODO: insure local cache does not cache info if redirected
         flash('Please login or register to start using this app')
         return redirect(url_for('memberships_main.memberships_main_routes', path='login'))
@@ -54,7 +54,7 @@ def client_dashboard(current_user: Optional[dict]) -> tuple:
 @handle_users_auth
 def client_dashboard_routes(current_user: Optional[dict], path: str) -> tuple:
     get_flashed_messages()
-    if not current_user or not bool(current_user.get('uid')):
+    if not isinstance(current_user, dict) or not bool(current_user.get('uid')):
         flash('Please login or register to start using this app')
         return redirect(url_for('memberships_main.memberships_main_routes', path='login'))
 

@@ -31,7 +31,7 @@ def client_home(current_user: Optional[dict]) -> tuple:
     :return:
     ***REMOVED***
     get_flashed_messages()
-    if current_user and current_user.get('uid'):
+    if isinstance(current_user, dict) and bool(current_user.get('uid')):
         return render_template('client/home.html', current_user=current_user), status_codes.status_ok_code
     else:
         return render_template('client/home.html'), status_codes.status_ok_code

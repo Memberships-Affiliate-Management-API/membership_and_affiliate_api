@@ -59,7 +59,7 @@ class BaseModel(ndb.Model):
                 includes ndb.Key
         :return: dict rep of instance
         ***REMOVED***
-        return super().to_dict(include=include, exclude=exclude).update(key=self.urlsafe_key)
+        return super().to_dict(include=[include], exclude=[exclude]).update(key=self.urlsafe_key)
 
     @staticmethod
     def get_instance_by_key(key: bytes) -> ndb.Model:

@@ -261,6 +261,7 @@ class UserModel(BaseModel):
         :param exclude: password
         :return: dict -> all user properties excluding password
         ***REMOVED***
+
         exclude: typing.List[str] = ['password']
         return super().to_dict(include=include, exclude=exclude)
 

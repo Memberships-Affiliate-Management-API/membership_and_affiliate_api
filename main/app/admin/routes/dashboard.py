@@ -1,6 +1,6 @@
+from typing import Optional
 from flask import Blueprint, render_template, url_for, get_flashed_messages, redirect, flash
 from config.exceptions import status_codes
-from database.users import UserModel
 from security.users_authenticator import logged_user, is_app_admin
 
 
@@ -9,7 +9,7 @@ admin_dashboard_bp = Blueprint("admin_dashboard", __name__)
 
 @admin_dashboard_bp.route("/admin/dashboard", methods=["GET"])
 @logged_user
-def admin_dashboard(current_user: UserModel) -> tuple:
+def admin_dashboard(current_user: Optional[dict]) -> tuple:
     ***REMOVED***
         **admin_dashboard**
             home route for system admin dashboard
@@ -27,7 +27,7 @@ def admin_dashboard(current_user: UserModel) -> tuple:
 # noinspection PyTypeChecker
 @admin_dashboard_bp.route("/admin/dashboard/<path:path>", methods=["GET"])
 @logged_user
-def admin_dashboard_routes(current_user: UserModel, path: str) -> tuple:
+def admin_dashboard_routes(current_user: Optional[dict], path: str) -> tuple:
     ***REMOVED***
             **admin_dashboard_routes**
                 home route for system admin dashboard
