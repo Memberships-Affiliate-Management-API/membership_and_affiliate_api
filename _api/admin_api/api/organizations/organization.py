@@ -43,7 +43,7 @@ def organization_admin_api(path: str) -> tuple:
         organization_id: Optional[str] = json_data.get("organization_id")
         add: int = int(json_data.get("add", 0))
         sub: int = int(json_data.get("int", 0))
-        return org_view_instance._update_affiliate_count(organization_id=organization_id, add=add, sub=sub)
+        return org_view_instance._update_affiliate_count(organization_id=organization_id, add=add, subtract=sub)
 
     # Updates the total amount paid by this organization
     elif path == "update-total-paid":

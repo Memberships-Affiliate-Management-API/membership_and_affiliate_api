@@ -119,7 +119,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
         :return: organization_id
         ***REMOVED***
         organization_id: str = create_id()
-        org_instance: Organization = Organization.query(Organization.organization_id == organization_id).get()
+        org_instance: Optional[Organization] = Organization.query(Organization.organization_id == organization_id).get()
         if isinstance(org_instance, Organization):
             # NOTE: Calling the function again to create a new key the present key is being used
             self._create_org_id()
@@ -243,7 +243,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
         # NOTE: returns true if user has sufficient rights to update organization.
         if self.can_update_organization(uid=uid, organization_id=organization_id):
 
-            org_instance: Organization = Organization.query(Organization.organization_id == organization_id).get()
+            org_instance: Optional[Organization] = Organization.query(Organization.organization_id == organization_id).get()
             if isinstance(org_instance, Organization):
                 org_instance.organization_name = organization_name
                 org_instance.description = description
@@ -294,8 +294,9 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        organization_instance: Organization = Organization.query(Organization.organization_id == organization_id,
-                                                                 Organization.uid == uid).get()
+        organization_instance: Optional[Organization] = Organization.query(
+            Organization.organization_id == organization_id, Organization.uid == uid).get()
+
         if isinstance(organization_instance, Organization):
             message: str = 'successfully fetched organization'
             return jsonify({'status': True,
@@ -336,7 +337,9 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
 
             :return: a list containing all organization details
         ***REMOVED***
-        organization_instance: Organization = Organization.query(Organization.organization_id == organization_id).get()
+        organization_instance: Optional[Organization] = Organization.query(
+            Organization.organization_id == organization_id).get()
+
         if isinstance(organization_instance, Organization):
             message: str = 'successfully retrieved organizations'
             return jsonify({'status': True,
@@ -349,7 +352,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
     @use_context
     @handle_view_errors
     def _update_affiliate_count(self, organization_id: Optional[str], add: Optional[int] = None,
-                                sub: Optional[int] = None) -> tuple:
+                                subtract: Optional[int] = None) -> tuple:
         ***REMOVED***
             **_update_affiliate_count**
                 Private Function: this function will never be called externally or by the user.
@@ -359,17 +362,19 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
 
             :param organization_id: the id of the organization of which the total affiliates has to be updated.
             :param add: Optional amount to add, if you want to subtract pass None to this value and integer to sub
-            :param sub: Optional amount to subtract, if you want to add pass None to this value and integer to add
+            :param subtract: Optional amount to subtract, if you want to add pass None to this value and integer to add
             :return: tuple containing response and status code.
         ***REMOVED***
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        organization_instance: Organization = Organization.query(Organization.organization_id == organization_id).get()
+        organization_instance: Optional[Organization] = Organization.query(
+            Organization.organization_id == organization_id).get()
+
         if isinstance(organization_instance, Organization):
-            if isinstance(sub, int):
-                organization_instance.total_affiliates -= sub
+            if isinstance(subtract, int):
+                organization_instance.total_affiliates -= subtract
             elif isinstance(add, int):
                 organization_instance.total_affiliates += add
             else:
@@ -413,7 +418,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        organization_instance: Organization = Organization.query(Organization.organization_id == organization_id).get()
+        organization_instance: Optional[Organization] = Organization.query(Organization.organization_id == organization_id).get()
 
         if isinstance(organization_instance, Organization):
             calculated: bool = False
@@ -460,7 +465,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        organization_instance: Organization = Organization.query(Organization.organization_id == organization_id).get()
+        organization_instance: Optional[Organization] = Organization.query(Organization.organization_id == organization_id).get()
 
         if isinstance(organization_instance, Organization):
             if sub:
@@ -502,7 +507,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        organization_instance: Organization = Organization.query(Organization.organization_id == organization_id).get()
+        organization_instance: Optional[Organization] = Organization.query(Organization.organization_id == organization_id).get()
 
         if isinstance(organization_instance, Organization):
             if isinstance(add_payment, AmountMixin):
@@ -542,7 +547,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        organization_instance: Organization = Organization.query(Organization.organization_id == organization_id).get()
+        organization_instance: Optional[Organization] = Organization.query(Organization.organization_id == organization_id).get()
 
         if isinstance(organization_instance, Organization):
             if isinstance(sub_total_membership_payment, AmountMixin):
