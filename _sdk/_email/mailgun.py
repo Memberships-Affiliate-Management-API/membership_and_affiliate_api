@@ -38,7 +38,7 @@ class Mailgun:
         ***REMOVED***
         self._base_url: str = config_instance.BASE_URL
         self.api = config_instance.MAILGUN_API_KEY
-        self.end_point = "https://api.mailgun.net/v3/{}/messages".format(config_instance.MAILGUN_DOMAIN)
+        self._mailgun_end_point = "https://api.mailgun.net/v3/{}/messages".format(config_instance.MAILGUN_DOMAIN)
         self.no_response = config_instance.MAILGUN_NO_RESPONSE
         self._admin_get_user_endpoint = '_api/v1/admin/users/get'
         self._admin_get_membership_plan_endpoint = '_api/v1/admin/membership-plans/get'
@@ -52,7 +52,7 @@ class Mailgun:
             async with session.post(url=_url, json=json_data, headers=headers) as response:
                 response, status = response
                 json_data = response.json()
-                if json_data.get('status'):
+                if json_data.get('status') is True:
                     user_data: dict = json_data.get('payload')
                     return user_data
                 return None
@@ -65,8 +65,7 @@ class Mailgun:
         :return:
         ***REMOVED***
         _url: str = f'{self._base_url}{self._admin_get_user_endpoint}'
-        json_data = jsonify({'organization_id': organization_id, 'uid': uid, 'SECRET_KEY': self._secret_key})
-        # TODO replace requests to make this async
+        json_data = dict(organization_id=organization_id, uid=uid, SECRET_KEY=self._secret_key)
         headers = {'content-type': 'application/json'}
         return asyncio.run(self.__async_request(_url=_url, json_data=json_data, headers=headers))
 
@@ -79,7 +78,7 @@ class Mailgun:
         :return:
         ***REMOVED***
         _url: str = f'{self._base_url}{self._admin_get_membership_plan_endpoint}'
-        json_data = jsonify({'organization_id': organization_id, 'uid': uid, 'SECRET_KEY': self._secret_key})
+        json_data = dict(organization_id=organization_id, uid=uid, SECRET_KEY=self._secret_key)
         headers = {'content-type': 'application/json'}
         return asyncio.run(self.__async_request(_url=_url, json_data=json_data, headers=headers))
 
@@ -91,8 +90,8 @@ class Mailgun:
         :return:
         ***REMOVED***
         # TODO ensure this endpoints works
-        _url: str = "{}{}".format(config_instance.BASE_URL, self._admin_get_organization_endpoint)
-        json_data = jsonify({'organization_id': organization_id, 'SECRET_KEY': self._secret_key})
+        _url: str = f'{config_instance.BASE_URL}{self._admin_get_organization_endpoint}'
+        json_data = dict(organization_id=organization_id, SECRET_KEY=self._secret_key)
         headers = {'content-type': 'application/json'}
         return asyncio.run(self.__async_request(_url=_url, json_data=json_data, headers=headers))
 
@@ -110,11 +109,11 @@ class Mailgun:
         :return: tuple indicating the status of the message sent
         ***REMOVED***
         # NOTE: from mail must be registered with MAILGUN
-        from_str = "{} <{}>".format(config_instance.APP_NAME, self.no_response)
+        from_str = f'{config_instance.APP_NAME} <{self.no_response}>'
         to_str = to_list
         api_instance = ("api", "{}".format(self.api))
         # TODO feature development use an async call here
-        response = requests.post(url=self.end_point,
+        response = requests.post(url=self._mailgun_end_point,
                                  auth=api_instance,
                                  data={"from": from_str, "to": to_str,
                                        "subject": subject, "text": text, "html": html, "o:tag": o_tag})
