@@ -35,12 +35,11 @@ class MainAPPAPIView:
         :param password: password
         :return: login auth-token
         ***REMOVED***
-        _url: Optional[str] = "{}{}".format(self._base_url, self._login_user_endpoint)
+        _url: str = f'{self._base_url}{self._login_user_endpoint}'
         user_data: dict = dict(email=email, password=password, organization_id=self._organization_id,
                                SECRET_KEY=self._secret_key)
 
         response = requests.post(url=_url, json=user_data)
-
         return response.json(), response.status_code
 
     def send_logout_request(self, email: Optional[str], token: Optional[str]) -> tuple:
@@ -51,7 +50,7 @@ class MainAPPAPIView:
         :param token:
         :return:
         ***REMOVED***
-        _url: Optional[str] = "{}{}".format(self._base_url, self._logout_user_endpoint)
+        _url: str = f'{self._base_url}{self._logout_user_endpoint}'
         user_data: dict = dict(email=email, token=token, organization_id=self._organization_id,
                                SECRET_KEY=self._secret_key)
 
@@ -70,7 +69,7 @@ class MainAPPAPIView:
         :param surname:
         :return: response as dict
         ***REMOVED***
-        _url: Optional[str] = "{}{}".format(self._base_url, self._logout_user_endpoint)
+        _url: Optional[str] = f'{self._base_url}{self._logout_user_endpoint}'
         user_data = dict(email=email, cell=cell, password=password, names=names, surname=surname,
                          organization_id=self._organization_id, SECRET_KEY=self._secret_key)
 
@@ -83,7 +82,7 @@ class MainAPPAPIView:
         :param email:
         :return:
         ***REMOVED***
-        _url: str = f"{self._base_url}{self._send_email_recovery_endpoint}"
+        _url: str = f'{self._base_url}{self._send_email_recovery_endpoint}'
         user_data: dict = dict(email=email, organization_id=self._organization_id, SECRET_KEY=self._secret_key)
         response = requests.post(url=_url, json=user_data)
         return response.json(), response.status_code
@@ -94,7 +93,7 @@ class MainAPPAPIView:
                 send contact message to the api through an api request
         :return:
         ***REMOVED***
-        _url: str = "{}{}".format(self._base_url, self._send_contact_message_endpoint)
+        _url: str = f'{self._base_url}{self._send_contact_message_endpoint}'
 
         contact_message.update(organization_id=self._organization_id, SECRET_KEY=self._secret_key)
         # json_data = json.dumps(contact_message)
@@ -107,5 +106,5 @@ class MainAPPAPIView:
 
         :return:
         ***REMOVED***
-        _url: str = "{}{}".format(self._base_url, self._send_contact_message_endpoint)
+        _url: str = f'{self._base_url}{self._send_contact_message_endpoint}'
 
