@@ -16,7 +16,7 @@ from datetime import datetime, date
 from google.cloud import ndb
 
 from config.exceptions import (DataServiceError, InputError, error_codes, status_codes,
-                               UnAuthenticatedError, RequestError)
+                               UnAuthenticatedError, RequestError, RemoteDataError)
 from database.memberships import MembershipPlans, AccessRights, Memberships, Coupons
 from database.memberships import PlanValidators as PlanValid
 from database.mixins import AmountMixin
@@ -113,12 +113,10 @@ class MembershipsEmails(Mailgun):
 
         data_tasks = asyncio.gather(self.__get_user_data_async(organization_id=organization_id, uid=uid),
                                     self.__get_membership_data_async(organization_id=organization_id, uid=uid),
-                                    self.__get_organization_data(organization_id=organization_id))
+                                    self.__get_organization_data_async(organization_id=organization_id))
 
         results = loop.run_until_complete(data_tasks)
-        user_data: Optional[dict] = results[0]
-        membership_data: Optional[dict] = results[1]
-        organization_data: Optional[dict] = results[2]
+        membership_data, organization_data, user_data = self._get_requests_results(results)
 
         if user_data:
             email: str = user_data.get('email')
@@ -137,6 +135,23 @@ class MembershipsEmails(Mailgun):
 
             subject: str = 'Welcome to : {}'.format(organization_name)
             self.__do_send_mail(to_email=email, subject=subject, text=text_body, html=html_body)
+
+    @staticmethod
+    def _get_requests_results(results: tuple) -> tuple:
+        ***REMOVED***
+            **_get_requests_results**
+                obtains results
+        :param results:
+        :return: tuple containing results
+        ***REMOVED***
+        if not isinstance(results, tuple):
+            message: str = "Remote data error: Unable to obtain data"
+            raise RemoteDataError(status=error_codes.remote_data_error, description=message)
+
+        user_data: Optional[dict] = results[0]
+        membership_data: Optional[dict] = results[1]
+        organization_data: Optional[dict] = results[2]
+        return membership_data, organization_data, user_data
 
     def send_change_of_membership_notification_email(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
