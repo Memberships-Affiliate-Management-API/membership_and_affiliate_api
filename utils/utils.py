@@ -150,6 +150,7 @@ def return_ttl(name: str) -> int:
     ***REMOVED***
         **return_ttl**
             returns ttl for cache depending on long, short, and medium
+
     :param name: string -> period = short, medium, long
     :return: int -> time to live
     ***REMOVED***
