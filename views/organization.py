@@ -149,9 +149,13 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
     @use_context
     @handle_view_errors
     def create_organization(self, uid: Optional[str], organization_name: Optional[str], description: Optional[str],
-                            currency: Optional[str], paypal_address: Optional[str]) -> tuple:
+                            currency: Optional[str], paypal_address: Optional[str], home_url: Optional[str],
+                            login_callback_url: Optional[str], recovery_callback_url: Optional[str]) -> tuple:
         ***REMOVED***
 
+            :param recovery_callback_url:
+            :param login_callback_url:
+            :param home_url:
             :param paypal_address:
             :param currency:
             :param uid: user_id of the user creating the organization
@@ -190,7 +194,9 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
                                                                total_paid=AmountMixin(amount=0),
                                                                total_members=0,
                                                                projected_membership_payments=AmountMixin(amount=0),
-                                                               total_membership_payments=AmountMixin(amount=0))
+                                                               total_membership_payments=AmountMixin(amount=0),
+                                                               home_url=home_url, login_callback_url=login_callback_url,
+                                                               recovery_callback_url=recovery_callback_url)
 
             key: Optional[str] = organization_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             if not bool(key):
