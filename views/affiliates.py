@@ -687,10 +687,13 @@ class RecruitsView(Validator, CacheManager):
     @app_cache.memoize(timeout=return_ttl('short'))
     def get_recruits_by_deleted_status(self, organization_id: str, is_deleted: bool) -> tuple:
         ***REMOVED***
-            get_recruits_by_deleted_status
-        :param organization_id:
-        :param is_deleted:
-        :return:
+            **get_recruits_by_deleted_status**
+                returns recruits matching deleted status when true returns deleted when
+                false returns recruits which are not deleted
+
+        :param organization_id: str -> the organization_id for the organization to search recruits
+        :param is_deleted: bool -> True if you want to search for deleted recruits
+        :return: tuple -> response, status_codes , response contains results of the search in payload
         ***REMOVED***
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
@@ -712,7 +715,9 @@ class RecruitsView(Validator, CacheManager):
     @app_cache.memoize(timeout=return_ttl('short'))
     def get_recruits_by_affiliate(self, affiliate_data: dict) -> tuple:
         ***REMOVED***
-            return recruits belonging to a certain affiliate
+            **get_recruits_by_affiliate**
+                return recruits belonging to a certain affiliate
+
         :param affiliate_data:
         :return: list of recruits belonging to a specific affiliate
         ***REMOVED***
