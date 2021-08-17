@@ -108,7 +108,7 @@ class UserEmails(Mailgun):
         :return:
         ***REMOVED***
         # TODO - actually send recovery email through MailGun here
-        response: Optional[dict] = self.__get_organization_data(organization_id=organization_id)
+        response: Optional[dict] = self.__get_organization_data_async(organization_id=organization_id)
         # NOTE response here will already be a dict containing payload
         if response:
             organization_name: str = response['organization_name']
