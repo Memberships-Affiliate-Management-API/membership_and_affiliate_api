@@ -100,8 +100,8 @@ def is_app_admin(current_user: any) -> bool:
     :return: boolean indicating if current user is admin or not
     ***REMOVED***
     if isinstance(current_user, dict):
-        return current_user and current_user['uid'] and (
-                    current_user['organization_id'] == config_instance.ORGANIZATION_ID)
+        return current_user and current_user.get('uid') and (current_user.get('organization_id') == config_instance.ORGANIZATION_ID)
+
     return current_user and current_user.uid and (current_user.organization_id == config_instance.ORGANIZATION_ID)
 
 
