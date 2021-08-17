@@ -37,10 +37,15 @@ def client_organization_main(path: str) -> tuple:
         description: Optional[str] = json_data.get('description')
         currency: Optional[str] = json_data.get('currency')
         paypal_address: Optional[str] = json_data.get('paypal_address')
+        home_url: Optional[str] = json_data.get('home_url')
+        login_callback_url: Optional[str] = json_data.get('login_callback_url')
+        recovery_callback_url: Optional[str] = json_data.get('recovery_callback_url')
         if isinstance(secret_key, str) and secret_key == current_app.config.get('SECRET_KEY'):
             return org_view_instance.create_organization(uid=uid, organization_name=organization_name,
                                                          description=description, currency=currency,
-                                                         paypal_address=paypal_address)
+                                                         paypal_address=paypal_address, home_url=home_url,
+                                                         login_callback_url=login_callback_url,
+                                                         recovery_callback_url=recovery_callback_url)
 
         message: str = 'User Not Authorized: cannot create new organization'
         raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
@@ -51,12 +56,18 @@ def client_organization_main(path: str) -> tuple:
         organization_id: Optional[str] = json_data.get('organization_id')
         organization_name: Optional[str] = json_data.get('organization_name')
         description: Optional[str] = json_data.get('description')
+        home_url: Optional[str] = json_data.get('home_url')
+        login_callback_url: Optional[str] = json_data.get('login_callback_url')
+        recovery_callback_url: Optional[str] = json_data.get('recovery_callback_url')
+
         # NOTE can update organization wallet on the org page wallet tab - meaning separate route or api
         # currency: Optional[str] = json_data.get('currency')
         # paypal_address: Optional[str] = json_data.get('paypal_address')
         if isinstance(secret_key, str) and secret_key == current_app.config.get('SECRET_KEY'):
             return org_view_instance.update_organization(uid=uid, organization_id=organization_id,
-                                                         organization_name=organization_name, description=description)
+                                                         organization_name=organization_name, description=description,
+                                                         home_url=home_url, login_callback_url=login_callback_url,
+                                                         recovery_callback_url=recovery_callback_url)
 
         message: str = 'User Not Authorized: cannot update organization'
         raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
