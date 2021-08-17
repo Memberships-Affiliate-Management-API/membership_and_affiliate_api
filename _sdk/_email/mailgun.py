@@ -37,9 +37,9 @@ class Mailgun:
             MAILGUN_API_KEY : can be found from mailgun control panel
         ***REMOVED***
         self._base_url: str = config_instance.BASE_URL
-        self.api = config_instance.MAILGUN_API_KEY
+        self._mailgun_api_key = config_instance.MAILGUN_API_KEY
         self._mailgun_end_point = "https://api.mailgun.net/v3/{}/messages".format(config_instance.MAILGUN_DOMAIN)
-        self.no_response = config_instance.MAILGUN_NO_RESPONSE
+        self._mailgun_no_response_email = config_instance.MAILGUN_NO_RESPONSE
         self._admin_get_user_endpoint = '_api/v1/admin/users/get'
         self._admin_get_membership_plan_endpoint = '_api/v1/admin/membership-plans/get'
         self._admin_get_organization_endpoint = '_api/v1/admin/organizations/get'
@@ -109,9 +109,9 @@ class Mailgun:
         :return: tuple indicating the status of the message sent
         ***REMOVED***
         # NOTE: from mail must be registered with MAILGUN
-        from_str = f'{config_instance.APP_NAME} <{self.no_response}>'
+        from_str = f'{config_instance.APP_NAME} <{self._mailgun_no_response_email}>'
         to_str = to_list
-        api_instance = ("api", "{}".format(self.api))
+        api_instance = ("api", "{}".format(self._mailgun_api_key))
         # TODO feature development use an async call here
         response = requests.post(url=self._mailgun_end_point,
                                  auth=api_instance,
