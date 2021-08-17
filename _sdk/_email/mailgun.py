@@ -45,6 +45,7 @@ class Mailgun:
         self._admin_get_organization_endpoint = '_api/v1/admin/organizations/get'
         self._secret_key: str = current_app.config.get('SECRET_KEY')
 
+    # TODO - replace requests with this all over the application
     @staticmethod
     async def __async_request(_url, json_data, headers) -> typing.Union[dict, None]:
         async with aiohttp.ClientSession() as session:
@@ -63,7 +64,7 @@ class Mailgun:
         :param uid: uid of the user
         :return:
         ***REMOVED***
-        _url: str = "{}{}".format(self._base_url, self._admin_get_user_endpoint)
+        _url: str = f'{self._base_url}{self._admin_get_user_endpoint}'
         json_data = jsonify({'organization_id': organization_id, 'uid': uid, 'SECRET_KEY': self._secret_key})
         # TODO replace requests to make this async
         headers = {'content-type': 'application/json'}
@@ -77,7 +78,7 @@ class Mailgun:
         :param uid:
         :return:
         ***REMOVED***
-        _url: str = "{}{}".format(self._base_url, self._admin_get_membership_plan_endpoint)
+        _url: str = f'{self._base_url}{self._admin_get_membership_plan_endpoint}'
         json_data = jsonify({'organization_id': organization_id, 'uid': uid, 'SECRET_KEY': self._secret_key})
         headers = {'content-type': 'application/json'}
         return asyncio.run(self.__async_request(_url=_url, json_data=json_data, headers=headers))

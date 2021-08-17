@@ -231,9 +231,11 @@ class CouponsValidator:
     @staticmethod
     async def expiration_valid_async(expiration_time: int) -> bool:
         ***REMOVED***
-        checks if expiration time is valid
+            **expiration_valid_async**
+                checks if expiration time is valid
+
         :param expiration_time:
-        :return:
+        :return: return bool indicating if membership hasn't expired
         ***REMOVED***
 
         if not (isinstance(expiration_time, int)):
