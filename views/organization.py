@@ -139,7 +139,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
         ***REMOVED***
         _endpoint: str = 'api/v1/wallet/organization'
         base_url: str = current_app.config.get('BASE_URL')
-        request_url: str = "{}{}".format(base_url, _endpoint)
+        request_url: str = f'{base_url}{_endpoint}'
 
         json_body = json.dumps(dict(organization_id=organization_id, uid=uid, currency=currency,
                                     paypal_address=paypal_address))
@@ -378,7 +378,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
             elif isinstance(add, int):
                 organization_instance.total_affiliates += add
             else:
-                raise InputError(status=500, description="Please either enter the amount to subtract or add")
+                raise InputError(status=error_codes.input_error_code, description="Please either enter the amount to subtract or add")
 
             key: Optional[ndb.Key] = organization_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             if not bool(key):
@@ -429,7 +429,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
                 organization_instance.total_paid -= subtract_amount
                 calculated = True
             if not calculated:
-                raise InputError(status=500, description="Please enter either the amount to add or subtract")
+                raise InputError(status=error_codes.input_error_code, description="Please enter either the amount to add or subtract")
 
             key: Optional[ndb.Key] = organization_instance.put(retries=self._max_retries, timeout=self._max_timeout)
 
@@ -469,9 +469,9 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
 
         if isinstance(organization_instance, Organization):
             if subtract:
-                organization_instance.total_members += subtract
+                organization_instance.total_members -= subtract
             elif add:
-                organization_instance.total_members -= add
+                organization_instance.total_members += add
             else:
                 raise InputError(status=error_codes.input_error_code,
                                  description="Please Enter either the amount to add or subtract")
@@ -531,7 +531,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
     @use_context
     @handle_view_errors
     def _update_total_membership_payments(self, organization_id: Optional[str],
-                                          sub_total_membership_payment: Optional[AmountMixin] = None,
+                                          subtract_total_membership_payment: Optional[AmountMixin] = None,
                                           add_total_membership_amount: Optional[AmountMixin] = None) -> tuple:
         ***REMOVED***
             **_update_total_membership_payments**
@@ -539,7 +539,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
                 but not both
 
             :param organization_id: the id of the organization to update the total memberships
-            :param sub_total_membership_payment: amount to subtract
+            :param subtract_total_membership_payment: amount to subtract
             :param add_total_membership_amount: amount to add
             :return: react a response and status code tuple
         ***REMOVED***
@@ -550,8 +550,8 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
         organization_instance: Optional[Organization] = Organization.query(Organization.organization_id == organization_id).get()
 
         if isinstance(organization_instance, Organization):
-            if isinstance(sub_total_membership_payment, AmountMixin):
-                organization_instance.total_membership_payments += sub_total_membership_payment
+            if isinstance(subtract_total_membership_payment, AmountMixin):
+                organization_instance.total_membership_payments -= subtract_total_membership_payment
             elif isinstance(add_total_membership_amount, AmountMixin):
                 organization_instance.total_membership_payments += add_total_membership_amount
             else:

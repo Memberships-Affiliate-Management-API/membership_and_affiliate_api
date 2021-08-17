@@ -80,7 +80,7 @@ def organization_admin_api(path: str) -> tuple:
         if sub:
             sub_amount: AmountMixin = AmountMixin(amount=sub, currency=currency)
         return org_view_instance._update_total_membership_payments(organization_id=organization_id,
-                                                                   sub_total_membership_payment=sub_amount,
+                                                                   subtract_total_membership_payment=sub_amount,
                                                                    add_total_membership_amount=add_amount)
 
 
