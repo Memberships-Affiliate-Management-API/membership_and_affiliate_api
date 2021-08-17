@@ -55,14 +55,14 @@ def organization_admin_api(path: str) -> tuple:
         add_amount: AmountMixin = AmountMixin(amount=add, currency=currency)
         sub_amount: AmountMixin = AmountMixin(amount=sub, currency=currency)
         return org_view_instance._update_total_paid(organization_id=organization_id, add_amount=add_amount,
-                                                    sub_amount=sub_amount)
+                                                    subtract_amount=sub_amount)
 
     elif path == "update-total-members":
         organization_id: Optional[str] = json_data.get("organization_id")
         add: int = int(json_data.get("add", 0))
         sub: int = int(json_data.get("int", 0))
 
-        return org_view_instance._update_total_members(organization_id=organization_id, add=add, sub=sub)
+        return org_view_instance._update_total_members(organization_id=organization_id, add=add, subtract=sub)
 
     elif path == "update-projected-payments":
         # TODO learn the best way to calculate projected payments - maybe use property on databases

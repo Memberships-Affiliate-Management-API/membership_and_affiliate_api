@@ -399,7 +399,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
     @handle_view_errors
     def _update_total_paid(self, organization_id: Optional[str],
                            add_amount: Optional[AmountMixin] = None,
-                           sub_amount: Optional[AmountMixin] = None) -> tuple:
+                           subtract_amount: Optional[AmountMixin] = None) -> tuple:
         ***REMOVED***
             **_update_total_paid**
                 Private function to update the total amount paid by the organization.
@@ -409,7 +409,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
 
             :param organization_id: the id of the organization of which the add operation shall be performed
             :param add_amount: Optional pass add_amount <AmountMixin> to add or None otherwise
-            :param sub_amount: Optional pass sub_amount as <AmountMixin> to subtract or None otherwise
+            :param subtract_amount: Optional pass sub_amount as <AmountMixin> to subtract or None otherwise
 
             :return: tuple containing response and status code
 
@@ -425,8 +425,8 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
             if isinstance(add_amount, AmountMixin):
                 organization_instance.total_paid += add_amount
                 calculated = True
-            if isinstance(sub_amount, AmountMixin):
-                organization_instance.total_paid -= sub_amount
+            if isinstance(subtract_amount, AmountMixin):
+                organization_instance.total_paid -= subtract_amount
                 calculated = True
             if not calculated:
                 raise InputError(status=500, description="Please enter either the amount to add or subtract")
@@ -450,7 +450,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
     @use_context
     @handle_view_errors
     def _update_total_members(self, organization_id: Optional[str], add: Optional[int] = None,
-                              sub: Optional[int] = None) -> tuple:
+                              subtract: Optional[int] = None) -> tuple:
         ***REMOVED***
             **_update_total_members**
                 supply either the amount to add to total members or the amount to subtract
@@ -458,7 +458,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
 
             :param organization_id:
             :param add: Optional > amount to add <int> or else pass None
-            :param sub: Optional > amount to subtract <int> or else pass None
+            :param subtract: Optional > amount to subtract <int> or else pass None
             :return: tuple containing response code and status
         ***REMOVED***
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
@@ -468,8 +468,8 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
         organization_instance: Optional[Organization] = Organization.query(Organization.organization_id == organization_id).get()
 
         if isinstance(organization_instance, Organization):
-            if sub:
-                organization_instance.total_members += sub
+            if subtract:
+                organization_instance.total_members += subtract
             elif add:
                 organization_instance.total_members -= add
             else:
@@ -490,7 +490,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
     @handle_view_errors
     def _update_projected_membership_payments(self, organization_id: Optional[str],
                                               add_payment: Optional[str] = None,
-                                              sub_payment: Optional[str] = None) -> tuple:
+                                              subtract_payment: Optional[str] = None) -> tuple:
 
         ***REMOVED***
             # TODO update projected memberships payments may need revision - or can be implemented as a property
@@ -500,7 +500,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
 
             :param organization_id:
             :param add_payment: Optional payment amount to Add type <AmountMixin> or pass None
-            :param sub_payment: Optional payment amount to Subtract <AmountMixin>, or Pass None
+            :param subtract_payment: Optional payment amount to Subtract <AmountMixin>, or Pass None
             :return: tuple
         ***REMOVED***
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
@@ -512,8 +512,8 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
         if isinstance(organization_instance, Organization):
             if isinstance(add_payment, AmountMixin):
                 organization_instance.projected_membership_payments += add_payment
-            elif isinstance(sub_payment, AmountMixin):
-                organization_instance.projected_membership_payments -= sub_payment
+            elif isinstance(subtract_payment, AmountMixin):
+                organization_instance.projected_membership_payments -= subtract_payment
             else:
                 message: str = "Please enter either the amount to add or subtract"
                 raise InputError(status=error_codes.input_error_code, description=message)
