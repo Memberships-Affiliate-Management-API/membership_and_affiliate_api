@@ -12,7 +12,6 @@ membership_plans_admin_api_bp = Blueprint('memberships_admin_api', __name__)
 def memberships_admin_api(path: str) -> tuple:
     ***REMOVED***
         this endpoint is for purposes of user administration only not for admin purposes
-    :param current_user:
     :param path:
     :return:
     ***REMOVED***
