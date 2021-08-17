@@ -2,6 +2,8 @@
     **Main Memberships & Affiliates Management API Website Routes**
         Routes for requests related to main website for Memberships & Affiliates Management API.
 ***REMOVED***
+from typing import Optional
+
 from flask import Blueprint, render_template, get_flashed_messages, make_response, redirect, url_for, flash
 from config.exceptions import status_codes
 from main import app_cache, github_authorize
@@ -16,7 +18,7 @@ memberships_main_bp = Blueprint('memberships_main', __name__)
 @memberships_main_bp.route('/', methods=["GET"])
 @logged_user
 @app_cache.cached(timeout=return_ttl('short'), unless=can_cache())
-def memberships_main(current_user) -> tuple:
+def memberships_main(current_user: Optional[dict]) -> tuple:
     ***REMOVED***
         Basic Main route for Memberships & Affiliates Management API Admin APP
         Errors are handled by an error handler, located in a separate blueprint
@@ -25,7 +27,7 @@ def memberships_main(current_user) -> tuple:
     :return: template plus status code as a tuple
     ***REMOVED***
     get_flashed_messages()
-    if current_user and current_user.uid:
+    if isinstance(current_user, dict) and bool(current_user.get('uid')):
         return render_template('main/home.html', current_user=current_user), status_codes.status_ok_code
 
     return render_template('main/home.html'), status_codes.status_ok_code
@@ -35,7 +37,7 @@ def memberships_main(current_user) -> tuple:
 @memberships_main_bp.route('/<path:path>', methods=["GET"])
 @logged_user
 @app_cache.cached(timeout=return_ttl('short'), unless=can_cache())
-def memberships_main_routes(current_user, path: str) -> tuple:
+def memberships_main_routes(current_user: Optional[dict], path: str) -> tuple:
     ***REMOVED***
         @app_cache.memoize( ) caching the results of this function based on function
         parameters current user and path.
@@ -47,7 +49,7 @@ def memberships_main_routes(current_user, path: str) -> tuple:
     get_flashed_messages()
 
     if path == 'home' or path == "home.html":
-        if current_user and current_user.uid:
+        if isinstance(current_user, dict) and bool(current_user.get('uid')):
             return render_template('main/home.html', current_user=current_user), status_codes.status_ok_code
         return render_template('main/home.html'), status_codes.status_ok_code
 
@@ -55,13 +57,13 @@ def memberships_main_routes(current_user, path: str) -> tuple:
         return render_template('main/home.html'), status_codes.status_ok_code
 
     elif path == 'contact' or path == "contact.html":
-        if current_user and current_user.uid:
+        if isinstance(current_user, dict) and bool(current_user.get('uid')):
             return render_template('main/contact.html', current_user=current_user), status_codes.status_ok_code
 
         return render_template('main/contact.html'), status_codes.status_ok_code
 
     elif path == 'login' or path == "login.html":
-        if current_user and current_user.uid:
+        if isinstance(current_user, dict) and bool(current_user.get('uid')):
             return redirect(url_for('memberships_main.memberships_main_routes', path='logout'))
         return render_template('main/login.html'), status_codes.status_ok_code
 
@@ -88,19 +90,19 @@ def memberships_main_routes(current_user, path: str) -> tuple:
             return redirect('/')
 
     elif path == 'logout' or path == "logout.html":
-        if not current_user:
+        if isinstance(current_user, dict) and bool(current_user.get('uid')):
             return redirect(url_for('memberships_main.memberships_main_routes', path='login'))
 
         return render_template('main/logout.html', current_user=current_user), status_codes.status_ok_code
 
     elif path == 'subscribe' or path == "subscribe.html":
-        if current_user and current_user.uid:
+        if isinstance(current_user, dict) and bool(current_user.get('uid')):
             return redirect(url_for('memberships_main.memberships_main_routes', path='logout'))
 
         return render_template('main/subscribe.html'), status_codes.status_ok_code
 
     elif path == 'forget' or path == "forget.html":
-        if current_user and current_user.uid:
+        if isinstance(current_user, dict) and bool(current_user.get('uid')):
             return redirect(url_for('client_dashboard.client_dashboard_routes', path='dashboard'))
 
         return render_template('main/forget.html'), status_codes.status_ok_code
@@ -133,7 +135,7 @@ def memberships_main_routes(current_user, path: str) -> tuple:
 @memberships_main_bp.route('/demos/api/<path:path>', methods=["GET"])
 @logged_user
 @app_cache.cached(timeout=return_ttl('short'), unless=can_cache())
-def api_demos(current_user, path: str) -> tuple:
+def api_demos(current_user: Optional[dict], path: str) -> tuple:
     ***REMOVED***
        @app_cache.memoize() this will enable caching based on function arguments in this case current_user, and path
 
@@ -143,14 +145,14 @@ def api_demos(current_user, path: str) -> tuple:
     ***REMOVED***
     get_flashed_messages()
     if path == "demos":
-        if current_user and current_user.uid:
+        if isinstance(current_user, dict) and bool(current_user.get('uid')):
             # Note: user has logged in
             return render_template('main/demos/demos.html', current_user=current_user), status_codes.status_ok_code
 
         return render_template('main/demos/demos.html'), status_codes.status_ok_code
 
     elif path == "memberships":
-        if current_user and current_user.uid:
+        if isinstance(current_user, dict) and bool(current_user.get('uid')):
             # Note: User has logged in
             return render_template('main/demos/memberships.html',
                                    current_user=current_user), status_codes.status_ok_code
@@ -159,7 +161,7 @@ def api_demos(current_user, path: str) -> tuple:
 
     elif path == "organizations":
         # Displays API Demos Related to Organizations
-        if current_user and current_user.uid:
+        if isinstance(current_user, dict) and bool(current_user.get('uid')):
             return render_template('main/demos/organizations.html',
                                    current_user=current_user), status_codes.status_ok_code
 
@@ -167,21 +169,21 @@ def api_demos(current_user, path: str) -> tuple:
 
     elif path == "coupons":
         # Displays API Demos related to coupons and coupons code
-        if current_user and current_user.uid:
+        if isinstance(current_user, dict) and bool(current_user.get('uid')):
             return render_template('main/demos/coupons.html', current_user=current_user), status_codes.status_ok_code
 
         return render_template('main/demos/coupons.html'), status_codes.status_ok_code
 
     elif path == "users":
         # Displays API Demos related to Users
-        if current_user and current_user.uid:
+        if isinstance(current_user, dict) and bool(current_user.get('uid')):
             return render_template('main/demos/users.html', current_user=current_user), status_codes.status_ok_code
 
         return render_template('main/demos/users.html'), status_codes.status_ok_code
 
     elif path == "affiliates":
         # Displays API Demos related to Affiliates
-        if current_user and current_user.uid:
+        if isinstance(current_user, dict) and bool(current_user.get('uid')):
             return render_template('main/demos/affiliates.html', current_user=current_user), status_codes.status_ok_code
         return render_template('main/demos/affiliates.html'), status_codes.status_ok_code
 
@@ -190,7 +192,7 @@ def api_demos(current_user, path: str) -> tuple:
 @memberships_main_bp.route('/examples/sdk/<path:path>', methods=["GET"])
 @logged_user
 @app_cache.cached(timeout=return_ttl('short'), unless=can_cache())
-def sdk_examples(current_user, path: str) -> tuple:
+def sdk_examples(current_user: Optional[dict], path: str) -> tuple:
     ***REMOVED***
         @app_cache.memoize() will cache the results of the function based on current_user and path
 
@@ -203,7 +205,7 @@ def sdk_examples(current_user, path: str) -> tuple:
         # TODO- need to display this once Front End and Back End SDKS are done at least
         #  Node.JS, Javascript and Python SDK's may be completed before this is displayed
 
-        if current_user and current_user.uid:
+        if isinstance(current_user, dict) and bool(current_user.get('uid')):
             return render_template('main/examples/sdk/examples.html',
                                    current_user=current_user), status_codes.status_ok_code
 

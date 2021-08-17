@@ -12,7 +12,7 @@ main_api_bp = Blueprint('main_api', __name__)
 
 @main_api_bp.route('/api/v1/main/auth/<path:path>', methods=['POST'])
 @logged_user
-def auth(current_user, path: str) -> tuple:
+def auth(current_user: Optional[dict], path: str) -> tuple:
     ***REMOVED***
         **auth**
             for authentication based on password and email
@@ -23,7 +23,7 @@ def auth(current_user, path: str) -> tuple:
     main_app_view: MainAPPAPIView = MainAPPAPIView()
 
     if path == 'login':
-        if current_user:
+        if current_user and bool(current_user.get('uid')):
             message: str = "Access Forbidden: User already logged in"
             raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
 
@@ -34,7 +34,7 @@ def auth(current_user, path: str) -> tuple:
         return jsonify(response), status_code
 
     elif path == 'subscribe':
-        if current_user:
+        if current_user and bool(current_user.get('uid')):
             message: str = "Access Forbidden: User already logged in"
             raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
 
@@ -49,7 +49,7 @@ def auth(current_user, path: str) -> tuple:
         return jsonify(response), status_code
 
     elif path == 'send-recovery-email':
-        if current_user:
+        if current_user and bool(current_user.get('uid')):
             message: str = "Access Forbidden: User already logged in"
             raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
 
@@ -62,16 +62,16 @@ def auth(current_user, path: str) -> tuple:
     # NOTE that if user is logged in then user details will be present on current_user
     elif path == "get":
         # NOTE: this route could be called by the main app just in-case the user is already logged-in
-        if current_user:
+        if current_user and bool(current_user.get('uid')):
             message: str = "user details successfully fetched"
-            return jsonify({'status': True, 'payload': current_user.to_dict(), 'message': message})
+            return jsonify({'status': True, 'payload': current_user, 'message': message})
         message: str = "unable to retrieve user details: please login"
         return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
 
 @main_api_bp.route('/api/v1/main/contact', methods=['POST', 'GET', 'PUT', 'DELETE'])
 @logged_user
-def contact(current_user) -> tuple:
+def contact(current_user: Optional[dict]) -> tuple:
     ***REMOVED***
         **contact**
             main contact api- handles everything related to
@@ -79,9 +79,9 @@ def contact(current_user) -> tuple:
         :return:
     ***REMOVED***
     json_data: dict = request.get_json()
-    if current_user and current_user.uid:
+    if current_user and bool(current_user.get('uid')):
         # NOTE: if user is logged in add the user id in the message
-        json_data.update(uid=current_user.uid)
+        json_data.update(uid=current_user.get('uid'))
 
     main_app_view: MainAPPAPIView = MainAPPAPIView()
     response, status_code = main_app_view.send_contact_message_request(contact_message=json_data)

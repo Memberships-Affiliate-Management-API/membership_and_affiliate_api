@@ -1,7 +1,7 @@
 ***REMOVED***
     this is a private route
 ***REMOVED***
-from typing import List
+from typing import List, Optional
 
 from flask import Blueprint, request, render_template, url_for, get_flashed_messages, redirect, flash
 
@@ -31,7 +31,7 @@ temp_organizations: List[dict] = [
 
 @client_dashboard_bp.route('/client/dashboard', methods=["GET"])
 @handle_users_auth
-def client_dashboard(current_user: UserModel) -> tuple:
+def client_dashboard(current_user: Optional[dict]) -> tuple:
     ***REMOVED***
         **client_dashboard**
             allows client to get access to their organizations
@@ -39,7 +39,7 @@ def client_dashboard(current_user: UserModel) -> tuple:
     :return:
     ***REMOVED***
     get_flashed_messages()
-    if not(current_user and current_user.uid):
+    if not current_user or not bool(current_user.get('uid')):
         # TODO: insure local cache does not cache info if redirected
         flash('Please login or register to start using this app')
         return redirect(url_for('memberships_main.memberships_main_routes', path='login'))
@@ -52,9 +52,9 @@ def client_dashboard(current_user: UserModel) -> tuple:
 
 @client_dashboard_bp.route('/client/dashboard/<path:path>', methods=["GET"])
 @handle_users_auth
-def client_dashboard_routes(current_user: UserModel, path: str) -> tuple:
+def client_dashboard_routes(current_user: Optional[dict], path: str) -> tuple:
     get_flashed_messages()
-    if not(current_user and current_user.uid):
+    if not current_user or not bool(current_user.get('uid')):
         flash('Please login or register to start using this app')
         return redirect(url_for('memberships_main.memberships_main_routes', path='login'))
 

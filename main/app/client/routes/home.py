@@ -8,6 +8,8 @@ __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
+from typing import Optional
+
 from flask import Blueprint, render_template, get_flashed_messages
 from config.exceptions import status_codes
 from database.users import UserModel
@@ -21,7 +23,7 @@ client_home_bp = Blueprint('client_home', __name__)
 @client_home_bp.route('/client', methods=["GET"])
 @logged_user
 @app_cache.cached(timeout=return_ttl('short'))
-def client_home(current_user: UserModel) -> tuple:
+def client_home(current_user: Optional[dict]) -> tuple:
     ***REMOVED***
         **client_home**
             entry page to client dashboard
@@ -29,7 +31,7 @@ def client_home(current_user: UserModel) -> tuple:
     :return:
     ***REMOVED***
     get_flashed_messages()
-    if current_user and current_user.uid:
+    if current_user and current_user.get('uid'):
         return render_template('client/home.html', current_user=current_user), status_codes.status_ok_code
     else:
         return render_template('client/home.html'), status_codes.status_ok_code

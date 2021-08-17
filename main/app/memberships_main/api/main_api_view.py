@@ -2,7 +2,6 @@
     **Main API View**
         Main View module to enable api calls for use in main memberships website
 ***REMOVED***
-import json
 import requests
 from typing import Optional
 from flask import current_app, jsonify
