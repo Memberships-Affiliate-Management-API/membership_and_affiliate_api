@@ -31,7 +31,14 @@ def warmup() -> tuple:
 # TODO - send an sms notification or email message to app admin with the error message for each error
 
 def return_error(e) -> tuple:
-    ***REMOVED***Actually replying with the error and description of the error here***REMOVED***
+    ***REMOVED***
+        **return_error**
+            Actually replying with the error and description of the error here
+
+        :param e: -> thrown exception
+        :return tuple response, status_code
+            -> message: exception description
+    ***REMOVED***
 
     if config_instance.DEBUG:
         print(f"Description: {e.description} Error_Code: {e.code}")
@@ -41,23 +48,27 @@ def return_error(e) -> tuple:
 @default_handlers_bp.app_errorhandler(BadRequest)
 def handle_bad_request(e: BadRequest) -> tuple:
     ***REMOVED***
-    Error_Code: 400
+    **handle_bad_request**
         Raise if the browser sends something to the application the application
         or server cannot handle.
+
     :param e: error instance
-    :return:
+    :return: tuple -> response, status_code
     ***REMOVED***
     return return_error(e)
 
 
 @default_handlers_bp.app_errorhandler(Forbidden)
 def handle_forbidden_error(e: Forbidden) -> tuple:
-    ***REMOVED****403* Forbidden
+    ***REMOVED***
+    **handle_forbidden_error**
+        Raise if the user doesn't have the permission for the requested resource
+        but was authenticated.
 
-    Raise if the user doesn't have the permission for the requested resource
-    but was authenticated.
-    param e: error instance
-    return: error response
+    *403* Forbidden
+
+    :param e: error instance
+    :return: error response
     ***REMOVED***
     return return_error(e)
 
@@ -65,10 +76,12 @@ def handle_forbidden_error(e: Forbidden) -> tuple:
 @default_handlers_bp.app_errorhandler(NotFound)
 def handle_not_found_error(e: NotFound) -> tuple:
     ***REMOVED***
+        **handle_not_found_error**
+            Raise if a resource does not exist and never existed.
+
         *404* `Not Found`
-        Raise if a resource does not exist and never existed.
     :param e: error instance
-    :return: tuple of error response and status code
+    :return: tuple -> error response and status code
     ***REMOVED***
     return return_error(e)
 
@@ -76,14 +89,16 @@ def handle_not_found_error(e: NotFound) -> tuple:
 @default_handlers_bp.app_errorhandler(MethodNotAllowed)
 def handle_method_not_allowed(e: MethodNotAllowed) -> tuple:
     ***REMOVED***
-    *405* `Method Not Allowed`
+    **handle_method_not_allowed**
+        Raise if the server used a method the resource does not handle.  For
+        example `POST` if the resource is view only.  Especially useful for REST.
 
-    Raise if the server used a method the resource does not handle.  For
-    example `POST` if the resource is view only.  Especially useful for REST.
+        The first argument for this exception should be a list of allowed methods.
+        Strictly speaking the response would be invalid if you don't provide valid
+        methods in the header which you can do with that list.
 
-    The first argument for this exception should be a list of allowed methods.
-    Strictly speaking the response would be invalid if you don't provide valid
-    methods in the header which you can do with that list.
+        *405* `Method Not Allowed`
+
     :param e: error instance
     :return: tuple of error response and status code
     ***REMOVED***
@@ -93,18 +108,17 @@ def handle_method_not_allowed(e: MethodNotAllowed) -> tuple:
 @default_handlers_bp.app_errorhandler(Unauthorized)
 def handle_un_authorized_requests(e: Unauthorized) -> tuple:
     ***REMOVED***
-*401* ``Unauthorized``
+    **handle_un_authorized_requests**
+        Raise if the user is not authorized to access a resource.
 
-    Raise if the user is not authorized to access a resource.
+        The ``www_authenticate`` argument should be used to set the
+        ``WWW-Authenticate`` header. This is used for HTTP basic auth and
+        other schemes. Use :class:`~werkzeug.datastructures.WWWAuthenticate`
+        to create correctly formatted values. Strictly speaking a 401
+        response is invalid if it doesn't provide at least one value for
+        this header, although real clients typically don't care.
 
-    The ``www_authenticate`` argument should be used to set the
-    ``WWW-Authenticate`` header. This is used for HTTP basic auth and
-    other schemes. Use :class:`~werkzeug.datastructures.WWWAuthenticate`
-    to create correctly formatted values. Strictly speaking a 401
-    response is invalid if it doesn't provide at least one value for
-    this header, although real clients typically don't care.
-
-
+        *401* ``Unauthorized``
     :param e: error instance
     :return:
     ***REMOVED***
@@ -113,40 +127,33 @@ def handle_un_authorized_requests(e: Unauthorized) -> tuple:
 
 @default_handlers_bp.app_errorhandler(UnAuthenticatedError)
 def handle_un_authorized_requests(e: UnAuthenticatedError) -> tuple:
-    ***REMOVED****401*
-    raised when a user is trying to access a resource without supplying the proper credentials for the resource.
+    ***REMOVED***
+    **handle_un_authorized_requests**
+        raised when a user is trying to access a resource without supplying the proper credentials for the resource.
 
-    example: trying to access users from one organization without being registered to do so...meaning no organization_id was provided
-    for such an organization or your uid is not suppose to access resources or manipulate those resources in the organization even
-    though you are registered to the organization.
+        example: trying to access users from one organization without being registered to do so...meaning no organization_id was provided
+        for such an organization or your uid is not suppose to access resources or manipulate those resources in the organization even
+        though you are registered to the organization.
 
+    **CODE: 401**
 
-    :param e: error_instance
+    :param e: exception -> error instance
     :return: tuple representing the error
     ***REMOVED***
     return return_error(e)
-
-#
-# @default_handlers_bp.app_errorhandler(HTTPException)
-# def handle_http_exception(e: HTTPException) -> tuple:
-#     ***REMOVED***
-#
-#     :param e:
-#     :return:
-#     ***REMOVED***
-#     return return_error(e)
-#
 
 
 # Custom Errors
 @default_handlers_bp.app_errorhandler(DataServiceError)
 def handle_data_service_error(e: DataServiceError):
     ***REMOVED***
-    *401*
+    **handle_data_service_error**
         raised when user has been performing an update or edit operation on their resource and the application
         is unable to complete such an operation.
 
-    :param e: error instance
+    **CODE: 512**
+
+    :param e: exception instance
     :return: tuple representing the error
     ***REMOVED***
     return return_error(e)
@@ -154,9 +161,14 @@ def handle_data_service_error(e: DataServiceError):
 
 @default_handlers_bp.app_errorhandler(InputError)
 def handle_input_error(e: InputError) -> tuple:
-    ***REMOVED****422*
-        raised when a user has supplied bad data or invalid arguments, for example supplying a None / Null value instead
-        of a string will result in this error being thrown
+    ***REMOVED***
+        **handle_input_error**
+
+            raised when a user has supplied bad data or invalid arguments, for example supplying a None / Null value instead
+            of a string will result in this error being thrown
+
+        **CODE: 422**
+
     :param e: error_instance
     :return: tuple representing the error and status
     ***REMOVED***
