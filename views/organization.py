@@ -215,11 +215,15 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
     @use_context
     @handle_view_errors
     def update_organization(self, uid: Optional[str], organization_id: Optional[str],
-                            organization_name: Optional[str], description: Optional[str]) -> tuple:
+                            organization_name: Optional[str], description: Optional[str], home_url: Optional[str],
+                            login_callback_url: Optional[str], recovery_callback_url:  Optional[str]) -> tuple:
         ***REMOVED***
             **update_organization**
                 function used to update the name and description of an organization.
 
+            :param recovery_callback_url:
+            :param login_callback_url:
+            :param home_url:
             :param uid: user id of the user updating the organization
             :param organization_id: the id of the organization being updated, this id has to exist first
             :param organization_name: the name the organization will be updated to
@@ -241,6 +245,10 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
             if isinstance(org_instance, Organization):
                 org_instance.organization_name = organization_name
                 org_instance.description = description
+                org_instance.home_url = home_url
+                org_instance.login_callback_url = login_callback_url
+                org_instance.recovery_callback_url = recovery_callback_url
+
                 key = org_instance.put(retries=self._max_retries, timeout=self._max_timeout)
                 if not bool(key):
                     message: str = "An Unspecified Error has occurred"
