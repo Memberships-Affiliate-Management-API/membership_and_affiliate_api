@@ -3,7 +3,6 @@
         Routes for requests related to main website for Memberships & Affiliates Management API.
 ***REMOVED***
 from typing import Optional
-
 from flask import Blueprint, render_template, get_flashed_messages, make_response, redirect, url_for, flash
 from config.exceptions import status_codes
 from main import app_cache, github_authorize
@@ -20,8 +19,9 @@ memberships_main_bp = Blueprint('memberships_main', __name__)
 @app_cache.cached(timeout=return_ttl('short'), unless=can_cache())
 def memberships_main(current_user: Optional[dict]) -> tuple:
     ***REMOVED***
-        Basic Main route for Memberships & Affiliates Management API Admin APP
-        Errors are handled by an error handler, located in a separate blueprint
+        **memberships_main**
+            Basic Main route for Memberships & Affiliates Management API Admin APP
+            Errors are handled by an error handler, located in a separate blueprint
 
     :param current_user: Logged In User None Otherwise
     :return: template plus status code as a tuple
