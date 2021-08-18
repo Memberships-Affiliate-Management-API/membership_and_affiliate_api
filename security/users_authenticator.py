@@ -223,6 +223,13 @@ def handle_users_auth(func):
 
 
 def logged_user(func):
+    ***REMOVED***
+        **logged_user**
+            only accesses the record of the logged in user without denying access to the route
+            if user is not logged in.
+    :param func: route to wrap
+    :return: wrapped function
+    ***REMOVED***
     @wraps(func)
     def decorated(*args, **kwargs):
         current_user: Optional[dict] = None

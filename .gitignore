@@ -5,6 +5,7 @@ app.yaml
 venv/
 gen/
 .idea/
+.vscode/
 .pytest_cache/
 *.pyc
 open-api.json
