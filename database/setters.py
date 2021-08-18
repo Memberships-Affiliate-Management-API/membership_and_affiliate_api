@@ -11,6 +11,7 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
 import typing
+from flask import escape
 from datetime import datetime, date
 from google.cloud import ndb
 from phonenumbers import NumberParseException
@@ -326,7 +327,7 @@ class PropertySetters(Events, Util):
         if not bool(value.strip()):
             raise ValueError("is an Instance of : {} , and cannot be Null".format(class_name))
 
-        return value.strip().lower()
+        return escape(value.strip().lower())
 
     @staticmethod
     def set_schedule_term(prop: ndb.StringProperty, value: typing.Union[str, None]) -> str:

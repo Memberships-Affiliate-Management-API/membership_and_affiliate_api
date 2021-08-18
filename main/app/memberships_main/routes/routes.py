@@ -90,7 +90,7 @@ def memberships_main_routes(current_user: Optional[dict], path: str) -> tuple:
             return redirect('/')
 
     elif path == 'logout' or path == "logout.html":
-        if isinstance(current_user, dict) and bool(current_user.get('uid')):
+        if not isinstance(current_user, dict) or not bool(current_user.get('uid')):
             return redirect(url_for('memberships_main.memberships_main_routes', path='login'))
 
         return render_template('main/logout.html', current_user=current_user), status_codes.status_ok_code
