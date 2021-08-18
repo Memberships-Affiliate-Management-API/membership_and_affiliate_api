@@ -175,10 +175,16 @@ def handle_users_auth(func):
     # noinspection PyBroadException
     @wraps(func)
     def decorated(*args, **kwargs):
+        ***REMOVED***
+            decorated
+            :param args:
+            :param kwargs:
+            :return:
+        ***REMOVED***
         token: Optional[str] = None
         # print('token headers: {}'.format(request.headers))
         if 'x-access-token' in request.headers:
-            token = request.headers['x-access-token']
+            token = request.headers.get('x-access-token')
             # print('token found : {}'.format(token))
         # NOTE: if running on development server by-pass authentication and return admin user
 
