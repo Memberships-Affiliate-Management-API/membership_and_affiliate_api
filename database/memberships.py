@@ -1,8 +1,8 @@
 ***REMOVED***
     **Memberships Module**
-    *Class Definitions for: Memberships, Memberships Plans and Coupons*
-    This classes are related to creating and management of organizational memberships and their membership plans
-    for organizations products or services in order to collect payments from clients
+        *Class Definitions for: Memberships, Memberships Plans and Coupons*
+        This classes are related to creating and management of organizational memberships and their membership plans
+        for organizations products or services in order to collect payments from clients
 
 ***REMOVED***
 __author__ = "mobius-crypt"
