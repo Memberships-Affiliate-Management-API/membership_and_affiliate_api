@@ -168,7 +168,8 @@ def handle_users_auth(func):
     ***REMOVED***
         **handle_users_auth**
             handles authentication on html routes for users on client dashboard
-            and admin dashboard        
+            and admin dashboard
+        :param func:
     ***REMOVED***
 
     # noinspection PyBroadException
