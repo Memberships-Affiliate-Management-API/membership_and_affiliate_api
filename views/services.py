@@ -1,16 +1,15 @@
 ***REMOVED***
-
     ** Services View  Controller** ,
-    will handle service Creation
-    on the database and also on paypal, Services are necessary in order for organization
-    admins to create membership payment plans,
+        will handle service Creation
+        on the database and also on paypal, Services are necessary in order for organization
+        admins to create membership payment plans,
 
-    organizations administrators
-    should host the service page on their website,
+        organizations administrators
+        should host the service page on their website,
 
-     and expose the service on the admin section of their website.
-     users will be able to access any such website admin section upon registering
-     and becoming a member of such a service.
+         and expose the service on the admin section of their website.
+         users will be able to access any such website admin section upon registering
+         and becoming a member of such a service.
 ***REMOVED***
 __author__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
@@ -19,11 +18,9 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
 from typing import Optional
-
 from flask import jsonify, current_app
 # noinspection PyProtectedMember
 from google.cloud import ndb
-
 from _sdk._paypal.paypal import PayPalRecurring
 from config.exception_handlers import handle_view_errors
 from config.exceptions import InputError, error_codes, status_codes, DataServiceError
@@ -123,4 +120,4 @@ class ServicesView(ServiceValidator):
 
         # TODO Investigate how we can update services especially on paypal
         # TODO the steps that follows after creating a
-        #   service will be integrated into memberships
+        # TODO service will be integrated into memberships
