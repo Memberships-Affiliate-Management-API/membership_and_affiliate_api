@@ -102,6 +102,7 @@ class UserEmails(Mailgun):
         ***REMOVED***
             **send_recovery_email**
                 send an email informing the user a recovery action has been activated on their account
+
         :param email:
         :param organization_id:
         :param recovery_code

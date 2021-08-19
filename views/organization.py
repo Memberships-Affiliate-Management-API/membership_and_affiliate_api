@@ -75,7 +75,7 @@ class OrganizationEmails(Mailgun):
 
 class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
     ***REMOVED***
-        **OrganizationView**
+        **Class OrganizationView**
             Utilities to validate UserInput Data and also validate access rights of those using the API, While
             accessing and manipulating information related to Client Organization.
     ***REMOVED***
