@@ -18,19 +18,25 @@ __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
+from typing import Optional
+
 from flask import jsonify, current_app
 # noinspection PyProtectedMember
+from google.cloud import ndb
+
 from _sdk._paypal.paypal import PayPalRecurring
 from config.exception_handlers import handle_view_errors
-from config.exceptions import InputError, error_codes, status_codes
+from config.exceptions import InputError, error_codes, status_codes, DataServiceError
 from config.use_context import use_context
 from database.services import ServiceValidator, Services
 
 
 class ServicesView(ServiceValidator):
     ***REMOVED***
-        this will run api endpoints for memberships services, users have to first create a service
-        and then payment plans for that service in order to activate the plan
+        **Class ServicesView**
+
+            this will run api endpoints for memberships services, users have to first create a service
+            and then payment plans for that service in order to activate the plan
     ***REMOVED***
 
     def __init__(self):
@@ -44,6 +50,12 @@ class ServicesView(ServiceValidator):
                        description: str, category: str, image_url: str,
                        home_url: str) -> tuple:
         ***REMOVED***
+            **create_service**
+                creates a service locally and also on paypal
+
+            **NOTE**
+                Note products or services are needed in order to create payment plans
+
             :param organization_id: the organization the service belongs to
             :param uid: created_by_uid / the user creating this service
             :param name: name of the service being created
@@ -94,7 +106,10 @@ class ServicesView(ServiceValidator):
                 services_instance: Services = Services(organization_id=organization_id, created_by_uid=uid,
                                                        service_id=service_id, name=name, description=description,
                                                        category=category, image_url=image_url, home_url=home_url)
-                key = services_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+                key: Optional[ndb.Key] = services_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+                if not isinstance(key, ndb.Key):
+                    message: str = "Database Error: there was an error creating service"
+                    raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
                 message: str = '''Successfully created plan service you may proceed to 
                 create payment plans for this service'''

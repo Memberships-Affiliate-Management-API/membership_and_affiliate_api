@@ -76,7 +76,7 @@ def contact(current_user: Optional[dict]) -> tuple:
         **contact**
             main contact api- handles everything related to
             contacts for both clients and admins
-        :return:
+        :return: tuple: -> response, status_code
     ***REMOVED***
     json_data: dict = request.get_json()
     if current_user and bool(current_user.get('uid')):
