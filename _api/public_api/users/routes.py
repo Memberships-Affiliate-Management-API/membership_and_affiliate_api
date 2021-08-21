@@ -28,7 +28,7 @@ def get_kwargs(user_data: dict) -> tuple:
     return organization_id, uid, email, cell
 
 
-@users_bp.route("/api/v1/create-user", methods=["POST"])
+@users_bp.route("/api/v1/public/user/create-user", methods=["POST"])
 @handle_api_auth
 def create_user() -> tuple:
     ***REMOVED***
@@ -53,7 +53,7 @@ def create_user() -> tuple:
 
 
 # NOTE: use "<uid>@<organization_id>" as path to obtain user
-@users_bp.route("/api/v1/user/<path:path>", methods=["GET", "POST"])
+@users_bp.route("/api/v1/public/user/<path:path>", methods=["GET", "POST"])
 @handle_api_auth
 def user(path: str) -> tuple:
     ***REMOVED***
@@ -92,7 +92,7 @@ def user(path: str) -> tuple:
             return users_view_instance.get_user(organization_id=organization_id, uid=uid, email=email, cell=cell)
 
 
-@users_bp.route("/api/v1/users/<path:path>", methods=["GET", "POST"])
+@users_bp.route("/api/v1/public/users/<path:path>", methods=["GET", "POST"])
 @handle_api_auth
 def get_all(path: str) -> tuple:
     ***REMOVED***
@@ -119,7 +119,7 @@ def get_all(path: str) -> tuple:
     return jsonify({"status": False, "message": "general error fetching users"}), 500
 
 
-@users_bp.route("/api/v1/check-password", methods=["POST"])
+@users_bp.route("/api/v1/public/check-password", methods=["POST"])
 @handle_api_auth
 def check_password() -> tuple:
     ***REMOVED***
@@ -134,7 +134,7 @@ def check_password() -> tuple:
     return user_view_instance.check_password(organization_id=organization_id, uid=uid, password=password)
 
 
-@users_bp.route("/api/v1/deactivate-user", methods=["POST"])
+@users_bp.route("/api/v1/public/deactivate-user", methods=["POST"])
 @handle_api_auth
 def de_activate_user() -> tuple:
     ***REMOVED***
@@ -148,7 +148,7 @@ def de_activate_user() -> tuple:
     return user_view_instance.deactivate_user(organization_id=organization_id, uid=uid)
 
 
-@users_bp.route("/api/v1/auth/login", methods=["POST"])
+@users_bp.route("/api/v1/public/auth/login", methods=["POST"])
 @handle_api_auth
 def login() -> tuple:
     ***REMOVED***
@@ -165,9 +165,13 @@ def login() -> tuple:
     return user_view_instance.login(organization_id=organization_id, email=email, password=password)
 
 
-@users_bp.route("/api/v1/auth/logout", methods=["POST"])
+@users_bp.route("/api/v1/public/auth/logout", methods=["POST"])
 @handle_api_auth
 def logout() -> tuple:
+    ***REMOVED***
+        **logout public api**
+    :return:
+    ***REMOVED***
     # Raises Bad Request error if request is not in json format
     if_bad_request_raise(request)
 
@@ -177,7 +181,7 @@ def logout() -> tuple:
     return "OK", 200
 
 
-@users_bp.route("/api/v1/auth/register", methods=["POST"])
+@users_bp.route("/api/v1/public/auth/register", methods=["POST"])
 @handle_api_auth
 def register() -> tuple:
     # Raises Bad Request error if request is not in json format
