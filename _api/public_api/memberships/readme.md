@@ -14,5 +14,19 @@
 #### Endpoints Definitions
     for endpoint documentations see relevant readme files below.
 
-1.` **create memberships plan**
-    endpoint - https://memberships-affiliates-man-api.herokuapp.com/api/v1/public/member
+1. **create memberships plan**
+   `
+    endpoint = https://memberships-affiliates-man-api.herokuapp.com/api/v1/public/membership-plan
+    method = POST
+    payload = `{ 
+            'organization_id': "",
+            'service_id': "",
+            'plan_name': "",
+            'description': "",
+            'schedule_day': "",
+            'schedule_term': "",
+            'term_payment': "",
+            'registration_amount': "",
+            'currency': ""}
+    `
+   
