@@ -13,7 +13,7 @@ import typing
 from flask import Blueprint, request, jsonify
 from datetime import datetime, date
 from security.api_authenticator import handle_api_auth
-from config.exceptions import InputError, if_bad_request_raise
+from config.exceptions import if_bad_request_raise
 from utils.utils import date_string_to_date
 from views.memberships import MembershipsView, MembershipPlansView
 memberships_bp = Blueprint('memberships', __name__)
@@ -216,6 +216,6 @@ def payment_amount(path: str) -> tuple:
 def set_payment_status(path: str, status: str) -> tuple:
     uid, organization_id = path.split("@")
     membership_instance: MembershipsView = MembershipsView()
-    return membership_instance.set_payment_status(organization_id=organization_id, uid=uid, status=status)
+    return membership_instance.set_membership_payment_status(organization_id=organization_id, uid=uid, status=status)
 
 
