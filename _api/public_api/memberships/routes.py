@@ -20,7 +20,7 @@ memberships_bp = Blueprint('memberships', __name__)
 
 
 # NOTE: path is plan_id@organization_id
-@memberships_bp.route("/api/v1/members/<path:path>", methods=['POST'])
+@memberships_bp.route("/api/v1/public/members/<path:path>", methods=['POST'])
 @handle_api_auth
 def get_members(path: str) -> tuple:
     plan_id, organization_id = path.split('@')
@@ -28,7 +28,7 @@ def get_members(path: str) -> tuple:
     return members_instance.return_plan_members(organization_id=organization_id, plan_id=plan_id)
 
 
-@memberships_bp.route("/api/v1/member", methods=['POST', 'PUT'])
+@memberships_bp.route("/api/v1/public/member", methods=['POST', 'PUT'])
 @handle_api_auth
 def create_member() -> tuple:
     ***REMOVED***
@@ -49,7 +49,7 @@ def create_member() -> tuple:
 
 
 # NOTE: path is <uid@organization_id>
-@memberships_bp.route("/api/v1/member/status/<path:path>", methods=['GET', 'PUT'])
+@memberships_bp.route("/api/v1/public/member/status/<path:path>", methods=['GET', 'PUT'])
 @handle_api_auth
 def get_update_status(path: str) -> tuple:
     ***REMOVED***
@@ -78,7 +78,7 @@ def get_update_status(path: str) -> tuple:
 
 
 # NOTE: path is <plan_id@organization_id>
-@memberships_bp.route("/api/v1/members/<path:path>/status/<path:status>", methods=["GET"])
+@memberships_bp.route("/api/v1/public/members/<path:path>/status/<path:status>", methods=["GET"])
 @handle_api_auth
 def get_plan_members_by_payment_status(path: str, status: str) -> tuple:
     plan_id, organization_id = path.split("@")
@@ -89,7 +89,7 @@ def get_plan_members_by_payment_status(path: str, status: str) -> tuple:
 
 
 # NOTE: path is <plan_id@organization_id>
-@memberships_bp.route("/api/v1/membership/plan/<path:path>")
+@memberships_bp.route("/api/v1/public/membership/plan/<path:path>")
 @handle_api_auth
 def change_membership_plan(path: str) -> tuple:
     plan_id, organization_id = path.split("@")
@@ -114,7 +114,8 @@ def change_membership_plan(path: str) -> tuple:
                                                            dest_plan_id=dest_plan_id)
 
 
-@memberships_bp.route('/api/v1/membership-plan', methods=["POST"])
+@memberships_bp.route('/api/v1/public/membership-plan', methods=["POST"])
+@handle_api_auth
 def create_membership_plan() -> tuple:
     # Raises Bad Request error if request is not in json format
     if_bad_request_raise(request)
@@ -125,13 +126,15 @@ def create_membership_plan() -> tuple:
 
 
 # NOTE path equal organization_id
-@memberships_bp.route('/api/v1/membership-plans/<path:path>', methods=["GET"])
+@memberships_bp.route('/api/v1/public/membership-plans/<path:path>', methods=["GET"])
+@handle_api_auth
 def get_membership_plans(path: str) -> tuple:
     member_ship_instance_view: MembershipPlansView = MembershipPlansView()
     return member_ship_instance_view.return_all_plans(organization_id=path)
 
 
-@memberships_bp.route('/api/v1/update-membership-plan', methods=["POST"])
+@memberships_bp.route('/api/v1/public/update-membership-plan', methods=["POST"])
+@handle_api_auth
 def update_membership_plan() -> tuple:
     # Raises Bad Request error if request is not in json format
     if_bad_request_raise(request)
@@ -190,7 +193,8 @@ def update_membership_plan() -> tuple:
 
 
 # NOTE: path is <uid@organization_id>
-@memberships_bp.route('/api/v1/is-member-off/<path:path>', methods=["GET"])
+@memberships_bp.route('/api/v1/public/is-member-off/<path:path>', methods=["GET"])
+@handle_api_auth
 def is_member_off(path: str) -> tuple:
     ***REMOVED***
         for a specific user returns membership
@@ -201,7 +205,8 @@ def is_member_off(path: str) -> tuple:
 
 
 # NOTE: path is <uid@organization_id>
-@memberships_bp.route('/api/v1/memberships-payment-amount/<path:path>', methods=["GET"])
+@memberships_bp.route('/api/v1/public/memberships-payment-amount/<path:path>', methods=["GET"])
+@handle_api_auth
 def payment_amount(path: str) -> tuple:
     ***REMOVED***
         for a specific member return payment amounts
@@ -212,7 +217,8 @@ def payment_amount(path: str) -> tuple:
 
 
 # NOTE: path is <uid@organization_id>
-@memberships_bp.route('/api/v1/memberships-set-payment-status/<path:path>/<path:status>', methods=["GET"])
+@memberships_bp.route('/api/v1/public/memberships-set-payment-status/<path:path>/<path:status>', methods=["GET"])
+@handle_api_auth
 def set_payment_status(path: str, status: str) -> tuple:
     uid, organization_id = path.split("@")
     membership_instance: MembershipsView = MembershipsView()
