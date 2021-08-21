@@ -15,8 +15,8 @@
     for endpoint documentations see relevant readme files below.
 
 1. **create memberships plan**
-   this allows developers to create a membership payment plan for an existing service 
-   so clients can subscribe to the service by selecting the described payment plan.
+       this allows developers to create a membership payment plan for an existing service 
+       so clients can subscribe to the service by selecting the described payment plan.
    
     **NOTE**
         The service or product under which the payment plan is to be created must already 
@@ -24,20 +24,22 @@
    
         Once you successfully created a service or product a service_id will be return which 
         can then be used here to create payment plans
-        
-    url = https://memberships-affiliates-man-api.herokuapp.com/api/v1/public/membership-plan
-
-   ```javascript
-    method = 'POST'
-    body = JSON.stringify({ 
-            'organization_id': "98asd98asj8df9as8hfa9sd9787fd",
-            'service_id': "342kjdh98d982u9384j23jd2d23",
-            'plan_name': "beginner",
-            'description': "Entry level plan",
-            'schedule_day': 1,
-            'schedule_term': "monthly",
-            'term_payment': 15,
-            'registration_amount': 5,
-            'currency': "USD"})
-   ```
+    **Endpoint**        
+        url = https://memberships-affiliates-man-api.herokuapp.com/api/v1/public/membership-plan
+    
+    **Example**
+       ```javascript
+        method = 'POST'
+        body = JSON.stringify({ 
+                'organization_id': "98asd98asj8df9as8hfa9sd9787fd",
+                'service_id': "342kjdh98d982u9384j23jd2d23",
+                'plan_name': "beginner",
+                'description': "Entry level plan",
+                'schedule_day': 1,
+                'schedule_term': "monthly",
+                'term_payment': 15,
+                'registration_amount': 5,
+                'currency': "USD"})
+       ```
    
+       
