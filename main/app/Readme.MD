@@ -1,6 +1,6 @@
 ### Memberships & Affiliates Management API Applications
 
-    There are three applications in total.
+     memberships & Affiliates Management API is made up of three Services  
     
     1. Admin Application
     2. Client Dashboard Application
@@ -31,3 +31,6 @@
 #### Public Facing Application
     This application is literally a blog for memberships & Affiliates Management API.
     and also an entry point into the client dashboard.
+
+
+        
