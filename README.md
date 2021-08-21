@@ -2,7 +2,16 @@
 
  **How it Works?**
  --
-    
+    Our API allows developers to create memberships or subscriptions based services and products 
+    on their websites or web applications faster, easier and cheaper by intergrating our api in their 
+    website, our api will handle 
+       1. user creation and authentications.
+       2. products and service creation and management.
+       3. payment plans creations for services and products on your website. 
+       4. subscriptions and payment colletiongs through paypal services. 
+       5. affiliates intergrations for promotional purposes 
+       6. creation of and management of coupon codes for promotional purposes
+  
 
    
  **What it Handles**
