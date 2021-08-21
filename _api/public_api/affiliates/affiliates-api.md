@@ -36,4 +36,3 @@
 
         path == "get-deleted"
 
-        # TODO finish documentation
