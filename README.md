@@ -27,18 +27,21 @@
 #### Credentials
    - _Create your credentials on RapidAPI or on our portal see below_
 
-#### Examples
+#### [Documentations](docs/readme.md)
+  api detailed documentations and getting started documentations
+  
 
-
-#### Licensed
+#### License
    - _Code Released under MIT License_
 
 
-#### Contributions
+#### [Contributions](CONTRIBUTING.md)
    - _See Contributions.MD on this repo for instructions_
 
+### [Code of Conduct](CODE_OF_CONDUCT.md)
+
 #### Links
-   - _RapidAPI_ 
+   - _On RapidAPI_  coming soon...
    - _Platform Home_ [https://memberships-affiliates-man-api.herokuapp.com/](https://memberships-affiliates-man-api.herokuapp.com/)
 
 #### Author
