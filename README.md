@@ -1,4 +1,4 @@
-#### Memberships Control and Affiliate API for websites
+## Memberships & Affiliate Management API
 
  **How it Works?**
  --
@@ -24,31 +24,33 @@
    - **_Affiliates_**
    - **_Coupon Codes_**
 
- #### Access to our service is provided through: 
-    - _API_
-    - _SDK's_
 
-
-#### [Documentations](docs/readme.md)
-  api detailed [developer documentations](docs/developers-docs/readme.md) and [getting started documentations](docs/getting-started-docs/readme.md)
+**[Documentations](docs/readme.md)**
+--
+  API detailed [developer documentations](docs/developers-docs/readme.md) and [getting started documentations](docs/getting-started-docs/readme.md)
   
 
-#### License
+**License**
+--
    - _Code Released under MIT License_
 
 
-#### [Contributions](CONTRIBUTING.md)
+**[Contributions](CONTRIBUTING.md)**
+ --
    - _See [Contributions.MD](CONTRIBUTING.md) on this repo for instructions_
 
-### [Code of Conduct](CODE_OF_CONDUCT.md)
+**[Code of Conduct](CODE_OF_CONDUCT.md)**
+ --
    - if you intend to contribute to this project please read through our code of conduct
 
-#### Links
+**Links**
+--
    - _On RapidAPI_  coming soon...
    - _Platform Home_ [https://memberships-affiliates-man-api.herokuapp.com/](https://memberships-affiliates-man-api.herokuapp.com/)
 
-#### Author
-   - ***Justice Ndou*** _[https://justice-ndou.site](https://justice-ndou.site)_
+**Developer**
+--
+   - **Justice Ndou** _[https://justice-ndou.site](https://justice-ndou.site)_
    - **Email:*** _mobiusndou@gmail.com_
    - **Twitter** [@blueitserver](https://twitter.com/blueitserver)
 
