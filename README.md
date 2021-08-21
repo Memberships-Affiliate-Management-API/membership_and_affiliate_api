@@ -5,12 +5,12 @@
     Our API allows developers to create memberships or subscriptions based services and products 
     on their websites or web applications faster, easier and cheaper by intergrating our api in their 
     website, our api will handle 
-       1. user creation and authentications.
-       2. products and service creation and management.
-       3. payment plans creations for services and products on your website. 
-       4. subscriptions and payment colletiongs through paypal services. 
-       5. affiliates intergrations for promotional purposes 
-       6. creation of and management of coupon codes for promotional purposes
+       - user creation and authentications.
+       - products and service creation and management.
+       - payment plans creations for services and products on your website. 
+       - subscriptions and payment colletiongs through paypal services. 
+       - affiliates intergrations for promotional purposes 
+       - creation of and management of coupon codes for promotional purposes
   
 
    
@@ -29,15 +29,8 @@
     - _SDK's_
 
 
-#### Prerequisites
-   - _Python 3.8 +_
-
-
-#### Credentials
-   - _Create your credentials on RapidAPI or on our portal see below_
-
 #### [Documentations](docs/readme.md)
-  api detailed documentations and getting started documentations
+  api detailed [developer documentations](docs/developers-docs/readme.md) and [getting started documentations](docs/getting-started-docs/readme.md)
   
 
 #### License
@@ -45,9 +38,10 @@
 
 
 #### [Contributions](CONTRIBUTING.md)
-   - _See Contributions.MD on this repo for instructions_
+   - _See [Contributions.MD](CONTRIBUTING.md) on this repo for instructions_
 
 ### [Code of Conduct](CODE_OF_CONDUCT.md)
+   - if you intend to contribute to this project please read through our code of conduct
 
 #### Links
    - _On RapidAPI_  coming soon...
