@@ -15,7 +15,7 @@
     for endpoint documentations see relevant readme files below.
 
 1. **create memberships plan**
-   `
+   
     url = https://memberships-affiliates-man-api.herokuapp.com/api/v1/public/membership-plan
     method = 'POST'
     body = JSON.stringify({ 
@@ -28,5 +28,4 @@
             'term_payment': "",
             'registration_amount': "",
             'currency': ""})
-    `
    
