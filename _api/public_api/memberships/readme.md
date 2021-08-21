@@ -53,35 +53,35 @@
    ```
    
 
-        returns 
-        
-            _on success_
-        
-            ```javascript 
-                {
-                    'status': true,
-                    'payload': {
-                        'organization_id': '98asd98asj8df9as8hfa9sd9787fd',
-                        'plan_id': 'fdfs7dy8fy74h83y58347yrfy87y435',
-                        'plan_name': "beginner",
-                        'description': "Entry level plan",
-                        'schedule_day': 1,
-                        'schedule_term': "monthly",
-                        'term_payment': 15,
-                        'registration_amount': 5,
-                        'currency': "USD"},
-                    'message': 'successfully created payment plan'
-                },
-                status_code = 201
-            ```
+    returns 
+    
+    _on success_
 
-        _on failure_ 
-        
-            ```javascript 
-                {
-                    'status': false,
-                    'message': 'failed to create payment plan'
-                },
-                status_code: relevant error code
-            ```
-           
+    ```javascript 
+        {
+            'status': true,
+            'payload': {
+                'organization_id': '98asd98asj8df9as8hfa9sd9787fd',
+                'plan_id': 'fdfs7dy8fy74h83y58347yrfy87y435',
+                'plan_name': "beginner",
+                'description': "Entry level plan",
+                'schedule_day': 1,
+                'schedule_term': "monthly",
+                'term_payment': 15,
+                'registration_amount': 5,
+                'currency': "USD"},
+            'message': 'successfully created payment plan'
+        },
+        status_code = 201
+    ```
+
+    _on failure_ 
+    
+    ```javascript 
+        {
+            'status': false,
+            'message': 'failed to create payment plan'
+        },
+        status_code: relevant error code
+    ```
+       
