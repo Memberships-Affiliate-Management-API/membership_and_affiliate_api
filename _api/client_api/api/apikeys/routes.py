@@ -11,6 +11,7 @@ from views.apikeys import APIKeysView
 
 client_api_keys_bp = Blueprint('api-keys', __name__)
 
+
 # NOTE do not change to client route
 @client_api_keys_bp.route('/_api/v1/admin/api-keys/<string:key>/org/<string:organization_id>', methods=["POST"])
 @handle_apps_authentication
@@ -91,4 +92,3 @@ def activate_key() -> tuple:
 
     message: str = "User not Authorized: you are not authorized to call this API"
     raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
-
