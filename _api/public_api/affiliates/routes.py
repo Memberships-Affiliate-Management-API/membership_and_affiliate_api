@@ -21,7 +21,7 @@ affiliates_bp = Blueprint('affiliates', __name__)
 
 
 # NOTE: there is no reason to cache API routes as the cache is on the view level
-@affiliates_bp.route('/api/v1/affiliate/<path:path>', methods=['POST'])
+@affiliates_bp.route('/api/v1/public/affiliate/<path:path>', methods=['POST'])
 @handle_api_auth
 def affiliate(path: str) -> tuple:
     ***REMOVED***
@@ -103,7 +103,7 @@ def affiliate(path: str) -> tuple:
         return affiliate_view_instance.mark_active(affiliate_data=affiliate_data, is_active=False)
 
 
-@affiliates_bp.route('/api/v1/recruits/<path:path>', methods=['POST'])
+@affiliates_bp.route('/api/v1/public/recruits/<path:path>', methods=['POST'])
 @handle_api_auth
 def recruits(path: str) -> tuple:
     ***REMOVED***
