@@ -16,7 +16,7 @@ from views.memberships import CouponsView
 coupons_bp = Blueprint('coupons', __name__)
 
 
-@coupons_bp.route('/api/v1/coupons/<path:path>', methods=['POST'])
+@coupons_bp.route('/api/v1/public/coupons/<path:path>', methods=['POST'])
 @handle_api_auth
 def coupons(path: str) -> tuple:
     ***REMOVED***
