@@ -15,8 +15,18 @@
     for endpoint documentations see relevant readme files below.
 
 1. **create memberships plan**
+   this allows developers to create a membership payment plan for an existing service 
+   so clients can subscribe to the service by selecting the described payment plan.
    
+    **NOTE**
+        The service or product under which the payment plan is to be created must already 
+        be created, in order for you to know which service_id to use to create the payment plan.
+   
+        Once you successfully created a service or product a service_id will be return which 
+        can then be used here to create payment plans
+        
     url = https://memberships-affiliates-man-api.herokuapp.com/api/v1/public/membership-plan
+
    ```javascript
     method = 'POST'
     body = JSON.stringify({ 
