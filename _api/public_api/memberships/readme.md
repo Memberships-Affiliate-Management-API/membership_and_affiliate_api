@@ -31,7 +31,8 @@
         see code below 
    
    ```javascript
-    method = 'POST'
+   {
+    method = 'POST',
     body = JSON.stringify({ 
             'organization_id': "98asd98asj8df9as8hfa9sd9787fd",
             'service_id': "342kjdh98d982u9384j23jd2d23",
@@ -41,7 +42,41 @@
             'schedule_term': "monthly",
             'term_payment': 15,
             'registration_amount': 5,
-            'currency': "USD"})
+            'currency': "USD"}),
+    headers = {'content-type': 'application/json'}       
+   }
    ```
    
+
+    returns 
+    
+    on success
+
+    ```javascript 
+        {
+            'status': true,
+            'payload': {
+                'organization_id': '98asd98asj8df9as8hfa9sd9787fd',
+                'plan_id': 'fdfs7dy8fy74h83y58347yrfy87y435',
+                'plan_name': "beginner",
+                'description': "Entry level plan",
+                'schedule_day': 1,
+                'schedule_term': "monthly",
+                'term_payment': 15,
+                'registration_amount': 5,
+                'currency': "USD"},
+            'message': 'successfully created payment plan'
+        },
+        status_code = 201
+    ```
+
+    on failure 
+    
+    ```javascript 
+        {
+            'status': false,
+            'message': 'failed to create payment plan'
+        },
+        status_code: relevant error code
+    ```
        
