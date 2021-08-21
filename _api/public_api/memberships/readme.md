@@ -17,15 +17,17 @@
 1. **create memberships plan**
    
     url = https://memberships-affiliates-man-api.herokuapp.com/api/v1/public/membership-plan
+   ```javascript
     method = 'POST'
     body = JSON.stringify({ 
-            'organization_id': "",
-            'service_id': "",
-            'plan_name': "",
-            'description': "",
-            'schedule_day': "",
-            'schedule_term': "",
-            'term_payment': "",
-            'registration_amount': "",
-            'currency': ""})
+            'organization_id': "98asd98asj8df9as8hfa9sd9787fd",
+            'service_id': "342kjdh98d982u9384j23jd2d23",
+            'plan_name': "beginner",
+            'description': "Entry level plan",
+            'schedule_day': 1,
+            'schedule_term': "monthly",
+            'term_payment': 15,
+            'registration_amount': 5,
+            'currency': "USD"})
+   ```
    
