@@ -16,9 +16,9 @@
 
 1. **create memberships plan**
    `
-    endpoint = https://memberships-affiliates-man-api.herokuapp.com/api/v1/public/membership-plan
-    method = POST
-    payload = `{ 
+    url = https://memberships-affiliates-man-api.herokuapp.com/api/v1/public/membership-plan
+    method = 'POST'
+    body = JSON.stringify({ 
             'organization_id': "",
             'service_id': "",
             'plan_name': "",
@@ -27,6 +27,6 @@
             'schedule_term': "",
             'term_payment': "",
             'registration_amount': "",
-            'currency': ""}
+            'currency': ""})
     `
    
