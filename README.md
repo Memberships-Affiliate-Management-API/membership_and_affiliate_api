@@ -14,16 +14,15 @@
   
 
    
- **What it Handles**
+ **API Structure**
  --
- **Presently the api can handle several services**
-   - **_Users_**
-   - **_Memberships_**
-   - **_Organizations_**
-   - **_Wallet_**
-   - **_Affiliates_**
-   - **_Coupon Codes_**
-
+ 
+ **Presently the api allows you to offer the following services to your users**
+   - **[_Users_](_api/public_api/users/README.md)**
+   - **[_Memberships_](_api/public_api/memberships/readme.md)**
+   - **[_Wallet_](_api/public_api/wallet/readme.md)**
+   - **[_Affiliates_](_api/public_api/affiliates/Readme.md)**
+   - **[_Coupon Codes_](_api/public_api/coupons/readme.md)**
 
 **[Documentations](docs/readme.md)**
 --
