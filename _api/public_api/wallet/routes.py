@@ -24,7 +24,7 @@ wallet_bp = Blueprint("wallet", __name__)
 # NOTE: there is no reason to cache API routes as the cache is on the view level
 
 
-@wallet_bp.route('/api/v1/wallet', methods=["GET", "POST", "DELETE", "PUT"])
+@wallet_bp.route('/api/v1/public/wallet', methods=["GET", "POST", "DELETE", "PUT"])
 @handle_api_auth
 def wallet() -> tuple:
     ***REMOVED***
@@ -63,7 +63,7 @@ def wallet() -> tuple:
         return jsonify({'status': False, 'message': 'Unable to process this request please check your parameters'}), 500
 
 
-@wallet_bp.route('/api/v1/wallet/organization', methods=["GET", "POST", "DELETE", "PUT"])
+@wallet_bp.route('/api/v1/public/wallet/organization', methods=["GET", "POST", "DELETE", "PUT"])
 def org_wallet() -> tuple:
     # TODO Finalize of the authentication method to use here
     ***REMOVED***
@@ -98,7 +98,7 @@ def org_wallet() -> tuple:
         return wallet_instance.update_wallet(wallet_data=json_data)
 
 
-@wallet_bp.route('/api/v1/wallet/organization/<path:path>', methods=["GET"])
+@wallet_bp.route('/api/v1/public/wallet/organization/<path:path>', methods=["GET"])
 def organization_wallets(path: str) -> tuple:
     ***REMOVED***
             returns all wallets relating to a specific organization.
