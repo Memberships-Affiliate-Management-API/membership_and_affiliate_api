@@ -38,7 +38,6 @@ def get_all_services(org_id: str) -> tuple:
         **public_services_api**
             returns a service governed by organization_id and service_id
     :param org_id:
-    :param service_id:
     :return:
     ***REMOVED***
     service_view: ServicesView = ServicesView()
