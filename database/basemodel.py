@@ -9,8 +9,8 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
 from typing import Optional
-
 from google.cloud import ndb
+from config.use_context import use_context
 
 
 class BaseModel(ndb.Model):
@@ -25,7 +25,7 @@ class BaseModel(ndb.Model):
                 equivalent to __str__, but has to be unique for each instance
         :return: string rep of instance
         ***REMOVED***
-        return "{} (id={} state={})".format(type(self).__name__, self.id, self.__str__())
+        return f"{type(self).__name__} (id={self.id} state={self.__str__()})"
 
     def __len__(self) -> int:
         ***REMOVED***
@@ -37,7 +37,11 @@ class BaseModel(ndb.Model):
 
     @property
     def id(self) -> Optional[str]:
-        ***REMOVED***int: The index ID.***REMOVED***
+        ***REMOVED***
+            **id**
+            int: The index ID.
+            return: key: str
+        ***REMOVED***
         return self.key.id() if isinstance(self.key, ndb.Key) else None
 
     @property
@@ -46,6 +50,7 @@ class BaseModel(ndb.Model):
             **urlsafe_key**
                 byte representation of key in order to enable
                 sending the key over requests calls
+
         :return: bytes representing datastore key
         ***REMOVED***
         return self.key.urlsafe() if isinstance(self.key, ndb.Key) else None
@@ -62,10 +67,14 @@ class BaseModel(ndb.Model):
         return super().to_dict(include=[include], exclude=[exclude]).update(key=self.urlsafe_key)
 
     @staticmethod
+    @use_context
     def get_instance_by_key(key: bytes) -> ndb.Model:
         ***REMOVED***
-            returns the model instance from a key in byte string format
+            **get_instance_by_key**
+                returns the model instance from a key in byte string format
+
         :param key: byte ndb. Key
         :return: ndb instance fetched by key
         ***REMOVED***
+
         return ndb.Key(urlsafe=key).get()
