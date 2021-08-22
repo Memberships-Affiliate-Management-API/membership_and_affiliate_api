@@ -26,6 +26,8 @@ from config.exception_handlers import handle_view_errors
 from config.exceptions import InputError, error_codes, status_codes, DataServiceError
 from config.use_context import use_context
 from database.services import ServiceValidator, Services
+from main import app_cache
+from utils import return_ttl
 
 
 class ServicesView(ServiceValidator):
@@ -201,9 +203,11 @@ class ServicesView(ServiceValidator):
 
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'))
     def get_service(self, service_id: Optional[str], organization_id: Optional[str]) -> tuple:
         ***REMOVED***
-
+            **get_service**
+                given service_id return service
         :param service_id:
         :param organization_id:
         :return:
@@ -227,12 +231,15 @@ class ServicesView(ServiceValidator):
 
     @use_context
     @handle_view_errors
+    @app_cache.memoize(timeout=return_ttl('short'))
     def return_services(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
-
+            **return_services**
+                returns all services under a specific organization
         :param organization_id:
         :return:
         ***REMOVED***
+        # TODO intergrate cache delete events here
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
