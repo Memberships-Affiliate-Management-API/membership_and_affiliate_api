@@ -20,7 +20,7 @@ services_client_api_bp = Blueprint('services_client_api', __name__)
 def services_api(path: str) -> tuple:
     ***REMOVED***
         **services_api**
-
+            allows clients/ developers to manage their services
     :param path:
     :return:
     ***REMOVED***
