@@ -76,5 +76,4 @@ class BaseModel(ndb.Model):
         :param key: byte ndb. Key
         :return: ndb instance fetched by key
         ***REMOVED***
-
         return ndb.Key(urlsafe=key).get()
