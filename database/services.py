@@ -18,6 +18,8 @@ import typing
 from typing import Optional
 from datetime import datetime
 from google.cloud import ndb
+
+from config.exception_handlers import handle_store_errors
 from config.exceptions import DataServiceError, InputError, error_codes
 from database.setters import property_
 from database.organization import OrgValidators, AuthUserValidators
@@ -36,9 +38,25 @@ class ServiceValidator(OrgValidators, AuthUserValidators, UserValidators):
     def __init__(self):
         super(ServiceValidator, self).__init__()
 
+    @staticmethod
+    @handle_store_errors
+    def is_service_in_organization(service_id: str, organization_id: str) -> Optional[bool]:
+        ***REMOVED***
+            **is_service_in_organization**
+                checks if service belongs to the organization
+        :param service_id:
+        :param organization_id:
+        :return: True if yes
+        ***REMOVED***
+
+        service_instance: Services = Services.query(Services.service_id == service_id,
+                                                    Services.organization_id == organization_id).get()
+
+        return isinstance(service_instance, Services)
+
     @app_cache.memoize(timeout=return_ttl('short'))
     def can_create_service(self, uid: typing.Union[str, None],
-                           organization_id: typing.Union[str, None]) -> typing.Union[None, bool]:
+                           organization_id: typing.Union[str, None]) -> Optional[bool]:
         ***REMOVED***
             **can_create_service**
                 checks if user can create a new service if this is the case then returns True
@@ -60,6 +78,32 @@ class ServiceValidator(OrgValidators, AuthUserValidators, UserValidators):
             return org_exist and is_admin and is_user_valid
 
         message: str = "Database Error: Unable to verify if user can create service"
+        raise DataServiceError(status=500, description=message)
+
+    def can_update_service(self, service_id: Optional[str], uid: Optional[str],
+                           organization_id: Optional[str]) -> Optional[bool]:
+        ***REMOVED***
+            **can_update_service**
+                returns True if user can update service
+        :param service_id:
+        :param uid:
+        :param organization_id:
+        :return:
+        ***REMOVED***
+        org_exist: Optional[bool] = self.is_organization_exist(organization_id=organization_id)
+        # NOTE: only members of the organization administrator group can create services for a plan
+        is_admin: Optional[bool] = self.user_is_member_of_org(uid=uid, organization_id=organization_id)
+        # NOTE: de activated users cannot add services
+        is_user_valid: Optional[bool] = self.is_user_valid(uid=uid)
+
+        service_in_organization: Optional[bool] = self.is_service_in_organization(service_id=service_id,
+                                                                                  organization_id=organization_id)
+
+        if isinstance(org_exist, bool) and isinstance(is_admin, bool) and isinstance(is_user_valid, bool) and \
+                isinstance(service_in_organization, bool):
+            return org_exist and is_admin and is_user_valid and service_in_organization
+
+        message: str = "Database Error: Unable to verify if user can update service"
         raise DataServiceError(status=500, description=message)
 
     @staticmethod

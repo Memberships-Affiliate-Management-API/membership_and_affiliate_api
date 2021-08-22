@@ -62,19 +62,9 @@ class ServicesView(ServiceValidator):
             :param home_url: page containing service descriptions and pricing
         :return:
         ***REMOVED***
-        if not isinstance(name, str) or not bool(name.strip()):
-            message: str = "Service Name cannot be Null"
-            raise InputError(status=error_codes.input_error_code, description=message)
+        self.check_parameters(name=name, category=category, description=description)
 
-        if not isinstance(description, str) or not bool(description.strip()):
-            message: str = "Service Description cannot be Null"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(category, str) or not bool(category.strip()):
-            message: str = "Service Category cannot be Null"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if self.can_create_service(uid=uid, organization_id=organization_id) is True:
+        if self.can_create_service(uid=uid, organization_id=organization_id):
             name: str = name.strip().lower()
             description: str = description.strip().lower()
             category: str = category.strip().lower()
@@ -139,14 +129,7 @@ class ServicesView(ServiceValidator):
         :param home_url:
         :return:
         ***REMOVED***
-        if not isinstance(name, str) or not bool(name.strip()):
-            message: str = "Service Name cannot be Null"
-            raise InputError(status=error_codes.input_error_code, description=message)
+        self.check_parameters(name=name, category=category, description=description)
 
-        if not isinstance(description, str) or not bool(description.strip()):
-            message: str = "Service Description cannot be Null"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(category, str) or not bool(category.strip()):
-            message: str = "Service Category cannot be Null"
-            raise InputError(status=error_codes.input_error_code, description=message)
+        if self.can_update_service(uid=uid, organization_id=organization_id, service_id=service_id):
+            pass
