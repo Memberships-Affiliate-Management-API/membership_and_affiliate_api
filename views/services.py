@@ -200,5 +200,23 @@ class ServicesView(ServiceValidator):
         return jsonify({'status': False, 'message': message}), error_codes.access_forbidden_error_code
 
 
+    @use_context
+    @handle_view_errors
+    def get_service(self, service_id: Optional[str], organization: Optional[str]) -> tuple:
+        ***REMOVED***
 
+        :param service_id:
+        :param organization:
+        :return:
+        ***REMOVED***
+        pass
 
+    @use_context
+    @handle_view_errors
+    def return_services(self, organization: Optional[str]) -> tuple:
+        ***REMOVED***
+
+        :param organization:
+        :return:
+        ***REMOVED***
+        pass

@@ -92,7 +92,7 @@ def user(path: str) -> tuple:
             return users_view_instance.get_user(organization_id=organization_id, uid=uid, email=email, cell=cell)
 
 
-@users_bp.route("/api/v1/public/users/<path:path>", methods=["GET", "POST"])
+@users_bp.route("/api/v1/public/users/<string:path>", methods=["GET", "POST"])
 @handle_api_auth
 def get_all(path: str) -> tuple:
     ***REMOVED***
