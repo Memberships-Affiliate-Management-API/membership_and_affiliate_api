@@ -47,7 +47,11 @@ def services_api(path: str) -> tuple:
                                                      home_url=home_url)
 
     elif path == "update-service":
-        services_id: Optional[str] = services_data.get('services_id')
-        return services_view_instance.update_service(services_id=services_id, organization_id=organization_id, uid=uid,
+        service_id: Optional[str] = services_data.get('service_id')
+        return services_view_instance.update_service(service_id=service_id, organization_id=organization_id, uid=uid,
                                                      name=name, description=description, category=category,
                                                      image_url=image_url, home_url=home_url)
+
+    elif path == "activate-service":
+        service_id: Optional[str] = services_data.get('service_id')
+        return services_view_instance.activate_service(service_id=service_id,organization_id=organization_id, uid=uid)

@@ -137,7 +137,7 @@ class ServicesView(ServiceValidator):
 
             # TODO - first update service in paypal services
 
-            service_instance: Services = Services.query(Services.service_id == service_id).get()
+            service_instance: Optional[Services] = Services.query(Services.service_id == service_id).get()
 
             if isinstance(service_instance, Services):
                 service_instance.name = name
@@ -145,7 +145,7 @@ class ServicesView(ServiceValidator):
                 service_instance.category = category
                 service_instance.image_url = image_url
                 service_instance.home_url = home_url
-                key: Optional[ndb.Key] = service_instance.put()
+                key: Optional[ndb.Key] = service_instance.put(retries=self._max_retries, timeout=self._max_timeout)
                 if not isinstance(key, ndb.Key):
                     message: str = "Database Error: Unable to update service details"
                     raise DataServiceError(status=error_codes.data_service_error_code, description=message)
@@ -160,3 +160,39 @@ class ServicesView(ServiceValidator):
 
         message: str = "User Not Authorized: cannot update service"
         return jsonify({'status': False, 'message': message}), error_codes.access_forbidden_error_code
+
+    @use_context
+    @handle_view_errors
+    def activate_service(self, service_id: Optional[str], organization_id: Optional[str], uid: Optional[str]) -> tuple:
+        ***REMOVED***
+            **activate_service**
+                given a service_id activate a service.
+                an active service is viewable by users
+        :param service_id:
+        :param organization_id:
+        :param uid:
+        :return: tuple -> response, status_code
+        ***REMOVED***
+        if self.can_update_service(service_id=service_id, organization_id=organization_id, uid=uid):
+            service_instance: Optional[Services] = Services.query(Services.service_id == service_id).get()
+
+            if isinstance(service_instance, Services):
+                service_instance.is_service_active = True
+                key: Optional[ndb.Key] = service_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+                if not isinstance(key, ndb.Key):
+                    message: str = "Database Error: unable to activate service"
+                    raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+                # TODO - update cache
+                message: str = "successfully activated service"
+                return jsonify({'status': True, 'payload': service_instance.to_dict(),
+                                'message': message}), status_codes.status_ok_code
+
+            message: str = "Data not Found: unable to update service as service was not found"
+            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+
+        message: str = "User Not Authorized: cannot update service"
+        return jsonify({'status': False, 'message': message}), error_codes.access_forbidden_error_code
+
+
+
+
