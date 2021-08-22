@@ -167,7 +167,7 @@ class Services(BaseModel):
     home_url: str = ndb.StringProperty(validator=property_.set_domain)
     date_created: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=property_.set_datetime)
     date_updated: datetime = ndb.DateTimeProperty(auto_now=True, validator=property_.set_datetime)
-    is_service_active: bool = ndb.BooleanProperty(auto_now_add=False, validator=property_.set_bool)
+    is_service_active: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
 
     def __eq__(self, other):
         if self.__class__ != other.__class__:
