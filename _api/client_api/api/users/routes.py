@@ -21,7 +21,7 @@ def client_users(path: str) -> tuple:
     user_data: dict = request.get_json()
     secret_key: Optional[str] = user_data.get("SECRET_KEY")
     user_view_instance: UserView = UserView()
-    print(f"user data : {user_data}")
+
     if not isinstance(secret_key, str) or secret_key != current_app.config.get('SECRET_KEY'):
         message: str = 'User Not Authorized: you cannot perform this action'
         raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
