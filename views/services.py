@@ -139,4 +139,14 @@ class ServicesView(ServiceValidator):
         :param home_url:
         :return:
         ***REMOVED***
-        pass
+        if not isinstance(name, str) or not bool(name.strip()):
+            message: str = "Service Name cannot be Null"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(description, str) or not bool(description.strip()):
+            message: str = "Service Description cannot be Null"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(category, str) or not bool(category.strip()):
+            message: str = "Service Category cannot be Null"
+            raise InputError(status=error_codes.input_error_code, description=message)

@@ -15,9 +15,10 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
 import typing
+from typing import Optional
 from datetime import datetime
 from google.cloud import ndb
-from config.exceptions import DataServiceError
+from config.exceptions import DataServiceError, InputError, error_codes
 from database.setters import property_
 from database.organization import OrgValidators, AuthUserValidators
 from database.users import UserValidators
@@ -60,6 +61,28 @@ class ServiceValidator(OrgValidators, AuthUserValidators, UserValidators):
 
         message: str = "Database Error: Unable to verify if user can create service"
         raise DataServiceError(status=500, description=message)
+
+    @staticmethod
+    def check_parameters(name: Optional[str], category: Optional[str], description: Optional[str]) -> None:
+        ***REMOVED***
+            **check_parameters**
+                check if name, category and description are valid if not raise an error
+        :param name:
+        :param category:
+        :param description:
+        :return: None
+        ***REMOVED***
+        if not isinstance(name, str) or not bool(name.strip()):
+            message: str = "Service Name cannot be Null"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(description, str) or not bool(description.strip()):
+            message: str = "Service Description cannot be Null"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(category, str) or not bool(category.strip()):
+            message: str = "Service Category cannot be Null"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
 
 class Services(BaseModel):

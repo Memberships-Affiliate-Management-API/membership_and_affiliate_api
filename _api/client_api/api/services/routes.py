@@ -42,15 +42,12 @@ def services_api(path: str) -> tuple:
     home_url: Optional[str] = services_data.get('home_url')
 
     if path == "create-service":
-
         return services_view_instance.create_service(organization_id=organization_id, uid=uid, name=name,
                                                      description=description, category=category, image_url=image_url,
                                                      home_url=home_url)
 
     elif path == "update-service":
-        if_bad_request_raise(request)
         services_id: Optional[str] = services_data.get('services_id')
-
         return services_view_instance.update_service(services_id=services_id, organization_id=organization_id, uid=uid,
                                                      name=name, description=description, category=category,
                                                      image_url=image_url, home_url=home_url)
