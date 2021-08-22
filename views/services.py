@@ -132,4 +132,23 @@ class ServicesView(ServiceValidator):
         self.check_parameters(name=name, category=category, description=description)
 
         if self.can_update_service(uid=uid, organization_id=organization_id, service_id=service_id):
-            pass
+
+            # TODO - first update service in paypal services
+
+            service_instance: Services = Services.query(Services.service_id == service_id).get()
+
+            if isinstance(service_instance, Services):
+                service_instance.name = name
+                service_instance.description = description
+                service_instance.category = category
+                service_instance.image_url = image_url
+                service_instance.home_url = home_url
+                key: Optional[ndb.Key] = service_instance.put()
+                if not isinstance(key, ndb.Key):
+                    message: str = "Database Error: Unable to update service details"
+                    raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
+                # TODO - update cache instances
+                message: str = "Successfully updated service or product"
+                return jsonify({'status': True, 'payload': service_instance.to_dict(),
+                                'message': message}), status_codes.status_ok_code
