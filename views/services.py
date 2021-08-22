@@ -17,7 +17,7 @@ __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
-from typing import Optional
+from typing import Optional, List
 from flask import jsonify, current_app
 # noinspection PyProtectedMember
 from google.cloud import ndb
@@ -199,24 +199,50 @@ class ServicesView(ServiceValidator):
         message: str = "User Not Authorized: cannot update service"
         return jsonify({'status': False, 'message': message}), error_codes.access_forbidden_error_code
 
-
     @use_context
     @handle_view_errors
-    def get_service(self, service_id: Optional[str], organization: Optional[str]) -> tuple:
+    def get_service(self, service_id: Optional[str], organization_id: Optional[str]) -> tuple:
         ***REMOVED***
 
         :param service_id:
-        :param organization:
+        :param organization_id:
         :return:
         ***REMOVED***
-        pass
+        if not isinstance(service_id, str) or not bool(service_id.strip()):
+            message: str = "service_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        service_instance: Services = Services.query(Services.organization_id == organization_id,
+                                                    Services.service_id == service_id).get()
+        if isinstance(service_instance, Services):
+            message: str = "successfully retrieved service"
+            return jsonify({'status': True, 'payload': service_instance.to_dict(),
+                            'message': message}), status_codes.status_ok_code
+        message: str = "Data Error: Service not found"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
-    def return_services(self, organization: Optional[str]) -> tuple:
+    def return_services(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
 
-        :param organization:
+        :param organization_id:
         :return:
         ***REMOVED***
-        pass
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        payload: List[Services] = [serv.to_dict() for serv in
+                                   Services.query(Services.organization_id == organization_id)]
+
+        if isinstance(payload, list) and len(payload):
+            message: str = "successfully retrieved services"
+            return jsonify({'status': True, 'payload': payload, 'message': message}), status_codes.status_ok_code
+
+        message: str = "Data Error: No services found"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
