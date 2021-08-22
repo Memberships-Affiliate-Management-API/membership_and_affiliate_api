@@ -54,4 +54,12 @@ def services_api(path: str) -> tuple:
 
     elif path == "activate-service":
         service_id: Optional[str] = services_data.get('service_id')
-        return services_view_instance.activate_service(service_id=service_id,organization_id=organization_id, uid=uid)
+        return services_view_instance.service_activation(service_id=service_id, organization_id=organization_id,
+                                                         uid=uid, is_active=True)
+
+    elif path == "de-activate-service":
+        service_id: Optional[str] = services_data.get('service_id')
+        return services_view_instance.service_activation(service_id=service_id, organization_id=organization_id,
+                                                         uid=uid, is_active=False)
+
+

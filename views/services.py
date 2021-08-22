@@ -163,21 +163,27 @@ class ServicesView(ServiceValidator):
 
     @use_context
     @handle_view_errors
-    def activate_service(self, service_id: Optional[str], organization_id: Optional[str], uid: Optional[str]) -> tuple:
+    def service_activation(self, service_id: Optional[str], organization_id: Optional[str], uid: Optional[str],
+                           is_active: bool) -> tuple:
         ***REMOVED***
             **activate_service**
                 given a service_id activate a service.
                 an active service is viewable by users
+        :param is_active:
         :param service_id:
         :param organization_id:
         :param uid:
         :return: tuple -> response, status_code
         ***REMOVED***
+        if not isinstance(is_active, bool):
+            message: str = "is_active: can only be a boolean"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         if self.can_update_service(service_id=service_id, organization_id=organization_id, uid=uid):
             service_instance: Optional[Services] = Services.query(Services.service_id == service_id).get()
 
             if isinstance(service_instance, Services):
-                service_instance.is_service_active = True
+                service_instance.is_service_active = is_active
                 key: Optional[ndb.Key] = service_instance.put(retries=self._max_retries, timeout=self._max_timeout)
                 if not isinstance(key, ndb.Key):
                     message: str = "Database Error: unable to activate service"
