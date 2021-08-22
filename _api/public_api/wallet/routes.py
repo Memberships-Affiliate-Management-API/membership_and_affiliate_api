@@ -64,6 +64,7 @@ def wallet() -> tuple:
 
 
 @wallet_bp.route('/api/v1/public/wallet/organization', methods=["GET", "POST", "DELETE", "PUT"])
+@handle_api_auth
 def org_wallet() -> tuple:
     # TODO Finalize of the authentication method to use here
     ***REMOVED***
@@ -99,6 +100,7 @@ def org_wallet() -> tuple:
 
 
 @wallet_bp.route('/api/v1/public/wallet/organization/<path:path>', methods=["GET"])
+@handle_api_auth
 def organization_wallets(path: str) -> tuple:
     ***REMOVED***
             returns all wallets relating to a specific organization.
