@@ -45,6 +45,9 @@ def services_api(path: str) -> tuple:
                                                      description=description, category=category, image_url=image_url,
                                                      home_url=home_url)
 
+    elif path == "update-service":
+        pass
+
 
 
 

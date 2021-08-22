@@ -43,9 +43,9 @@ class ServicesView(ServiceValidator):
 
     @use_context
     @handle_view_errors
-    def create_service(self, organization_id: str, uid: str, name: str,
-                       description: str, category: str, image_url: str,
-                       home_url: str) -> tuple:
+    def create_service(self, organization_id: Optional[str], uid: Optional[str], name: Optional[str],
+                       description: Optional[str], category: Optional[str], image_url: Optional[str],
+                       home_url: Optional[str]) -> tuple:
         ***REMOVED***
             **create_service**
                 creates a service locally and also on paypal
@@ -115,9 +115,28 @@ class ServicesView(ServiceValidator):
             message: str = '''Remote Error: Unable to create plan service please try again later or inform admin'''
             return jsonify({'status': False, 'message': message}), error_codes.remote_data_error
 
+            # TODO Investigate how we can update services especially on paypal
+            # TODO the steps that follows after creating a
+            # TODO service will be integrated into memberships
+
         message: str = '''You are not authorized to create services in this organization'''
         return jsonify({'status': False, 'message': message}), error_codes.access_forbidden_error_code
 
-        # TODO Investigate how we can update services especially on paypal
-        # TODO the steps that follows after creating a
-        # TODO service will be integrated into memberships
+    @use_context
+    @handle_view_errors
+    def update_service(self, service_id: Optional[str], organization_id: Optional[str], uid: Optional[str],
+                       name: Optional[str], description: Optional[str], category: Optional[str],
+                       image_url: Optional[str], home_url: Optional[str]) -> tuple:
+        ***REMOVED***
+
+        :param service_id:
+        :param organization_id:
+        :param uid:
+        :param name:
+        :param description:
+        :param category:
+        :param image_url:
+        :param home_url:
+        :return:
+        ***REMOVED***
+        pass
