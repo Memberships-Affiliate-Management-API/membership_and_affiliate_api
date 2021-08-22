@@ -28,9 +28,10 @@ from config.use_context import use_context
 from database.services import ServiceValidator, Services
 from main import app_cache
 from utils import return_ttl
+from views.cache_manager import CacheManager
 
 
-class ServicesView(ServiceValidator):
+class ServicesView(ServiceValidator, CacheManager):
     ***REMOVED***
         **Class ServicesView**
 
@@ -100,6 +101,7 @@ class ServicesView(ServiceValidator):
                     message: str = "Database Error: there was an error creating service"
                     raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
+                self.__delete_services_cache(services_view=ServicesView, organization_id=organization_id, service_id=service_id)
                 message: str = '''Successfully created plan service you may proceed to 
                 create payment plans for this service'''
                 return jsonify({'status': False, 'message': message}), status_codes.successfully_updated_code
@@ -152,7 +154,9 @@ class ServicesView(ServiceValidator):
                     message: str = "Database Error: Unable to update service details"
                     raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-                # TODO - update cache instances
+                self.__delete_services_cache(services_view=ServicesView, organization_id=organization_id,
+                                             service_id=service_id)
+
                 message: str = "Successfully updated service or product"
                 return jsonify({'status': True, 'payload': service_instance.to_dict(),
                                 'message': message}), status_codes.status_ok_code
@@ -190,7 +194,10 @@ class ServicesView(ServiceValidator):
                 if not isinstance(key, ndb.Key):
                     message: str = "Database Error: unable to activate service"
                     raise DataServiceError(status=error_codes.data_service_error_code, description=message)
-                # TODO - update cache
+
+                self.__delete_services_cache(services_view=ServicesView, organization_id=organization_id,
+                                             service_id=service_id)
+
                 message: str = "successfully activated service"
                 return jsonify({'status': True, 'payload': service_instance.to_dict(),
                                 'message': message}), status_codes.status_ok_code
@@ -239,7 +246,7 @@ class ServicesView(ServiceValidator):
         :param organization_id:
         :return:
         ***REMOVED***
-        # TODO intergrate cache delete events here
+        # TODO integrate cache delete events here
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)

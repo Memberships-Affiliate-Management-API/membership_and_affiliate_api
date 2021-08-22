@@ -167,3 +167,16 @@ class CacheManager:
         app_cache.delete_memoized(recruits_view.get_recruits_by_active_affiliate, recruits_view, affiliate_data,
                                   is_active)
         return True
+
+    @staticmethod
+    def __delete_services_cache(services_view, organization_id: str, service_id: str ) -> bool:
+        ***REMOVED***
+
+        :param services_view:
+        :param organization_id:
+        :param service_id:
+        :return:
+        ***REMOVED***
+
+        app_cache.delete_memoized(services_view.get_service, services_view, service_id, organization_id)
+        app_cache.delete_memoized(services_view.return_services, services_view, organization_id)
