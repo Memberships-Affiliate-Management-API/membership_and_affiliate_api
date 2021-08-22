@@ -68,6 +68,8 @@ def create_app(config_class=config_instance):
     from _api.admin_api.api.organizations.organization import admin_organization_api_bp
     from _api.admin_api.api.memberships.memberships import membership_plans_admin_api_bp
 
+    from _api.public_api.services.routes import services_public_api_bp
+
     # Routes registrations
     app.register_blueprint(affiliates_bp)
     app.register_blueprint(users_bp)
@@ -107,6 +109,8 @@ def create_app(config_class=config_instance):
     app.register_blueprint(client_users_api_bp)
     app.register_blueprint(memberships_client_api_bp)
     app.register_blueprint(services_client_api_bp)
+
+    app.register_blueprint(services_public_api_bp)
 
     # Error Handlers
     app.register_blueprint(default_handlers_bp)
