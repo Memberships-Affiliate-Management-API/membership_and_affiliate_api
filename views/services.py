@@ -118,6 +118,8 @@ class ServicesView(ServiceValidator):
                        name: Optional[str], description: Optional[str], category: Optional[str],
                        image_url: Optional[str], home_url: Optional[str]) -> tuple:
         ***REMOVED***
+            **update_service**
+                given service id update service details
 
         :param service_id:
         :param organization_id:

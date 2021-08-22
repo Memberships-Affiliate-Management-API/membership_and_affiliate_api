@@ -51,11 +51,3 @@ def services_api(path: str) -> tuple:
         return services_view_instance.update_service(services_id=services_id, organization_id=organization_id, uid=uid,
                                                      name=name, description=description, category=category,
                                                      image_url=image_url, home_url=home_url)
-
-
-
-
-
-
-
-
