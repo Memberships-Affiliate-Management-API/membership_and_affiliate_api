@@ -152,3 +152,9 @@ class ServicesView(ServiceValidator):
                 message: str = "Successfully updated service or product"
                 return jsonify({'status': True, 'payload': service_instance.to_dict(),
                                 'message': message}), status_codes.status_ok_code
+
+            message: str = "Data not Found: unable to update service as service was not found"
+            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+
+        message: str = "User Not Authorized: cannot update service"
+        return jsonify({'status': False, 'message': message}), error_codes.access_forbidden_error_code
