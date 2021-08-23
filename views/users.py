@@ -208,44 +208,57 @@ class UserEmails(Mailgun):
         message: str = "Bad Request Error: Email not verified please verify your account"
         raise RequestError(status=error_codes.bad_request_error_code, description=message)
 
-    def send_recovery_email(self, organization_id: Optional[str], email: Optional[str], recovery_code: str) -> tuple:
+    def send_recovery_email(self, organization_id: Optional[str], uid: Optional[str], recovery_code: str) -> None:
         ***REMOVED***
             **send_recovery_email**
                 send an email informing the user a recovery action has been activated on their account
 
-        :param email:
+        :param uid:
         :param organization_id:
         :param recovery_code
         :return:
         ***REMOVED***
-        response: Optional[dict] = None
-        if isinstance(organization_id, str):
-            response = self.__get_organization_data_async(organization_id=organization_id)
+        user_data, organization_data = self.return_organization_user(organization_id=organization_id, uid=uid)
 
-        # NOTE response here will already be a dict containing payload
-        if response:
-            organization_name: str = response['organization_name']
-            # NOTE during password recovery the link display should fit the look of the user of the api
-            password_reset_link: str = f'{self._base_url}{recovery_code}'
-            text_body = f'''
-            Hi
-             You are receiving this email because you requested
-             a password reset please click on the following link to reset your password 
-             and proceed: 
-             
-             {password_reset_link}
-             
-             '''
-            html_body = f'''
-            Hi
-             You are receiving this email because you requested
-             a password reset please click on the following link to reset your password 
-             and proceed:
-              
-             {password_reset_link}             
-             '''
-            return self.__do_send_mail(to_email=email, subject=f"{organization_name}Email Recovery Email",
-                                       text=text_body, html=html_body)
+        # NOTE during password recovery the link display should fit the look of the user of the api
+        email_verified: bool = user_data.get('email_verified')
+
+        _url: str = organization_data.get('recovery_callback_url', self._base_url + 'password-reset')
+        # NOTE splitting the forward slash if url endswith forward slash
+        _url = _url[:-1] if _url.endswith("/") else _url
+
+        password_reset_link: str = f"{_url}/{recovery_code}"
+
+        subject = f"{organization_data.get('organization_name')} Please reset your password"
+
+        text: str = f'''
+         Hi {user_data.get('names', " ")} {user_data.get('surname', " ")}
+        
+         You are receiving this email because you requested
+         a password reset please click on the following link to reset your password 
+         
+         {password_reset_link}
+         
+         if you did not make this request please ignore this email
+         
+         Thank You
+         {organization_data.get('organization_name')}
+         '''
+        html: str = f'''
+         <h3>Hi {user_data.get('names', " ")} {user_data.get('surname', " ")}</h3>
+         
+         <p>You are receiving this email because you requested
+         a password reset please click on the following link to reset your password</p>
+          
+         <p><a class='btn' href="{password_reset_link}">password reset link</a></p>
+
+         if you did not make this request please ignore this email
+         
+         <h4>Thank You</h4>
+         <strong>{organization_data.get('organization_name')}</strong>             
+         '''
+        if email_verified:
+            self.__do_send_mail(to_email=user_data.get('email'), subject=subject, text=text, html=html)
 
         message: str = "Bad Request Error: Email not verified please verify your account"
         raise RequestError(status=error_codes.bad_request_error_code, description=message)
@@ -1403,11 +1416,12 @@ class UserView(Validators, UserEmails, CacheManager):
                 message: str = "Database Error: Unable to create recovery code please try again later"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-            # TODO - remove cache values for this User
+            self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=user_model.uid,
+                                     cell=user_model.cell, email=email)
 
             # Using super method to send recovery email
-            return super().send_recovery_email(organization_id=organization_id, email=email,
-                                               recovery_code=user_model.recovery_code)
+            super().send_recovery_email(organization_id=organization_id, uid=user_model.uid,
+                                        recovery_code=user_model.recovery_code)
 
         # NOTE cannot send failure messages as it will give attackers more information than necessary
         message: str = "If your email is registered please check your inbox"
