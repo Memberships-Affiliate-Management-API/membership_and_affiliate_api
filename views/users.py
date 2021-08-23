@@ -45,7 +45,6 @@ class UserEmails(Mailgun):
         ***REMOVED***
         super(UserEmails, self).__init__()
 
-
     def send_welcome_to_admins_email(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
             **send_welcome_to_admins_email**
@@ -97,7 +96,36 @@ class UserEmails(Mailgun):
         :param organization_id:
         :return:
         ***REMOVED***
-        pass
+        user_data, organization_data = self.return_organization_user(organization_id=organization_id, uid=uid)
+        email: str = user_data.get('email')
+        name: str = user_data.get('names')
+        surname: str = user_data.get('surname')
+        email_verified: bool = user_data.get('email_verified')
+
+        subject: str = f"{organization_data.get('organization_name')} You are not longer admin"
+        text: str = f'''
+        hi {name} {surname}
+        you are no longer an admin of  {organization_data.get('organization_name')}
+
+        Please contact fellow admins @ {organization_data.get('home_url')} 
+        to find out why that is the case 
+
+        Thank You
+        {organization_data.get('organization_name')}        
+        '''
+
+        html: str = f'''
+        hi {name} {surname}
+        you are no longer an admin of  {organization_data.get('organization_name')}
+
+        Please contact fellow admins @ {organization_data.get('home_url')} 
+        to find out why that is the case 
+
+        Thank You
+        {organization_data.get('organization_name')}        
+        '''
+        if email_verified:
+            self.__do_send_mail(to_email=email, subject=subject, text=text)
 
     def send_welcome_to_support_email(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
