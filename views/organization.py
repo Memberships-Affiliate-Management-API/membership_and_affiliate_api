@@ -85,7 +85,7 @@ class OrganizationEmails(Mailgun):
         <strong>{current_app.config.get('APP_NAME')}</strong>                            
         '''
         email: Optional[str] = user_data.get('email')
-        if email_verified and email:
+        if email_verified and bool(email):
             self.__do_send_mail(to_email=email, subject=subject, text=text, html=html)
 
         message: str = "Bad Request Error: Email not verified please verify your account"
