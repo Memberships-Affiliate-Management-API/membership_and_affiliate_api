@@ -955,9 +955,8 @@ class UserView(Validators, UserEmails, CacheManager):
                 # TODO- rather mark user as deleted
                 cell: str = user_instance.cell
                 email: str = user_instance.email
-
-                self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=uid, email=email,
-                                         cell=cell)
+                _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+                self.__schedule_cache_deletion(func=self.__delete_user_cache, kwargs=_kwargs)
 
                 user_instance.key.delete()
                 return jsonify({'status': True,
@@ -1335,9 +1334,8 @@ class UserView(Validators, UserEmails, CacheManager):
             user_instance.put_async().get_result()
             cell: str = user_instance.cell
             email: str = user_instance.email
-
-            self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=uid, email=email,
-                                     cell=cell)
+            _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+            self.__schedule_cache_deletion(func=self.__delete_user_cache, kwargs=_kwargs)
 
             return jsonify({'status': True, 'message': 'user deactivated'}), status_codes.status_ok_code
 
@@ -1411,9 +1409,8 @@ class UserView(Validators, UserEmails, CacheManager):
                 message: str = "Database Error: Unable to create recovery code please try again later"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-            self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=user_model.uid,
-                                     cell=user_model.cell, email=email)
-
+            _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+            self.__schedule_cache_deletion(func=self.__delete_user_cache, kwargs=_kwargs)
             # Using super method to send recovery email
             super().send_recovery_email(organization_id=organization_id, uid=user_model.uid,
                                         recovery_code=user_model.recovery_code)
