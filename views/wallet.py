@@ -383,7 +383,8 @@ class WalletView(Validator, WalletEmails, CacheManager):
         self.__schedule_cache_deletion(func=self.__delete_wallet_cache, kwargs=_kwargs)
 
         # Sending an email notification to the user informing them that the wallet has been created successfully
-        self.wallet_created_successfully(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
+        kwargs: dict = dict(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
+        self.__base_email_scheduler(func=self.wallet_created_successfully, kwargs=kwargs)
 
         return jsonify({'status': True, 'message': 'successfully created wallet',
                         'payload': wallet_instance.to_dict()}), status_codes.successfully_updated_code
@@ -414,7 +415,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
                                                    is_org_wallet=is_org_wallet, available_funds=amount_instance,
                                                    paypal_address=paypal_address)
 
-        key = wallet_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
+        key: Optional[ndb.Key] = wallet_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
         if not bool(key):
             raise DataServiceError(status=error_codes.data_service_error_code,
                                    description="An Error occurred creating Wallet")
@@ -423,7 +424,8 @@ class WalletView(Validator, WalletEmails, CacheManager):
         self.__schedule_cache_deletion(func=self.__delete_wallet_cache, kwargs=_kwargs)
 
         # Sending an email notification to the user informing them that the wallet has been created successfully
-        self.wallet_created_successfully(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
+        kwargs: dict = dict(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
+        self.__base_email_scheduler(func=self.wallet_created_successfully, kwargs=kwargs)
 
         return jsonify({'status': True, 'message': 'successfully created wallet',
                         'payload': wallet_instance.to_dict()}), status_codes.successfully_updated_code
@@ -519,7 +521,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
         amount_instance: AmountMixin = AmountMixin(amount=available_funds, currency=currency)
         wallet_instance.available_funds = amount_instance
         wallet_instance.paypal_address = paypal_address
-        key = wallet_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+        key: Optional[ndb.Key] = wallet_instance.put(retries=self._max_retries, timeout=self._max_timeout)
         if not bool(key):
             message: str = "Database Error: occurred updating Wallet"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
