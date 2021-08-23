@@ -42,21 +42,6 @@ class AffiliatesEmails(Mailgun):
         self._send_with: str = 'mailgun'
         # TODO add more email providers here
 
-    def __do_send_mail(self, to_email: str, subject: str, text: str, html: str) -> None:
-        ***REMOVED***
-            **__do_send_mail**
-                send email with mailgun or another email provider
-
-        :param subject:
-        :param text:
-        :param html:
-        :return:
-        ***REMOVED***
-        if self._send_with == "mailgun":
-            seconds_after = datetime_now() + datetime.timedelta(seconds=15)
-            schedule.add_job(func=self.__send_with_mailgun_rest_api, trigger='date', run_date=seconds_after, kwargs=dict(
-                to_list=[to_email], sbject=subject, text=text, html=html), id=create_id(), name='send_affiliates_email')
-
 
 # TODO Create Test Cases for Affiliates View and Documentations
 # Dont Edit Just Watch can you see this
