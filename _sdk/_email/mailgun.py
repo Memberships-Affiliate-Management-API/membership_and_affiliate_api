@@ -14,13 +14,15 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
 import requests
-import typing
 from flask import jsonify, current_app
 from config import config_instance
 from config.exceptions import status_codes, error_codes
-from typing import List
+from typing import List, Optional
 import aiohttp
 import asyncio
+
+from main import app_cache
+from utils import return_ttl
 
 
 class Mailgun:
@@ -31,6 +33,7 @@ class Mailgun:
 
         TODO - feature development add Mailgun Templates see Email-templates on Github Repos
     ***REMOVED***
+
     def __init__(self):
         ***REMOVED***
             mailgun_domain : domain name registered with mailgun
@@ -47,7 +50,7 @@ class Mailgun:
 
     # TODO - replace requests with this all over the application
     @staticmethod
-    async def __async_request(_url, json_data, headers) -> typing.Union[dict, None]:
+    async def __async_request(_url, json_data, headers) -> Optional[dict]:
         async with aiohttp.ClientSession() as session:
             async with session.post(url=_url, json=json_data, headers=headers) as response:
                 response, status = response
@@ -57,7 +60,8 @@ class Mailgun:
                     return user_data
                 return None
 
-    async def __get_user_data_async(self, organization_id: str, uid: str) -> typing.Union[dict, None]:
+    @app_cache.memoize(timeout=return_ttl('short'))
+    async def __get_user_data_async(self, organization_id: str, uid: str) -> Optional[dict]:
         ***REMOVED***
             from an api obtain user details related to the parameters
         :param organization_id: organization_id related to the user
@@ -67,9 +71,10 @@ class Mailgun:
         _url: str = f'{self._base_url}{self._admin_get_user_endpoint}'
         json_data = dict(organization_id=organization_id, uid=uid, SECRET_KEY=self._secret_key)
         headers = {'content-type': 'application/json'}
-        return asyncio.run(self.__async_request(_url=_url, json_data=json_data, headers=headers))
+        return await self.__async_request(_url=_url, json_data=json_data, headers=headers)
 
-    async def __get_membership_data_async(self, organization_id: str, uid: str) -> typing.Union[dict, None]:
+    @app_cache.memoize(timeout=return_ttl('short'))
+    async def __get_membership_data_async(self, organization_id: str, uid: str) -> Optional[dict]:
         ***REMOVED***
             **__get_membership_data_async**
                 asynchronously from an api obtain membership plan details related to the parameters
@@ -80,9 +85,10 @@ class Mailgun:
         _url: str = f'{self._base_url}{self._admin_get_membership_plan_endpoint}'
         json_data = dict(organization_id=organization_id, uid=uid, SECRET_KEY=self._secret_key)
         headers = {'content-type': 'application/json'}
-        return asyncio.run(self.__async_request(_url=_url, json_data=json_data, headers=headers))
+        return await self.__async_request(_url=_url, json_data=json_data, headers=headers)
 
-    async def __get_organization_data_async(self, organization_id: str) -> typing.Union[dict, None]:
+    @app_cache.memoize(timeout=return_ttl('short'))
+    async def __get_organization_data_async(self, organization_id: str) -> Optional[dict]:
         ***REMOVED***
             **__get_organization_data**
                 asynchronously returns the organization details based on the organization id and uid
@@ -93,7 +99,7 @@ class Mailgun:
         _url: str = f'{config_instance.BASE_URL}{self._admin_get_organization_endpoint}'
         json_data = dict(organization_id=organization_id, SECRET_KEY=self._secret_key)
         headers = {'content-type': 'application/json'}
-        return asyncio.run(self.__async_request(_url=_url, json_data=json_data, headers=headers))
+        return await self.__async_request(_url=_url, json_data=json_data, headers=headers)
 
     def __send_with_mailgun_rest_api(self, to_list: List[str], subject: str, text: str, html: str,
                                      o_tag: List[str] = None) -> bool:
@@ -119,4 +125,3 @@ class Mailgun:
                                        "subject": subject, "text": text, "html": html, "o:tag": o_tag})
 
         return True
-
