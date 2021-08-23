@@ -125,10 +125,16 @@ class PayPalOrders(PayPalClient):
         self.authorize_response = response
         return response
 
-    ***REMOVED***This function can be used to capture an approved authorization. 
-    Valid authorization id should be passed as an argument to this function.***REMOVED***
     def capture_order(self, authorization_id: typing.Union[str, None] = None, debug=False):
-        ***REMOVED***Method to capture order using authorization_id***REMOVED***
+        ***REMOVED***
+            This function can be used to capture an approved authorization.
+            Valid authorization id should be passed as an argument to this function.
+
+            :param authorization_id:
+            :param debug:
+            :return:
+        ***REMOVED***
+
         if isinstance(authorization_id, str):
             capture_request = AuthorizationsCaptureRequest(authorization_id)
         else:
