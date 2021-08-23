@@ -11,13 +11,10 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 
 import asyncio
 import typing
-from datetime import timedelta
 from typing import Optional
 from flask import jsonify, current_app
 from google.cloud import ndb
 from werkzeug.security import check_password_hash
-
-from _cron.scheduler import schedule
 from _sdk._email import Mailgun
 from config.exceptions import error_codes, status_codes, InputError, UnAuthenticatedError, DataServiceError, \
     RequestError
@@ -395,7 +392,8 @@ class UserView(Validators, UserEmails, CacheManager):
             message: str = "Unable to save database"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-        self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+        _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+        self.__schedule_cache_deletion(func=self.__delete_user_cache, kwargs=_kwargs)
 
         return jsonify({'status': True,
                         "message": "Successfully created new user",
@@ -438,7 +436,8 @@ class UserView(Validators, UserEmails, CacheManager):
             message: str = "Unable to save user database"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-        self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+        _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+        self.__schedule_cache_deletion(func=self.__delete_user_cache, kwargs=_kwargs)
 
         return jsonify({'status': True,
                         "message": "Successfully created new user",
@@ -487,8 +486,8 @@ class UserView(Validators, UserEmails, CacheManager):
                 message: str = "Unable to save user database"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-            self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=uid, email=email,
-                                     cell=cell)
+            _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+            self.__schedule_cache_deletion(func=self.__delete_user_cache, kwargs=_kwargs)
 
             return jsonify({'status': True, 'message': 'successfully updated user details',
                             'payload': user_instance.to_dict()}), status_codes.successfully_updated_code
