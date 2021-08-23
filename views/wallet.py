@@ -8,16 +8,14 @@ __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
-import asyncio
+
 import typing
-from datetime import timedelta
 from typing import Optional
 from flask import jsonify, current_app
-from _cron.scheduler import schedule
 from _sdk._email import Mailgun
 from database.mixins import AmountMixin
 from database.wallet import WalletModel, WalletValidator
-from utils import return_ttl, datetime_now, create_id
+from utils import return_ttl
 from config.exceptions import DataServiceError, UnAuthenticatedError, status_codes, error_codes, InputError
 from config.exception_handlers import handle_view_errors
 from config.use_context import use_context
