@@ -757,9 +757,8 @@ class UserView(Validators, UserEmails, CacheManager):
 
             cell: str = user_instance.cell
             email: str = user_instance.email
-
-            self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=uid, email=email,
-                                     cell=cell)
+            _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+            self.__schedule_cache_deletion(func=self.__delete_user_cache, kwargs=_kwargs)
 
             message: str = "Successfully Update admin status"
             return jsonify({'status': True, 'payload': user_instance.to_dict(),
@@ -797,8 +796,8 @@ class UserView(Validators, UserEmails, CacheManager):
 
             cell: str = user_instance.cell
             email: str = user_instance.email
-            self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=uid, email=email,
-                                     cell=cell)
+            _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+            self.__schedule_cache_deletion(func=self.__delete_user_cache, kwargs=_kwargs)
 
             message: str = "Successfully Update support status"
             return jsonify({'status': True, 'payload': user_instance.to_dict(),
@@ -859,9 +858,8 @@ class UserView(Validators, UserEmails, CacheManager):
 
             cell: str = user_instance.cell
             email: str = user_instance.email
-
-            self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=uid, email=email,
-                                     cell=cell)
+            _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+            self.__schedule_cache_deletion(func=self.__delete_user_cache, kwargs=_kwargs)
 
             message: str = "Successfully updated user address"
             return jsonify({'status': True, 'payload': user_instance.to_dict(),
@@ -907,9 +905,8 @@ class UserView(Validators, UserEmails, CacheManager):
             if isinstance(user_instance, UserModel):
                 cell: str = user_instance.cell
                 email: str = user_instance.email
-
-                self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=uid, email=email,
-                                         cell=cell)
+                _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+                self.__schedule_cache_deletion(func=self.__delete_user_cache, kwargs=_kwargs)
 
                 # TODO- rather mark user as deleted
                 user_instance.key.delete()
