@@ -145,8 +145,8 @@ class Mailgun:
 
     def __do_schedule_mail(self, to_email: str, subject: str, text: str, html: str) -> None:
         ***REMOVED***
-            **__do_send_mail**
-                If possible this method should be run asynchronously a method to actually send email
+            **__do_schedule_mail**
+                using APScheduler schedule the emails to be sent at a later period
 
         :param to_email: email address to send the email to
         :param subject: subject of the email
@@ -155,6 +155,9 @@ class Mailgun:
         :return: does not return anything
         ***REMOVED***
         # Scheduling email to be sent later with mailgun api
-        seconds_after = datetime_now() + timedelta(seconds=5)
-        schedule.add_job(func=self.__send_with_mailgun_rest_api, trigger='date', run_date=seconds_after, kwargs=dict(
-            to_list=[to_email], sbject=subject, text=text, html=html), id=create_id())
+        # Note: creating arguments dict
+        _kwargs: dict = dict(to_list=[to_email], sbject=subject, text=text, html=html)
+        # 5 seconds after now the email will be sent
+        five_seconds_after = datetime_now() + timedelta(seconds=5)
+        schedule.add_job(func=self.__send_with_mailgun_rest_api, trigger='date', run_date=five_seconds_after,
+                         kwargs=_kwargs, id=create_id())
