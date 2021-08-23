@@ -9,6 +9,7 @@ __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
+import asyncio
 import typing
 from datetime import timedelta
 from typing import Optional
@@ -44,7 +45,7 @@ class UserEmails(Mailgun):
         ***REMOVED***
         super(UserEmails, self).__init__()
 
-    def __do_send_mail(self, to_email: str, subject: str, text: str, html: str) -> tuple:
+    def __do_send_mail(self, to_email: str, subject: str, text: str, html: str) -> None:
         ***REMOVED***
             **__do_send_mail**
                 If possible this method should be run asynchronously a method to actually send email
@@ -70,7 +71,37 @@ class UserEmails(Mailgun):
         :param organization_id:
         :return:
         ***REMOVED***
-        pass
+        user_data, organization_data = self.return_organization_user(organization_id=organization_id, uid=uid)
+        email: str = user_data.get('email')
+        name: str = user_data.get('names')
+        surname: str = user_data.get('surname')
+        email_verified: bool = user_data.get('email_verified')
+
+        subject: str = f"{organization_data.get('organization_name')} Welcome to to Admins"
+
+        text: str = f'''
+        hi {name} {surname}
+        you have been successfully registered as an administrator of {organization_data.get('organization_name')}
+        
+        Please contact fellow admins @ {organization_data.get('home_url')} 
+        to find out what your responsibilities entails 
+        
+        Thank You
+        {organization_data.get('organization_name')}        
+        '''
+
+        html: str = f'''
+        hi {name} {surname}
+        you have been successfully registered as an administrator of {organization_data.get('organization_name')}
+        
+        Please contact fellow admins @ {organization_data.get('home_url')} 
+        to find out what your responsibilities entails 
+        
+        Thank You
+        {organization_data.get('organization_name')}                    
+        '''
+        if email_verified:
+            self.__do_send_mail(to_email=email, subject=subject, text=text)
 
     def send_goodbye_admin_email(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
@@ -104,7 +135,7 @@ class UserEmails(Mailgun):
         ***REMOVED***
         pass
 
-    def send_recovery_email(self, organization_id: Optional[str],  email: Optional[str], recovery_code: str) -> tuple:
+    def send_recovery_email(self, organization_id: Optional[str], email: Optional[str], recovery_code: str) -> tuple:
         ***REMOVED***
             **send_recovery_email**
                 send an email informing the user a recovery action has been activated on their account
@@ -148,6 +179,7 @@ class Validators(UserValidators, OrgValidators):
     ***REMOVED***
         User Validators
     ***REMOVED***
+
     def __init__(self):
         super(Validators, self).__init__()
         self._max_retries = current_app.config.get('DATASTORE_RETRIES')
@@ -226,6 +258,7 @@ class UserView(Validators, UserEmails, CacheManager):
     ***REMOVED***
         User-View handling business logic for UserModel
     ***REMOVED***
+
     def __init__(self):
         super(UserView, self).__init__()
 
@@ -239,9 +272,9 @@ class UserView(Validators, UserEmails, CacheManager):
     # ----------------------------------------Main API Functions------------------------->
     @use_context
     @handle_view_errors
-    def add_user(self,   organization_id: Optional[str], names:  Optional[str],
-                 surname:  Optional[str], cell:  Optional[str], email:  Optional[str],
-                 password:  Optional[str], uid:  Optional[str] = None) -> tuple:
+    def add_user(self, organization_id: Optional[str], names: Optional[str],
+                 surname: Optional[str], cell: Optional[str], email: Optional[str],
+                 password: Optional[str], uid: Optional[str] = None) -> tuple:
         ***REMOVED***
             Register a new User
                 this is called for registering a new user
@@ -282,9 +315,9 @@ class UserView(Validators, UserEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    async def add_user_async(self, organization_id: Optional[str],  names:  Optional[str], surname:  Optional[str],
-                             cell:  Optional[str], email:  Optional[str],
-                             password:  Optional[str], uid:  Optional[str] = None) -> tuple:
+    async def add_user_async(self, organization_id: Optional[str], names: Optional[str], surname: Optional[str],
+                             cell: Optional[str], email: Optional[str],
+                             password: Optional[str], uid: Optional[str] = None) -> tuple:
         ***REMOVED***
             creates a new user asynchronously - all parameters are required
         :param organization_id:
@@ -325,9 +358,9 @@ class UserView(Validators, UserEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    def update_user(self, organization_id: Optional[str], uid:  Optional[str],
-                    names:  Optional[str], surname:  Optional[str],
-                    cell:  Optional[str], email:  Optional[str], is_admin: bool,
+    def update_user(self, organization_id: Optional[str], uid: Optional[str],
+                    names: Optional[str], surname: Optional[str],
+                    cell: Optional[str], email: Optional[str], is_admin: bool,
                     is_support: bool) -> tuple:
         ***REMOVED***
                 update user details all fields are required -
@@ -365,7 +398,8 @@ class UserView(Validators, UserEmails, CacheManager):
                 message: str = "Unable to save user database"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-            self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+            self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=uid, email=email,
+                                     cell=cell)
 
             return jsonify({'status': True, 'message': 'successfully updated user details',
                             'payload': user_instance.to_dict()}), status_codes.successfully_updated_code
@@ -375,9 +409,9 @@ class UserView(Validators, UserEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    async def update_user_async(self, organization_id: Optional[str], uid:  Optional[str],
-                                names:  Optional[str], surname:  Optional[str],
-                                cell:  Optional[str], email:  Optional[str],
+    async def update_user_async(self, organization_id: Optional[str], uid: Optional[str],
+                                names: Optional[str], surname: Optional[str],
+                                cell: Optional[str], email: Optional[str],
                                 is_admin: bool, is_support: bool) -> tuple:
         ***REMOVED***
             update user details asynchronously
@@ -413,7 +447,8 @@ class UserView(Validators, UserEmails, CacheManager):
                 message: str = "Unable to save user database"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-            self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+            self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=uid, email=email,
+                                     cell=cell)
 
             return jsonify({'status': True, 'message': 'successfully updated user details',
                             'payload': user_instance.to_dict()}), status_codes.successfully_updated_code
@@ -424,7 +459,7 @@ class UserView(Validators, UserEmails, CacheManager):
     @use_context
     @handle_view_errors
     def update_user_names(self, organization_id: Optional[str], uid: Optional[str],
-                          names:  Optional[str], surname: Optional[str]) -> tuple:
+                          names: Optional[str], surname: Optional[str]) -> tuple:
         ***REMOVED***
             given organization_id and uid update names
         :param organization_id: required
@@ -457,7 +492,8 @@ class UserView(Validators, UserEmails, CacheManager):
             cell: str = user_instance.cell
             email: str = user_instance.email
 
-            self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+            self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=uid, email=email,
+                                     cell=cell)
 
             message: str = "Successfully updated user names"
             return jsonify({'status': True, 'payload': user_instance.to_dict(),
@@ -496,7 +532,8 @@ class UserView(Validators, UserEmails, CacheManager):
             # Note that the old cache needs to be removed as it has now an entry relating to the old cell
             cell: str = old_cell
             email: str = user_instance.email
-            self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+            self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=uid, email=email,
+                                     cell=cell)
 
             message: str = "Successfully Updated Cell Number"
             return jsonify({'status': True, 'payload': user_instance.to_dict(),
@@ -534,7 +571,8 @@ class UserView(Validators, UserEmails, CacheManager):
 
                 cell: str = user_instance.cell
                 email: str = old_email
-                self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+                self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=uid, email=email,
+                                         cell=cell)
 
                 message: str = "Successfully Updated Email Record please check your email inbox for verification email"
                 return jsonify({'status': True, 'payload': user_instance.to_dict(),
@@ -550,7 +588,7 @@ class UserView(Validators, UserEmails, CacheManager):
     @use_context
     @handle_view_errors
     def update_password(self, organization_id: Optional[str], uid: Optional[str],
-                        password:  Optional[str], new_password: Optional[str]) -> tuple:
+                        password: Optional[str], new_password: Optional[str]) -> tuple:
         ***REMOVED***
             update password given  organization_id and uid update password
             check if old password matches the present password if that's the case then
@@ -588,7 +626,8 @@ class UserView(Validators, UserEmails, CacheManager):
             cell: str = user_instance.cell
             email: str = user_instance.email
 
-            self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+            self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=uid, email=email,
+                                     cell=cell)
 
             # TODO - logoff the user
             message: str = "Successfully Updated Password - please login again"
@@ -632,7 +671,8 @@ class UserView(Validators, UserEmails, CacheManager):
             cell: str = user_instance.cell
             email: str = user_instance.email
 
-            self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+            self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=uid, email=email,
+                                     cell=cell)
 
             message: str = "Successfully Update admin status"
             return jsonify({'status': True, 'payload': user_instance.to_dict(),
@@ -641,7 +681,7 @@ class UserView(Validators, UserEmails, CacheManager):
     @use_context
     @handle_view_errors
     def set_is_support(self, organization_id: Optional[str], uid: Optional[str],
-                       is_support:  Optional[bool]) -> tuple:
+                       is_support: Optional[bool]) -> tuple:
         ***REMOVED***
             given organization_id and uid set support role
         :param organization_id:
@@ -670,7 +710,8 @@ class UserView(Validators, UserEmails, CacheManager):
 
             cell: str = user_instance.cell
             email: str = user_instance.email
-            self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+            self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=uid, email=email,
+                                     cell=cell)
 
             message: str = "Successfully Update support status"
             return jsonify({'status': True, 'payload': user_instance.to_dict(),
@@ -732,7 +773,8 @@ class UserView(Validators, UserEmails, CacheManager):
             cell: str = user_instance.cell
             email: str = user_instance.email
 
-            self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+            self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=uid, email=email,
+                                     cell=cell)
 
             message: str = "Successfully updated user address"
             return jsonify({'status': True, 'payload': user_instance.to_dict(),
@@ -743,7 +785,7 @@ class UserView(Validators, UserEmails, CacheManager):
     @use_context
     @handle_view_errors
     def delete_user(self, organization_id: Optional[str], uid: Optional[str] = None,
-                    email: Optional[str] = None, cell:  Optional[str] = None) -> tuple:
+                    email: Optional[str] = None, cell: Optional[str] = None) -> tuple:
         ***REMOVED***
             given either, uid, email or cell delete user
             :param organization_id:
@@ -776,11 +818,11 @@ class UserView(Validators, UserEmails, CacheManager):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.cell == cell).get()
             if isinstance(user_instance, UserModel):
-
                 cell: str = user_instance.cell
                 email: str = user_instance.email
 
-                self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+                self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=uid, email=email,
+                                         cell=cell)
 
                 # TODO- rather mark user as deleted
                 user_instance.key.delete()
@@ -793,7 +835,7 @@ class UserView(Validators, UserEmails, CacheManager):
     @use_context
     @handle_view_errors
     async def delete_user_async(self, organization_id: Optional[str], uid: Optional[str] = None,
-                                email: Optional[str] = None, cell:  Optional[str] = None) -> tuple:
+                                email: Optional[str] = None, cell: Optional[str] = None) -> tuple:
         ***REMOVED***
             given either, uid, email or cell delete user
             :param organization_id:
@@ -830,7 +872,8 @@ class UserView(Validators, UserEmails, CacheManager):
                 cell: str = user_instance.cell
                 email: str = user_instance.email
 
-                self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+                self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=uid, email=email,
+                                         cell=cell)
 
                 user_instance.key.delete()
                 return jsonify({'status': True,
@@ -983,8 +1026,8 @@ class UserView(Validators, UserEmails, CacheManager):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    def get_user(self, organization_id: Optional[str], uid:  Optional[str] = None, cell:  Optional[str] = None,
-                 email:  Optional[str] = None) -> tuple:
+    def get_user(self, organization_id: Optional[str], uid: Optional[str] = None, cell: Optional[str] = None,
+                 email: Optional[str] = None) -> tuple:
         ***REMOVED***
             return a user either by uid, cell or email
             :param organization_id:
@@ -1036,8 +1079,8 @@ class UserView(Validators, UserEmails, CacheManager):
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
-    async def get_user_async(self, organization_id: Optional[str], uid:  Optional[str] = None,
-                             cell:  Optional[str] = None, email:  Optional[str] = None) -> tuple:
+    async def get_user_async(self, organization_id: Optional[str], uid: Optional[str] = None,
+                             cell: Optional[str] = None, email: Optional[str] = None) -> tuple:
         ***REMOVED***
             return a user either by uid, cell or email
             :param organization_id:
@@ -1085,7 +1128,7 @@ class UserView(Validators, UserEmails, CacheManager):
     @use_context
     @handle_view_errors
     def check_password(self, organization_id: Optional[str], uid: Optional[str],
-                       password:  Optional[str]) -> tuple:
+                       password: Optional[str]) -> tuple:
         ***REMOVED***
             check password
         :param organization_id:
@@ -1119,7 +1162,7 @@ class UserView(Validators, UserEmails, CacheManager):
     @use_context
     @handle_view_errors
     async def check_password_async(self, organization_id: Optional[str],
-                                   uid: Optional[str], password:  Optional[str]) -> tuple:
+                                   uid: Optional[str], password: Optional[str]) -> tuple:
         ***REMOVED***
             check password asynchronously
         :param organization_id:
@@ -1176,7 +1219,8 @@ class UserView(Validators, UserEmails, CacheManager):
             cell: str = user_instance.cell
             email: str = user_instance.email
 
-            self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+            self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=uid, email=email,
+                                     cell=cell)
 
             return jsonify({'status': True, 'message': 'user deactivated'}), status_codes.status_ok_code
 
@@ -1208,7 +1252,8 @@ class UserView(Validators, UserEmails, CacheManager):
             cell: str = user_instance.cell
             email: str = user_instance.email
 
-            self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+            self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=uid, email=email,
+                                     cell=cell)
 
             return jsonify({'status': True, 'message': 'user deactivated'}), status_codes.status_ok_code
 
@@ -1216,7 +1261,7 @@ class UserView(Validators, UserEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    def login(self, organization_id: Optional[str], email:   Optional[str],
+    def login(self, organization_id: Optional[str], email: Optional[str],
               password: Optional[str]) -> tuple:
         ***REMOVED***
             this login utility may support client app , not necessary for admin and service to service calls
@@ -1313,4 +1358,3 @@ class UserView(Validators, UserEmails, CacheManager):
 
         message: str = "user not found"
         return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
-
