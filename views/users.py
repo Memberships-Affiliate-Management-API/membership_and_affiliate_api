@@ -713,9 +713,8 @@ class UserView(Validators, UserEmails, CacheManager):
 
             cell: str = user_instance.cell
             email: str = user_instance.email
-
-            self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=uid, email=email,
-                                     cell=cell)
+            _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+            self.__schedule_cache_deletion(func=self.__delete_user_cache, kwargs=_kwargs)
 
             # TODO - logoff the user
             message: str = "Successfully Updated Password - please login again"
