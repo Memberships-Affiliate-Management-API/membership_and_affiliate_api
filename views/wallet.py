@@ -8,11 +8,11 @@ __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
+import asyncio
 import typing
 from datetime import timedelta
 from typing import Optional
 from flask import jsonify, current_app
-
 from _cron.scheduler import schedule
 from _sdk._email import Mailgun
 from database.mixins import AmountMixin
@@ -50,17 +50,48 @@ class WalletEmails(Mailgun):
         schedule.add_job(func=self.__send_with_mailgun_rest_api, trigger='date', run_date=seconds_after, kwargs=dict(
             to_list=[to_email], sbject=subject, text=text, html=html), id=create_id(), name='send_memberships_email')
 
-    def send_balance_changed_notification(self, organization_id: str, uid: str) -> None:
+    def send_balance_changed_notification(self, wallet_instance: WalletModel, organization_id: str, uid: str) -> None:
         ***REMOVED***
             **send_balance_changed_notification**
                 send an email to client or organization informing them that balance has changed on their wallet
 
+        :param wallet_instance:
         :param organization_id:
         :param uid:
         :return:
         ***REMOVED***
         # TODO finish send_balance_changed_notification
-        pass
+        user_data: dict = asyncio.run(self.__get_user_data_async(organization_id=organization_id, uid=uid))
+        organization_data: dict = asyncio.run(self._admin_get_organization_endpoint(organization_id=organization_id))
+        email: str = user_data.get('email')
+        name: str = user_data.get('names')
+        surname: str = user_data.get('surname')
+        email_verified: bool = user_data.get('email_verified')
+        new_balance: AmountMixin = wallet_instance.available_funds
+        monthly_withdrawal_allowance: AmountMixin = wallet_instance.monthly_withdrawal_allowance
+
+        subject = f"{organization_data.get('organization_name')} Your Wallet Balance Changed"
+        text = f'''
+        hi {name} {surname} 
+        this email is intended to notify you that your wallet balance has changed.
+        
+        Available Funds: {str(new_balance)}
+        Monthly Withdrawal Allowance: {str(monthly_withdrawal_allowance)}
+        
+        Thank you
+        {organization_data.get('organization_name')}                 
+        '''
+        html = f'''
+        hi {name} {surname} 
+        this email is intended to notify you that your wallet balance has changed.
+        
+        Available Funds: {str(new_balance)}
+        Monthly Withdrawal Allowance: {str(monthly_withdrawal_allowance)}
+        
+        Thank you
+        {organization_data.get('organization_name')}                         
+        '''
+        self.__do_send_mail(to_email=email, subject=subject, text=text, html=html)
 
     def wallet_created_successfully(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
@@ -445,6 +476,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
         self.__delete_wallet_cache(wallet_view=WalletView, organization_id=organization_id, uid=uid)
+        self.wallet_details_changed(organization_id=organization_id, uid=uid)
 
         return jsonify({'status': True, 'payload': wall_instance.to_dict(),
                         'message': 'successfully updated wallet'}), status_codes.successfully_updated_code
@@ -499,6 +531,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
         self.__delete_wallet_cache(wallet_view=WalletView, organization_id=organization_id, uid=uid)
+        self.wallet_details_changed(organization_id=organization_id, uid=uid)
 
         return jsonify({'status': True, 'payload': wall_instance.to_dict(),
                         'message': 'successfully updated wallet'}), status_codes.successfully_updated_code
@@ -537,6 +570,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
         self.__delete_wallet_cache(wallet_view=WalletView, organization_id=organization_id, uid=uid)
+        self.wallet_details_changed(organization_id=organization_id, uid=uid)
 
         return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
                         'message': 'wallet is rest'}), status_codes.successfully_updated_code
@@ -576,6 +610,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
         self.__delete_wallet_cache(wallet_view=WalletView, organization_id=organization_id, uid=uid)
+        self.wallet_details_changed(organization_id=organization_id, uid=uid)
 
         return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
                         'message': 'wallet is rest'}), status_codes.successfully_updated_code
@@ -739,6 +774,8 @@ class WalletView(Validator, WalletEmails, CacheManager):
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
             self.__delete_wallet_cache(wallet_view=WalletView, organization_id=organization_id, uid=uid)
+            self.send_balance_changed_notification(wallet_instance=wallet_instance, organization_id=organization_id,
+                                                   uid=uid)
 
             message: str = "Successfully created transaction"
             return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
