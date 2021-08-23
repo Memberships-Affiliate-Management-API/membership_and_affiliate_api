@@ -33,17 +33,6 @@ class WalletEmails(Mailgun):
     def __init__(self):
         super(WalletEmails, self).__init__()
 
-    def return_organization_user(self, organization_id: str, uid: str) -> tuple:
-        event_loop = asyncio.get_event_loop()
-        tasks = [self.__get_user_data_async(organization_id=organization_id, uid=uid),
-                 self.__get_organization_data_async(organization_id=organization_id)]
-        results, _ = event_loop.run_until_complete(asyncio.wait(tasks))
-        user_data_future, organization_data_future = results
-        user_data = user_data_future.result()
-        organization_data = organization_data_future.result()
-        event_loop.close()
-        return user_data, organization_data
-
     def __do_send_mail(self, to_email: str, subject: str, text: str, html: str) -> None:
         ***REMOVED***
             **__do_send_mail**
