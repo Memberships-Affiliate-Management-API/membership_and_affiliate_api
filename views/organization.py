@@ -19,7 +19,8 @@ from google.cloud import ndb
 from _cron.scheduler import schedule
 from _sdk._email import Mailgun
 from config.exception_handlers import handle_view_errors, handle_store_errors
-from config.exceptions import InputError, DataServiceError, error_codes, status_codes, UnAuthenticatedError
+from config.exceptions import InputError, DataServiceError, error_codes, status_codes, UnAuthenticatedError, \
+    RequestError
 from config.use_context import use_context
 from database.mixins import AmountMixin
 from database.organization import Organization, OrgValidators
@@ -48,7 +49,45 @@ class OrganizationEmails(Mailgun):
             :param uid:
             :return:
         ***REMOVED***
-        pass
+        user_data, organization_data = self.return_organization_user(organization_id=organization_id, uid=uid)
+        email_verified: bool = user_data.get('email_verified')
+        subject: str = f"{organization_data.get('organization_name')} Organization was created successfully"
+
+        text: str = f'''
+        Hi {user_data.get('names', " ")} {user_data.get('surname', " ")}
+        
+        Your organization has been successfully created : {organization_data.get('organization_name')}
+        Organization Name: {organization_data.get('organization_name')}
+        Description: {organization_data.get('description')}
+        Website Home: {organization_data.get('home_url')}
+        Login Callback URL : {organization_data.get('login_callback_url')}
+        Password Recovery Callback URL : {organization_data.get('recovery_callback_url')}
+         
+        
+        Thank you
+        {current_app.config.get('APP_NAME')}                
+        '''
+        html: str = f'''
+        <h3>Hi {user_data.get('names', " ")} {user_data.get('surname', " ")}</h3>
+        
+        <p>Your organization has been successfully created : {organization_data.get('organization_name')}</p>
+        <ol>
+        <li>Organization Name: {organization_data.get('organization_name')}</li>
+        <li>Description: {organization_data.get('description')}</li>
+        <li>Website Home: {organization_data.get('home_url')}</li>
+        <li>Login Callback URL : {organization_data.get('login_callback_url')}</li>
+        <li>Password Recovery Callback URL : {organization_data.get('recovery_callback_url')}</li>
+        </ol>
+                
+        <h4>Thank you</h4>
+        <strong>{current_app.config.get('APP_NAME')}</strong>                            
+        '''
+        email: Optional[str] = user_data.get('email')
+        if email_verified and email:
+            self.__do_send_mail(to_email=email, subject=subject, text=text, html=html)
+
+        message: str = "Bad Request Error: Email not verified please verify your account"
+        raise RequestError(status=error_codes.bad_request_error_code, description=message)
 
     def send_organization_wallet_created_email(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
