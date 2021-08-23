@@ -83,7 +83,7 @@ class UserEmails(Mailgun):
         <strong>{organization_data.get('organization_name')}</strong>                    
         '''
         if email_verified:
-            self.__do_send_mail(to_email=user_data.get('email'), subject=subject, text=text, html=html)
+            self.__do_schedule_mail(to_email=user_data.get('email'), subject=subject, text=text, html=html)
 
         message: str = "Bad Request Error: Email not verified please verify your account"
         raise RequestError(status=error_codes.bad_request_error_code, description=message)
@@ -123,7 +123,7 @@ class UserEmails(Mailgun):
         <strong>{organization_data.get('organization_name')}</strong>        
         '''
         if email_verified:
-            self.__do_send_mail(to_email=user_data.get('email'), subject=subject, text=text, html=html)
+            self.__do_schedule_mail(to_email=user_data.get('email'), subject=subject, text=text, html=html)
 
         message: str = "Bad Request Error: Email not verified please verify your account"
         raise RequestError(status=error_codes.bad_request_error_code, description=message)
@@ -163,7 +163,7 @@ class UserEmails(Mailgun):
         <strong>{organization_data.get('organization_name')}</strong>        
         '''
         if email_verified:
-            self.__do_send_mail(to_email=user_data.get('email'), subject=subject, text=text, html=html)
+            self.__do_schedule_mail(to_email=user_data.get('email'), subject=subject, text=text, html=html)
 
         message: str = "Bad Request Error: Email not verified please verify your account"
         raise RequestError(status=error_codes.bad_request_error_code, description=message)
@@ -203,7 +203,7 @@ class UserEmails(Mailgun):
         <strong>{organization_data.get('organization_name')}</strong>        
         '''
         if email_verified:
-            self.__do_send_mail(to_email=user_data.get('email'), subject=subject, text=text, html=html)
+            self.__do_schedule_mail(to_email=user_data.get('email'), subject=subject, text=text, html=html)
 
         message: str = "Bad Request Error: Email not verified please verify your account"
         raise RequestError(status=error_codes.bad_request_error_code, description=message)
@@ -258,7 +258,7 @@ class UserEmails(Mailgun):
          <strong>{organization_data.get('organization_name')}</strong>             
          '''
         if email_verified:
-            self.__do_send_mail(to_email=user_data.get('email'), subject=subject, text=text, html=html)
+            self.__do_schedule_mail(to_email=user_data.get('email'), subject=subject, text=text, html=html)
 
         message: str = "Bad Request Error: Email not verified please verify your account"
         raise RequestError(status=error_codes.bad_request_error_code, description=message)

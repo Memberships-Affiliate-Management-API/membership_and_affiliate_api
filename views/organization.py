@@ -87,7 +87,7 @@ class OrganizationEmails(Mailgun):
         '''
         email: Optional[str] = user_data.get('email')
         if email_verified and bool(email):
-            self.__do_send_mail(to_email=email, subject=subject, text=text, html=html)
+            self.__do_schedule_mail(to_email=email, subject=subject, text=text, html=html)
 
         message: str = "Bad Request Error: Email not verified please verify your account"
         raise RequestError(status=error_codes.bad_request_error_code, description=message)
@@ -124,7 +124,7 @@ class OrganizationEmails(Mailgun):
         '''
         email: Optional[str] = user_data.get('email')
         if email_verified and bool(email):
-            self.__do_send_mail(to_email=email, subject=subject, text=text, html=html)
+            self.__do_schedule_mail(to_email=email, subject=subject, text=text, html=html)
 
         message: str = "Bad Request Error: Email not verified please verify your account"
         raise RequestError(status=error_codes.bad_request_error_code, description=message)
@@ -174,7 +174,7 @@ class OrganizationEmails(Mailgun):
         '''
         email: Optional[str] = user_data.get('email')
         if email_verified and bool(email):
-            self.__do_send_mail(to_email=email, subject=subject, text=text, html=html)
+            self.__do_schedule_mail(to_email=email, subject=subject, text=text, html=html)
 
         message: str = "Bad Request Error: Email not verified please verify your account"
         raise RequestError(status=error_codes.bad_request_error_code, description=message)
@@ -242,7 +242,7 @@ class OrganizationEmails(Mailgun):
 
         email: str = user_data.get('email')
         if email_verified and bool(email):
-            self.__do_send_mail(to_email=email, subject=subject, text=text, html=html)
+            self.__do_schedule_mail(to_email=email, subject=subject, text=text, html=html)
 
         message: str = "Bad Request Error: Email not verified please verify your account"
         raise RequestError(status=error_codes.bad_request_error_code, description=message)

@@ -74,7 +74,7 @@ class WalletEmails(Mailgun):
         {organization_data.get('organization_name')}                         
         '''
         if email_verified:
-            self.__do_send_mail(to_email=email, subject=subject, text=text, html=html)
+            self.__do_schedule_mail(to_email=email, subject=subject, text=text, html=html)
 
     def wallet_created_successfully(self, wallet_instance: WalletModel, organization_id: str, uid: str) -> None:
         ***REMOVED***
@@ -115,7 +115,7 @@ class WalletEmails(Mailgun):
                {organization_data.get('organization_name')}                 
                '''
         if email_verified:
-            self.__do_send_mail(to_email=email, subject=subject, text=text, html=html)
+            self.__do_schedule_mail(to_email=email, subject=subject, text=text, html=html)
 
     def wallet_details_changed(self, wallet_instance: WalletModel, organization_id: str, uid: str) -> None:
         ***REMOVED***
@@ -162,7 +162,7 @@ class WalletEmails(Mailgun):
                {organization_data.get('organization_name')}                 
                '''
         if email_verified:
-            self.__do_send_mail(to_email=email, subject=subject, text=text, html=html)
+            self.__do_schedule_mail(to_email=email, subject=subject, text=text, html=html)
 
 
 class Validator(WalletValidator):
