@@ -145,17 +145,52 @@ class WalletEmails(Mailgun):
         if email_verified:
             self.__do_send_mail(to_email=email, subject=subject, text=text, html=html)
 
-    def wallet_details_changed(self, organization_id: str, uid: str) -> None:
+    def wallet_details_changed(self, wallet_instance: WalletModel, organization_id: str, uid: str) -> None:
         ***REMOVED***
             **wallet_details_changed**
                 send an email informing the user that wallet details has changed
 
+        :param wallet_instance:
         :param organization_id:
         :param uid:
         :return:
         ***REMOVED***
-        # TODO wallet_details_changed
-        pass
+        user_data, organization_data = self.return_organization_user(organization_id=organization_id, uid=uid)
+        email: str = user_data.get('email')
+        name: str = user_data.get('names')
+        surname: str = user_data.get('surname')
+        email_verified: bool = user_data.get('email_verified')
+
+        subject = f"{organization_data.get('organization_name')} wallet created successfully"
+
+        text = f'''
+               hi {name} {surname} 
+               this email is intended to notify you that your wallet details have changed.
+
+               Available Funds: {str(wallet_instance.available_funds)}
+               Monthly Withdrawal Allowance: {str(wallet_instance.monthly_withdrawal_allowance)}
+               Paypal Email: {wallet_instance.paypal_address}
+               is_verified: {wallet_instance.is_verified}
+               last_transaction_time: {str(wallet_instance.last_transaction_time)}
+
+               Thank you
+               {organization_data.get('organization_name')}                 
+               '''
+        html = f'''
+               hi {name} {surname} 
+               this email is intended to notify you that your wallet details have changed.
+
+               Available Funds: {str(wallet_instance.available_funds)}
+               Monthly Withdrawal Allowance: {str(wallet_instance.monthly_withdrawal_allowance)}
+               Paypal Email: {wallet_instance.paypal_address}
+               is_verified: {wallet_instance.is_verified}
+               last_transaction_time: {str(wallet_instance.last_transaction_time)}
+
+               Thank you
+               {organization_data.get('organization_name')}                 
+               '''
+        if email_verified:
+            self.__do_send_mail(to_email=email, subject=subject, text=text, html=html)
 
 
 class Validator(WalletValidator):
@@ -503,22 +538,22 @@ class WalletView(Validator, WalletEmails, CacheManager):
             message: str = "You are not authorized to update this Wallet"
             raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
-        wall_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
+        wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
                                                        WalletModel.uid == uid).get()
 
         # No need to test for wallet availability as can update returned True
         amount_instance: AmountMixin = AmountMixin(amount=available_funds, currency=currency)
-        wall_instance.available_funds = amount_instance
-        wall_instance.paypal_address = paypal_address
-        key = wall_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+        wallet_instance.available_funds = amount_instance
+        wallet_instance.paypal_address = paypal_address
+        key = wallet_instance.put(retries=self._max_retries, timeout=self._max_timeout)
         if not bool(key):
             message: str = "Database Error: occurred updating Wallet"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
         self.__delete_wallet_cache(wallet_view=WalletView, organization_id=organization_id, uid=uid)
-        self.wallet_details_changed(organization_id=organization_id, uid=uid)
+        self.wallet_details_changed(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
 
-        return jsonify({'status': True, 'payload': wall_instance.to_dict(),
+        return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
                         'message': 'successfully updated wallet'}), status_codes.successfully_updated_code
 
     @use_context
@@ -557,23 +592,23 @@ class WalletView(Validator, WalletEmails, CacheManager):
             message: str = "You are not authorized to update this Wallet"
             raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
-        wall_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
+        wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
                                                        WalletModel.uid == uid).get_async().get_result()
 
         # No need to test for wallet availability as can update returned True
 
         amount_instance: AmountMixin = AmountMixin(amount=available_funds, currency=currency)
-        wall_instance.available_funds = amount_instance
-        wall_instance.paypal_address = paypal_address
-        key = wall_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
+        wallet_instance.available_funds = amount_instance
+        wallet_instance.paypal_address = paypal_address
+        key = wallet_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
         if not bool(key):
             message: str = "Database Error: while updating wallet"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
         self.__delete_wallet_cache(wallet_view=WalletView, organization_id=organization_id, uid=uid)
-        self.wallet_details_changed(organization_id=organization_id, uid=uid)
+        self.wallet_details_changed(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
 
-        return jsonify({'status': True, 'payload': wall_instance.to_dict(),
+        return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
                         'message': 'successfully updated wallet'}), status_codes.successfully_updated_code
 
     @use_context
@@ -610,7 +645,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
         self.__delete_wallet_cache(wallet_view=WalletView, organization_id=organization_id, uid=uid)
-        self.wallet_details_changed(organization_id=organization_id, uid=uid)
+        self.wallet_details_changed(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
 
         return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
                         'message': 'wallet is rest'}), status_codes.successfully_updated_code
@@ -650,7 +685,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
         self.__delete_wallet_cache(wallet_view=WalletView, organization_id=organization_id, uid=uid)
-        self.wallet_details_changed(organization_id=organization_id, uid=uid)
+        self.wallet_details_changed(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
 
         return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
                         'message': 'wallet is rest'}), status_codes.successfully_updated_code
