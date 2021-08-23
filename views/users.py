@@ -535,8 +535,8 @@ class UserView(Validators, UserEmails, CacheManager):
                 message: str = "Unable to save user database"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-            self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=uid, email=email,
-                                     cell=cell)
+            _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+            self.__schedule_cache_deletion(func=self.__delete_user_cache, kwargs=_kwargs)
 
             return jsonify({'status': True, 'message': 'successfully updated user details',
                             'payload': user_instance.to_dict()}), status_codes.successfully_updated_code
@@ -580,8 +580,8 @@ class UserView(Validators, UserEmails, CacheManager):
             cell: str = user_instance.cell
             email: str = user_instance.email
 
-            self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=uid, email=email,
-                                     cell=cell)
+            _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+            self.__schedule_cache_deletion(func=self.__delete_user_cache, kwargs=_kwargs)
 
             message: str = "Successfully updated user names"
             return jsonify({'status': True, 'payload': user_instance.to_dict(),
@@ -620,8 +620,8 @@ class UserView(Validators, UserEmails, CacheManager):
             # Note that the old cache needs to be removed as it has now an entry relating to the old cell
             cell: str = old_cell
             email: str = user_instance.email
-            self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=uid, email=email,
-                                     cell=cell)
+            _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+            self.__schedule_cache_deletion(func=self.__delete_user_cache, kwargs=_kwargs)
 
             message: str = "Successfully Updated Cell Number"
             return jsonify({'status': True, 'payload': user_instance.to_dict(),
@@ -659,8 +659,8 @@ class UserView(Validators, UserEmails, CacheManager):
 
                 cell: str = user_instance.cell
                 email: str = old_email
-                self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=uid, email=email,
-                                         cell=cell)
+                _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+                self.__schedule_cache_deletion(func=self.__delete_user_cache, kwargs=_kwargs)
 
                 message: str = "Successfully Updated Email Record please check your email inbox for verification email"
                 return jsonify({'status': True, 'payload': user_instance.to_dict(),
