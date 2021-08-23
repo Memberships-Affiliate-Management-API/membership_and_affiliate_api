@@ -664,6 +664,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
 
         _kwargs: dict = dict(wallet_view=WalletView, organization_id=organization_id, uid=uid)
         self.__schedule_cache_deletion(func=self.__delete_wallet_cache, kwargs=_kwargs)
+
         self.wallet_details_changed(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
 
         return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
