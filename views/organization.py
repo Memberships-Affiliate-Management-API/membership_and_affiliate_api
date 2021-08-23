@@ -56,7 +56,7 @@ class OrganizationEmails(Mailgun):
         text: str = f'''
         Hi {user_data.get('names', " ")} {user_data.get('surname', " ")}
         
-        Your organization has been successfully created : {organization_data.get('organization_name')}
+        Organization has been successfully created : {organization_data.get('organization_name')}
         
             Organization Name: {organization_data.get('organization_name')}
             Description: {organization_data.get('description')}
@@ -71,7 +71,7 @@ class OrganizationEmails(Mailgun):
         html: str = f'''
         <h3>Hi {user_data.get('names', " ")} {user_data.get('surname', " ")}</h3>
         
-        <p>Your organization has been successfully created : {organization_data.get('organization_name')}</p>
+        <p>Organization has been successfully created : {organization_data.get('organization_name')}</p>
         
         <ol>
             <li>Organization Name: {organization_data.get('organization_name')}</li>
@@ -99,7 +99,34 @@ class OrganizationEmails(Mailgun):
         :param uid:
         :return:
         ***REMOVED***
-        pass
+        user_data, organization_data = self.return_organization_user(organization_id=organization_id, uid=uid)
+        email_verified: bool = user_data.get('email_verified')
+        subject: str = f"{organization_data.get('organization_name')} Organization Wallet created successfully"
+
+        # TODO - obtain wallet details
+
+        text: str = f'''
+        Hi {user_data.get('names', " ")} {user_data.get('surname', " ")}
+
+        organization Wallet has been successfully created : {organization_data.get('organization_name')}
+
+        Thank you
+        {current_app.config.get('APP_NAME')}                
+        '''
+        html: str = f'''
+        <h3>Hi {user_data.get('names', " ")} {user_data.get('surname', " ")}</h3>
+
+        <p>Organization Wallet has been successfully created : {organization_data.get('organization_name')}</p>
+
+        <h4>Thank you</h4>
+        <strong>{current_app.config.get('APP_NAME')}</strong>                            
+        '''
+        email: Optional[str] = user_data.get('email')
+        if email_verified and bool(email):
+            self.__do_send_mail(to_email=email, subject=subject, text=text, html=html)
+
+        message: str = "Bad Request Error: Email not verified please verify your account"
+        raise RequestError(status=error_codes.bad_request_error_code, description=message)
 
 
 class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
