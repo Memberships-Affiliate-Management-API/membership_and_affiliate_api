@@ -931,5 +931,4 @@ class WalletView(Validator, WalletEmails, CacheManager):
         # TODO - complete this method
 
         self.__delete_wallet_cache(wallet_view=WalletView, organization_id=organization_id, uid=uid)
-
         pass
