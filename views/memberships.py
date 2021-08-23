@@ -114,10 +114,7 @@ class MembershipsEmails(Mailgun):
             :param uid
             :return:
         ***REMOVED***
-
-        # TODO compile a message here
         # TODO find out how to create templates and allow clients to create their email templates
-        # TODO: fetching user data over API -- all this must be done asynchronously
         loop = asyncio.get_event_loop()
 
         data_tasks = asyncio.gather(self.__get_user_data_async(organization_id=organization_id, uid=uid),
@@ -127,7 +124,6 @@ class MembershipsEmails(Mailgun):
         results = loop.run_until_complete(data_tasks)
         membership_data, organization_data, user_data = self._get_requests_results(results)
         loop.close()
-
 
         email: str = user_data.get('email')
         names: str = user_data.get('names', " ")
@@ -204,20 +200,52 @@ class MembershipsEmails(Mailgun):
         message: str = "Bad Request Error: Email not verified please verify your account"
         raise RequestError(status=error_codes.bad_request_error_code, description=message)
 
-    def send_payment_method_changed_email(self, organization_id: str, uid: str) -> None:
+    def send_payment_method_changed_email(self, organization_id: str, uid: str,
+                                          membership_instance: Memberships) -> None:
         ***REMOVED***
             **send_payment_method_changed_email**
                 send an email notifying the user that their payment method changed
                 TODO - call user api to fetch user details
                 TODO - with user details compile the payment changed email and send
 
+            :param membership_instance:
             :param organization_id : required
             :param uid: required
             :return:
         ***REMOVED***
-        # TODO compile a message here
         # TODO find out how to create templates and allow clients to create their email templates
-        pass
+        user_data, organization_data = self.return_organization_user(organization_id=organization_id, uid=uid)
+        email_verified: bool = user_data.get('email_verified')
+        subject: str = f"From: {organization_data.get('organization_name')} Your Payment Method has changed"
+
+        text: str = f'''
+        hi {user_data.get('names', " ")} {user_data.get('surname', " ")}
+        
+        Payment Method Changed Notification from : {organization_data.get('organization_name')}
+        
+        Your Present Payment Method is : {membership_instance.payment_method}
+        
+        Thank You
+            {organization_data.get('organization_name')}
+            Website: {organization_data.get('home_url')}        
+        '''
+        html: str = f'''
+        <h3>Hi {user_data.get('names', " ")} {user_data.get('surname', " ")}</h3>
+        
+        <p>Payment Method Changed Notification from : {organization_data.get('organization_name')}</p>
+        
+        <h4>Your Present Payment Method is : {membership_instance.payment_method}</h4>
+        
+        <h3>Thank You</h3>
+            <p>{organization_data.get('organization_name')}</p>
+            <p>Website: {organization_data.get('home_url')}</p>                
+        '''
+        email: str = user_data.get('email')
+        if email_verified and bool(email):
+            self.__do_send_mail(to_email=email, subject=subject, text=text, html=html)
+
+        message: str = "Bad Request Error: Email not verified please verify your account"
+        raise RequestError(status=error_codes.bad_request_error_code, description=message)
 
 
 # TODO Create Test Cases for Memberships & Documentations
@@ -867,7 +895,9 @@ class MembershipsView(Validators, MembershipsEmails):
                 raise InputError(status=error_codes.input_error_code, description=message)
 
             # Sending User payment method changed notification
-            self.send_payment_method_changed_email(organization_id=organization_id, uid=uid)
+            self.send_payment_method_changed_email(organization_id=organization_id, uid=uid,
+                                                   membership_instance=membership_instance)
+
             message: str = "successfully updated payment method"
             return jsonify({'status': True, 'payload': membership_instance.to_dict(),
                             'message': message}), status_codes.successfully_updated_code
