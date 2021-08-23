@@ -34,6 +34,7 @@ from views.cache_manager import CacheManager
 users_type = typing.List[UserModel]
 
 
+# noinspection DuplicatedCode
 class UserEmails(Mailgun):
     ***REMOVED***
         **Class UserEmails**
@@ -61,7 +62,7 @@ class UserEmails(Mailgun):
         subject: str = f"{organization_data.get('organization_name')} Welcome to to Admins"
 
         text: str = f'''
-        hi {user_data.get('names')} {user_data.get('surname')}
+        hi {user_data.get('names', " ")} {user_data.get('surname', " ")}
         you have been successfully registered as an administrator of {organization_data.get('organization_name')}
         
         Please contact fellow admins @ {organization_data.get('home_url')} 
@@ -72,7 +73,7 @@ class UserEmails(Mailgun):
         '''
 
         html: str = f'''
-        <h3>hi {user_data.get('names')} {user_data.get('surname')}</h3>
+        <h3>hi {user_data.get('names', " ")} {user_data.get('surname', " ")}</h3>
         <p>you have been successfully registered as an administrator of {organization_data.get('organization_name')}</p>
         
         <p>Please contact fellow admins @ {organization_data.get('home_url')} 
@@ -137,14 +138,11 @@ class UserEmails(Mailgun):
         :return:
         ***REMOVED***
         user_data, organization_data = self.return_organization_user(organization_id=organization_id, uid=uid)
-        email: str = user_data.get('email')
-        name: str = user_data.get('names')
-        surname: str = user_data.get('surname')
         email_verified: bool = user_data.get('email_verified')
 
         subject: str = f"{organization_data.get('organization_name')} Welcomes you to its support team"
         text: str = f'''
-        hi {name} {surname}
+        hi {user_data.get('names', " ")} {user_data.get('surname', " ")}
         You are a member of the support team of : {organization_data.get('organization_name')}
 
         Please contact fellow support members  @ {organization_data.get('home_url')} 
@@ -155,17 +153,17 @@ class UserEmails(Mailgun):
         '''
 
         html: str = f'''
-        hi {name} {surname}
-        You are a member of the support team of : {organization_data.get('organization_name')}
+        <h3>hi {user_data.get('names', " ")} {user_data.get('surname', " ")}</h3>
+        <p>You are a member of the support team of : {organization_data.get('organization_name')}</p>
 
-        Please contact fellow support members  @ {organization_data.get('home_url')} 
-        for more information on how to proceed.        
+        <p>Please contact fellow support members  @ {organization_data.get('home_url')} 
+        for more information on how to proceed.</p>        
 
-        Thank You
-        {organization_data.get('organization_name')}        
+        <h4>Thank You</h4>
+        <strong>{organization_data.get('organization_name')}</strong>        
         '''
         if email_verified:
-            self.__do_send_mail(to_email=email, subject=subject, text=text, html=html)
+            self.__do_send_mail(to_email=user_data.get('email'), subject=subject, text=text, html=html)
 
         message: str = "Bad Request Error: Email not verified please verify your account"
         raise RequestError(status=error_codes.bad_request_error_code, description=message)
@@ -180,14 +178,11 @@ class UserEmails(Mailgun):
         :return:
         ***REMOVED***
         user_data, organization_data = self.return_organization_user(organization_id=organization_id, uid=uid)
-        email: str = user_data.get('email')
-        name: str = user_data.get('names')
-        surname: str = user_data.get('surname')
         email_verified: bool = user_data.get('email_verified')
 
         subject: str = f"{organization_data.get('organization_name')} You are not longer a member of our support team"
         text: str = f'''
-        hi {name} {surname}
+        hi {user_data.get('names', " ")} {user_data.get('surname', " ")}
         You are no longer a member of the support team of : {organization_data.get('organization_name')}
 
         Please contact fellow support members  @ {organization_data.get('home_url')} 
@@ -198,17 +193,17 @@ class UserEmails(Mailgun):
         '''
 
         html: str = f'''
-        hi {name} {surname}
-        You are no longer a member of the support team of : {organization_data.get('organization_name')}
+        <h3>hi {user_data.get('names', " ")} {user_data.get('surname', " ")}</h3>
+        <p>You are no longer a member of the support team of : {organization_data.get('organization_name')}</p>
 
-        Please contact fellow support members  @ {organization_data.get('home_url')} 
-        for more information on how to proceed.        
+        <p>Please contact fellow support members  @ {organization_data.get('home_url')} 
+        for more information on how to proceed.</p>        
 
-        Thank You
-        {organization_data.get('organization_name')}        
+        <h4>Thank You</h4>
+        <strong>{organization_data.get('organization_name')}</strong>        
         '''
         if email_verified:
-            self.__do_send_mail(to_email=email, subject=subject, text=text, html=html)
+            self.__do_send_mail(to_email=user_data.get('email'), subject=subject, text=text, html=html)
 
         message: str = "Bad Request Error: Email not verified please verify your account"
         raise RequestError(status=error_codes.bad_request_error_code, description=message)
