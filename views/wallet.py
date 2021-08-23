@@ -915,4 +915,4 @@ class WalletView(Validator, WalletEmails, CacheManager):
         _kwargs: dict = dict(wallet_view=WalletView, organization_id=organization_id, uid=uid)
         self.__schedule_cache_deletion(func=self.__delete_wallet_cache, kwargs=_kwargs)
 
-        pass
+        return "OK", status_codes.status_ok_code
