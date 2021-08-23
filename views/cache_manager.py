@@ -11,11 +11,9 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
 from datetime import timedelta
-
 from _cron.scheduler import schedule
 from main import app_cache
-from typing import Optional
-
+from typing import Optional, Callable
 from utils import datetime_now, create_id
 
 
@@ -187,13 +185,14 @@ class CacheManager:
         return True
 
     @staticmethod
-    def __schedule_cache_deletion(func, kwargs) -> None:
+    def __schedule_cache_deletion(func: Callable, kwargs: dict) -> None:
         ***REMOVED***
         **schedule_cache_deletion**
-            schedule cache deletion such that it occurs sometime time in thr future
+            schedule cache deletion such that it occurs sometime time in the future
         :param func:
         :param kwargs:
         :return:
         ***REMOVED***
         twenty_seconds_after = datetime_now() + timedelta(seconds=20)
-        schedule.add_job(func=func, trigger='data', run_date=twenty_seconds_after, kwargs=kwargs, id=create_id())
+        schedule.add_job(func=func, trigger='data', run_date=twenty_seconds_after, kwargs=kwargs, id=create_id(),
+                         name="cache_deletion", misfire_grace_time=360)
