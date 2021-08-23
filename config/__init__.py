@@ -126,7 +126,7 @@ class Config:
             "CACHE_REDIS_PORT": 10433,
             "CACHE_REDIS_PASSWORD": password,
             "CACHE_REDIS_DB": f"{db}",
-            "CACHE_REDIS_URL": "rediss://{}{}@{}/2".format(user, password, redis_host),
+            "CACHE_REDIS_URL": "redis://{}{}@{}/2".format(user, password, redis_host),
             "CACHE_OPTIONS": ""
         }
 
