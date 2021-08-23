@@ -1301,9 +1301,8 @@ class UserView(Validators, UserEmails, CacheManager):
 
             cell: str = user_instance.cell
             email: str = user_instance.email
-
-            self.__delete_user_cache(user_view=UserView, organization_id=organization_id, uid=uid, email=email,
-                                     cell=cell)
+            _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+            self.__schedule_cache_deletion(func=self.__delete_user_cache, kwargs=_kwargs)
 
             return jsonify({'status': True, 'message': 'user deactivated'}), status_codes.status_ok_code
 
@@ -1412,8 +1411,9 @@ class UserView(Validators, UserEmails, CacheManager):
             _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
             self.__schedule_cache_deletion(func=self.__delete_user_cache, kwargs=_kwargs)
             # Using super method to send recovery email
-            super().send_recovery_email(organization_id=organization_id, uid=user_model.uid,
-                                        recovery_code=user_model.recovery_code)
+            kwargs: dict = dict(organization_id=organization_id, uid=user_model.uid,
+                                recovery_code=user_model.recovery_code)
+            self.__base_email_scheduler(func=super().send_recovery_email, kwargs=kwargs)
 
         # NOTE cannot send failure messages as it will give attackers more information than necessary
         message: str = "If your email is registered please check your inbox"
