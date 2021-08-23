@@ -65,7 +65,8 @@ class Organization(BaseModel):
             5. description: str -> detailed description for the organization
             6. total_affiliates: int -> a number equalling the total number of affiliates recruited by this organization
             7. total_paid: AmountMixin -> total amount of money in cents paid out from this organization to clients and etc
-            8. total_members: int -> total number of users or clients belonging to this organization
+            8. total_members: int -> total number of users or clients who are paying members or subscribers
+            9. total_users: int -> overall number of users
             9. projected_membership_payments : AmountMixin -> total expected earnings for this month
             10. total_membership_payments: AmountMixin -> total payments to the organization which came from memberships
             11. home_url: String -> Home page for the organization being registered
@@ -73,14 +74,16 @@ class Organization(BaseModel):
             13. recovery_callback_url: string -> recovery page callback url - specify where the user must be redirected to in order to complete password recovery process
 
     ***REMOVED***
+    # TODO - fully intergrate total users and total members
     owner_uid: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
     organization_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
     wallet_id: str = ndb.StringProperty(validator=property_.set_string, indexed=True, required=True)
     organization_name: str = ndb.StringProperty(validator=property_.set_string, required=True)
     description: str = ndb.StringProperty(validator=property_.set_string, required=True)
-    total_affiliates: int = ndb.IntegerProperty(validator=property_.set_number)
+    total_affiliates: int = ndb.IntegerProperty(default=0, validator=property_.set_number)
     total_paid: AmountMixin = ndb.StructuredProperty(AmountMixin)
-    total_members: int = ndb.IntegerProperty(validator=property_.set_number)
+    total_members: int = ndb.IntegerProperty(default=0, validator=property_.set_number)
+    total_users: int = ndb.IntegerProperty(default=0, validator=property_.set_number)
     projected_membership_payments: AmountMixin = ndb.StructuredProperty(AmountMixin)
     total_membership_payments: AmountMixin = ndb.StructuredProperty(AmountMixin)
     date_created: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=property_.set_datetime)
@@ -104,6 +107,11 @@ class Organization(BaseModel):
 
     def __bool__(self) -> bool:
         return bool(self.organization_id)
+
+    @property
+    def balance(self) -> AmountMixin:
+        amount = self.total_membership_payments.amount - self.total_paid.amount
+        return AmountMixin(amount=amount, currency=self.total_paid.currency)
 
 
 class AuthUserValidators:

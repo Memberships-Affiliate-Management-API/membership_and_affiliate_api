@@ -39,6 +39,7 @@ class OrganizationEmails(Mailgun):
     def __init__(self):
         super(OrganizationEmails, self).__init__()
 
+    # noinspection DuplicatedCode
     def send_successfully_created_organization(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
             **send_successfully_created_organization**
@@ -122,6 +123,124 @@ class OrganizationEmails(Mailgun):
         <strong>{current_app.config.get('APP_NAME')}</strong>                            
         '''
         email: Optional[str] = user_data.get('email')
+        if email_verified and bool(email):
+            self.__do_send_mail(to_email=email, subject=subject, text=text, html=html)
+
+        message: str = "Bad Request Error: Email not verified please verify your account"
+        raise RequestError(status=error_codes.bad_request_error_code, description=message)
+
+    # noinspection DuplicatedCode
+    def send_organization_updated_email(self, organization_id: str, uid: str) -> None:
+        ***REMOVED***
+
+        :param organization_id:
+        :param uid:
+        :return:
+        ***REMOVED***
+        user_data, organization_data = self.return_organization_user(organization_id=organization_id, uid=uid)
+        email_verified: bool = user_data.get('email_verified')
+        subject: str = f"{organization_data.get('organization_name')} Successfully updated"
+
+        text: str = f'''
+        Hi {user_data.get('names', " ")} {user_data.get('surname', " ")}
+
+        Organization : {organization_data.get('organization_name')} has been updated successfully. 
+
+            Organization Name: {organization_data.get('organization_name')}
+            Description: {organization_data.get('description')}
+            Website Home: {organization_data.get('home_url')}
+            Login Callback URL : {organization_data.get('login_callback_url')}
+            Password Recovery Callback URL : {organization_data.get('recovery_callback_url')}
+
+
+        Thank you
+        {current_app.config.get('APP_NAME')}                
+        '''
+        html: str = f'''
+        <h3>Hi {user_data.get('names', " ")} {user_data.get('surname', " ")}</h3>
+
+        <p>Organization : {organization_data.get('organization_name')} has been updated successfully.</p> 
+
+        <ol>
+            <li>Organization Name: {organization_data.get('organization_name')}</li>
+            <li>Description: {organization_data.get('description')}</li>
+            <li>Website Home: {organization_data.get('home_url')}</li>
+            <li>Login Callback URL : {organization_data.get('login_callback_url')}</li>
+            <li>Password Recovery Callback URL : {organization_data.get('recovery_callback_url')}</li>
+        </ol>
+
+        <h4>Thank you</h4>
+        <strong>{current_app.config.get('APP_NAME')}</strong>                            
+        '''
+        email: Optional[str] = user_data.get('email')
+        if email_verified and bool(email):
+            self.__do_send_mail(to_email=email, subject=subject, text=text, html=html)
+
+        message: str = "Bad Request Error: Email not verified please verify your account"
+        raise RequestError(status=error_codes.bad_request_error_code, description=message)
+
+    def send_organization_stats_email(self, organization_id: str, uid: str) -> None:
+        ***REMOVED***
+            **send_organization_stats_email**
+                sends organizational statistics email to organization owner
+
+        :param self:
+        :param organization_id:
+        :param uid:
+        :return:
+        ***REMOVED***
+        user_data, organization_data = self.return_organization_user(organization_id=organization_id, uid=uid)
+        email_verified = user_data.get('email_verified')
+        subject: str = f"User Statistics for {organization_data.get('organization_name')}"
+
+        text: str = f'''
+            hi {user_data.get('names', " ")} {user_data.get('surname', " ")}
+            
+            Here are your organization statistics for {organization_data.get('organization_name')}
+            
+            User Statistics
+            
+            Total Affiliates : {organization_data.get('total_affiliates')}
+            Total Subscriptions : {organization_data.get('total_members')}
+            Total Users: {organization_data.get('total_users')}
+            
+            
+            Income Statistics        
+    
+            Total Memberships Payments: {organization_data.get('total_membership_payments')}
+            Total Paid : {organization_data.get('total_paid')}
+            Balance: {organization_data.get('balance')}
+            
+            Thank you
+            {current_app.config.get('APP_NAME')}        
+        
+        '''
+
+        html: str = f'''
+            <h3>hi {user_data.get('names', " ")} {user_data.get('surname', " ")}</h3>
+            
+            <p>Here are your organization statistics for {organization_data.get('organization_name')}</p>
+            
+            <h3>User Statistics</h3>
+            <ol>
+                <li>Total Affiliates : {organization_data.get('total_affiliates')}</li>
+                <li>Total Subscriptions : {organization_data.get('total_members')}</li>
+                <li>Total Users: {organization_data.get('total_users')}</li>
+            </ol>
+            
+            
+            <h3>Income Statistics</h3>                    
+            <ol>    
+                <li>Total Memberships Payments: {organization_data.get('total_membership_payments')}</li>
+                <li>Total Paid : {organization_data.get('total_paid')}</li>
+                <li>Balance: {organization_data.get('balance')}</li>
+            </ol>
+            
+            <h4>Thank you</h4>
+            <strong>{current_app.config.get('APP_NAME')}</strong>                
+        '''
+
+        email: str = user_data.get('email')
         if email_verified and bool(email):
             self.__do_send_mail(to_email=email, subject=subject, text=text, html=html)
 
@@ -262,6 +381,8 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
             self.__delete_organization_cache(org_view=OrganizationView, organization_id=organization_id)
+            self.send_successfully_created_organization(organization_id=organization_id, uid=uid)
+            self.send_organization_wallet_created_email(organization_id=organization_id, uid=uid)
 
             message: str = "Successfully created Organization"
             return jsonify({'status': True, 'payload': organization_instance.to_dict(),
@@ -314,6 +435,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
 
                 # Delete Return all organizations
                 self.__delete_organization_cache(org_view=OrganizationView, organization_id=organization_id)
+                self.send_organization_updated_email(organization_id=organization_id, uid=uid)
 
                 message: str = "Successfully updated organization"
                 return jsonify({'status': True, 'payload': org_instance.to_dict(),
