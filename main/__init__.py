@@ -117,8 +117,8 @@ def create_app(config_class=config_instance):
     app.register_blueprint(default_handlers_bp)
 
     # Clear Cache
-    if clear_cache(app=app, cache=app_cache):
-        print("Cache Cleared and Starting")
+    # if clear_cache(app=app, cache=app_cache):
+    #     print("Cache Cleared and Starting")
 
     # Schedule Start
     schedule.start()

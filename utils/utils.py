@@ -256,6 +256,7 @@ def clear_cache(app, cache: Cache) -> bool:
     :param app -> present application
     :param cache -> cache instance to clear
     ***REMOVED***
+
     with app.app_context():
         cache.clear()
         return True

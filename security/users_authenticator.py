@@ -232,7 +232,7 @@ def logged_user(func):
     ***REMOVED***
     @wraps(func)
     def decorated(*args, **kwargs):
-        current_user: Optional[dict] = None
+        current_user: Optional[dict] = 0
         # NOTE: by passes authentication and returns admin user as authenticated
         # user on development
         if is_development():
