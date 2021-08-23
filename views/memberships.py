@@ -42,6 +42,67 @@ class MembershipsEmails(Mailgun):
     def __init__(self):
         super(MembershipsEmails, self).__init__()
 
+    @staticmethod
+    def welcome_email_body_composer(_names: str, _surname: str, _plan_name: str, _plan_description: str,
+                                    _organization_name: str,
+                                    _organization_description: str) -> tuple:
+        # Include Powered by Message on the Footer of the Email Message
+        ***REMOVED***
+            **Email body Composer**
+                compose the two email bodies given the above variables
+
+        :param _names:
+        :param _surname:
+        :param _plan_name:
+        :param _plan_description:
+        :param _organization_name:
+        :param _organization_description:
+        :return:
+        ***REMOVED***
+        # TODO find a way to format the email body wonderfully
+        _text_body = f'''
+            Hi {_names} {_surname}
+
+            Welcome to : {_organization_name}
+
+            You have recently subscribe to : {_plan_name}
+            {_plan_description}
+
+            Thank you
+            {_organization_name}
+
+        '''
+        _html_body = f'''
+            Hi {_names} {_surname}
+
+            Welcome to : {_organization_name}
+
+            You have recently subscribe to : {_plan_name}
+            {_plan_description}
+
+            Thank you
+            {_organization_name}
+
+        '''
+        return _text_body, _html_body
+
+    @staticmethod
+    def _get_requests_results(results) -> tuple:
+        ***REMOVED***
+            **_get_requests_results**
+                obtains results
+        :param results:
+        :return: tuple containing results
+        ***REMOVED***
+        if not isinstance(results, tuple):
+            message: str = "Remote data error: Unable to obtain data"
+            raise RemoteDataError(status=error_codes.remote_data_error, description=message)
+
+        user_data: Optional[dict] = results[0].result()
+        membership_data: Optional[dict] = results[1].result()
+        organization_data: Optional[dict] = results[2].result()
+        return membership_data, organization_data, user_data
+
     def send_memberships_welcome_email(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
             **send_memberships_welcome_email**
@@ -57,43 +118,6 @@ class MembershipsEmails(Mailgun):
         # TODO compile a message here
         # TODO find out how to create templates and allow clients to create their email templates
         # TODO: fetching user data over API -- all this must be done asynchronously
-
-        def email_body_composer(_names: str, _surname: str, _plan_name: str, _plan_description: str, _organization_name: str,
-                                _organization_description: str) -> tuple:
-            # Include Powered by Message on the Footer of the Email Message
-            ***REMOVED***
-                **Email body Composer**
-                    compose the two email bodies given the above variables
-
-            :param _names:
-            :param _surname:
-            :param _plan_name:
-            :param _plan_description:
-            :param _organization_name:
-            :param _organization_description:
-            :return:
-            ***REMOVED***
-            # TODO find a way to format the email body wonderfully
-            _text_body = f'''
-                Hi {_names} {_surname}
-                
-                Welcome to : {_organization_name}
-                
-                You have recently subscribe to : {_plan_name}
-                {_plan_description}
-                        
-            '''
-            _html_body = f'''
-                Hi {_names} {_surname}
-                
-                Welcome to : {_organization_name}
-                
-                You have recently subscribe to : {_plan_name}
-                {_plan_description}
-            
-            '''
-            return _text_body, _html_body
-
         loop = asyncio.get_event_loop()
 
         data_tasks = asyncio.gather(self.__get_user_data_async(organization_id=organization_id, uid=uid),
@@ -102,41 +126,30 @@ class MembershipsEmails(Mailgun):
 
         results = loop.run_until_complete(data_tasks)
         membership_data, organization_data, user_data = self._get_requests_results(results)
+        loop.close()
 
-        if user_data:
-            email: str = user_data.get('email')
-            names: str = user_data.get('names')
-            surname: str = user_data.get('surname')
-            plan_name: str = membership_data.get('plan_name')
-            plan_description: str = membership_data.get('description')
-            organization_name: str = organization_data.get('organization_name')
-            description: str = organization_data.get('description')
 
-            # Note: composes and returns email body given membership and organization details the member joined
-            text_body, html_body = email_body_composer(_names=names, _surname=surname, _plan_name=plan_name,
-                                                       _plan_description=plan_description,
-                                                       _organization_name=organization_name,
-                                                       _organization_description=description)
+        email: str = user_data.get('email')
+        names: str = user_data.get('names', " ")
+        surname: str = user_data.get('surname', " ")
+        plan_name: str = membership_data.get('plan_name')
+        plan_description: str = membership_data.get('description')
+        organization_name: str = organization_data.get('organization_name')
+        description: str = organization_data.get('description')
 
-            subject: str = 'Welcome to : {}'.format(organization_name)
+        # Note: composes and returns email body given membership and organization details the member joined
+        text_body, html_body = self.welcome_email_body_composer(_names=names, _surname=surname, _plan_name=plan_name,
+                                                                _plan_description=plan_description,
+                                                                _organization_name=organization_name,
+                                                                _organization_description=description)
+
+        subject: str = 'Welcome to : {}'.format(organization_name)
+        email_verified: bool = user_data.get('email_verified')
+        if email_verified and bool(email):
             self.__do_send_mail(to_email=email, subject=subject, text=text_body, html=html_body)
 
-    @staticmethod
-    def _get_requests_results(results: tuple) -> tuple:
-        ***REMOVED***
-            **_get_requests_results**
-                obtains results
-        :param results:
-        :return: tuple containing results
-        ***REMOVED***
-        if not isinstance(results, tuple):
-            message: str = "Remote data error: Unable to obtain data"
-            raise RemoteDataError(status=error_codes.remote_data_error, description=message)
-
-        user_data: Optional[dict] = results[0]
-        membership_data: Optional[dict] = results[1]
-        organization_data: Optional[dict] = results[2]
-        return membership_data, organization_data, user_data
+        message: str = "Bad Request Error: Email not verified please verify your account"
+        raise RequestError(status=error_codes.bad_request_error_code, description=message)
 
     def send_change_of_membership_notification_email(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
@@ -147,9 +160,49 @@ class MembershipsEmails(Mailgun):
             :param: uid
             :return:
         ***REMOVED***
-        # TODO compile a message here
         # TODO find out how to create templates and allow clients to create their email templates
-        pass
+        user_data, organization_data = self.return_organization_user(organization_id=organization_id, uid=uid)
+        membership_data: dict = asyncio.run(self.__get_membership_data_async(organization_id=organization_id, uid=uid))
+
+        email_verified: bool = user_data.get('email_verified')
+        subject: str = f"{organization_data.get('organization_name')} Your Membership Details have changed"
+
+        text: str = f'''
+        Hi {user_data.get('names', " ")} {user_data.get('surname', " ")}
+        
+        Your Subscription details have changed: 
+        
+            Subscription Name: {membership_data.get('plan_name')}
+            Registration Amount: {membership_data.get('registration_amount')}
+            Payment Schedule: {membership_data.get('schedule_term')}
+            Scheduled Amount: {membership_data.get('term_payment_amount')}
+         
+        Thank you
+        {organization_data.get('organization_name')}        
+        
+        '''
+
+        html: str = f'''
+        <h3>Hi {user_data.get('names', " ")} {user_data.get('surname', " ")}</h3>
+        
+        <h3>Your Subscription details have changed</h3> 
+        
+        <ol>
+            <li>Subscription Name: {membership_data.get('plan_name')}</li>
+            <li>Registration Amount: {membership_data.get('registration_amount')}</li>
+            <li>Payment Schedule: {membership_data.get('schedule_term')}</li>
+            <li>Scheduled Amount: {membership_data.get('term_payment_amount')}</li>
+        </ol>
+         
+        <h4>Thank you </h4>
+        <strong>{organization_data.get('organization_name')}</strong>        
+        '''
+        email: str = user_data.get('email')
+        if email_verified and bool(email):
+            self.__do_send_mail(to_email=email, subject=subject, text=text, html=html)
+
+        message: str = "Bad Request Error: Email not verified please verify your account"
+        raise RequestError(status=error_codes.bad_request_error_code, description=message)
 
     def send_payment_method_changed_email(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
