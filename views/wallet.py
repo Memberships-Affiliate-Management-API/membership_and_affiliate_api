@@ -539,7 +539,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
             raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
         wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
-                                                       WalletModel.uid == uid).get()
+                                                         WalletModel.uid == uid).get()
 
         # No need to test for wallet availability as can update returned True
         amount_instance: AmountMixin = AmountMixin(amount=available_funds, currency=currency)
@@ -593,7 +593,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
             raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
         wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
-                                                       WalletModel.uid == uid).get_async().get_result()
+                                                         WalletModel.uid == uid).get_async().get_result()
 
         # No need to test for wallet availability as can update returned True
 
