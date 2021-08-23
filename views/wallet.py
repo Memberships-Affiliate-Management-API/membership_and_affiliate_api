@@ -12,6 +12,8 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 import typing
 from typing import Optional
 from flask import jsonify, current_app
+from google.cloud import ndb
+
 from _sdk._email import Mailgun
 from database.mixins import AmountMixin
 from database.wallet import WalletModel, WalletValidator
@@ -525,7 +527,8 @@ class WalletView(Validator, WalletEmails, CacheManager):
         _kwargs: dict = dict(wallet_view=WalletView, organization_id=organization_id, uid=uid)
         self.__schedule_cache_deletion(func=self.__delete_wallet_cache, kwargs=_kwargs)
 
-        self.wallet_details_changed(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
+        kwargs: dict = dict(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
+        self.__base_email_scheduler(func=self.wallet_details_changed, kwargs=kwargs)
 
         return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
                         'message': 'successfully updated wallet'}), status_codes.successfully_updated_code
@@ -581,7 +584,9 @@ class WalletView(Validator, WalletEmails, CacheManager):
 
         _kwargs: dict = dict(wallet_view=WalletView, organization_id=organization_id, uid=uid)
         self.__schedule_cache_deletion(func=self.__delete_wallet_cache, kwargs=_kwargs)
-        self.wallet_details_changed(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
+
+        kwargs: dict = dict(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
+        self.__base_email_scheduler(func=self.wallet_details_changed, kwargs=kwargs)
 
         return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
                         'message': 'successfully updated wallet'}), status_codes.successfully_updated_code
@@ -614,14 +619,18 @@ class WalletView(Validator, WalletEmails, CacheManager):
 
         amount_instance: AmountMixin = AmountMixin(amount=0, currency=currency)
         wallet_instance.available_funds = amount_instance
-        key = wallet_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+        key: Optional[ndb.Key] = wallet_instance.put(retries=self._max_retries, timeout=self._max_timeout)
         if not bool(key):
             message: str = "Database Error: while updating wallet"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
+        # Note scheduling cache deletion function
         _kwargs: dict = dict(wallet_view=WalletView, organization_id=organization_id, uid=uid)
         self.__schedule_cache_deletion(func=self.__delete_wallet_cache, kwargs=_kwargs)
-        self.wallet_details_changed(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
+
+        # Note scheduling an email to send wallet details changed notifications
+        kwargs: dict = dict(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
+        self.__base_email_scheduler(func=self.wallet_details_changed, kwargs=kwargs)
 
         return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
                         'message': 'wallet is rest'}), status_codes.successfully_updated_code
@@ -660,10 +669,13 @@ class WalletView(Validator, WalletEmails, CacheManager):
             message: str = "Database error while resetting wallet"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
+        # Note Scheduling task to delete caches
         _kwargs: dict = dict(wallet_view=WalletView, organization_id=organization_id, uid=uid)
         self.__schedule_cache_deletion(func=self.__delete_wallet_cache, kwargs=_kwargs)
 
-        self.wallet_details_changed(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
+        # Note scheduling task to send Emails
+        kwargs: dict = dict(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
+        self.__base_email_scheduler(func=self.wallet_details_changed, kwargs=kwargs)
 
         return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
                         'message': 'wallet is rest'}), status_codes.successfully_updated_code
@@ -826,10 +838,13 @@ class WalletView(Validator, WalletEmails, CacheManager):
                 message: str = "General error updating database"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
+            # Scheduling cache deletions
             _kwargs: dict = dict(wallet_view=WalletView, organization_id=organization_id, uid=uid)
             self.__schedule_cache_deletion(func=self.__delete_wallet_cache, kwargs=_kwargs)
-            self.send_balance_changed_notification(wallet_instance=wallet_instance, organization_id=organization_id,
-                                                   uid=uid)
+
+            # Scheduling emails
+            kwargs: dict = dict(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
+            self.__base_email_scheduler(func=self.send_balance_changed_notification, kwargs=kwargs)
 
             message: str = "Successfully created transaction"
             return jsonify({'status': True, 'payload': wallet_instance.to_dict(),

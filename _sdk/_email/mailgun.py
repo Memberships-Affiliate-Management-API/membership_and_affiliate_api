@@ -161,3 +161,14 @@ class Mailgun:
         five_seconds_after = datetime_now() + timedelta(seconds=5)
         schedule.add_job(func=self.__send_with_mailgun_rest_api, trigger='date', run_date=five_seconds_after,
                          kwargs=_kwargs, id=create_id())
+
+    @staticmethod
+    def __base_email_scheduler(func, kwargs) -> None:
+        ***REMOVED***
+
+        :param func:
+        :param kwargs:
+        :return:
+        ***REMOVED***
+        seconds_after = datetime_now() + timedelta(seconds=10)
+        schedule.add_job(func=func, trigger='date', run_date=seconds_after, kwargs=kwargs, id=create_id())
