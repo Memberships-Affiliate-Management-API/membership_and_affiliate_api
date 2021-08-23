@@ -12,9 +12,10 @@ import functools
 from typing import Optional, List
 from google.api_core.exceptions import RetryError, Aborted
 from flask import jsonify, current_app
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from google.cloud import ndb
 
+from _cron.scheduler import schedule
 from config.exceptions import (DataServiceError, InputError, error_codes, status_codes,
                                UnAuthenticatedError, RequestError, RemoteDataError)
 from database.memberships import MembershipPlans, AccessRights, Memberships, Coupons
@@ -23,7 +24,7 @@ from database.mixins import AmountMixin
 from database.users import UserValidators as UserValid
 from database.memberships import MembershipValidators as MemberValid
 from database.memberships import CouponsValidator as CouponValid
-from utils.utils import return_ttl, timestamp, get_payment_methods
+from utils.utils import return_ttl, timestamp, get_payment_methods, datetime_now, create_id
 from main import app_cache
 from config.exception_handlers import handle_view_errors, handle_store_errors
 from config.use_context import use_context
@@ -54,8 +55,10 @@ class MembershipsEmails(Mailgun):
         :param html:
         :return:
         ***REMOVED***
-        # Actually sending email with mailgun api
-        self.__send_with_mailgun_rest_api(to_list=[to_email], subject=subject, text=text, html=html)
+        # Scheduling email to be sent later with mailgun api
+        seconds_after = datetime_now() + timedelta(seconds=15)
+        schedule.add_job(func=self.__send_with_mailgun_rest_api, trigger='date', run_date=seconds_after, kwargs=dict(
+            to_list=[to_email], sbject=subject, text=text, html=html), id=create_id(), name='send_memberships_email')
 
     def send_memberships_welcome_email(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
