@@ -384,8 +384,9 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
             _kwargs: dict = dict(org_view=OrganizationView, organization_id=organization_id)
             self.__schedule_cache_deletion(func=self.__delete_organization_cache, kwargs=_kwargs)
 
-            self.send_successfully_created_organization(organization_id=organization_id, uid=uid)
-            self.send_organization_wallet_created_email(organization_id=organization_id, uid=uid)
+            kwargs: dict = dict(organization_id=organization_id, uid=uid)
+            self.__base_email_scheduler(func=self.send_organization_wallet_created_email, kwargs=kwargs)
+            self.__base_email_scheduler(func=self.send_successfully_created_organization, kwargs=kwargs)
 
             message: str = "Successfully created Organization"
             return jsonify({'status': True, 'payload': organization_instance.to_dict(),
@@ -440,7 +441,8 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
                 _kwargs: dict = dict(org_view=OrganizationView, organization_id=organization_id)
                 self.__schedule_cache_deletion(func=self.__delete_organization_cache, kwargs=_kwargs)
 
-                self.send_organization_updated_email(organization_id=organization_id, uid=uid)
+                kwargs: dict = dict(organization_id=organization_id, uid=uid)
+                self.__base_email_scheduler(func=self.send_organization_updated_email, kwargs=kwargs)
 
                 message: str = "Successfully updated organization"
                 return jsonify({'status': True, 'payload': org_instance.to_dict(),
