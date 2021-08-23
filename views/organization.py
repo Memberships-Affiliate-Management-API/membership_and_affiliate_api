@@ -38,23 +38,6 @@ class OrganizationEmails(Mailgun):
     def __init__(self):
         super(OrganizationEmails, self).__init__()
 
-    def __do_send_mail(self, to_email: str, subject: str, text: str, html: str) -> None:
-        ***REMOVED***
-            **__do_send_mail**
-                If possible this method should be run asynchronously
-                a method to actually send email
-
-            :param to_email: email address to send the email to
-            :param subject: subject of the email
-            :param text: body in text format
-            :param html: body in html format
-            :return: does not return anything
-        ***REMOVED***
-        # Scheduling email to be sent later with mailgun api
-        seconds_after = datetime_now() + timedelta(seconds=15)
-        schedule.add_job(func=self.__send_with_mailgun_rest_api, trigger='date', run_date=seconds_after, kwargs=dict(
-            to_list=[to_email], sbject=subject, text=text, html=html), id=create_id(), name='send_organization_email')
-
     def send_successfully_created_organization(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
             **send_successfully_created_organization**
