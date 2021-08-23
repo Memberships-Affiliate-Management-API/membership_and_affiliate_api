@@ -125,7 +125,7 @@ class UserEmails(Mailgun):
         {organization_data.get('organization_name')}        
         '''
         if email_verified:
-            self.__do_send_mail(to_email=email, subject=subject, text=text)
+            self.__do_send_mail(to_email=email, subject=subject, text=text, html=html)
 
     def send_welcome_to_support_email(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
@@ -136,17 +136,76 @@ class UserEmails(Mailgun):
         :param organization_id:
         :return:
         ***REMOVED***
-        pass
+        user_data, organization_data = self.return_organization_user(organization_id=organization_id, uid=uid)
+        email: str = user_data.get('email')
+        name: str = user_data.get('names')
+        surname: str = user_data.get('surname')
+        email_verified: bool = user_data.get('email_verified')
 
-    def send_goodbye_support_email(self, email) -> None:
+        subject: str = f"{organization_data.get('organization_name')} Welcomes you to its support team"
+        text: str = f'''
+        hi {name} {surname}
+        You are a member of the support team of : {organization_data.get('organization_name')}
+
+        Please contact fellow support members  @ {organization_data.get('home_url')} 
+        for more information on how to proceed.        
+
+        Thank You
+        {organization_data.get('organization_name')}        
+        '''
+
+        html: str = f'''
+        hi {name} {surname}
+        You are a member of the support team of : {organization_data.get('organization_name')}
+
+        Please contact fellow support members  @ {organization_data.get('home_url')} 
+        for more information on how to proceed.        
+
+        Thank You
+        {organization_data.get('organization_name')}        
+        '''
+        if email_verified:
+            self.__do_send_mail(to_email=email, subject=subject, text=text, html=html)
+
+    def send_goodbye_support_email(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
             **send_goodbye_support_email**
                 used to send emails when users are no longer part of the support roles
 
-        :param email:
+        :param uid:
+        :param organization_id:
         :return:
         ***REMOVED***
-        pass
+        user_data, organization_data = self.return_organization_user(organization_id=organization_id, uid=uid)
+        email: str = user_data.get('email')
+        name: str = user_data.get('names')
+        surname: str = user_data.get('surname')
+        email_verified: bool = user_data.get('email_verified')
+
+        subject: str = f"{organization_data.get('organization_name')} You are not longer a member of our support team"
+        text: str = f'''
+        hi {name} {surname}
+        You are no longer a member of the support team of : {organization_data.get('organization_name')}
+
+        Please contact fellow support members  @ {organization_data.get('home_url')} 
+        for more information on how to proceed.        
+
+        Thank You
+        {organization_data.get('organization_name')}        
+        '''
+
+        html: str = f'''
+        hi {name} {surname}
+        You are no longer a member of the support team of : {organization_data.get('organization_name')}
+
+        Please contact fellow support members  @ {organization_data.get('home_url')} 
+        for more information on how to proceed.        
+
+        Thank You
+        {organization_data.get('organization_name')}        
+        '''
+        if email_verified:
+            self.__do_send_mail(to_email=email, subject=subject, text=text, html=html)
 
     def send_recovery_email(self, organization_id: Optional[str], email: Optional[str], recovery_code: str) -> tuple:
         ***REMOVED***
@@ -719,7 +778,7 @@ class UserView(Validators, UserEmails, CacheManager):
             if is_support:
                 self.send_welcome_to_support_email(organization_id=organization_id, uid=uid)
             else:
-                self.send_goodbye_support_email(email=user_instance.email)
+                self.send_goodbye_support_email(organization_id=organization_id, uid=uid)
 
             cell: str = user_instance.cell
             email: str = user_instance.email
