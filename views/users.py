@@ -10,10 +10,13 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
 import typing
+from datetime import timedelta
 from typing import Optional
 from flask import jsonify, current_app
 from google.cloud import ndb
 from werkzeug.security import check_password_hash
+
+from _cron.scheduler import schedule
 from _sdk._email import Mailgun
 from config.exceptions import error_codes, status_codes, InputError, UnAuthenticatedError, DataServiceError
 from database.mixins import AddressMixin
@@ -21,7 +24,7 @@ from database.organization import OrgValidators
 from main import app_cache
 from database.users import UserModel, UserValidators
 from security.users_authenticator import encode_auth_token
-from utils.utils import create_id, return_ttl
+from utils.utils import create_id, return_ttl, datetime_now
 from config.exception_handlers import handle_view_errors
 from config.use_context import use_context
 from views.cache_manager import CacheManager
@@ -52,7 +55,10 @@ class UserEmails(Mailgun):
         :param html: body in html format
         :return: does not return anything
         ***REMOVED***
-        return self.__send_with_mailgun_rest_api(to_list=[to_email], subject=subject, text=text, html=html)
+        # Scheduling email to be sent later with mailgun api
+        seconds_after = datetime_now() + timedelta(seconds=15)
+        schedule.add_job(func=self.__send_with_mailgun_rest_api, trigger='date', run_date=seconds_after, kwargs=dict(
+            to_list=[to_email], sbject=subject, text=text, html=html), id=create_id(), name='send_memberships_email')
 
     def send_welcome_to_admins_email(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
@@ -108,8 +114,10 @@ class UserEmails(Mailgun):
         :param recovery_code
         :return:
         ***REMOVED***
-        # TODO - actually send recovery email through MailGun here
-        response: Optional[dict] = self.__get_organization_data_async(organization_id=organization_id)
+        response: Optional[dict] = None
+        if isinstance(organization_id, str):
+            response = self.__get_organization_data_async(organization_id=organization_id)
+
         # NOTE response here will already be a dict containing payload
         if response:
             organization_name: str = response['organization_name']
