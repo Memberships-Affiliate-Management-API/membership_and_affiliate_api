@@ -59,7 +59,7 @@ class Mailgun:
             async with session.post(url=_url, json=json_data, headers=headers) as response:
                 response, status = response
                 json_data = response.json()
-                if json_data.get('status') is True:
+                if json_data.get('status'):
                     user_data: dict = json_data.get('payload')
                     return user_data
                 return None
@@ -158,6 +158,6 @@ class Mailgun:
         :return: does not return anything
         ***REMOVED***
         # Scheduling email to be sent later with mailgun api
-        seconds_after = datetime_now() + timedelta(seconds=15)
+        seconds_after = datetime_now() + timedelta(seconds=5)
         schedule.add_job(func=self.__send_with_mailgun_rest_api, trigger='date', run_date=seconds_after, kwargs=dict(
             to_list=[to_email], sbject=subject, text=text, html=html), id=create_id())
