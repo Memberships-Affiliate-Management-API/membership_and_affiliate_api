@@ -106,7 +106,7 @@ class Config:
             preferably host the cache as a docker instance on Cloud Run
         :return: dict
         ***REMOVED***
-        # TODO learn how to host redis cache on Heroku
+        # TODO learn how to host redis cache on Heroku then change this logic so cache launches redis
         if not self.IS_PRODUCTION or os.environ.get('IS_HEROKU'):
             return {
                 "CACHE_TYPE": "simple",
