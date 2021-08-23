@@ -33,7 +33,6 @@ class WalletEmails(Mailgun):
     def __init__(self):
         super(WalletEmails, self).__init__()
 
-
     def send_balance_changed_notification(self, wallet_instance: WalletModel, organization_id: str, uid: str) -> None:
         ***REMOVED***
             **send_balance_changed_notification**

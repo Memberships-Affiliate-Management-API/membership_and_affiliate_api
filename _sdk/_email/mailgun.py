@@ -122,15 +122,20 @@ class Mailgun:
         from_str = f'{config_instance.APP_NAME} <{self._mailgun_no_response_email}>'
         to_str = to_list
         api_instance = ("api", "{}".format(self._mailgun_api_key))
-        # TODO feature development use an async call here
-        response = requests.post(url=self._mailgun_end_point,
-                                 auth=api_instance,
-                                 data={"from": from_str, "to": to_str,
-                                       "subject": subject, "text": text, "html": html, "o:tag": o_tag})
+        requests.post(url=self._mailgun_end_point, auth=api_instance,
+                      data={"from": from_str, "to": to_str, "subject": subject, "text": text, "html": html,
+                            "o:tag": o_tag})
 
         return True
 
     def return_organization_user(self, organization_id: str, uid: str) -> tuple:
+        ***REMOVED***
+        **return_organization_user**
+        asynchronously returns organization data and user data
+        :param organization_id:
+        :param uid:
+        :return:
+        ***REMOVED***
         event_loop = asyncio.get_event_loop()
         tasks = [self.__get_user_data_async(organization_id=organization_id, uid=uid),
                  self.__get_organization_data_async(organization_id=organization_id)]
