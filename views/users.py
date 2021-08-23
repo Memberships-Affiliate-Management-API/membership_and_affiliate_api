@@ -19,7 +19,8 @@ from werkzeug.security import check_password_hash
 
 from _cron.scheduler import schedule
 from _sdk._email import Mailgun
-from config.exceptions import error_codes, status_codes, InputError, UnAuthenticatedError, DataServiceError
+from config.exceptions import error_codes, status_codes, InputError, UnAuthenticatedError, DataServiceError, \
+    RequestError
 from database.mixins import AddressMixin
 from database.organization import OrgValidators
 from main import app_cache
@@ -56,15 +57,11 @@ class UserEmails(Mailgun):
         :return:
         ***REMOVED***
         user_data, organization_data = self.return_organization_user(organization_id=organization_id, uid=uid)
-        email: str = user_data.get('email')
-        name: str = user_data.get('names')
-        surname: str = user_data.get('surname')
         email_verified: bool = user_data.get('email_verified')
-
         subject: str = f"{organization_data.get('organization_name')} Welcome to to Admins"
 
         text: str = f'''
-        hi {name} {surname}
+        hi {user_data.get('names')} {user_data.get('surname')}
         you have been successfully registered as an administrator of {organization_data.get('organization_name')}
         
         Please contact fellow admins @ {organization_data.get('home_url')} 
@@ -75,17 +72,20 @@ class UserEmails(Mailgun):
         '''
 
         html: str = f'''
-        hi {name} {surname}
-        you have been successfully registered as an administrator of {organization_data.get('organization_name')}
+        <h3>hi {user_data.get('names')} {user_data.get('surname')}</h3>
+        <p>you have been successfully registered as an administrator of {organization_data.get('organization_name')}</p>
         
-        Please contact fellow admins @ {organization_data.get('home_url')} 
-        to find out what your responsibilities entails 
+        <p>Please contact fellow admins @ {organization_data.get('home_url')} 
+        to find out what your responsibilities entails</p> 
         
-        Thank You
-        {organization_data.get('organization_name')}                    
+        <h4>Thank You</h4>
+        <strong>{organization_data.get('organization_name')}</strong>                    
         '''
         if email_verified:
-            self.__do_send_mail(to_email=email, subject=subject, text=text)
+            self.__do_send_mail(to_email=user_data.get('email'), subject=subject, text=text, html=html)
+
+        message: str = "Bad Request Error: Email not verified please verify your account"
+        raise RequestError(status=error_codes.bad_request_error_code, description=message)
 
     def send_goodbye_admin_email(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
@@ -97,14 +97,11 @@ class UserEmails(Mailgun):
         :return:
         ***REMOVED***
         user_data, organization_data = self.return_organization_user(organization_id=organization_id, uid=uid)
-        email: str = user_data.get('email')
-        name: str = user_data.get('names')
-        surname: str = user_data.get('surname')
         email_verified: bool = user_data.get('email_verified')
 
         subject: str = f"{organization_data.get('organization_name')} You are not longer admin"
         text: str = f'''
-        hi {name} {surname}
+        hi {user_data.get('names', " ")} {user_data.get('surname', " ")}
         you are no longer an admin of  {organization_data.get('organization_name')}
 
         Please contact fellow admins @ {organization_data.get('home_url')} 
@@ -115,17 +112,20 @@ class UserEmails(Mailgun):
         '''
 
         html: str = f'''
-        hi {name} {surname}
-        you are no longer an admin of  {organization_data.get('organization_name')}
+        <h3>hi {user_data.get('names', " ")} {user_data.get('surname', " ")}</h3>
+        <p>you are no longer an admin of  {organization_data.get('organization_name')}</p>
 
-        Please contact fellow admins @ {organization_data.get('home_url')} 
-        to find out why that is the case 
+        <p>Please contact fellow admins @ {organization_data.get('home_url')} 
+        to find out why that is the case</p> 
 
-        Thank You
-        {organization_data.get('organization_name')}        
+        <h4>Thank You</h4>
+        <strong>{organization_data.get('organization_name')}</strong>        
         '''
         if email_verified:
-            self.__do_send_mail(to_email=email, subject=subject, text=text, html=html)
+            self.__do_send_mail(to_email=user_data.get('email'), subject=subject, text=text, html=html)
+
+        message: str = "Bad Request Error: Email not verified please verify your account"
+        raise RequestError(status=error_codes.bad_request_error_code, description=message)
 
     def send_welcome_to_support_email(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
@@ -167,6 +167,9 @@ class UserEmails(Mailgun):
         if email_verified:
             self.__do_send_mail(to_email=email, subject=subject, text=text, html=html)
 
+        message: str = "Bad Request Error: Email not verified please verify your account"
+        raise RequestError(status=error_codes.bad_request_error_code, description=message)
+
     def send_goodbye_support_email(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
             **send_goodbye_support_email**
@@ -207,6 +210,9 @@ class UserEmails(Mailgun):
         if email_verified:
             self.__do_send_mail(to_email=email, subject=subject, text=text, html=html)
 
+        message: str = "Bad Request Error: Email not verified please verify your account"
+        raise RequestError(status=error_codes.bad_request_error_code, description=message)
+
     def send_recovery_email(self, organization_id: Optional[str], email: Optional[str], recovery_code: str) -> tuple:
         ***REMOVED***
             **send_recovery_email**
@@ -245,6 +251,9 @@ class UserEmails(Mailgun):
              '''
             return self.__do_send_mail(to_email=email, subject=f"{organization_name}Email Recovery Email",
                                        text=text_body, html=html_body)
+
+        message: str = "Bad Request Error: Email not verified please verify your account"
+        raise RequestError(status=error_codes.bad_request_error_code, description=message)
 
 
 class Validators(UserValidators, OrgValidators):
