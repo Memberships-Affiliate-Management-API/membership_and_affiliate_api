@@ -521,9 +521,11 @@ class RecruitsView(Validator, CacheManager):
             message: str = "An Error occurred while adding new recruit"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-        self.__delete_recruits_cache(recruits_view=RecruitsView, organization_id=organization_id,
-                                     is_active=recruit_instance.is_active, is_deleted=recruit_instance.is_deleted,
-                                     affiliate_data=None, recruit_data=recruit_data)
+        # NOTE scheduling recruits cache deleter
+        _kwargs: dict = dict(recruits_view=RecruitsView, organization_id=organization_id,
+                             is_active=recruit_instance.is_active, is_deleted=recruit_instance.is_deleted,
+                             affiliate_data=None, recruit_data=recruit_data)
+        self.__schedule_cache_deletion(func=self.__delete_recruits_cache, kwargs=_kwargs)
 
         return jsonify({'status': True, 'message': 'Successfully created new recruit',
                         'payload': recruit_instance.to_dict()}), status_codes.successfully_updated_code
@@ -564,9 +566,12 @@ class RecruitsView(Validator, CacheManager):
                 message: str = "An Error occurred while deleting recruit"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-            self.__delete_recruits_cache(recruits_view=RecruitsView, organization_id=organization_id,
-                                         is_active=recruit_instance.is_active, is_deleted=recruit_instance.is_deleted,
-                                         affiliate_data=None, recruit_data=recruit_data)
+            # Note: scheduling recruits cache deletions
+            _kwargs: dict = dict(recruits_view=RecruitsView, organization_id=organization_id,
+                                 is_active=recruit_instance.is_active, is_deleted=recruit_instance.is_deleted,
+                                 affiliate_data=None, recruit_data=recruit_data)
+
+            self.__schedule_cache_deletion(func=self.__delete_recruits_cache, kwargs=_kwargs)
 
             return jsonify({'status': True, 'message': 'Successfully deleted recruit',
                             'payload': recruit_instance.to_dict()}), status_codes.successfully_updated_code
