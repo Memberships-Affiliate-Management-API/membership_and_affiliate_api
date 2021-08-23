@@ -135,9 +135,9 @@ class AffiliatesView(Validator, CacheManager):
             message: str = "There was an error creating Affiliate"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-        # Deleting related Cache
-        self.__delete_affiliate_cache(affiliates_view=AffiliatesView, organization_id=organization_id,
-                                      affiliate_id=affiliate_id)
+        # scheduling cache deletions
+        _kwargs: dict = dict(affiliates_view=AffiliatesView, organization_id=organization_id, affiliate_id=affiliate_id)
+        self.__schedule_cache_deletion(func=self.__delete_affiliate_cache, kwargs=_kwargs)
 
         return jsonify({'status': True,
                         'message': 'successfully registered an affiliate',
@@ -222,9 +222,10 @@ class AffiliatesView(Validator, CacheManager):
                 message: str = 'something went wrong while deleting affiliate'
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-            # deleting affiliate Caches related to the updated record
-            self.__delete_affiliate_cache(affiliates_view=AffiliatesView, organization_id=organization_id,
-                                          affiliate_id=affiliate_id)
+            # scheduling affiliate cache deletions
+            _kwargs: dict = dict(affiliates_view=AffiliatesView, organization_id=organization_id,
+                                 affiliate_id=affiliate_id)
+            self.__schedule_cache_deletion(func=self.__delete_affiliate_cache, kwargs=_kwargs)
 
             return jsonify({'status': True,
                             'message': 'successfully deleted the affiliate',
@@ -272,9 +273,10 @@ class AffiliatesView(Validator, CacheManager):
                 message: str = "An Unknown Error occurred while trying to mark affiliate as in-active"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-            # deleting affiliate Caches related to the updated record
-            self.__delete_affiliate_cache(affiliates_view=AffiliatesView, organization_id=organization_id,
-                                          affiliate_id=affiliate_id)
+            # scheduling affiliate cache deletion
+            _kwargs: dict = dict(affiliates_view=AffiliatesView, organization_id=organization_id,
+                                 affiliate_id=affiliate_id)
+            self.__schedule_cache_deletion(func=self.__delete_affiliate_cache, kwargs=_kwargs)
 
             return jsonify({'status': True, 'message': 'successfully marked affiliate as inactive',
                             'payload': affiliate_instance.to_dict()}), status_codes.successfully_updated_code
