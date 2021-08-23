@@ -13,8 +13,12 @@ __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
+from datetime import timedelta
+
 import requests
 from flask import jsonify, current_app
+
+from _cron.scheduler import schedule
 from config import config_instance
 from config.exceptions import status_codes, error_codes
 from typing import List, Optional
@@ -22,7 +26,7 @@ import aiohttp
 import asyncio
 
 from main import app_cache
-from utils import return_ttl
+from utils import return_ttl, datetime_now, create_id
 
 
 class Mailgun:
@@ -136,3 +140,19 @@ class Mailgun:
         organization_data = organization_data_future.result()
         event_loop.close()
         return user_data, organization_data
+
+    def __do_send_mail(self, to_email: str, subject: str, text: str, html: str) -> None:
+        ***REMOVED***
+            **__do_send_mail**
+                If possible this method should be run asynchronously a method to actually send email
+
+        :param to_email: email address to send the email to
+        :param subject: subject of the email
+        :param text: body in text format
+        :param html: body in html format
+        :return: does not return anything
+        ***REMOVED***
+        # Scheduling email to be sent later with mailgun api
+        seconds_after = datetime_now() + timedelta(seconds=15)
+        schedule.add_job(func=self.__send_with_mailgun_rest_api, trigger='date', run_date=seconds_after, kwargs=dict(
+            to_list=[to_email], sbject=subject, text=text, html=html), id=create_id())
