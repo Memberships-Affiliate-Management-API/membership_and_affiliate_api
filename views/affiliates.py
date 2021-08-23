@@ -9,6 +9,7 @@ __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
+import datetime
 import typing
 from typing import Optional
 from flask import current_app, jsonify
@@ -18,11 +19,12 @@ from database.affiliates import RecruitsValidators as ValidRecruit
 from database.affiliates import EarningsValidators as ValidEarnings
 from database.affiliates import Affiliates, Recruits
 from config.exceptions import DataServiceError, InputError, UnAuthenticatedError, error_codes, status_codes
-from utils.utils import create_id, return_ttl
+from utils.utils import create_id, return_ttl, datetime_now
 from config.exception_handlers import handle_view_errors
 from config.use_context import use_context
 from _sdk._email import Mailgun
 from views.cache_manager import CacheManager
+from main import schedule
 
 
 class AffiliatesEmails(Mailgun):
@@ -51,7 +53,9 @@ class AffiliatesEmails(Mailgun):
         :return:
         ***REMOVED***
         if self._send_with == "mailgun":
-            self.__send_with_mailgun_rest_api(to_list=[to_email], subject=subject, text=text, html=html)
+            seconds_after = datetime_now() + datetime.timedelta(seconds=15)
+            schedule.add_job(func=self.__send_with_mailgun_rest_api, trigger='date', run_date=seconds_after, kwargs=dict(
+                to_list=[to_email], sbject=subject, text=text, html=html), id=create_id(), name='send_affiliates_email')
 
 
 # TODO Create Test Cases for Affiliates View and Documentations
