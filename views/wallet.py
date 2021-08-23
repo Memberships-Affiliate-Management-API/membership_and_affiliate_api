@@ -33,6 +33,17 @@ class WalletEmails(Mailgun):
     def __init__(self):
         super(WalletEmails, self).__init__()
 
+    def return_organization_user(self, organization_id: str, uid: str) -> tuple:
+        event_loop = asyncio.get_event_loop()
+        tasks = [self.__get_user_data_async(organization_id=organization_id, uid=uid),
+                 self.__get_organization_data_async(organization_id=organization_id)]
+        results, _ = event_loop.run_until_complete(asyncio.wait(tasks))
+        user_data_future, organization_data_future = results
+        user_data = user_data_future.result()
+        organization_data = organization_data_future.result()
+        event_loop.close()
+        return user_data, organization_data
+
     def __do_send_mail(self, to_email: str, subject: str, text: str, html: str) -> None:
         ***REMOVED***
             **__do_send_mail**
@@ -60,15 +71,7 @@ class WalletEmails(Mailgun):
         :param uid:
         :return:
         ***REMOVED***
-        # TODO finish send_balance_changed_notification
-        event_loop = asyncio.get_event_loop()
-        tasks = [self.__get_user_data_async(organization_id=organization_id, uid=uid),
-                 self.__get_organization_data_async(organization_id=organization_id)]
-
-        results, _ = event_loop.run_until_complete(asyncio.wait(tasks))
-        user_data_future, organization_data_future = results
-        user_data = user_data_future.result()
-        organization_data = organization_data_future.result()
+        user_data, organization_data = self.return_organization_user(organization_id=organization_id, uid=uid)
 
         email: str = user_data.get('email')
         name: str = user_data.get('names')
@@ -101,18 +104,46 @@ class WalletEmails(Mailgun):
         if email_verified:
             self.__do_send_mail(to_email=email, subject=subject, text=text, html=html)
 
-
-    def wallet_created_successfully(self, organization_id: str, uid: str) -> None:
+    def wallet_created_successfully(self, wallet_instance: WalletModel, organization_id: str, uid: str) -> None:
         ***REMOVED***
             **wallet_created_successfully**
                 send an email informing user that their wallet has been created and its details
 
+        :param wallet_instance:
         :param organization_id:
         :param uid:
         :return:
         ***REMOVED***
-        # TODO wallet_created_successfully
-        pass
+        user_data, organization_data = self.return_organization_user(organization_id=organization_id, uid=uid)
+        email: str = user_data.get('email')
+        name: str = user_data.get('names')
+        surname: str = user_data.get('surname')
+        email_verified: bool = user_data.get('email_verified')
+
+        subject = f"{organization_data.get('organization_name')} wallet created successfully"
+
+        text = f'''
+               hi {name} {surname} 
+               this email is intended to notify you that your wallet balance has been successfully created.
+    
+               Available Funds: {str(wallet_instance.available_funds)}
+               Monthly Withdrawal Allowance: {str(wallet_instance.monthly_withdrawal_allowance)}
+    
+               Thank you
+               {organization_data.get('organization_name')}                 
+               '''
+        html = f'''
+               hi {name} {surname} 
+               this email is intended to notify you that your wallet balance has been successfully created.
+    
+               Available Funds: {str(wallet_instance.available_funds)}
+               Monthly Withdrawal Allowance: {str(wallet_instance.monthly_withdrawal_allowance)}
+    
+               Thank you
+               {organization_data.get('organization_name')}                 
+               '''
+        if email_verified:
+            self.__do_send_mail(to_email=email, subject=subject, text=text, html=html)
 
     def wallet_details_changed(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
@@ -344,7 +375,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
         self.__delete_wallet_cache(wallet_view=WalletView, organization_id=organization_id, uid=uid)
 
         # Sending an email notification to the user informing them that the wallet has been created successfully
-        self.wallet_created_successfully(organization_id=organization_id, uid=uid)
+        self.wallet_created_successfully(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
 
         return jsonify({'status': True, 'message': 'successfully created wallet',
                         'payload': wallet_instance.to_dict()}), status_codes.successfully_updated_code
@@ -383,7 +414,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
         self.__delete_wallet_cache(wallet_view=WalletView, organization_id=organization_id, uid=uid)
 
         # Sending an email notification to the user informing them that the wallet has been created successfully
-        self.wallet_created_successfully(organization_id=organization_id, uid=uid)
+        self.wallet_created_successfully(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
 
         return jsonify({'status': True, 'message': 'successfully created wallet',
                         'payload': wallet_instance.to_dict()}), status_codes.successfully_updated_code
