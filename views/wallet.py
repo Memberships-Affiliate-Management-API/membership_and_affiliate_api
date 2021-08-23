@@ -61,8 +61,15 @@ class WalletEmails(Mailgun):
         :return:
         ***REMOVED***
         # TODO finish send_balance_changed_notification
-        user_data: dict = asyncio.run(self.__get_user_data_async(organization_id=organization_id, uid=uid))
-        organization_data: dict = asyncio.run(self._admin_get_organization_endpoint(organization_id=organization_id))
+        event_loop = asyncio.get_event_loop()
+        tasks = [self.__get_user_data_async(organization_id=organization_id, uid=uid),
+                 self.__get_organization_data_async(organization_id=organization_id)]
+
+        results, _ = event_loop.run_until_complete(asyncio.wait(tasks))
+        user_data_future, organization_data_future = results
+        user_data = user_data_future.result()
+        organization_data = organization_data_future.result()
+
         email: str = user_data.get('email')
         name: str = user_data.get('names')
         surname: str = user_data.get('surname')
@@ -91,7 +98,9 @@ class WalletEmails(Mailgun):
         Thank you
         {organization_data.get('organization_name')}                         
         '''
-        self.__do_send_mail(to_email=email, subject=subject, text=text, html=html)
+        if email_verified:
+            self.__do_send_mail(to_email=email, subject=subject, text=text, html=html)
+
 
     def wallet_created_successfully(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
