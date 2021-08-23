@@ -57,11 +57,12 @@ class OrganizationEmails(Mailgun):
         Hi {user_data.get('names', " ")} {user_data.get('surname', " ")}
         
         Your organization has been successfully created : {organization_data.get('organization_name')}
-        Organization Name: {organization_data.get('organization_name')}
-        Description: {organization_data.get('description')}
-        Website Home: {organization_data.get('home_url')}
-        Login Callback URL : {organization_data.get('login_callback_url')}
-        Password Recovery Callback URL : {organization_data.get('recovery_callback_url')}
+        
+            Organization Name: {organization_data.get('organization_name')}
+            Description: {organization_data.get('description')}
+            Website Home: {organization_data.get('home_url')}
+            Login Callback URL : {organization_data.get('login_callback_url')}
+            Password Recovery Callback URL : {organization_data.get('recovery_callback_url')}
          
         
         Thank you
@@ -71,12 +72,13 @@ class OrganizationEmails(Mailgun):
         <h3>Hi {user_data.get('names', " ")} {user_data.get('surname', " ")}</h3>
         
         <p>Your organization has been successfully created : {organization_data.get('organization_name')}</p>
+        
         <ol>
-        <li>Organization Name: {organization_data.get('organization_name')}</li>
-        <li>Description: {organization_data.get('description')}</li>
-        <li>Website Home: {organization_data.get('home_url')}</li>
-        <li>Login Callback URL : {organization_data.get('login_callback_url')}</li>
-        <li>Password Recovery Callback URL : {organization_data.get('recovery_callback_url')}</li>
+            <li>Organization Name: {organization_data.get('organization_name')}</li>
+            <li>Description: {organization_data.get('description')}</li>
+            <li>Website Home: {organization_data.get('home_url')}</li>
+            <li>Login Callback URL : {organization_data.get('login_callback_url')}</li>
+            <li>Password Recovery Callback URL : {organization_data.get('recovery_callback_url')}</li>
         </ol>
                 
         <h4>Thank you</h4>
