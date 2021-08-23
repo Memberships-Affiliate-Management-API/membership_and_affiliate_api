@@ -96,7 +96,7 @@ class Mailgun:
         return asyncio.run(self.__async_request(_url=_url, json_data=json_data, headers=headers))
 
     def __send_with_mailgun_rest_api(self, to_list: List[str], subject: str, text: str, html: str,
-                                     o_tag: List[str] = None) -> tuple:
+                                     o_tag: List[str] = None) -> bool:
         ***REMOVED***
         **__send_with_mailgun_rest_api**
             a method to send email via rest api
@@ -118,11 +118,5 @@ class Mailgun:
                                  data={"from": from_str, "to": to_str,
                                        "subject": subject, "text": text, "html": html, "o:tag": o_tag})
 
-        response_data = response.json()
-        if response.status_code == 200:
-            message: str = 'Successfully sent email'
-            return jsonify({"status": True,
-                            'message': message, 'payload': response_data.id}), status_codes.status_ok_code
+        return True
 
-        message: str = 'Unable to send email please try again later'
-        return jsonify({"status": False, "message": message}), error_codes.remote_data_error
