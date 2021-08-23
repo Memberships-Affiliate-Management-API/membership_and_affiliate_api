@@ -10,9 +10,13 @@ __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
+from datetime import timedelta
 
+from _cron.scheduler import schedule
 from main import app_cache
 from typing import Optional
+
+from utils import datetime_now, create_id
 
 
 class CacheManager:
@@ -169,7 +173,7 @@ class CacheManager:
         return True
 
     @staticmethod
-    def __delete_services_cache(services_view, organization_id: str, service_id: str ) -> bool:
+    def __delete_services_cache(services_view, organization_id: str, service_id: str) -> bool:
         ***REMOVED***
 
         :param services_view:
@@ -180,3 +184,16 @@ class CacheManager:
 
         app_cache.delete_memoized(services_view.get_service, services_view, service_id, organization_id)
         app_cache.delete_memoized(services_view.return_services, services_view, organization_id)
+        return True
+
+    @staticmethod
+    def __schedule_cache_deletion(func, kwargs) -> None:
+        ***REMOVED***
+        **schedule_cache_deletion**
+            schedule cache deletion such that it occurs sometime time in thr future
+        :param func:
+        :param kwargs:
+        :return:
+        ***REMOVED***
+        twenty_seconds_after = datetime_now() + timedelta(seconds=20)
+        schedule.add_job(func=func, trigger='data', run_date=twenty_seconds_after, kwargs=kwargs, id=create_id())
