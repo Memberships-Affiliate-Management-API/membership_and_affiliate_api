@@ -9,12 +9,15 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
 import typing
+from datetime import timedelta
 from typing import Optional
 from flask import jsonify, current_app
+
+from _cron.scheduler import schedule
 from _sdk._email import Mailgun
 from database.mixins import AmountMixin
 from database.wallet import WalletModel, WalletValidator
-from utils import return_ttl
+from utils import return_ttl, datetime_now, create_id
 from config.exceptions import DataServiceError, UnAuthenticatedError, status_codes, error_codes, InputError
 from config.exception_handlers import handle_view_errors
 from config.use_context import use_context
@@ -42,7 +45,10 @@ class WalletEmails(Mailgun):
         :param html: body in html format
         :return: does not return anything
         ***REMOVED***
-        self.__send_with_mailgun_rest_api(to_list=[to_email], subject=subject, text=text, html=html)
+        # Scheduling email to be sent later with mailgun api
+        seconds_after = datetime_now() + timedelta(seconds=15)
+        schedule.add_job(func=self.__send_with_mailgun_rest_api, trigger='date', run_date=seconds_after, kwargs=dict(
+            to_list=[to_email], sbject=subject, text=text, html=html), id=create_id(), name='send_memberships_email')
 
     def send_balance_changed_notification(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
