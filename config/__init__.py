@@ -107,30 +107,30 @@ class Config:
         :return: dict
         ***REMOVED***
         # TODO learn how to host redis cache on Heroku
-        if not self.IS_PRODUCTION or os.environ.get('IS_HEROKU'):
-            return {
-                "CACHE_TYPE": "simple",
-                "CACHE_DEFAULT_TIMEOUT": self.CACHE_DEFAULT_TIMEOUT,
-                "CACHE_KEY_PREFIX": "memberships_cache_"
-            }
-        else:
-            user = os.environ.get("CACHE_REDIS_USER") or config("CACHE_REDIS_USER")
-            password = os.environ.get("CACHE_REDIS_PASSWORD") or config("CACHE_REDIS_PASSWORD")
-            redis_host = os.environ.get("CACHE_REDIS_HOST") or config("CACHE_REDIS_HOST")
-            db = os.environ.get("CACHE_REDIS_DB") or config("CACHE_REDIS_DB")
-            return {
-                "CACHE_TYPE": "redis",
-                "CACHE_DEFAULT_TIMEOUT": self.CACHE_DEFAULT_TIMEOUT,
-                "CACHE_KEY_PREFIX": "memberships_cache_",
-                "CACHE_REDIS_HOST": "{}".format(redis_host),
-                "CACHE_REDIS_PORT": 6379,
-                "CACHE_REDIS_PASSWORD": "{}".format(password),
-                "CACHE_REDIS_DB": "{}".format(db),
-                "CACHE_REDIS_URL": "{}{}@{}:6379/2".format(user, password, redis_host),
-                "CACHE_OPTIONS": ""
-            }
+        # if not self.IS_PRODUCTION or os.environ.get('IS_HEROKU'):
+        #     return {
+        #         "CACHE_TYPE": "simple",
+        #         "CACHE_DEFAULT_TIMEOUT": self.CACHE_DEFAULT_TIMEOUT,
+        #         "CACHE_KEY_PREFIX": "memberships_cache_"
+        #     }
+        # else:
+        user = os.environ.get("CACHE_REDIS_USER") or config("CACHE_REDIS_USER")
+        password = os.environ.get("CACHE_REDIS_PASSWORD") or config("CACHE_REDIS_PASSWORD")
+        redis_host = os.environ.get("CACHE_REDIS_HOST") or config("CACHE_REDIS_HOST")
+        db = os.environ.get("CACHE_REDIS_DB") or config("CACHE_REDIS_DB")
+        return {
+            "CACHE_TYPE": "redis",
+            "CACHE_DEFAULT_TIMEOUT": self.CACHE_DEFAULT_TIMEOUT,
+            "CACHE_KEY_PREFIX": "memberships_cache_",
+            "CACHE_REDIS_HOST": redis_host,
+            "CACHE_REDIS_PORT": 10433,
+            "CACHE_REDIS_PASSWORD": password,
+            "CACHE_REDIS_DB": f"{db}",
+            "CACHE_REDIS_URL": "rediss://{}{}@{}/2".format(user, password, redis_host),
+            "CACHE_OPTIONS": ""
+        }
 
-            # TODO: Note replace with a redis server connection url
+        # TODO: Note replace with a redis server connection url
 
 
 config_instance: Config = Config()

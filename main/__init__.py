@@ -9,8 +9,6 @@ app_cache: Cache = Cache(config=config_instance.cache_dict())
 
 default_timeout: int = 60 * 60 * 6
 
-
-
 # github authenticate - enables developers to easily sign-up to our api
 oauth = OAuth()
 github_authorize = oauth.register(

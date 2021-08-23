@@ -1,5 +1,4 @@
 import os
-from _cron.scheduler import schedule
 from config import config_instance
 from main import create_app
 from utils.utils import is_development
