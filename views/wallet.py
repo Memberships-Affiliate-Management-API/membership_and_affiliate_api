@@ -379,7 +379,8 @@ class WalletView(Validator, WalletEmails, CacheManager):
             message: str = "Database Error: Wallet may not have been created"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-        self.__delete_wallet_cache(wallet_view=WalletView, organization_id=organization_id, uid=uid)
+        _kwargs: dict = dict(wallet_view=WalletView, organization_id=organization_id, uid=uid)
+        self.__schedule_cache_deletion(func=self.__delete_wallet_cache, kwargs=_kwargs)
 
         # Sending an email notification to the user informing them that the wallet has been created successfully
         self.wallet_created_successfully(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
@@ -418,7 +419,8 @@ class WalletView(Validator, WalletEmails, CacheManager):
             raise DataServiceError(status=error_codes.data_service_error_code,
                                    description="An Error occurred creating Wallet")
 
-        self.__delete_wallet_cache(wallet_view=WalletView, organization_id=organization_id, uid=uid)
+        _kwargs: dict = dict(wallet_view=WalletView, organization_id=organization_id, uid=uid)
+        self.__schedule_cache_deletion(func=self.__delete_wallet_cache, kwargs=_kwargs)
 
         # Sending an email notification to the user informing them that the wallet has been created successfully
         self.wallet_created_successfully(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
@@ -522,7 +524,9 @@ class WalletView(Validator, WalletEmails, CacheManager):
             message: str = "Database Error: occurred updating Wallet"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-        self.__delete_wallet_cache(wallet_view=WalletView, organization_id=organization_id, uid=uid)
+        _kwargs: dict = dict(wallet_view=WalletView, organization_id=organization_id, uid=uid)
+        self.__schedule_cache_deletion(func=self.__delete_wallet_cache, kwargs=_kwargs)
+
         self.wallet_details_changed(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
 
         return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
@@ -577,7 +581,8 @@ class WalletView(Validator, WalletEmails, CacheManager):
             message: str = "Database Error: while updating wallet"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-        self.__delete_wallet_cache(wallet_view=WalletView, organization_id=organization_id, uid=uid)
+        _kwargs: dict = dict(wallet_view=WalletView, organization_id=organization_id, uid=uid)
+        self.__schedule_cache_deletion(func=self.__delete_wallet_cache, kwargs=_kwargs)
         self.wallet_details_changed(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
 
         return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
@@ -616,7 +621,8 @@ class WalletView(Validator, WalletEmails, CacheManager):
             message: str = "Database Error: while updating wallet"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-        self.__delete_wallet_cache(wallet_view=WalletView, organization_id=organization_id, uid=uid)
+        _kwargs: dict = dict(wallet_view=WalletView, organization_id=organization_id, uid=uid)
+        self.__schedule_cache_deletion(func=self.__delete_wallet_cache, kwargs=_kwargs)
         self.wallet_details_changed(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
 
         return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
@@ -656,7 +662,8 @@ class WalletView(Validator, WalletEmails, CacheManager):
             message: str = "Database error while resetting wallet"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-        self.__delete_wallet_cache(wallet_view=WalletView, organization_id=organization_id, uid=uid)
+        _kwargs: dict = dict(wallet_view=WalletView, organization_id=organization_id, uid=uid)
+        self.__schedule_cache_deletion(func=self.__delete_wallet_cache, kwargs=_kwargs)
         self.wallet_details_changed(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
 
         return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
@@ -820,7 +827,8 @@ class WalletView(Validator, WalletEmails, CacheManager):
                 message: str = "General error updating database"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-            self.__delete_wallet_cache(wallet_view=WalletView, organization_id=organization_id, uid=uid)
+            _kwargs: dict = dict(wallet_view=WalletView, organization_id=organization_id, uid=uid)
+            self.__schedule_cache_deletion(func=self.__delete_wallet_cache, kwargs=_kwargs)
             self.send_balance_changed_notification(wallet_instance=wallet_instance, organization_id=organization_id,
                                                    uid=uid)
 
@@ -871,7 +879,8 @@ class WalletView(Validator, WalletEmails, CacheManager):
                 message: str = "General error updating database"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-            self.__delete_wallet_cache(wallet_view=WalletView, organization_id=organization_id, uid=uid)
+            _kwargs: dict = dict(wallet_view=WalletView, organization_id=organization_id, uid=uid)
+            self.__schedule_cache_deletion(func=self.__delete_wallet_cache, kwargs=_kwargs)
 
             message: str = "Successfully created transaction"
             return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
@@ -902,5 +911,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
         ***REMOVED***
         # TODO - complete this method
 
-        self.__delete_wallet_cache(wallet_view=WalletView, organization_id=organization_id, uid=uid)
+        _kwargs: dict = dict(wallet_view=WalletView, organization_id=organization_id, uid=uid)
+        self.__schedule_cache_deletion(func=self.__delete_wallet_cache, kwargs=_kwargs)
+
         pass
