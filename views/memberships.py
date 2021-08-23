@@ -42,24 +42,6 @@ class MembershipsEmails(Mailgun):
     def __init__(self):
         super(MembershipsEmails, self).__init__()
 
-    def __do_send_mail(self, to_email: str, subject: str, text: str, html: str) -> None:
-        ***REMOVED***
-            **__do_send_mail**
-                TODO try sending emails with a specific sender - this allows the actual sending module
-                to be interchangeable at run time
-                send email using mail_sender
-
-        :param to_email:
-        :param subject:
-        :param text:
-        :param html:
-        :return:
-        ***REMOVED***
-        # Scheduling email to be sent later with mailgun api
-        seconds_after = datetime_now() + timedelta(seconds=15)
-        schedule.add_job(func=self.__send_with_mailgun_rest_api, trigger='date', run_date=seconds_after, kwargs=dict(
-            to_list=[to_email], sbject=subject, text=text, html=html), id=create_id(), name='send_memberships_email')
-
     def send_memberships_welcome_email(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
             **send_memberships_welcome_email**
