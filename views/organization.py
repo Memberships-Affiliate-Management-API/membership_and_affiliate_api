@@ -10,11 +10,13 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 
 import json
 import typing
+from datetime import timedelta
 from typing import Optional
 import requests
 from flask import current_app, jsonify
 from google.cloud import ndb
 
+from _cron.scheduler import schedule
 from _sdk._email import Mailgun
 from config.exception_handlers import handle_view_errors, handle_store_errors
 from config.exceptions import InputError, DataServiceError, error_codes, status_codes, UnAuthenticatedError
@@ -23,7 +25,7 @@ from database.mixins import AmountMixin
 from database.organization import Organization, OrgValidators
 # TODO finish up organization  view
 from main import app_cache
-from utils.utils import create_id, return_ttl
+from utils.utils import create_id, return_ttl, datetime_now
 from views.cache_manager import CacheManager
 
 
@@ -48,7 +50,10 @@ class OrganizationEmails(Mailgun):
             :param html: body in html format
             :return: does not return anything
         ***REMOVED***
-        self.__send_with_mailgun_rest_api(to_list=[to_email], subject=subject, text=text, html=html)
+        # Scheduling email to be sent later with mailgun api
+        seconds_after = datetime_now() + timedelta(seconds=15)
+        schedule.add_job(func=self.__send_with_mailgun_rest_api, trigger='date', run_date=seconds_after, kwargs=dict(
+            to_list=[to_email], sbject=subject, text=text, html=html), id=create_id(), name='send_organization_email')
 
     def send_successfully_created_organization(self, organization_id: str, uid: str) -> None:
         ***REMOVED***
