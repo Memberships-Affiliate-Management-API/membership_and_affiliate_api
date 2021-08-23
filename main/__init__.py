@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_caching import Cache
+from _cron.scheduler import schedule
 from config import config_instance
 from authlib.integrations.flask_client import OAuth
 # TODO: consider upgrading the cache service from version 2 of this api
@@ -7,6 +8,8 @@ from utils import clear_cache
 app_cache: Cache = Cache(config=config_instance.cache_dict())
 
 default_timeout: int = 60 * 60 * 6
+
+
 
 # github authenticate - enables developers to easily sign-up to our api
 oauth = OAuth()
@@ -118,4 +121,8 @@ def create_app(config_class=config_instance):
     # Clear Cache
     if clear_cache(app=app, cache=app_cache):
         print("Cache Cleared and Starting")
+
+    # Schedule Start
+    schedule.start()
+
     return app

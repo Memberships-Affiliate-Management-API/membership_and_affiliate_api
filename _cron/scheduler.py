@@ -1,15 +1,15 @@
 from apscheduler.schedulers.background import BackgroundScheduler
 from config import config_instance
 import asyncio
-
 schedule = BackgroundScheduler()
 
 
-@schedule.scheduled_job('interval', minutes=5)
-def task_run():
+@schedule.scheduled_job('interval', minutes=1)
+def send_emails():
     ***REMOVED***
-        **task_run**
-            launch tasks/processes that must run in a short interval  here
+        **send_emails**
+        this task sends emails
+
 
     :return:
     ***REMOVED***
