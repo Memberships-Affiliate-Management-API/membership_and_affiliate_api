@@ -13,7 +13,6 @@ import typing
 from typing import Optional
 from flask import jsonify, current_app
 from google.cloud import ndb
-
 from _sdk._email import Mailgun
 from database.mixins import AmountMixin
 from database.wallet import WalletModel, WalletValidator
@@ -905,6 +904,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
         message: str = "Unable to find wallet - cannot perform transaction"
         return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
+    # noinspection PyUnusedLocal
     @use_context
     @handle_view_errors
     def _wallet_withdraw_funds(self, organization_id: Optional[str], uid: str, amount: int) -> tuple:
