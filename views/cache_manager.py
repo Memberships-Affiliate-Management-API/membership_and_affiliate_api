@@ -194,5 +194,5 @@ class CacheManager:
         :return:
         ***REMOVED***
         twenty_seconds_after = datetime_now() + timedelta(seconds=20)
-        schedule.add_job(func=func, trigger='data', run_date=twenty_seconds_after, kwargs=kwargs, id=create_id(),
+        schedule.add_job(func=func, trigger='date', run_date=twenty_seconds_after, kwargs=kwargs, id=create_id(),
                          name="cache_deletion", misfire_grace_time=360)
