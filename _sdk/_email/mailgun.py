@@ -18,7 +18,6 @@ import requests
 from flask import current_app
 from _cron.scheduler import schedule
 from config import config_instance
-from config.exceptions import status_codes, error_codes
 from typing import List, Optional
 import aiohttp
 import asyncio
@@ -138,8 +137,8 @@ class Mailgun:
                  self.__get_organization_data_async(organization_id=organization_id)]
         results, _ = event_loop.run_until_complete(asyncio.wait(tasks))
         user_data_future, organization_data_future = results
-        user_data = user_data_future.result()
-        organization_data = organization_data_future.result()
+        user_data: dict = user_data_future.result()
+        organization_data: dict = organization_data_future.result()
         event_loop.close()
         return user_data, organization_data
 
