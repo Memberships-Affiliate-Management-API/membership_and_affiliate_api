@@ -252,7 +252,9 @@ def can_cache() -> bool:
 
 def clear_cache(app, cache: Cache) -> bool:
     ***REMOVED***
+    **clear_cache**
         totally clears application cache upon restart
+
     :param app -> present application
     :param cache -> cache instance to clear
     ***REMOVED***
@@ -266,7 +268,7 @@ def clear_cache(app, cache: Cache) -> bool:
 def task_counter(timer_limit: int = 1000000) -> any:
     ***REMOVED***
         **task_counter**
-        if request is to create task then
+            if request is to create task then
             with connection read task count
             add one to task count
 
@@ -291,10 +293,4 @@ def get_counter() -> int:
 
 
 if __name__ == '__main__':
-    # today = datetime.datetime.now()
-    # last_30_days_timestamp = timestamp() - get_days(days=30)
-    # print(date.fromtimestamp(float(last_30_days_timestamp/1000)))
-    # print(last_30_days_timestamp)
-    # expire_after = datetime.datetime.now() - datetime.timedelta(days=30)
-    # print(expire_after.date())
     pass
