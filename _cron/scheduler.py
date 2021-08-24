@@ -21,4 +21,4 @@ def schedule_func(func: Callable, kwargs: dict) -> None:
     ***REMOVED***
     twenty_seconds_after = datetime.now() + timedelta(seconds=20)
     schedule.add_job(func=func, trigger='date', run_date=twenty_seconds_after, kwargs=kwargs, id=create_unique_id(),
-                     name="cache_deletion", misfire_grace_time=360)
+                     name="schedule_func", misfire_grace_time=360)
