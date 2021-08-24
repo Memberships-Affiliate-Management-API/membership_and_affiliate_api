@@ -92,7 +92,7 @@ class Util:
     @staticmethod
     def regex_check_domain(domain: str) -> bool:
         ***REMOVED***
-            **Check a Domain Name**
+            **regex_check_domain**
                 1. checks a domain name for validity with regex pattern
                    r'^[a-z0-9]([a-z0-9-]+\.){1,}[a-z0-9]+\Z'
                 2. return True if pattern matches

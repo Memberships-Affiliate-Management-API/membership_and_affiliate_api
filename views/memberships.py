@@ -12,19 +12,17 @@ import functools
 from typing import Optional, List
 from google.api_core.exceptions import RetryError, Aborted
 from flask import jsonify, current_app
-from datetime import datetime, date, timedelta
+from datetime import datetime, date
 from google.cloud import ndb
-
-from _cron.scheduler import schedule
-from config.exceptions import (DataServiceError, InputError, error_codes, status_codes,
-                               UnAuthenticatedError, RequestError, RemoteDataError)
+from config.exceptions import (DataServiceError, InputError, error_codes, status_codes, UnAuthenticatedError,
+                               RequestError, RemoteDataError)
 from database.memberships import MembershipPlans, AccessRights, Memberships, Coupons
 from database.memberships import PlanValidators as PlanValid
 from database.mixins import AmountMixin
 from database.users import UserValidators as UserValid
 from database.memberships import MembershipValidators as MemberValid
 from database.memberships import CouponsValidator as CouponValid
-from utils.utils import return_ttl, timestamp, get_payment_methods, datetime_now, create_id
+from utils.utils import return_ttl, timestamp, get_payment_methods
 from main import app_cache
 from config.exception_handlers import handle_view_errors, handle_store_errors
 from config.use_context import use_context

@@ -172,6 +172,7 @@ class CouponsValidator:
     @handle_store_errors
     def coupon_exist(organization_id: str, code: str) -> typing.Union[None, bool]:
         ***REMOVED***
+        **coupon_exist**
             checks if a coupon is already created
         :param organization_id:
         :param code:
@@ -196,7 +197,9 @@ class CouponsValidator:
     @handle_store_errors
     async def coupon_exist_async(organization_id: str, code: str) -> typing.Union[None, bool]:
         ***REMOVED***
+        **coupon_exist_async**
             an asynchronous version of coupon_exist
+
         :param organization_id:
         :param code:
         :return:
@@ -218,7 +221,9 @@ class CouponsValidator:
     @staticmethod
     def expiration_valid(expiration_time: int) -> bool:
         ***REMOVED***
+        **expiration_valid**
             checks if expiration_time is valid
+
         :param expiration_time:
         :return:
         ***REMOVED***
@@ -247,7 +252,9 @@ class CouponsValidator:
     @staticmethod
     def discount_valid(discount_valid: int) -> bool:
         ***REMOVED***
+        **discount_valid**
             checks if discount percentage is valid
+
         :param discount_valid:
         :return: returns True or False
         ***REMOVED***
@@ -260,7 +267,9 @@ class CouponsValidator:
     @staticmethod
     async def discount_valid_async(discount_valid: int) -> bool:
         ***REMOVED***
+        **discount_valid_async**
             checks if discount percentage is valid
+
         :param discount_valid:
         :return: returns True or False
         ***REMOVED***
