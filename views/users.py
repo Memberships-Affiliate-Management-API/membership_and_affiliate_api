@@ -9,21 +9,20 @@ __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
-import asyncio
 import typing
 from typing import Optional
 from flask import jsonify, current_app
 from google.cloud import ndb
 from werkzeug.security import check_password_hash
 from _sdk._email import Mailgun
-from config.exceptions import error_codes, status_codes, InputError, UnAuthenticatedError, DataServiceError, \
-    RequestError
+from config.exceptions import (error_codes, status_codes, InputError, UnAuthenticatedError, DataServiceError,
+                               RequestError)
 from database.mixins import AddressMixin
 from database.organization import OrgValidators
 from main import app_cache
 from database.users import UserModel, UserValidators
 from security.users_authenticator import encode_auth_token
-from utils.utils import create_id, return_ttl, datetime_now
+from utils.utils import create_id, return_ttl
 from config.exception_handlers import handle_view_errors
 from config.use_context import use_context
 from views.cache_manager import CacheManager

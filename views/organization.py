@@ -10,23 +10,20 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 
 import json
 import typing
-from datetime import timedelta
 from typing import Optional
 import requests
 from flask import current_app, jsonify
 from google.cloud import ndb
-
-from _cron.scheduler import schedule
 from _sdk._email import Mailgun
 from config.exception_handlers import handle_view_errors, handle_store_errors
-from config.exceptions import InputError, DataServiceError, error_codes, status_codes, UnAuthenticatedError, \
-    RequestError
+from config.exceptions import (InputError, DataServiceError, error_codes, status_codes, UnAuthenticatedError,
+                               RequestError)
 from config.use_context import use_context
 from database.mixins import AmountMixin
 from database.organization import Organization, OrgValidators
 # TODO finish up organization  view
 from main import app_cache
-from utils.utils import create_id, return_ttl, datetime_now
+from utils.utils import create_id, return_ttl
 from views.cache_manager import CacheManager
 
 
