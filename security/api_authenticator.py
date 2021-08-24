@@ -18,7 +18,7 @@ from main import app_cache
 
 
 @app_cache.memoize(timeout=15*60)  # timeout equals fifteen minutes // 900 seconds
-def is_api_key_valid(api_key: str, secret: str, domain: str) -> bool:
+def is_request_valid(api_key: str, secret: str, domain: str) -> bool:
     ***REMOVED***
     **is_api_key_valid**
         validates api keys on behalf of client api calls
@@ -60,7 +60,7 @@ def handle_api_auth(func):
         domain: Optional[str] = request.base_url
         # TODO check which domain is making the request - this may not be True
 
-        if is_api_key_valid(api_key=api_key, secret=secret_token, domain=domain):
+        if is_request_valid(api_key=api_key, secret=secret_token, domain=domain):
             return func(*args, **kwargs)
         message: str = "request not authorized"
         raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
