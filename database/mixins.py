@@ -37,6 +37,7 @@ class AmountMixin(BaseModel):
         return True
 
     def __add__(self, other) -> int:
+        # TODO - does not function properly it needs to return AmountMixin as results
         if self.__class__ != other.__class__:
             raise TypeError("Invalid type")
         if self.currency != other.currency:
@@ -45,6 +46,7 @@ class AmountMixin(BaseModel):
         return self.amount
 
     def __sub__(self, other) -> int:
+        # TODO - does not function properly it needs to return AmountMixin as results
         if self.__class__ != other.__class__:
             raise TypeError("Invalid type")
         if self.currency != other.currency:
