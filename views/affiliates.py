@@ -24,7 +24,6 @@ from config.exception_handlers import handle_view_errors
 from config.use_context import use_context
 from _sdk._email import Mailgun
 from views.cache_manager import CacheManager
-from main import schedule
 
 
 class AffiliatesEmails(Mailgun):
