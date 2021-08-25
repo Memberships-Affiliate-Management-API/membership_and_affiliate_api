@@ -8,7 +8,8 @@ from database.wallet import WalletTransactionsModel, WalletModel
 
 class TransactionsJobs:
     ***REMOVED***
-
+    **TransactionsJobs**
+        withdrawals and deposits cron jobs
     ***REMOVED***
 
     def __init__(self):
