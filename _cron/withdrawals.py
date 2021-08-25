@@ -8,7 +8,7 @@ __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
 from flask import Blueprint
-from _cron.jobs.withdrawals_jobs import WithdrawalsJobs
+from _cron.jobs.withdrawals_jobs import TransactionsJobs
 from config.exceptions import status_codes
 from security.apps_authenticator import handle_apps_authentication
 
@@ -24,6 +24,6 @@ def cron_withdrawals_jobs() -> tuple:
             actually sends approved withdrawals to users paypal wallets
     :return:
     ***REMOVED***
-    withdrawals_jobs: WithdrawalsJobs = WithdrawalsJobs()
+    withdrawals_jobs: TransactionsJobs = TransactionsJobs()
     withdrawals_jobs.run()
     return "OK", status_codes.status_ok_code

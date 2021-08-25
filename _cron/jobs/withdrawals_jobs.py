@@ -6,7 +6,10 @@ from config.use_context import use_context
 from database.wallet import WalletTransactionsModel, WalletModel
 
 
-class WithdrawalsJobs:
+class TransactionsJobs:
+    ***REMOVED***
+
+    ***REMOVED***
 
     def __init__(self):
         self._max_retries = current_app.config.get('DATASTORE_RETRIES')
