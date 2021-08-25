@@ -25,6 +25,7 @@ class WalletValidator:
             and organizational wallets
 
     ***REMOVED***
+
     def __init__(self):
         pass
 
@@ -156,7 +157,8 @@ class WalletModel(BaseModel):
 
         return self.monthly_withdrawal_allowance if avail_funds > allowance else self.available_funds
 
-class WalletTransactionItemModel(BaseModel):
+
+class WalletTransactionsModel(BaseModel):
     ***REMOVED***
         **Class WalletTransactionItemModel**
             a model to keep track of each transaction item and amount that belongs to the
@@ -179,6 +181,7 @@ class WalletTransactionItemModel(BaseModel):
     transaction_date: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=property_.set_datetime)
     amount: AmountMixin = ndb.StructuredProperty(AmountMixin)
     is_verified: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
+    is_settled: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
 
     def __str__(self) -> str:
         return "{}{}".format(self.amount, self.is_verified)
