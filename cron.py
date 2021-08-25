@@ -34,7 +34,29 @@ def heroku_cron_memberships() -> tuple:
     return "OK", status_codes.status_ok_code
 
 
+@cron_scheduler.scheduled_job(trigger='cron', day_of_week='mon-sun', hour=5)
+def heroku_cron_withdrawals() -> tuple:
+    ***REMOVED***
+
+    :return:
+    ***REMOVED***
+    _endpoint: str = '_cron/v1/withdrawals'
+    _base_url: str = config_instance.BASE_URL
+    _url: str = f"{_base_url}{_endpoint}"
+    requests.get(url=_url)
+    return "OK", status_codes.status_ok_code
 
 
+@cron_scheduler.scheduled_job(trigger='cron', day_of_week='mon-sun', hour=7)
+def heroku_cron_users() -> tuple:
+    ***REMOVED***
+        **heroku_cron_users**
 
+        :return:
+    ***REMOVED***
+    _endpoint: str = '_cron/v1/users'
+    _base_url: str = config_instance.BASE_URL
+    _url: str = f"{_base_url}{_endpoint}"
+    requests.get(url=_url)
+    return "OK", status_codes.status_ok_code
 
