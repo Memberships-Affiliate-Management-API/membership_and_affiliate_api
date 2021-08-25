@@ -1,3 +1,6 @@
+***REMOVED***
+    will start main application as a web service
+***REMOVED***
 import os
 from config import config_instance
 from main import create_app
