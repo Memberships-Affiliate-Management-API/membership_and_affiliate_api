@@ -7,10 +7,8 @@
 import asyncio
 from datetime import datetime, date
 from typing import List, Coroutine, Optional
-
 from flask import current_app
 from google.cloud import ndb
-
 from config.use_context import use_context
 from database.affiliates import EarningsData, AffiliateTransactionItems
 from database.mixins import AmountMixin
