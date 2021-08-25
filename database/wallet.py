@@ -156,43 +156,6 @@ class WalletModel(BaseModel):
 
         return self.monthly_withdrawal_allowance if avail_funds > allowance else self.available_funds
 
-
-class WalletTransactionsModel(BaseModel):
-    ***REMOVED***
-        **Class WalletTransactionsModel**
-            a model to keep track of transactions taking place on the wallet for each user and or
-            organizations.
-
-        **Class Properties**
-            1. organization_id: string -> unique organization_id to track the organization the transaction belongs to
-            2. uid: string -> unique identifier for the user who owns the transaction
-            3. transaction_id: string -> unique id to identify this transaction
-            4. transaction_type: string -> the type of transaction taking place
-            5. transaction_date: string -> the date the transaction took place
-
-    ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True)
-    uid: str = ndb.StringProperty(validator=property_.set_id, indexed=True)
-    transaction_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True)
-    transaction_type: str = ndb.StringProperty(validator=property_.set_transaction_types)
-    transaction_date: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=property_.set_datetime)
-
-    def __str__(self) -> str:
-        return "<Transactions {} {}".format(self.transaction_type, self.transaction_date)
-
-    def __eq__(self, other) -> bool:
-        if self.__class__ != other.__class__:
-            return False
-        if self.transaction_type != other.transaction_type:
-            return False
-        if self.transaction_date != other.transaction_date:
-            return False
-        return True
-
-    def __bool__(self) -> bool:
-        return bool(self.uid) or bool(self.transaction_id)
-
-
 class WalletTransactionItemModel(BaseModel):
     ***REMOVED***
         **Class WalletTransactionItemModel**
@@ -209,8 +172,11 @@ class WalletTransactionItemModel(BaseModel):
             once a transaction has been verified amounts can change hands or transferred from
             actual accounts
     ***REMOVED***
+    organization_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True)
+    uid: str = ndb.StringProperty(validator=property_.set_id, indexed=True)
     transaction_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True)
-    item_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True)
+    transaction_type: str = ndb.StringProperty(validator=property_.set_transaction_types)
+    transaction_date: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=property_.set_datetime)
     amount: AmountMixin = ndb.StructuredProperty(AmountMixin)
     is_verified: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
 
