@@ -25,6 +25,8 @@ class UserJobs(Mailgun):
 
     async def do_send_login_reminder(self, user_instance: UserModel):
         ***REMOVED***
+            **do_send_login_reminder**
+                send actual login reminder to user
 
         :param user_instance:
         :return:
