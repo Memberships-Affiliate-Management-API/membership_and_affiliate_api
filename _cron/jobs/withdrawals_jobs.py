@@ -22,9 +22,10 @@ class TransactionsJobs:
 
     async def do_send_to_client_paypal(self, transaction: WalletTransactionsModel) -> bool:
         ***REMOVED***
-
-        :param transaction:
-        :return:
+        **do_send_to_client_paypal**
+            send withdrawal amount to the client's paypal account
+        :param transaction: contains a record of the transaction
+        :return: bool indicating success or failure
         ***REMOVED***
         # TODO use paypal SDK to send transactions to paypal here
         # TODO then update transaction to reflect that transaction was sent
@@ -46,8 +47,10 @@ class TransactionsJobs:
     async def send_approved_withdrawals_to_paypal_wallets(self):
         ***REMOVED***
             **send_approved_withdrawals_to_paypal_wallets**
+                fetches all processed and approved withdrawals and schedule them for sending to the client
+                paypal wallet address
 
-            :return:
+            :return: None
         ***REMOVED***
         wallet_transactions: List[WalletTransactionsModel] = await WalletTransactionsModel.query(
             WalletTransactionsModel.is_verified == True, WalletTransactionsModel.is_settled == False).fetch_async()
@@ -63,8 +66,8 @@ class TransactionsJobs:
         **do_send_to_client_wallet**
             send the deposit to client wallet
 
-        :param transaction:
-        :return:
+        :param transaction: contains the deposit amount
+        :return: bool indicating success or failure
         ***REMOVED***
         # requesting the user wallet
         wallet_instance: WalletModel = await WalletModel.query(
@@ -84,6 +87,12 @@ class TransactionsJobs:
 
     @use_context
     async def add_approved_deposits_to_wallet(self):
+        ***REMOVED***
+        **add_approved_deposits_to_wallet**
+        fetches all processed deposits which are not yet settled and then adding them to the client wallet
+
+        :return: None
+        ***REMOVED***
         wallet_transactions: List[WalletTransactionsModel] = await WalletTransactionsModel.query(
             WalletTransactionsModel.is_verified == True, WalletTransactionsModel.is_settled == False).fetch_async()
         cron: List[Coroutine] = [self.do_send_to_client_wallet(transaction=transaction) for transaction in wallet_transactions
