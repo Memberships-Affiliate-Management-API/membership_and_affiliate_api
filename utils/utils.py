@@ -9,6 +9,7 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
 import os
+import re
 import datetime
 import random
 import string
@@ -48,10 +49,7 @@ def is_valid_chars(value: str, chars: str = _input_character_set) -> bool:
     :param chars: valid characters
     :return: bool indicating if characters are valid or not
     ***REMOVED***
-    for c in value:
-        if c not in chars:
-            return False
-    return True
+    return bool([invalid_char for invalid_char in value if invalid_char not in chars])
 
 
 def is_development() -> bool:
@@ -99,7 +97,8 @@ def timestamp_difference(stamp1: int, stamp2: int) -> int:
         :param stamp2 -> integer timestamp 2
         :return the difference between the two timestamps
     ***REMOVED***
-    return int(stamp1 - stamp2) if stamp1 > stamp2 else int(stamp2 - stamp1)
+    from math import fabs
+    return int(fabs(stamp1 - stamp2))
 
 
 def date_string_to_date(date_str: str) -> date:
