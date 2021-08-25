@@ -17,7 +17,7 @@ cron_transactions_bp = Blueprint('cron_withdrawals', __name__)
 
 @cron_transactions_bp.route('/_cron/v1/transactions', methods=['POST', 'GET'])
 @handle_apps_authentication
-def cron_withdrawals_jobs() -> tuple:
+def cron_transactions_jobs() -> tuple:
     ***REMOVED***
         **cron_withdrawals_jobs**
             Manages Approved withdrawals - 0726177953

@@ -20,8 +20,9 @@ cron_users_bp = Blueprint('cron_users', __name__)
 @handle_apps_authentication
 def cron_users_jobs() -> tuple:
     ***REMOVED***
-
-    :return:
+    **cron_users_jobs**
+        user cron jobs, will run cron services needed to manage users
+    :return: tuple
     ***REMOVED***
     user_jobs_instance: UserJobs = UserJobs()
     user_jobs_instance.run()
