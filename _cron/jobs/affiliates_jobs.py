@@ -28,7 +28,8 @@ class AffiliateJobs:
         self._max_timeout = current_app.config.get('DATASTORE_TIMEOUT')
 
     def run(self):
-        asyncio.run(asyncio.gather([self.finalize_affiliate_earnings, self.create_affiliate_reports]))
+        asyncio.run(self.finalize_affiliate_earnings())
+        asyncio.run(self.create_affiliate_reports())
 
     async def do_finalize_earnings(self, earnings: EarningsData) -> bool:
         ***REMOVED***

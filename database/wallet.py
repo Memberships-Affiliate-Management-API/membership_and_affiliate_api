@@ -179,6 +179,7 @@ class WalletTransactionsModel(BaseModel):
     transaction_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True)
     transaction_type: str = ndb.StringProperty(validator=property_.set_transaction_types)
     transaction_date: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=property_.set_datetime)
+    last_updated: datetime = ndb.DateTimeProperty(auto_now=True, validator=property_.set_datetime)
     amount: AmountMixin = ndb.StructuredProperty(AmountMixin)
     is_verified: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
     is_settled: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
