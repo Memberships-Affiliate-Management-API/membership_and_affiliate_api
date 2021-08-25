@@ -9,6 +9,7 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 from flask import Blueprint
 from _cron.jobs.withdrawals_jobs import WithdrawalsJobs
+from config.exceptions import status_codes
 from security.apps_authenticator import handle_apps_authentication
 
 cron_withdrawals_bp = Blueprint('cron_withdrawals', __name__)
@@ -16,7 +17,7 @@ cron_withdrawals_bp = Blueprint('cron_withdrawals', __name__)
 
 @cron_withdrawals_bp.route('/_cron/v1/withdrawals', methods=['POST', 'GET'])
 @handle_apps_authentication
-def cron_withdrawals_jobs():
+def cron_withdrawals_jobs() -> tuple:
     ***REMOVED***
         **cron_withdrawals_jobs**
             Manages Approved withdrawals - 0726177953
@@ -25,3 +26,4 @@ def cron_withdrawals_jobs():
     ***REMOVED***
     withdrawals_jobs: WithdrawalsJobs = WithdrawalsJobs()
     withdrawals_jobs.run()
+    return "OK", status_codes.status_ok_code

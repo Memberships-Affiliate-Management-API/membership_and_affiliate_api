@@ -10,6 +10,7 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 from flask import Blueprint
 from _cron.jobs.users_jobs import UserJobs
+from config.exceptions import status_codes
 from security.apps_authenticator import  handle_apps_authentication
 
 cron_users_bp = Blueprint('cron_users', __name__)
@@ -17,10 +18,11 @@ cron_users_bp = Blueprint('cron_users', __name__)
 
 @cron_users_bp.route('/_cron/v1/users', methods=['POST', 'GET'])
 @handle_apps_authentication
-def cron_users_jobs():
+def cron_users_jobs() -> tuple:
     ***REMOVED***
 
     :return:
     ***REMOVED***
     user_jobs_instance: UserJobs = UserJobs()
     user_jobs_instance.run()
+    return "OK", status_codes.status_ok_code

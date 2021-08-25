@@ -13,6 +13,7 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 
 from flask import Blueprint
 from _cron.jobs.membership_jobs import MembershipsJobs
+from config.exceptions import status_codes
 from security.apps_authenticator import handle_apps_authentication
 
 cron_memberships_bp = Blueprint('cron_memberships', __name__)
@@ -20,7 +21,7 @@ cron_memberships_bp = Blueprint('cron_memberships', __name__)
 
 @cron_memberships_bp.route('/_cron/v1/memberships', methods=['GET', 'POST'])
 @handle_apps_authentication
-def cron_memberships_jobs():
+def cron_memberships_jobs() -> tuple:
     ***REMOVED***
         **cron_memberships_jobs**
             memberships cron jobs, will be responsible for the following:
@@ -30,4 +31,5 @@ def cron_memberships_jobs():
     ***REMOVED***
     memberships_jobs_instance: MembershipsJobs = MembershipsJobs()
     memberships_jobs_instance.run()
+    return "OK", status_codes.status_ok_code
 
