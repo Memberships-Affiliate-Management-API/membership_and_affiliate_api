@@ -8,7 +8,7 @@ __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
 from flask import Blueprint
-from _cron.jobs.withdrawals_jobs import TransactionsJobs
+from _cron.jobs.transactions_jobs import TransactionsJobs
 from config.exceptions import status_codes
 from security.apps_authenticator import handle_apps_authentication
 
