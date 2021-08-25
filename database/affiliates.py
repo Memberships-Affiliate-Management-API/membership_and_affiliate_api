@@ -268,43 +268,6 @@ class EarningsData(BaseModel):
         return bool(self.affiliate_id)
 
 
-class AffiliateEarningsTransactions(BaseModel):
-    ***REMOVED***
-        **Class AffiliateEarningsTransactions**
-            keeps track of amounts paid from EarningsData, meaning this holds a list
-            of transaction relating to affiliate earnings.
-
-        **Class Properties**
-            1. organization_id: string -> unique id to identify the organization
-            2. affiliate_id: string -> unique id to identify the affiliate the transaction refers to
-            3. transactions_total: AmountMixin -> total amount in transactions
-            4. transaction_id_list: list[str] -> list of transaction ids relating to this affiliate
-            5. last_transaction_time: datetime -> time the last transaction took place
-    ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
-    affiliate_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
-    transactions_total: AmountMixin = ndb.StructuredProperty(AmountMixin, required=True)
-    transaction_id_list: typing.List[str] = ndb.StringProperty(repeated=True)
-    last_transaction_time: datetime = ndb.DateTimeProperty(auto_now=True, validator=property_.set_date)
-
-    def __eq__(self, other) -> bool:
-        if self.__class__ != other.__class__:
-            return False
-        if self.affiliate_id != other.affiliate_id:
-            return False
-        if self.transactions_total != other.transactions_total:
-            return False
-        return True
-
-    def __str__(self) -> str:
-        return "<Total Earned: organization_id: {}, affiliate_id: {}, transactions_total: {}".format(
-            self.organization_id, self.affiliate_id, self.transactions_total.__str__())
-
-    def __bool__(self) -> bool:
-        # return True if self.affiliate_id else False
-        return bool(self.affiliate_id)
-
-
 class AffiliateTransactionItems(BaseModel):
     ***REMOVED***
         **Class AffiliateTransactionItems**
@@ -319,6 +282,7 @@ class AffiliateTransactionItems(BaseModel):
         **NOTE:**
             Transactions here only relates to affiliate earnings so there is no transaction types
     ***REMOVED***
+    uid: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
     transaction_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
     amount: AmountMixin = ndb.StructuredProperty(AmountMixin, required=True)
     transaction_date: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=property_.set_date)
