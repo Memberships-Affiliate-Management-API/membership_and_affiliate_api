@@ -1,6 +1,5 @@
 import asyncio
 from typing import List, Coroutine
-
 from database.wallet import WalletTransactionsModel, WalletModel
 
 
@@ -10,7 +9,7 @@ class WithdrawalsJobs:
         pass
 
     def run(self):
-        pass
+        asyncio.run(self.send_approved_withdrawals_to_paypal_wallets())
 
     async def do_send_to_paypal(self, transaction: WalletTransactionsModel) -> bool:
         ***REMOVED***
@@ -18,6 +17,9 @@ class WithdrawalsJobs:
         :param transaction:
         :return:
         ***REMOVED***
+        # TODO use paypal SDK to send transactions to paypal here
+        # TODO then update transaction to reflect that transaction was sent
+        # NOTE: Could also listen to an _ipn to find out if transaction succeeded on paypal side
         pass
 
     async def send_approved_withdrawals_to_paypal_wallets(self):
