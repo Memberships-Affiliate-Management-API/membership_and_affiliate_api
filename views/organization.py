@@ -606,10 +606,10 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
         if isinstance(organization_instance, Organization):
             calculated: bool = False
             if isinstance(add_amount, AmountMixin):
-                organization_instance.total_paid += add_amount
+                organization_instance.total_paid.__add__(add_amount)
                 calculated = True
             if isinstance(subtract_amount, AmountMixin):
-                organization_instance.total_paid -= subtract_amount
+                organization_instance.total_paid.__sub__(subtract_amount)
                 calculated = True
             if not calculated:
                 raise InputError(status=error_codes.input_error_code, description="Please enter either the amount to add or subtract")
@@ -698,9 +698,9 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
 
         if isinstance(organization_instance, Organization):
             if isinstance(add_payment, AmountMixin):
-                organization_instance.projected_membership_payments += add_payment
+                organization_instance.projected_membership_payments.__add__(add_payment)
             elif isinstance(subtract_payment, AmountMixin):
-                organization_instance.projected_membership_payments -= subtract_payment
+                organization_instance.projected_membership_payments.__sub__(subtract_payment)
             else:
                 message: str = "Please enter either the amount to add or subtract"
                 raise InputError(status=error_codes.input_error_code, description=message)
@@ -740,9 +740,9 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
 
         if isinstance(organization_instance, Organization):
             if isinstance(subtract_total_membership_payment, AmountMixin):
-                organization_instance.total_membership_payments -= subtract_total_membership_payment
+                organization_instance.total_membership_payments.__sub__(subtract_total_membership_payment)
             elif isinstance(add_total_membership_amount, AmountMixin):
-                organization_instance.total_membership_payments += add_total_membership_amount
+                organization_instance.total_membership_payments.__add__(add_total_membership_amount)
             else:
                 message: str = "Input Error: Please enter either the amount to add or subtract"
                 raise InputError(status=error_codes.input_error_code,
