@@ -17,7 +17,7 @@ import functools
 from main import app_cache
 
 
-@app_cache.memoize(timeout=15*60)  # timeout equals fifteen minutes // 900 seconds
+@app_cache.memoize(timeout=15 * 60)  # timeout equals fifteen minutes // 900 seconds
 def is_request_valid(api_key: str, secret: str, domain: str) -> bool:
     ***REMOVED***
     **is_api_key_valid**
@@ -53,6 +53,7 @@ def handle_api_auth(func):
     :param func: a function to be wrapped
     :return: wrapped function
     ***REMOVED***
+
     @functools.wraps(func)
     def auth_wrapper(*args, **kwargs):
         api_key: Optional[str] = request.headers.get('api-key')
@@ -68,14 +69,8 @@ def handle_api_auth(func):
     return auth_wrapper
 
 
-# NOTE: this is irrelevant
-@handle_api_auth
-def main():
-    pass
-
-
 if __name__ == '__main__':
     ***REMOVED***
         NOTE: fast testing of functions here 
     ***REMOVED***
-    main()
+    pass
