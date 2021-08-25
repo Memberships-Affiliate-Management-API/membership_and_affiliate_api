@@ -9,6 +9,8 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
 import typing
+from datetime import date
+
 from google.cloud import ndb
 from config.exception_handlers import handle_store_errors
 from config.exceptions import InputError, error_codes
@@ -156,6 +158,7 @@ class UserModel(BaseModel):
     is_support: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
     address: AddressMixin = ndb.StructuredProperty(AddressMixin)
     recovery_code: str = ndb.StringProperty(validator=property_.set_string)
+    last_login_date: date = ndb.DateProperty(validator=property_.set_date)
 
     def __str__(self) -> str:
         return "<User: UID: {}, Names: {}, Surname: {}, Email: {}, Cell: {}".format(self.uid, self.names, self.surname,
