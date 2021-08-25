@@ -12,10 +12,10 @@ from _cron.jobs.withdrawals_jobs import TransactionsJobs
 from config.exceptions import status_codes
 from security.apps_authenticator import handle_apps_authentication
 
-cron_withdrawals_bp = Blueprint('cron_withdrawals', __name__)
+cron_transactions_bp = Blueprint('cron_withdrawals', __name__)
 
 
-@cron_withdrawals_bp.route('/_cron/v1/withdrawals', methods=['POST', 'GET'])
+@cron_transactions_bp.route('/_cron/v1/transactions', methods=['POST', 'GET'])
 @handle_apps_authentication
 def cron_withdrawals_jobs() -> tuple:
     ***REMOVED***
@@ -24,6 +24,6 @@ def cron_withdrawals_jobs() -> tuple:
             actually sends approved withdrawals to users paypal wallets
     :return:
     ***REMOVED***
-    withdrawals_jobs: TransactionsJobs = TransactionsJobs()
-    withdrawals_jobs.run()
+    transactions: TransactionsJobs = TransactionsJobs()
+    transactions.run()
     return "OK", status_codes.status_ok_code

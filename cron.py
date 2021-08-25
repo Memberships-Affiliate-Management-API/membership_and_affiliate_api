@@ -35,12 +35,12 @@ def heroku_cron_memberships() -> tuple:
 
 
 @cron_scheduler.scheduled_job(trigger='cron', day_of_week='mon-sun', hour=5)
-def heroku_cron_withdrawals() -> tuple:
+def heroku_cron_transactions() -> tuple:
     ***REMOVED***
 
     :return:
     ***REMOVED***
-    _endpoint: str = '_cron/v1/withdrawals'
+    _endpoint: str = '_cron/v1/transactions'
     _base_url: str = config_instance.BASE_URL
     _url: str = f"{_base_url}{_endpoint}"
     requests.get(url=_url)
@@ -60,3 +60,6 @@ def heroku_cron_users() -> tuple:
     requests.get(url=_url)
     return "OK", status_codes.status_ok_code
 
+
+if __name__ == '__main__':
+    cron_scheduler.start()

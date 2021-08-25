@@ -5,7 +5,8 @@ from cron import cron_scheduler
 from config import config_instance
 from authlib.integrations.flask_client import OAuth
 # TODO: consider upgrading the cache service from version 2 of this api
-from utils import clear_cache
+from utils import clear_cache, is_development
+
 app_cache: Cache = Cache(config=config_instance.cache_dict())
 
 default_timeout: int = 60 * 60 * 6
@@ -24,6 +25,7 @@ github_authorize = oauth.register(
     client_kwargs={'scope': 'user:email'})
 
 
+# noinspection DuplicatedCode
 def create_app(config_class=config_instance):
     app = Flask(__name__, static_folder="app/resources/static", template_folder="app/resources/templates")
     app.config.from_object(config_class)
@@ -72,6 +74,12 @@ def create_app(config_class=config_instance):
 
     from _api.public_api.services.routes import services_public_api_bp
 
+    # Cron Jobs
+    from _cron.transactions import cron_transactions_bp
+    from _cron.users import cron_users_bp
+    from _cron.memberships import cron_memberships_bp
+    from _cron.affiliates import cron_affiliate_bp
+
     # Routes registrations
     app.register_blueprint(affiliates_bp)
     app.register_blueprint(users_bp)
@@ -114,15 +122,22 @@ def create_app(config_class=config_instance):
 
     app.register_blueprint(services_public_api_bp)
 
+    # cron jobs
+    app.register_blueprint(cron_transactions_bp)
+    app.register_blueprint(cron_users_bp)
+    app.register_blueprint(cron_memberships_bp)
+    app.register_blueprint(cron_affiliate_bp)
+
     # Error Handlers
     app.register_blueprint(default_handlers_bp)
 
     # Clear Cache
-    # if clear_cache(app=app, cache=app_cache):
-    #     print("Cache Cleared and Starting")
+    if clear_cache(app=app, cache=app_cache):
+        print("Cache Cleared and Starting")
 
     # Schedule Start
-    task_scheduler.start()
-    cron_scheduler.start()
+    if is_development():
+        task_scheduler.start()
+        cron_scheduler.start()
 
     return app

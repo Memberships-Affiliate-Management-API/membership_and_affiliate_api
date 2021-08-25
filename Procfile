@@ -1,2 +1,3 @@
 web: gunicorn run:app
-service: gunicorn cron:cron_scheduler
+cron: gunicorn cron:cron_scheduler
+tasks: gunicorn tasks:task_scheduler
