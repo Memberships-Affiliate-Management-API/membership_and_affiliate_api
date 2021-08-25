@@ -17,6 +17,8 @@ email_ipn_bp = Blueprint("email_ipn", __name__)
 @email_ipn_bp.route('/_ipn/v1/email/received/<path:path>', methods=["GET", "POST"])
 def email_received_ipn(path: str) -> tuple:
     ***REMOVED***
+    **email_received_ipn**
+
         :param path: organization_id
         :return: OK, 200
     ***REMOVED***
@@ -27,7 +29,9 @@ def email_received_ipn(path: str) -> tuple:
 @email_ipn_bp.route('/_ipn/v1/email/mailgun/<string:path>', methods=["GET", "POST"])
 def email_sent_ipn(path: str) -> tuple:
     ***REMOVED***
+    **email_sent_ipn**
         Delivered ipn for mailgun
+
         :param path: organization_id
         :return: OK, 200
     ***REMOVED***

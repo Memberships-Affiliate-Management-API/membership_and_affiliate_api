@@ -13,10 +13,13 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 
 from flask import Blueprint
 from _cron.jobs.membership_jobs import MembershipsJobs
+from security.apps_authenticator import is_app_authenticated
+
 cron_memberships_bp = Blueprint('cron_memberships', __name__)
 
 
 @cron_memberships_bp.route('/_cron/v1/memberships', methods=['GET', 'POST'])
+@is_app_authenticated
 def cron_memberships_jobs():
     ***REMOVED***
         **cron_memberships_jobs**
