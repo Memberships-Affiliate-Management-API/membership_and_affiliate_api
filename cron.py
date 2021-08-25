@@ -20,7 +20,7 @@ def heroku_cron_affiliate_jobs() -> tuple:
     return "OK", status_codes.status_ok_code
 
 
-@cron_scheduler.scheduled_job(trigger='cron', day_of_week='mon-sun', hour=2)
+@cron_scheduler.scheduled_job(trigger='cron', day_of_week='mon-sun', hour=3)
 def heroku_cron_memberships() -> tuple:
     ***REMOVED***
         **heroku_cron_memberships**
