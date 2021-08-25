@@ -81,6 +81,7 @@ class AffiliateJobs:
         event_loop = asyncio.get_event_loop()
         coro: List[Coroutine] = [self.do_finalize_earnings(earnings=earning) for earning in earnings_list]
         event_loop.run_until_complete(asyncio.gather(coro))
+        event_loop.close()
 
     async def create_affiliate_reports(self):
         pass
