@@ -27,5 +27,6 @@ def cron_affiliate_jobs():
                 3. sending affiliate report - recruitments & earnings
     :return:
     ***REMOVED***
+    # TODO add authentication on this route
     affiliate_cron_tasks: AffiliateCronTasks = AffiliateCronTasks()
     affiliate_cron_tasks.run()
