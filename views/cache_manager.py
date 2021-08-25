@@ -11,7 +11,7 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
 from datetime import timedelta
-from _cron.scheduler import schedule
+from _cron.scheduler import task_scheduler
 from main import app_cache
 from typing import Optional, Callable
 from utils import datetime_now, create_id
@@ -194,5 +194,5 @@ class CacheManager:
         :return:
         ***REMOVED***
         twenty_seconds_after = datetime_now() + timedelta(seconds=20)
-        schedule.add_job(func=func, trigger='date', run_date=twenty_seconds_after, kwargs=kwargs, id=create_id(),
-                         name="cache_deletion", misfire_grace_time=360)
+        task_scheduler.add_job(func=func, trigger='date', run_date=twenty_seconds_after, kwargs=kwargs, id=create_id(),
+                               name="cache_deletion", misfire_grace_time=360)

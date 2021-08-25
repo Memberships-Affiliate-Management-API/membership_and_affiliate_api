@@ -12,7 +12,7 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 import typing
 from config import config_instance
 from main import app_cache
-from utils.utils import return_ttl, can_cache
+from utils.utils import return_ttl
 
 
 class CurrencyUtils:

@@ -9,6 +9,7 @@ __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
 from flask import Blueprint
+from _cron.jobs.users_jobs import UserJobs
 cron_users_bp = Blueprint('cron_users', __name__)
 
 
@@ -18,4 +19,6 @@ def cron_users_jobs():
 
     :return:
     ***REMOVED***
-    pass
+    user_jobs_instance: UserJobs = UserJobs()
+    user_jobs_instance.run()
+    

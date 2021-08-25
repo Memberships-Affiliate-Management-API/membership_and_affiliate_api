@@ -12,7 +12,7 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
 from flask import Blueprint
-
+from _cron.jobs.membership_jobs import MembershipsJobsTask
 cron_memberships_bp = Blueprint('cron_memberships', __name__)
 
 
@@ -25,4 +25,6 @@ def cron_memberships_jobs():
                 if not paid check grace period if expired then expire membership
     :return:
     ***REMOVED***
-    pass
+    memberships_jobs_instance: MembershipsJobsTask = MembershipsJobsTask()
+    memberships_jobs_instance.run()
+

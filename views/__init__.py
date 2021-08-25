@@ -1,5 +1,5 @@
 ***REMOVED***
-    NOTES configuring memcache in heroku
+    NOTES: configuring memcache in heroku
 # ... run command to enable cache
 heroku addons:create memcachier:dev
 

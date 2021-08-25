@@ -8,7 +8,8 @@ from datetime import datetime, timedelta
 from apscheduler.schedulers.background import BackgroundScheduler
 from utils import create_id as create_unique_id
 
-schedule = BackgroundScheduler()
+task_scheduler = BackgroundScheduler()
+cron_scheduler = BackgroundScheduler()
 
 
 def schedule_func(func: Callable, kwargs: dict) -> None:
@@ -20,5 +21,5 @@ def schedule_func(func: Callable, kwargs: dict) -> None:
     :return:
     ***REMOVED***
     twenty_seconds_after = datetime.now() + timedelta(seconds=20)
-    schedule.add_job(func=func, trigger='date', run_date=twenty_seconds_after, kwargs=kwargs, id=create_unique_id(),
-                     name="schedule_func", misfire_grace_time=360)
+    task_scheduler.add_job(func=func, trigger='date', run_date=twenty_seconds_after, kwargs=kwargs, id=create_unique_id(),
+                           name="schedule_func", misfire_grace_time=360)

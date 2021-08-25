@@ -8,6 +8,7 @@ __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
 from flask import Blueprint
+from _cron.jobs.withdrawals_jobs import WithdrawalsJobs
 cron_withdrawals_bp = Blueprint('cron_withdrawals', __name__)
 
 
@@ -15,8 +16,9 @@ cron_withdrawals_bp = Blueprint('cron_withdrawals', __name__)
 def cron_withdrawals_jobs():
     ***REMOVED***
         **cron_withdrawals_jobs**
-            Manages Approved withdrawals
+            Manages Approved withdrawals - 0726177953
             actually sends approved withdrawals to users paypal wallets
     :return:
     ***REMOVED***
-    pass
+    withdrawals_jobs: WithdrawalsJobs = WithdrawalsJobs()
+    withdrawals_jobs.run()

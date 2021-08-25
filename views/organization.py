@@ -262,7 +262,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
                 check if user has registered, and is a paying user... or created an account.
                 Note: also Insures that the user does not have an organization already.
 
-        :param uid: user id of the user performing the action
+        :param uid: user id of the user performing the action --
         :param organization_name: the name of the organization to of which we should check if we can create
         :return: a boolean indicating if we can create the organization
         ***REMOVED***

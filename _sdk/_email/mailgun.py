@@ -16,7 +16,7 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 from datetime import timedelta
 import requests
 from flask import current_app
-from _cron.scheduler import schedule
+from _cron.scheduler import task_scheduler
 from config import config_instance
 from typing import List, Optional
 import aiohttp
@@ -158,8 +158,8 @@ class Mailgun:
         _kwargs: dict = dict(to_list=[to_email], sbject=subject, text=text, html=html)
         # 5 seconds after now the email will be sent
         five_seconds_after = datetime_now() + timedelta(seconds=5)
-        schedule.add_job(func=self.__send_with_mailgun_rest_api, trigger='date', run_date=five_seconds_after,
-                         kwargs=_kwargs, id=create_id(), name="do_schedule_mail_send", misfire_grace_time=360)
+        task_scheduler.add_job(func=self.__send_with_mailgun_rest_api, trigger='date', run_date=five_seconds_after,
+                               kwargs=_kwargs, id=create_id(), name="do_schedule_mail_send", misfire_grace_time=360)
 
     @staticmethod
     def __base_email_scheduler(func, kwargs) -> None:
@@ -170,5 +170,5 @@ class Mailgun:
         :return:
         ***REMOVED***
         seconds_after = datetime_now() + timedelta(seconds=10)
-        schedule.add_job(func=func, trigger='date', run_date=seconds_after, kwargs=kwargs, id=create_id(),
-                         name="base_email_scheduler", misfire_grace_time=360)
+        task_scheduler.add_job(func=func, trigger='date', run_date=seconds_after, kwargs=kwargs, id=create_id(),
+                               name="base_email_scheduler", misfire_grace_time=360)
