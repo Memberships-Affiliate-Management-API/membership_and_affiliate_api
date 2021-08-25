@@ -35,10 +35,10 @@ def deposit_successfull_ipn(path: str) -> tuple:
 @paypal_ipn_bp.route('/_ipn/paypal/deposit/failure/<path:path>', methods=["GET", "POST"])
 def deposit_failed_ipn(path: str) -> tuple:
     ***REMOVED***
-    **deposit_failed_ipn**
+        **deposit_failed_ipn**
 
-    :param path: organization_id
-    :return: "OK", 200
+        :param path: organization_id
+        :return: "OK", 200
     ***REMOVED***
 
     return "OK", 200
@@ -61,8 +61,8 @@ def withdrawal_failed_ipn(path: str) -> tuple:
     ***REMOVED***
         **withdrawal_failed_ipn**
 
-    :param path: organization_id
-    :return: "OK", 200
+        :param path: organization_id
+        :return: "OK", 200
     ***REMOVED***
 
     return "OK", 200
@@ -73,8 +73,8 @@ def withdrawal_successfull_ipn(path: str) -> tuple:
     ***REMOVED***
         **withdrawal_successfull_ipn**
 
-    :param path: organization_id
-    :return: "OK", 200
+        :param path: organization_id
+        :return: "OK", 200
     ***REMOVED***
 
     return "OK", 200
