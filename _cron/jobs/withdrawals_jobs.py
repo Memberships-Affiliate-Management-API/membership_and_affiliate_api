@@ -25,7 +25,18 @@ class WithdrawalsJobs:
         # TODO use paypal SDK to send transactions to paypal here
         # TODO then update transaction to reflect that transaction was sent
         # NOTE: Could also listen to an _ipn to find out if transaction succeeded on paypal side
-        pass
+        wallet_instance: WalletModel = await WalletModel.query(
+            WalletModel.organization_id == transaction.organization_id, WalletModel.uid == transaction.uid).get_async()
+
+        if wallet_instance.is_verified:
+            paypal_address = wallet_instance.paypal_address
+            amount = transaction.amount
+            # TODO send amount to paypal using paypal address from wallet and amount from transactions
+            transaction.is_settled = True
+            tran_key: Optional[ndb.Key] = transaction.put_async(retries=self._max_retries,
+                                                                timeout=self._max_timeout).get_result()
+            return bool(tran_key)
+        return False
 
     @use_context
     async def send_approved_withdrawals_to_paypal_wallets(self):

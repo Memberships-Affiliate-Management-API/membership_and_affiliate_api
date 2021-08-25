@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_caching import Cache
 from _cron.scheduler import task_scheduler
+from cron import cron_scheduler
 from config import config_instance
 from authlib.integrations.flask_client import OAuth
 # TODO: consider upgrading the cache service from version 2 of this api
@@ -122,5 +123,6 @@ def create_app(config_class=config_instance):
 
     # Schedule Start
     task_scheduler.start()
+    cron_scheduler.start()
 
     return app
