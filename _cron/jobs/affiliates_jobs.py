@@ -12,7 +12,7 @@ from flask import current_app
 from google.cloud import ndb
 
 from config.use_context import use_context
-from database.affiliates import EarningsData, AffiliateEarningsTransactions, AffiliateTransactionItems
+from database.affiliates import EarningsData, AffiliateTransactionItems
 from database.mixins import AmountMixin
 from database.wallet import WalletModel
 from utils import create_id
