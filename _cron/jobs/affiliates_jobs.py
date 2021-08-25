@@ -64,7 +64,7 @@ class AffiliateJobs:
                     tran_key: Optional[ndb.Key] = transaction_item.put_async(retries=self._max_retries,
                                                                              timeout=self._max_timeout).get_result()
 
-                    return True
+                    return bool(tran_key)
         return False
 
     @use_context
