@@ -12,10 +12,7 @@ __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
-from typing import Optional
-
 from flask import Blueprint
-from main import app_cache
 
 
 paypal_ipn_bp = Blueprint("paypal_ipn", __name__)

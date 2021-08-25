@@ -1,4 +1,15 @@
-class MembershipsJobsTask:
+***REMOVED***
+**Memberships Job Module**
+    this module defines memberships and membership plans cron jobs,
+
+***REMOVED***
+
+
+class MembershipsJobs:
+    ***REMOVED***
+        **Class MembershipsJobs**
+
+    ***REMOVED***
 
     def __init__(self):
         pass

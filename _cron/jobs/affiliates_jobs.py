@@ -2,10 +2,16 @@
         **affiliate_jobs**
 
 
+
 ***REMOVED***
 
 
-class AffiliateCronTasks:
+class AffiliateJobs:
+    ***REMOVED***
+    **Class AffiliateJobs**
+        runs affiliate cron jobs to complete recurring tasks
+
+    ***REMOVED***
 
     def __init__(self):
         pass

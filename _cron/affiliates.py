@@ -13,7 +13,7 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
 from flask import Blueprint
-from _cron.jobs.affiliates_jobs import AffiliateCronTasks
+from _cron.jobs.affiliates_jobs import AffiliateJobs
 cron_affiliate_bp = Blueprint('cron_affiliate', __name__)
 
 
@@ -28,5 +28,5 @@ def cron_affiliate_jobs():
     :return:
     ***REMOVED***
     # TODO add authentication on this route
-    affiliate_cron_tasks: AffiliateCronTasks = AffiliateCronTasks()
+    affiliate_cron_tasks: AffiliateJobs = AffiliateJobs()
     affiliate_cron_tasks.run()
