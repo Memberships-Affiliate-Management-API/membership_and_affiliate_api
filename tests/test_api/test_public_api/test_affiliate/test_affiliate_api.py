@@ -50,7 +50,7 @@ class AffiliateQueryMock:
         ***REMOVED***
         return Affiliates(affiliate_id=create_id(), organization_id=config_instance.ORGANIZATION_ID, uid=create_id(),
                           last_updated=datetime.now(), datetime_recruited=datetime.now(),
-                          total_recruits=randint(10, 1000), is_active=bool(randint(0,1)), is_deleted=randint(0, 1))
+                          total_recruits=randint(10, 1000), is_active=bool(randint(0, 1)), is_deleted=bool(randint(0, 1)))
 
     def fetch(self) -> List[Affiliates]:
         return [self.rand_affiliate() for _ in range(self.results_range)]
