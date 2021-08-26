@@ -706,7 +706,7 @@ class MembershipsView(Validators, MembershipsEmails):
         membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                              Memberships.uid == uid).get()
 
-        if isinstance(membership_instance, Memberships):
+        if isinstance(membership_instance, Memberships) and membership_instance.uid == uid:
             membership_instance.payment_status = status
             key: Optional[ndb.Key] = membership_instance.put(retries=self._max_retries, timeout=self._max_timeout)
 
@@ -751,7 +751,7 @@ class MembershipsView(Validators, MembershipsEmails):
         membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                              Memberships.uid == uid).get_async().get_result()
 
-        if isinstance(membership_instance, Memberships):
+        if isinstance(membership_instance, Memberships) and membership_instance.uid == uid:
             membership_instance.payment_status = status
             key: Optional[ndb.Key] = membership_instance.put_async(retries=self._max_retries,
                                                                    timeout=self._max_timeout).get_result()
@@ -894,7 +894,7 @@ class MembershipsView(Validators, MembershipsEmails):
 
         membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                              Memberships.uid == uid).get()
-        if isinstance(membership_instance, Memberships):
+        if isinstance(membership_instance, Memberships) and membership_instance.uid == uid:
             membership_instance.payment_method = payment_method
             key: Optional[ndb.Key] = membership_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             if not bool(key):
@@ -1164,7 +1164,7 @@ class MembershipsView(Validators, MembershipsEmails):
         member_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                          Memberships.uid == uid).get()
 
-        if isinstance(member_instance, Memberships):
+        if isinstance(member_instance, Memberships) and member_instance.uid == uid:
             return jsonify(
                 {'status': True, 'payload': member_instance.to_dict(),
                  'message': 'successfully fetched members'}), status_codes.status_ok_code
@@ -1200,7 +1200,7 @@ class MembershipsView(Validators, MembershipsEmails):
         member_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                          Memberships.uid == uid).get_async().get_result()
 
-        if isinstance(member_instance, Memberships):
+        if isinstance(member_instance, Memberships) and member_instance.uid == uid:
             return jsonify(
                 {'status': True, 'payload': member_instance.to_dict(),
                  'message': 'successfully fetched members'}), status_codes.status_ok_code
@@ -1236,7 +1236,7 @@ class MembershipsView(Validators, MembershipsEmails):
         membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                              Memberships.uid == uid).get()
 
-        if isinstance(membership_instance, Memberships):
+        if isinstance(membership_instance, Memberships) and membership_instance.uid == uid:
             plan_id: str = membership_instance.plan_id
             membership_plan_instance: MembershipPlans = MembershipPlansView()._get_plan(
                 organization_id=organization_id, plan_id=plan_id)
@@ -1285,7 +1285,7 @@ class MembershipsView(Validators, MembershipsEmails):
         membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                              Memberships.uid == uid).get_async().get_result()
 
-        if isinstance(membership_instance, Memberships):
+        if isinstance(membership_instance, Memberships) and membership_instance.uid == uid:
             plan_id: str = membership_instance.plan_id
             membership_plan_instance: MembershipPlans = await MembershipPlansView()._get_plan_async(
                 organization_id=organization_id, plan_id=plan_id)
@@ -1337,7 +1337,7 @@ class MembershipsView(Validators, MembershipsEmails):
 
         membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                              Memberships.uid == uid).get()
-        if isinstance(membership_instance, Memberships):
+        if isinstance(membership_instance, Memberships) and membership_instance.uid == uid:
             membership_instance.is_active_subscription = False
             key: Optional[ndb.Key] = membership_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             if not bool(key):
@@ -1684,11 +1684,22 @@ class MembershipPlansView(Validators):
             :param is_active: bool indicating weather to activate or de-activate the membership plan.
             :return:
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = 'organization_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(plan_id, str) or not bool(plan_id.strip()):
+            message: str = 'organization_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(is_active, bool):
+            message: str = "is_active can only be a boolean"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         membership_plans_instance: MembershipPlans = MembershipPlans.query(
             MembershipPlans.organization_id == organization_id, MembershipPlans.plan_id == plan_id).get()
 
-        if isinstance(membership_plans_instance, MembershipPlans):
+        if isinstance(membership_plans_instance, MembershipPlans) and membership_plans_instance.organization_id == organization_id:
             membership_plans_instance.is_active = is_active
             key: Optional[ndb.Key] = membership_plans_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             if not bool(key):
@@ -1713,12 +1724,23 @@ class MembershipPlansView(Validators):
             :param is_active: bool indicating weather to activate or de-activate the membership plan.
             :return:
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = 'organization_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(plan_id, str) or not bool(plan_id.strip()):
+            message: str = 'organization_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(is_active, bool):
+            message: str = "is_active can only be a boolean"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         membership_plans_instance: MembershipPlans = MembershipPlans.query(
             MembershipPlans.organization_id == organization_id,
             MembershipPlans.plan_id == plan_id).get_async().get_result()
 
-        if isinstance(membership_plans_instance, MembershipPlans):
+        if isinstance(membership_plans_instance, MembershipPlans) and membership_plans_instance.organization_id == organization_id:
             membership_plans_instance.is_active = is_active
             # TODO- this action has to be updated also in PayPal
             key: Optional[ndb.Key] = membership_plans_instance.put_async(retries=self._max_retries,
@@ -1742,6 +1764,13 @@ class MembershipPlansView(Validators):
         :param schedule_term:
         :return:
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = 'organization_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(schedule_term, str) or not bool(schedule_term.strip()):
+            message: str = 'schedule_term is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         membership_plan_list: List[MembershipPlans] = MembershipPlans.query(
             MembershipPlans.organization_id == organization_id, MembershipPlans.schedule_term == schedule_term).fetch()
@@ -1764,6 +1793,13 @@ class MembershipPlansView(Validators):
         :param schedule_term:
         :return:
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = 'organization_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(schedule_term, str) or not bool(schedule_term.strip()):
+            message: str = 'schedule_term is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         membership_plan_list: List[MembershipPlans] = MembershipPlans.query(
             MembershipPlans.organization_id == organization_id,
@@ -1792,6 +1828,14 @@ class MembershipPlansView(Validators):
         :param plan_id:
         :return:
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = 'organization_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(plan_id, str) or not bool(plan_id.strip()):
+            message: str = 'plan_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         if isinstance(plan_id, str) and bool(plan_id.strip()):
             membership_plan_instance: MembershipPlans = MembershipPlans.query(
                 Memberships.organization_id == organization_id, MembershipPlans.plan_id == plan_id.strip()).get()
@@ -1814,6 +1858,14 @@ class MembershipPlansView(Validators):
         :param plan_id:
         :return:
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = 'organization_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(plan_id, str) or not bool(plan_id.strip()):
+            message: str = 'plan_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         if isinstance(plan_id, str):
             membership_plan_instance: MembershipPlans = MembershipPlans.query(
                 MembershipPlans.organization_id == organization_id,
@@ -1833,6 +1885,13 @@ class MembershipPlansView(Validators):
         :param plan_id: the id of the plan to return - Note: this plan id is the same as the plan id / product id in PayPal
         :return: plan details
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = 'organization_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(plan_id, str) or not bool(plan_id.strip()):
+            message: str = 'plan_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         plan_instance = self._get_plan(organization_id=organization_id, plan_id=plan_id)
         if bool(plan_instance):
@@ -1852,6 +1911,13 @@ class MembershipPlansView(Validators):
         :param plan_id: the id of the plan to return - Note: this plan id is the same as the plan id / product id in PayPal
         :return: plan details
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = 'organization_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(plan_id, str) or not bool(plan_id.strip()):
+            message: str = 'plan_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         plan_instance = await self._get_plan_async(organization_id=organization_id, plan_id=plan_id)
         if bool(plan_instance):
@@ -1872,6 +1938,13 @@ class MembershipPlansView(Validators):
         :param organization_id: organization uid
         :return: plan details
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = 'organization_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(uid, str) or not bool(uid.strip()):
+            message: str = 'uid is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                              Memberships.uid == uid).get()
@@ -1895,6 +1968,10 @@ class MembershipPlansView(Validators):
             :param organization_id:
             :return: memberships plans
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = 'organization_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
+
 
         membership_plan_list: List[MembershipPlans] = MembershipPlans.query(
             MembershipPlans.organization_id == organization_id).fetch()
@@ -1918,6 +1995,10 @@ class MembershipPlansView(Validators):
             :param organization_id:
             :return: memberships plans
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = 'organization_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
+
 
         membership_plan_list: List[MembershipPlans] = MembershipPlans.query(
             MembershipPlans.organization_id == organization_id).fetch_async().get_result()
