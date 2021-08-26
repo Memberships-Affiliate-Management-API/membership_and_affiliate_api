@@ -1,6 +1,6 @@
 import random
 from typing import Optional, List
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from random import randint
 from google.cloud import ndb
 from config import config_instance
@@ -21,9 +21,9 @@ class MembershipsQueryMock:
     membership_instance: Memberships = Memberships()
     results_range: int = randint(0, 100)
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.membership_instance.plan_id = create_id()
-        self.membership_instance.status = "paid"
+        self.membership_instance.payment_status = "paid"
         self.membership_instance.date_created = datetime.now()
         self.membership_instance.plan_start_date = datetime.now().date()
         self.membership_instance.payment_method = 'paypal'
@@ -47,7 +47,7 @@ class MembershipsQueryMock:
         return self.membership_instance
 
     @ndb.tasklet
-    def get_async(self):
+    def get_async(self) -> Memberships:
         return self.membership_instance
 
 
@@ -85,7 +85,7 @@ membership_mock_data: dict = {
 
 
 # noinspection PyShadowingNames
-def test_create_membership(mocker):
+def test_create_membership(mocker) -> None:
     ***REMOVED***
     **test_create_membership**
         test if memberships can be created properly without errors
@@ -97,10 +97,10 @@ def test_create_membership(mocker):
 
     with test_app().app_context():
         membership_view_instance: MembershipsView = MembershipsView()
-        uid = membership_mock_data['uid']
-        organization_id = membership_mock_data['organization_id']
-        plan_id = membership_mock_data['plan_id']
-        plan_start_date = membership_mock_data['plan_start_date']
+        uid: str = membership_mock_data['uid']
+        organization_id: str = membership_mock_data['organization_id']
+        plan_id: str = membership_mock_data['plan_id']
+        plan_start_date: date = membership_mock_data['plan_start_date']
 
         mocker.patch('database.users.UserValidators.is_user_valid', return_value=True)
         mocker.patch('database.memberships.PlanValidators.plan_exist', return_value=False)
@@ -109,14 +109,15 @@ def test_create_membership(mocker):
         response, status = membership_view_instance.add_membership(
             organization_id=organization_id, uid=uid, plan_id=plan_id, plan_start_date=plan_start_date)
         response_data: dict = response.get_json()
-        print(response_data)
+        assert response_data.get('message') is not None, 'Unable to read response message'
         assert status == status_codes.successfully_updated_code, response_data['message']
+        assert response_data.get('payload') is not None, response_data.get('message')
 
     mocker.stopall()
 
 
 # noinspection PyShadowingNames
-def test_memberships_create_memberships_un_auth(mocker):
+def test_memberships_create_memberships_un_auth(mocker) -> None:
     ***REMOVED***
     **test_memberships_create_memberships_un_auth**
         tests if errors will be thrown in-case the application cannot determine the legitimacy of the user request
@@ -143,7 +144,7 @@ def test_memberships_create_memberships_un_auth(mocker):
 
 
 # noinspection PyUnusedLocal,PyShadowingNames
-def test_create_memberships_input_errors(mocker):
+def test_create_memberships_input_errors(mocker) -> None:
     ***REMOVED***
     **test_create_memberships_input_errors**
         test create memberships in-case of faulty data
@@ -185,7 +186,7 @@ def test_create_memberships_input_errors(mocker):
 
 
 # noinspection PyShadowingNames
-def test_update_membership(mocker):
+def test_update_membership(mocker) -> None:
     mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
     mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
 
@@ -209,7 +210,7 @@ def test_update_membership(mocker):
 
 
 # noinspection PyShadowingNames
-def test_update_membership_input_errors(mocker):
+def test_update_membership_input_errors(mocker) -> None:
     ***REMOVED***
         **test_update_membership_input_errors**
             tries to run update membership with faulty data,  if an error is not raised
@@ -246,7 +247,7 @@ def test_update_membership_input_errors(mocker):
 
 
 # noinspection PyShadowingNames
-def test_set_membership_status(mocker):
+def test_set_membership_status(mocker) -> None:
     mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
     mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
 
