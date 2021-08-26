@@ -219,6 +219,7 @@ def test_update_membership(mocker) -> None:
 
         assert status == status_codes.successfully_updated_code, "Unable to update membership"
         response_data: dict = response.get_json()
+        assert isinstance(response_data, dict), "invalid return data"
         assert response_data.get('message') is not None, "message was not set properly"
         assert response_data.get('payload') is not None, response_data['message']
         assert isinstance(response_data.get('payload'), dict), response_data['message']
@@ -235,27 +236,29 @@ def test_update_membership_input_errors(mocker) -> None:
     :param mocker:
     :return:
     ***REMOVED***
+    # Note: Patching put and Query Model requests so they do not perform the operations on the database
     mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
     mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
         membership_view_instance: MembershipsView = MembershipsView()
-        uid = random.choice([None, ""])
-        organization_id = config_instance.ORGANIZATION_ID
-        plan_id = membership_mock_data['plan_id']
-        plan_start_date = membership_mock_data['plan_start_date']
+        uid: Optional[str] = random.choice([None, "", " "])
+        organization_id: str = config_instance.ORGANIZATION_ID
+        plan_id: str = membership_mock_data['plan_id']
+        plan_start_date: date = membership_mock_data['plan_start_date']
+
         with raises(InputError):
             membership_view_instance.update_membership(organization_id=organization_id, uid=uid, plan_id=plan_id,
                                                        plan_start_date=plan_start_date)
 
-        uid = create_id()
-        organization_id = random.choice([None, ""])
+        uid: str = create_id()
+        organization_id: Optional[str] = random.choice([None, "", " "])
         with raises(InputError):
             membership_view_instance.update_membership(organization_id=organization_id, uid=uid, plan_id=plan_id,
                                                        plan_start_date=plan_start_date)
 
-        organization_id = create_id()
-        plan_id: Optional[str] = random.choice([None, ""])
+        organization_id: str = create_id()
+        plan_id: Optional[str] = random.choice([None, "", " "])
         with raises(InputError):
             membership_view_instance.update_membership(organization_id=organization_id, uid=uid, plan_id=plan_id,
                                                        plan_start_date=plan_start_date)
