@@ -42,7 +42,8 @@ class MembershipValidators:
             **asynchronous version of start_date_valid_async**
                 check if date is from today and falls within normal parameters
         ***REMOVED***
-        return isinstance(start_date, date) and start_date > today()
+
+        return start_date > today()
 
 
 class PlanValidators:

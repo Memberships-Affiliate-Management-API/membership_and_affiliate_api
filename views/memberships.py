@@ -518,6 +518,13 @@ class MembershipsView(Validators, MembershipsEmails):
 
         :return:
         ***REMOVED***
+        if not isinstance(plan_start_date, date):
+            message: str = "plan_start_date is invalid"
+            raise InputError(status=error_codes.input_error_code, description=message)
+        
+        if not isinstance(payment_method, str) or not bool(payment_method.strip()):
+            message: str = "payment_method is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         if self.can_add_member(organization_id=organization_id, uid=uid, plan_id=plan_id, start_date=plan_start_date):
 
