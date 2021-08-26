@@ -131,14 +131,14 @@ def test_memberships_create_memberships_un_auth(mocker) -> None:
 
     with test_app().app_context():
         membership_view_instance: MembershipsView = MembershipsView()
-        uid = membership_mock_data['uid']
-        organization_id = membership_mock_data['organization_id']
-        plan_id = membership_mock_data['plan_id']
-        plan_start_date = membership_mock_data['plan_start_date']
+        uid: str = membership_mock_data['uid']
+        organization_id: str = membership_mock_data['organization_id']
+        plan_id: str = membership_mock_data['plan_id']
+        plan_start_date: date = membership_mock_data['plan_start_date']
 
         with raises(UnAuthenticatedError):
-            membership_view_instance.add_membership(organization_id=organization_id, uid=uid,
-                                                    plan_id=plan_id, plan_start_date=plan_start_date)
+            membership_view_instance.add_membership(organization_id=organization_id, uid=uid, plan_id=plan_id,
+                                                    plan_start_date=plan_start_date)
 
     mocker.stopall()
 
@@ -156,27 +156,31 @@ def test_create_memberships_input_errors(mocker) -> None:
     mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
     with test_app().app_context():
         membership_view_instance: MembershipsView = MembershipsView()
-        uid = ''
+        # Note: testing for invalid uid
+        uid = random.choice([None, "", " "])
         organization_id = membership_mock_data['organization_id']
         plan_id = membership_mock_data['plan_id']
         plan_start_date = membership_mock_data['plan_start_date']
         with raises(InputError):
             membership_view_instance.add_membership(organization_id=organization_id, uid=uid,
                                                     plan_id=plan_id, plan_start_date=plan_start_date)
+        # Note: testing for invalid organization_id
         uid = create_id()
-        organization_id = random.choice([None, ""])
+        organization_id = random.choice([None, "", " "])
         with raises(InputError):
             membership_view_instance.add_membership(organization_id=organization_id, uid=uid,
                                                     plan_id=plan_id, plan_start_date=plan_start_date)
+        # Note: testing for invalid plan_start_date
         organization_id = create_id()
-        plan_start_date = random.choice([None, ""])
+        plan_start_date = random.choice([None, "", " "])
         with raises(InputError):
             # noinspection PyTypeChecker
             membership_view_instance.add_membership(organization_id=organization_id, uid=uid,
                                                     plan_id=plan_id, plan_start_date=plan_start_date)
 
+        # NOTE : testing for invalid plan id
         plan_start_date = today()
-        plan_id = random.choice([None, ""])
+        plan_id = random.choice([None, "", " "])
         with raises(InputError):
             # noinspection PyTypeChecker
             membership_view_instance.add_membership(organization_id=organization_id, uid=uid,
