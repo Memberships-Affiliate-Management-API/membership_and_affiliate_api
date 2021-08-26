@@ -386,57 +386,63 @@ def test_plan_members_payment_status(mocker):
             organization_id=organization_id, plan_id=plan_id, status=status)
 
         response_data: dict = response.get_json()
+        assert isinstance(response_data, dict), 'badly formatted data'
         assert status == status_codes.status_ok_code, "unable to fetch plan members by status"
         assert isinstance(response_data.get('payload'), list), response_data['message']
 
     mocker.stopall()
 
-#
-# # noinspection PyShadowingNames
-# def test_return_plan_members(mocker):
-#     mocker.patch('google.cloud.ndb.Model.put', return_value=create_id())
-#     mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
-#
-#     with test_app().app_context():
-#         membership_view_instance: MembershipsView = MembershipsView()
-#         plan_id: str = membership_mock_data['plan_id']
-#         response, status = membership_view_instance.return_plan_members(organization_id=config_instance.ORGANIZATION_ID,
-#                                                                         plan_id=plan_id)
-#         assert status == 200, "unable to fetch plan members"
-#
-#     mocker.stopall()
-#
-#
-# # noinspection PyShadowingNames
-# def test_is_member_off(mocker):
-#     mocker.patch('google.cloud.ndb.Model.put', return_value=create_id())
-#     mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
-#
-#     with test_app().app_context():
-#         membership_view_instance: MembershipsView = MembershipsView()
-#         uid: str = membership_mock_data['uid']
-#         response, status = membership_view_instance.is_member_off(organization_id=config_instance.ORGANIZATION_ID,
-#                                                                   uid=uid)
-#
-#         assert status == 200, "unable to test membership status"
-#
-#     mocker.stopall()
-#
-#
-# # noinspection PyShadowingNames
-# def test_payment_amount(mocker):
-#     mocker.patch('google.cloud.ndb.Model.put', return_value=create_id())
-#     mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
-#     with test_app().app_context():
-#         membership_view_instance: MembershipsView = MembershipsView()
-#         uid: str = membership_mock_data['uid']
-#         mocker.patch('views.memberships.MembershipPlansView.get_plan',
-#                      return_value=MembershipPlansQueryMock().get())
-#
-#         response, status = membership_view_instance.payment_amount(organization_id=config_instance.ORGANIZATION_ID, uid=uid)
-#         response_data: dict = response.get_json()
-#         assert status == 200, response_data['message']
-#     mocker.stopall()
+
+# noinspection PyShadowingNames
+def test_return_plan_members(mocker):
+    mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
+    mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
+
+    with test_app().app_context():
+        membership_view_instance: MembershipsView = MembershipsView()
+        plan_id: str = membership_mock_data['plan_id']
+        response, status = membership_view_instance.return_plan_members(organization_id=config_instance.ORGANIZATION_ID,
+                                                                        plan_id=plan_id)
+        response_data: dict = response.get_json()
+        assert isinstance(response_data, dict), 'badly formatted data'
+        assert status == status_codes.status_ok_code, response_data['message']
+        assert isinstance(response_data.get('payload'), list), response_data['message']
+
+    mocker.stopall()
+
+
+# noinspection PyShadowingNames
+def test_is_member_off(mocker):
+    mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
+    mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
+
+    with test_app().app_context():
+        membership_view_instance: MembershipsView = MembershipsView()
+        uid: str = membership_mock_data['uid']
+        organization_id = config_instance.ORGANIZATION_ID
+        response, status = membership_view_instance.is_member_off(organization_id=organization_id, uid=uid)
+
+        response_data: dict = response.get_json()
+        assert isinstance(response_data, dict), 'badly formatted data'
+        assert status == status_codes.data_not_found_code, response_data['message']
+
+    mocker.stopall()
+
+
+# noinspection PyShadowingNames
+def test_payment_amount(mocker):
+    mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
+    mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
+    with test_app().app_context():
+        membership_view_instance: MembershipsView = MembershipsView()
+        uid: str = membership_mock_data['uid']
+        mocker.patch('views.memberships.MembershipPlansView.get_plan',
+                     return_value=MembershipPlansQueryMock().get())
+
+        response, status = membership_view_instance.payment_amount(organization_id=config_instance.ORGANIZATION_ID, uid=uid)
+        response_data: dict = response.get_json()
+        assert status == status_codes.data_not_found_code, response_data['message']
+    mocker.stopall()
 #
 #
 # # noinspection PyShadowingNames

@@ -1153,7 +1153,7 @@ class MembershipsView(Validators, MembershipsEmails):
             :param uid -> string 
             :return -> tuple : response, status_code 
         ***REMOVED***
-        if not isinstance(organization_id, str) or bool(organization_id.strip()):
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
@@ -1236,7 +1236,7 @@ class MembershipsView(Validators, MembershipsEmails):
         membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                              Memberships.uid == uid).get()
 
-        if isinstance(membership_instance, Memberships) and membership_instance.uid == uid:
+        if bool(membership_instance):
             plan_id: str = membership_instance.plan_id
             membership_plan_instance: MembershipPlans = MembershipPlansView()._get_plan(
                 organization_id=organization_id, plan_id=plan_id)
@@ -1285,7 +1285,7 @@ class MembershipsView(Validators, MembershipsEmails):
         membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                              Memberships.uid == uid).get_async().get_result()
 
-        if isinstance(membership_instance, Memberships) and membership_instance.uid == uid:
+        if bool(membership_instance):
             plan_id: str = membership_instance.plan_id
             membership_plan_instance: MembershipPlans = await MembershipPlansView()._get_plan_async(
                 organization_id=organization_id, plan_id=plan_id)
@@ -1337,7 +1337,7 @@ class MembershipsView(Validators, MembershipsEmails):
 
         membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                              Memberships.uid == uid).get()
-        if isinstance(membership_instance, Memberships) and membership_instance.uid == uid:
+        if bool(membership_instance):
             membership_instance.is_active_subscription = False
             key: Optional[ndb.Key] = membership_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             if not bool(key):
