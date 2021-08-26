@@ -1225,7 +1225,7 @@ class MembershipsView(Validators, MembershipsEmails):
                 :param uid -> string
                 :return tuple -> as response, status_code 
         ***REMOVED***
-        if not isinstance(organization_id, str) or bool(organization_id.strip()):
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
@@ -1238,8 +1238,7 @@ class MembershipsView(Validators, MembershipsEmails):
 
         if bool(membership_instance):
             plan_id: str = membership_instance.plan_id
-            membership_plan_instance: MembershipPlans = MembershipPlansView()._get_plan(
-                organization_id=organization_id, plan_id=plan_id)
+            membership_plan_instance: MembershipPlans = MembershipPlansView()._get_plan(organization_id=organization_id, plan_id=plan_id)
 
             if not bool(membership_plan_instance):
                 message: str = 'could not find plan associate with the plan_id'
@@ -1274,7 +1273,7 @@ class MembershipsView(Validators, MembershipsEmails):
                 :param uid: -> string
                 :return tuple: -> as response, status_code
         ***REMOVED***
-        if not isinstance(organization_id, str) or bool(organization_id.strip()):
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
@@ -1323,7 +1322,7 @@ class MembershipsView(Validators, MembershipsEmails):
                 :param plan_id:
                 :return: tuple -> as response, status_code 
         ***REMOVED***
-        if not isinstance(organization_id, str) or bool(organization_id.strip()):
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
@@ -1836,12 +1835,11 @@ class MembershipPlansView(Validators):
             message: str = 'plan_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        if isinstance(plan_id, str) and bool(plan_id.strip()):
-            membership_plan_instance: MembershipPlans = MembershipPlans.query(
-                Memberships.organization_id == organization_id, MembershipPlans.plan_id == plan_id.strip()).get()
+        membership_plan_instance: MembershipPlans = MembershipPlans.query(
+            Memberships.organization_id == organization_id, MembershipPlans.plan_id == plan_id).get()
 
-            return membership_plan_instance if bool(membership_plan_instance) else None
-        return None
+        return membership_plan_instance if bool(membership_plan_instance) else None
+
 
     @staticmethod
     @handle_store_errors

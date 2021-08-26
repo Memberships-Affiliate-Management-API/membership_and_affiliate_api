@@ -433,13 +433,13 @@ def test_is_member_off(mocker):
 def test_payment_amount(mocker):
     mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
     mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
+    mocker.patch('views.memberships.MembershipPlansView._get_plan', return_value=MembershipPlansQueryMock().get())
+
     with test_app().app_context():
         membership_view_instance: MembershipsView = MembershipsView()
         uid: str = membership_mock_data['uid']
-        mocker.patch('views.memberships.MembershipPlansView.get_plan',
-                     return_value=MembershipPlansQueryMock().get())
-
-        response, status = membership_view_instance.payment_amount(organization_id=config_instance.ORGANIZATION_ID, uid=uid)
+        organization_id = config_instance.ORGANIZATION_ID
+        response, status = membership_view_instance.payment_amount(organization_id=organization_id, uid=uid)
         response_data: dict = response.get_json()
         assert status == status_codes.data_not_found_code, response_data['message']
     mocker.stopall()
