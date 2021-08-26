@@ -924,9 +924,9 @@ class MembershipsView(Validators, MembershipsEmails):
             :param plan_id: -> str: unique plan_id
             :return : tuple indicating if sending email as a success or failed
         ***REMOVED***
-        self.send_memberships_welcome_email(organization_id=organization_id, uid=uid)
-        self.__
-        return self.send_memberships_welcome_email(organization_id=organization_id, uid=uid)
+        _kwargs: dict = dict(organization_id=organization_id, uid=uid)
+        self._base_email_scheduler(func=self.send_memberships_welcome_email, kwargs=_kwargs)
+        return jsonify({'status': True, 'message': 'welcome email will be sent'}), status_codes.status_ok_code
 
     # noinspection PyUnusedLocal
     @use_context
