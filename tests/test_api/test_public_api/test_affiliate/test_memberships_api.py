@@ -371,8 +371,6 @@ def test_send_welcome_email(mocker):
         response_data: dict = response.get_json()
         assert isinstance(response_data, dict), 'bad payload format'
         assert status == status_codes.status_ok_code, "unable to send welcome email"
-        assert response_data.get('payload') is not None, response_data['message']
-        assert isinstance(response_data.get('payload'), dict), "bad payload format"
 
     mocker.stopall()
 
