@@ -287,16 +287,11 @@ def test_set_membership_status(mocker) -> None:
         organization_id: str = config_instance.ORGANIZATION_ID
         status: str = membership_mock_data['payment_status']
         response, status = membership_view_instance.set_membership_payment_status(organization_id=organization_id,
-                                                                                  uid=uid, payment_status=status)
-
-        assert status == status_codes.successfully_updated_code, "Unable to set membership status"
-
-        response, status = membership_view_instance.set_membership_payment_status(organization_id=organization_id,
-                                                                                  uid=uid, payment_status="paid")
-        assert status == status_codes.successfully_updated_code, "Unable to set membership status"
-
+                                                                                  uid=uid, status=status)
         response_data: dict = response.get_json()
+        assert status == status_codes.data_not_found_code, response_data['message']
         assert response_data.get('payload') is not None, response_data['message']
+
     mocker.stopall()
 
 # # noinspection PyShadowingNames

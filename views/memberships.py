@@ -705,8 +705,8 @@ class MembershipsView(Validators, MembershipsEmails):
 
         membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                              Memberships.uid == uid).get()
-
-        if isinstance(membership_instance, Memberships) and membership_instance.uid == uid:
+        print(f'membership_instance : {membership_instance}')
+        if bool(membership_instance):
             membership_instance.payment_status = status
             key: Optional[ndb.Key] = membership_instance.put(retries=self._max_retries, timeout=self._max_timeout)
 
@@ -1164,7 +1164,7 @@ class MembershipsView(Validators, MembershipsEmails):
         member_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                          Memberships.uid == uid).get()
 
-        if isinstance(member_instance, Memberships) and member_instance.uid == uid:
+        if bool(member_instance):
             return jsonify(
                 {'status': True, 'payload': member_instance.to_dict(),
                  'message': 'successfully fetched members'}), status_codes.status_ok_code
@@ -1200,7 +1200,7 @@ class MembershipsView(Validators, MembershipsEmails):
         member_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                          Memberships.uid == uid).get_async().get_result()
 
-        if isinstance(member_instance, Memberships) and member_instance.uid == uid:
+        if bool(member_instance):
             return jsonify(
                 {'status': True, 'payload': member_instance.to_dict(),
                  'message': 'successfully fetched members'}), status_codes.status_ok_code
@@ -1840,8 +1840,7 @@ class MembershipPlansView(Validators):
             membership_plan_instance: MembershipPlans = MembershipPlans.query(
                 Memberships.organization_id == organization_id, MembershipPlans.plan_id == plan_id.strip()).get()
 
-            if isinstance(membership_plan_instance, MembershipPlans):
-                return membership_plan_instance
+            return membership_plan_instance if bool(membership_plan_instance) else None
         return None
 
     @staticmethod
@@ -1871,8 +1870,7 @@ class MembershipPlansView(Validators):
                 MembershipPlans.organization_id == organization_id,
                 MembershipPlans.plan_id == plan_id).get_async().get_result()
 
-            if isinstance(membership_plan_instance, MembershipPlans):
-                return membership_plan_instance
+            return membership_plan_instance if bool(membership_plan_instance) else None
         return None
 
     @use_context
@@ -1972,7 +1970,6 @@ class MembershipPlansView(Validators):
             message: str = 'organization_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
 
-
         membership_plan_list: List[MembershipPlans] = MembershipPlans.query(
             MembershipPlans.organization_id == organization_id).fetch()
 
@@ -1998,7 +1995,6 @@ class MembershipPlansView(Validators):
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
-
 
         membership_plan_list: List[MembershipPlans] = MembershipPlans.query(
             MembershipPlans.organization_id == organization_id).fetch_async().get_result()
