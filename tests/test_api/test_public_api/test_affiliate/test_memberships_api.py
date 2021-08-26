@@ -9,7 +9,7 @@ from config.exceptions import DataServiceError, status_codes, UnAuthenticatedErr
 from database.mixins import AmountMixin
 from views.memberships import MembershipsView
 from database.memberships import Memberships, MembershipPlans
-from utils import create_id
+from utils import create_id, today, datetime_now
 from tests import test_app
 # noinspection PyUnresolvedReferences
 from pytest import raises
@@ -28,8 +28,20 @@ class MembershipsQueryMock:
         self.membership_instance.plan_start_date = datetime.now().date()
         self.membership_instance.payment_method = 'paypal'
 
+    @staticmethod
+    def rand_membership() -> Memberships:
+        ***REMOVED***
+        **rand_membership**
+            create a random membership for testing purposes
+        :return: Membership Instance
+        ***REMOVED***
+        return Memberships(organization_id=config_instance.ORGANIZATION_ID, uid=create_id(), plan_id=create_id(),
+                           payment_status=random.choice(['paid', 'unpaid']), date_created=datetime_now(),
+                           plan_start_date=today(), payment_method='paypal',
+                           is_active_subscription=random.choice([True, False]))
+
     def fetch(self) -> typing.List[Memberships]:
-        return [self.membership_instance for _ in range(self.results_range)]
+        return [self.rand_membership() for _ in range(self.results_range)]
 
     def get(self) -> Memberships:
         return self.membership_instance
