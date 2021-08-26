@@ -163,12 +163,19 @@ def test_create_memberships_input_errors(mocker):
             membership_view_instance.add_membership(organization_id=organization_id, uid=uid,
                                                     plan_id=plan_id, plan_start_date=plan_start_date)
         uid = create_id()
-        organization_id = None
+        organization_id = random.choice([None, ""])
         with raises(InputError):
             membership_view_instance.add_membership(organization_id=organization_id, uid=uid,
                                                     plan_id=plan_id, plan_start_date=plan_start_date)
         organization_id = create_id()
-        plan_start_date = None
+        plan_start_date = random.choice([None, ""])
+        with raises(InputError):
+            # noinspection PyTypeChecker
+            membership_view_instance.add_membership(organization_id=organization_id, uid=uid,
+                                                    plan_id=plan_id, plan_start_date=plan_start_date)
+
+        plan_start_date = today()
+        plan_id = random.choice([None, ""])
         with raises(InputError):
             # noinspection PyTypeChecker
             membership_view_instance.add_membership(organization_id=organization_id, uid=uid,
