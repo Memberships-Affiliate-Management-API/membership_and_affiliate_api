@@ -387,6 +387,7 @@ class UserView(Validators, UserEmails, CacheManager):
                                              surname=surname, cell=cell, email=email, password=password, is_active=True)
 
         key = user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+        print(user_instance.account_locked)
         if not bool(key):
             message: str = "Unable to save database"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)

@@ -55,7 +55,8 @@ class AffiliateJobs:
                 earnings.start_date = today
                 earnings.last_updated = today
                 earnings.is_paid = True
-                earnings_key: Optional[ndb.Key] = earnings.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
+                earnings_key: Optional[ndb.Key] = earnings.put_async(retries=self._max_retries,
+                                                                     timeout=self._max_timeout).get_result()
                 if bool(earnings_key):
                     transaction_item: AffiliateTransactionItems = AffiliateTransactionItems()
                     transaction_item.amount = amount_earned

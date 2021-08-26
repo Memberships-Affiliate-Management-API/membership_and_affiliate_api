@@ -177,7 +177,7 @@ class UserModel(BaseModel):
         # return True if self.uid else False
         return bool(self.uid)
 
-    @property
+    @ndb.model.ComputedProperty
     def full_names(self) -> str:
         ***REMOVED***
             **property -> full_names**
@@ -187,7 +187,7 @@ class UserModel(BaseModel):
         ***REMOVED***
         return f'{self.names} {self.surname}'
 
-    @property
+    @ndb.model.ComputedProperty
     def user_auth(self) -> dict:
         ***REMOVED***
             **property user_auth**
@@ -201,7 +201,7 @@ class UserModel(BaseModel):
             'email': self.email,
             'password': self.password}
 
-    @property
+    @ndb.model.ComputedProperty
     def account_locked(self) -> bool:
         ***REMOVED***
             **property account_locked**
@@ -211,7 +211,7 @@ class UserModel(BaseModel):
         ***REMOVED***
         return self.email_verified and (self.time_registered > (timestamp() - get_days_in_milliseconds(days=7)))
 
-    @property
+    @ndb.model.ComputedProperty
     def access_rights(self) -> dict:
         ***REMOVED***
             **property access_rights**
@@ -228,7 +228,7 @@ class UserModel(BaseModel):
             'email_verified': self.email_verified,
             'account_locked': self.account_locked}
 
-    @property
+    @ndb.model.ComputedProperty
     def user_details(self) -> dict:
         ***REMOVED***
             **property user_details**
@@ -243,7 +243,7 @@ class UserModel(BaseModel):
             'cell': self.cell,
             'email': self.email}
 
-    @property
+    @ndb.model.ComputedProperty
     def organization_details(self) -> dict:
         ***REMOVED***
             **property organization_details**
