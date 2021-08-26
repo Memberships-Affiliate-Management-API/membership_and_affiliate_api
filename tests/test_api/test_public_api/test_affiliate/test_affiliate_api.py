@@ -2,9 +2,8 @@
     **Test cases for public affiliate endpoints**
 
 ***REMOVED***
-from unittest import case
-
 from pytest import raises
+# noinspection PyUnresolvedReferences
 from pytest_mock import mocker
 from datetime import datetime
 from random import randint
@@ -42,8 +41,19 @@ class AffiliateQueryMock:
         self.affiliate_instance.is_active = True
         self.affiliate_instance.is_deleted = False
 
+    @staticmethod
+    def rand_affiliate() -> Affiliates:
+        ***REMOVED***
+        **rand_affiliate**
+            returns a randomly generated affiliate for test cases
+        :return: Affiliate Instance
+        ***REMOVED***
+        return Affiliates(affiliate_id=create_id(), organization_id=config_instance.ORGANIZATION_ID, uid=create_id(),
+                          last_updated=datetime.now(), datetime_recruited=datetime.now(),
+                          total_recruits=randint(10, 1000), is_active=bool(randint(0,1)), is_deleted=randint(0, 1))
+
     def fetch(self) -> List[Affiliates]:
-        return [self.affiliate_instance for _ in range(self.results_range)]
+        return [self.rand_affiliate() for _ in range(self.results_range)]
 
     def get(self) -> Affiliates:
         return self.affiliate_instance
@@ -65,7 +75,7 @@ def test_register_affiliate(mocker):
         response, status = affiliates_view_instance.register_affiliate(affiliate_data=data_mock)
         response_dict: dict = response.get_json()
         assert status == status_codes.successfully_updated_code, response_dict['message']
-        assert response_dict['status'], "response status not set correctly"
+        assert response_dict.get('status'), "response status not set correctly"
         assert response_dict.get('payload') is not None, "affiliates payload is not being set correctly"
         assert response_dict.get('message') is not None, "affiliate message is not being set correctly"
 
