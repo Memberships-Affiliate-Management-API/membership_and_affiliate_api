@@ -1,5 +1,5 @@
 import random
-import typing
+from typing import Optional, List
 from datetime import datetime, timedelta
 from random import randint
 from google.cloud import ndb
@@ -40,7 +40,7 @@ class MembershipsQueryMock:
                            plan_start_date=today(), payment_method='paypal',
                            is_active_subscription=random.choice([True, False]))
 
-    def fetch(self) -> typing.List[Memberships]:
+    def fetch(self) -> List[Memberships]:
         return [self.rand_membership() for _ in range(self.results_range)]
 
     def get(self) -> Memberships:
@@ -67,7 +67,7 @@ class MembershipPlansQueryMock:
         self.membership_plan_instance.registration_amount = AmountMixin(
             amount=100, currency=random.choice(currency_util.currency_symbols()))
 
-    def fetch(self) -> typing.List[MembershipPlans]:
+    def fetch(self) -> List[MembershipPlans]:
         return [self.membership_plan_instance for _ in range(self.results_range)]
 
     def get(self) -> MembershipPlans:
@@ -209,6 +209,43 @@ def test_update_membership(mocker):
 
 
 # noinspection PyShadowingNames
+def test_update_membership_input_errors(mocker):
+    ***REMOVED***
+        **test_update_membership_input_errors**
+            tries to run update membership with faulty data,  if an error is not raised
+            the test fails
+    :param mocker:
+    :return:
+    ***REMOVED***
+    mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
+    mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
+
+    with test_app().app_context():
+        membership_view_instance: MembershipsView = MembershipsView()
+        uid = random.choice([None, ""])
+        organization_id = config_instance.ORGANIZATION_ID
+        plan_id = membership_mock_data['plan_id']
+        plan_start_date = membership_mock_data['plan_start_date']
+        with raises(InputError):
+            membership_view_instance.update_membership(organization_id=organization_id, uid=uid, plan_id=plan_id,
+                                                       plan_start_date=plan_start_date)
+
+        uid = create_id()
+        organization_id = random.choice([None, ""])
+        with raises(InputError):
+            membership_view_instance.update_membership(organization_id=organization_id, uid=uid, plan_id=plan_id,
+                                                       plan_start_date=plan_start_date)
+
+        organization_id = create_id()
+        plan_id: Optional[str] = random.choice([None, ""])
+        with raises(InputError):
+            membership_view_instance.update_membership(organization_id=organization_id, uid=uid, plan_id=plan_id,
+                                                       plan_start_date=plan_start_date)
+
+    mocker.stopall()
+
+
+# noinspection PyShadowingNames
 def test_set_membership_status(mocker):
     mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
     mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
@@ -219,13 +256,14 @@ def test_set_membership_status(mocker):
         organization_id = config_instance.ORGANIZATION_ID
         status = membership_mock_data['status']
         response, status = membership_view_instance.set_membership_payment_status(organization_id=organization_id,
-                                                                                   uid=uid, status=status)
+                                                                                  uid=uid, status=status)
         assert status == status_codes.successfully_updated_code, "Unable to set membership status"
         response, status = membership_view_instance.set_membership_payment_status(organization_id=organization_id,
                                                                                   uid=uid, status="paid")
         assert status == status_codes.successfully_updated_code, "Unable to set membership status"
+        response_data: dict = response.get_json()
+        assert response_data.get('payload') is not None, response_data['message']
     mocker.stopall()
-
 
 # # noinspection PyShadowingNames
 # def test_change_membership(mocker):
