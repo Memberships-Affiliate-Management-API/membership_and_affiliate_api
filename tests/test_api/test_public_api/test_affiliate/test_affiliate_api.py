@@ -9,6 +9,7 @@ from datetime import datetime
 from random import randint
 from typing import List, Optional
 from google.cloud import ndb
+from config.exceptions import status_codes
 from database.affiliates import Affiliates
 from views.affiliates import AffiliatesView
 from tests import test_app
@@ -46,14 +47,14 @@ class AffiliateQueryMock:
 
 # noinspection PyShadowingNames
 def test_register_affiliate(mocker):
-    mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty(Affiliates))
+    mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Affiliates'))
     mocker.patch('google.cloud.ndb.Model.query', return_value=AffiliateQueryMock())
 
     with test_app().app_context():
         affiliates_view_instance = AffiliatesView()
         response, status = affiliates_view_instance.register_affiliate(affiliate_data=affiliate_data_mock)
         response_dict: dict = response.get_json()
-        assert status == 200, response_dict['message']
+        assert status == status_codes.successfully_updated_code, response_dict['message']
         assert response_dict['status'], "response status not set correctly"
         assert response_dict.get('payload') is not None, "affiliates payload is not being set correctly"
         assert response_dict.get('message') is not None, "affiliate message is not being set correctly"

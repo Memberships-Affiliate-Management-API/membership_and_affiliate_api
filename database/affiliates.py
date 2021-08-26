@@ -10,8 +10,7 @@ __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
-import typing
-from typing import Optional
+from typing import Optional, List, Union
 from google.cloud import ndb
 from datetime import date, datetime
 from config.exception_handlers import handle_store_errors
@@ -26,12 +25,13 @@ class AffiliatesValidators:
         **Class AffiliatesValidators**
             Input Validations for Affiliates
     ***REMOVED***
+
     def __init__(self):
         super(AffiliatesValidators, self).__init__()
 
     @staticmethod
     @handle_store_errors
-    def affiliate_exist(affiliate_id: Optional[str]) -> typing.Union[None, bool]:
+    def affiliate_exist(affiliate_id: Optional[str]) -> Optional[bool]:
         ***REMOVED***
             **affiliate_exist**
                 test if an affiliate already exists in the organization
@@ -47,7 +47,7 @@ class AffiliatesValidators:
     @staticmethod
     @handle_store_errors
     def recruiter_registered(organization_id: Optional[str],
-                             uid: Optional[str]) -> typing.Union[None, bool]:
+                             uid: Optional[str]) -> Optional[bool]:
         ***REMOVED***
             **recruiter_registered**
                 returns true or False according to registration status None otherwise
@@ -67,13 +67,14 @@ class RecruitsValidators:
         **RecruitsValidators**
             Input Validations for recruits class
     ***REMOVED***
+
     def __init__(self):
         super(RecruitsValidators, self).__init__()
 
     # noinspection DuplicatedCode
     @staticmethod
     @handle_store_errors
-    def user_already_recruited(uid: Optional[str]) -> typing.Union[None, bool]:
+    def user_already_recruited(uid: Optional[str]) -> Optional[bool]:
         ***REMOVED***
             **user_already_recruited**
                 method user_already_recruited -> checks if user has already been recruited
@@ -83,7 +84,7 @@ class RecruitsValidators:
         :return:
         ***REMOVED***
         # TODO - an organization_id
-        if not(isinstance(uid, str)) or not bool(uid.strip()):
+        if not (isinstance(uid, str)) or not bool(uid.strip()):
             message: str = "uid is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
@@ -94,7 +95,7 @@ class RecruitsValidators:
 
     @staticmethod
     @handle_store_errors
-    def user_already_an_affiliate(uid: Optional[str]) -> typing.Union[None, bool]:
+    def user_already_an_affiliate(uid: Optional[str]) -> Optional[bool]:
         ***REMOVED***
             ** method user_already_an_affiliate**
                 checks if user is already an affiliate
@@ -102,7 +103,7 @@ class RecruitsValidators:
         :return:
         ***REMOVED***
         # TODO - an organization_id
-        if not(isinstance(uid, str)) or not bool(uid.strip()):
+        if not (isinstance(uid, str)) or not bool(uid.strip()):
             message: str = "uid is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
@@ -118,17 +119,18 @@ class EarningsValidators:
             class used to validate user earnings based on affiliate recruitments and
             membership payments
     ***REMOVED***
+
     def __init__(self):
         super(EarningsValidators, self).__init__()
 
     @staticmethod
     @handle_store_errors
-    def unclosed_earnings_already_exist(affiliate_id: str) -> typing.Union[None, bool]:
-        if not(isinstance(affiliate_id, str)) or not bool(affiliate_id.strip()):
+    def unclosed_earnings_already_exist(affiliate_id: str) -> Optional[bool]:
+        if not (isinstance(affiliate_id, str)) or not bool(affiliate_id.strip()):
             message: str = "affiliate_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        earnings_instance: typing.List[EarningsData] = EarningsData.query(EarningsData.affiliate_id == affiliate_id).get()
+        earnings_instance: List[EarningsData] = EarningsData.query(EarningsData.affiliate_id == affiliate_id).get()
 
         # returns true if earnings already exists
         return bool(earnings_instance)
@@ -202,7 +204,8 @@ class Recruits(BaseModel):
     datetime_updated: datetime = ndb.DateTimeProperty(auto_now=True, validator=property_.set_date)
     is_member: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
     # TODO - test this first may need to remove plan ID
-    recruit_plan_id: str = ndb.StringProperty(validator=property_.set_id)  # Membership plan id allows to get payment fees
+    recruit_plan_id: str = ndb.StringProperty(
+        validator=property_.set_id)  # Membership plan id allows to get payment fees
     is_active: bool = ndb.BooleanProperty(default=True, validator=property_.set_bool)
     is_deleted: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
 

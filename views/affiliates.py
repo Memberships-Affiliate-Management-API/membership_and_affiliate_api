@@ -128,6 +128,7 @@ class AffiliatesView(Validator, CacheManager):
         # NOTE: this creates globally unique Affiliate Key
         affiliate_id: str = self._create_unique_affiliate_id()
         # NOTE: other affiliates fields will be auto completed - be defaults
+
         affiliate_instance: Affiliates = Affiliates(organization_id=organization_id,
                                                     affiliate_id=affiliate_id,
                                                     uid=uid)
@@ -140,6 +141,8 @@ class AffiliatesView(Validator, CacheManager):
         # scheduling cache deletions
         _kwargs: dict = dict(affiliates_view=self, organization_id=organization_id, affiliate_id=affiliate_id)
         self._schedule_cache_deletion(func=self._delete_affiliate_cache, kwargs=_kwargs)
+
+        print('affiliate instance: ', affiliate_instance.to_dict())
 
         return jsonify({'status': True,
                         'message': 'successfully registered an affiliate',

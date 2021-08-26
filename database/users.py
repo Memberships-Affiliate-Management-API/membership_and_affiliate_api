@@ -9,8 +9,8 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
 import typing
+from typing import Optional, List
 from datetime import date
-
 from google.cloud import ndb
 from config.exception_handlers import handle_store_errors
 from config.exceptions import InputError, error_codes
@@ -255,7 +255,7 @@ class UserModel(BaseModel):
             'organization_name': '',
             'description': ''}
 
-    def to_dict(self, include=all, exclude=None) -> dict:
+    def to_dict(self, include: Optional[List[str]] = None, exclude: Optional[List[str]] = None) -> dict:
         ***REMOVED***
             **to_dict method**
                 returns a full dict representing user except password property
@@ -265,7 +265,7 @@ class UserModel(BaseModel):
         :return: dict -> all user properties excluding password
         ***REMOVED***
 
-        exclude: typing.List[str] = ['password']
+        exclude: List[str] = ['password']
         return super().to_dict(include=include, exclude=exclude)
 
 
