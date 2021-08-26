@@ -87,8 +87,9 @@ class Validator(ValidAffiliate, ValidRecruit, ValidEarnings):
         :return:
         ***REMOVED***
         _id = create_id()
-        affiliate_instance: typing.List[Affiliates] = Affiliates.query(Affiliates.affiliate_id == _id).get()
-        return self._create_unique_affiliate_id() if isinstance(affiliate_instance, Affiliates) else _id
+        affiliate_instance: Affiliates = Affiliates.query(Affiliates.affiliate_id == _id).get()
+        print(affiliate_instance)
+        return self._create_unique_affiliate_id() if affiliate_instance.uid == _id else _id
 
 
 # noinspection DuplicatedCode
@@ -171,7 +172,7 @@ class AffiliatesView(Validator, CacheManager):
         affiliate_instance: Affiliates = Affiliates.query(Affiliates.organization_id == organization_id,
                                                           Affiliates.affiliate_id == affiliate_id).get()
 
-        if isinstance(affiliate_instance, Affiliates):
+        if isinstance(affiliate_instance, Affiliates) and affiliate_instance.affiliate_id == affiliate_id:
             affiliate_instance.total_recruits += add
             key = affiliate_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             if not bool(key):
@@ -261,7 +262,7 @@ class AffiliatesView(Validator, CacheManager):
         affiliate_instance: Affiliates = Affiliates.query(Affiliates.organization_id == organization_id,
                                                           Affiliates.affiliate_id == affiliate_id).get()
 
-        if isinstance(affiliate_instance, Affiliates):
+        if isinstance(affiliate_instance, Affiliates) and affiliate_instance.affiliate_id == affiliate_id:
             if affiliate_instance.is_deleted and is_active:
                 message: str = "cannot activate / de-activate an affiliate if the affiliate has been deleted"
                 raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
@@ -323,7 +324,7 @@ class AffiliatesView(Validator, CacheManager):
             raise InputError(status=error_codes.input_error_code, description=message)
 
         # Note checking if we have valid data and then return to user
-        if isinstance(affiliate_instance, Affiliates):
+        if isinstance(affiliate_instance, Affiliates) and affiliate_instance.uid == uid:
             return jsonify({'status': True,
                             'message': 'successfully obtained affiliate data',
                             'payload': affiliate_instance.to_dict()}), status_codes.status_ok_code
@@ -555,7 +556,7 @@ class RecruitsView(Validator, CacheManager):
         recruit_instance: Recruits = Recruits.query(Recruits.organization_id == organization_id,
                                                     Recruits.affiliate_id == affiliate_id).get()
 
-        if isinstance(recruit_instance, Recruits):
+        if isinstance(recruit_instance, Recruits) and recruit_instance.affiliate_id == affiliate_id:
             # Soft Deleting Recruit
             recruit_instance.is_deleted = True
             recruit_instance.is_active = False
@@ -604,7 +605,7 @@ class RecruitsView(Validator, CacheManager):
         recruit_instance: Recruits = Recruits.query(Recruits.organization_id == organization_id,
                                                     Recruits.affiliate_id == affiliate_id).get()
 
-        if isinstance(recruit_instance, Recruits):
+        if isinstance(recruit_instance, Recruits) and recruit_instance.affiliate_id == affiliate_id:
             recruit_instance.is_active = is_active
             key = recruit_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             if not bool(key):
@@ -645,7 +646,7 @@ class RecruitsView(Validator, CacheManager):
         recruit_instance: Recruits = Recruits.query(Recruits.organization_id == organization_id,
                                                     Recruits.affiliate_id == affiliate_id).get()
 
-        if isinstance(recruit_instance, Recruits):
+        if isinstance(recruit_instance, Recruits) and recruit_instance.affiliate_id == affiliate_id:
             message: str = "Successfully retrieved recruit"
             return jsonify({'status': True,
                             'payload': recruit_instance.to_dict(),
