@@ -303,8 +303,8 @@ class Memberships(BaseModel):
     uid: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
     plan_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
     payment_status: str = ndb.StringProperty(default="unpaid", validator=property_.set_status, required=True)  # Paid/ Unpaid
-    date_created: date = ndb.DateTimeProperty(auto_now_add=True, validator=property_.set_date)
-    plan_start_date: date = ndb.DateProperty(validator=property_.set_datetime)  # the date this plan will
+    date_created: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=property_.set_datetime)
+    plan_start_date: date = ndb.DateProperty(validator=property_.set_date)  # the date this plan will
     payment_method: str = ndb.StringProperty(default="paypal", validator=property_.set_payment_method)
     is_active_subscription: bool = ndb.BooleanProperty(default=True, validator=property_.set_bool)
 

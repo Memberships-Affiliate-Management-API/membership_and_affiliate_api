@@ -25,7 +25,7 @@ class UserValidators:
 
     @staticmethod
     @handle_store_errors
-    def is_user_valid(organization_id: str, uid: str) -> typing.Union[None, bool]:
+    def is_user_valid(organization_id: str, uid: str) -> Optional[bool]:
         ***REMOVED***
             **is_user_valid**
                 returns true if user_instance is found and user_instance.is_active
@@ -44,7 +44,7 @@ class UserValidators:
 
     @staticmethod
     @handle_store_errors
-    async def is_user_valid_async(organization_id: str, uid: str) -> typing.Union[None, bool]:
+    async def is_user_valid_async(organization_id: str, uid: str) -> Optional[bool]:
         ***REMOVED***
             **is_user_valid_async**
                 returns true if user_instance is valid and user_instance.is_active
@@ -68,7 +68,7 @@ class UserValidators:
 
     @staticmethod
     @handle_store_errors
-    def is_email_available(organization_id: str, email: str) -> typing.Union[None, bool]:
+    def is_email_available(organization_id: str, email: str) -> Optional[bool]:
         ***REMOVED***
             **is_email_available**
                 return False if email is not available True otherwise
@@ -92,7 +92,7 @@ class UserValidators:
 
     @staticmethod
     @handle_store_errors
-    def is_cell_available(organization_id: str, cell: str) -> typing.Union[None, bool]:
+    def is_cell_available(organization_id: str, cell: str) -> Optional[bool]:
         ***REMOVED***
             **is_cell_available**
                 checks if cell is available returns true if that's the case

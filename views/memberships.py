@@ -275,6 +275,8 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         plan_exist: Optional[bool] = self.plan_exist(organization_id=organization_id, plan_id=plan_id)
         date_valid: Optional[bool] = self.start_date_valid(start_date=start_date)
 
+        print(user_valid, plan_exist, date_valid)
+
         if isinstance(user_valid, bool) and isinstance(plan_exist, bool) and isinstance(date_valid, bool):
             return user_valid and not plan_exist and date_valid
 
