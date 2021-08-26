@@ -92,6 +92,7 @@ def test_create_membership(mocker) -> None:
     :param mocker:
     :return:
     ***REMOVED***
+    # Note: Patching put and Query Model requests so they do not perform the operations on the database
     mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
     mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
 
@@ -106,8 +107,8 @@ def test_create_membership(mocker) -> None:
         mocker.patch('database.memberships.PlanValidators.plan_exist', return_value=False)
         mocker.patch('database.memberships.MembershipValidators.start_date_valid', return_value=True)
 
-        response, status = membership_view_instance.add_membership(
-            organization_id=organization_id, uid=uid, plan_id=plan_id, plan_start_date=plan_start_date)
+        response, status = membership_view_instance.add_membership(organization_id=organization_id, uid=uid,
+                                                                   plan_id=plan_id, plan_start_date=plan_start_date)
         response_data: dict = response.get_json()
         assert response_data.get('message') is not None, 'Unable to read response message'
         assert status == status_codes.successfully_updated_code, response_data['message']
@@ -126,6 +127,7 @@ def test_memberships_create_memberships_un_auth(mocker) -> None:
     :param mocker:
     :return:
     ***REMOVED***
+    # Note: Patching put and Query Model requests so they do not perform the operations on the database
     mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
     mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
 
@@ -152,35 +154,35 @@ def test_create_memberships_input_errors(mocker) -> None:
     :param mocker:
     :return:
     ***REMOVED***
+    # Note: Patching put and Query Model requests so they do not perform the operations on the database
     mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
     mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
     with test_app().app_context():
         membership_view_instance: MembershipsView = MembershipsView()
         # Note: testing for invalid uid
-        uid = random.choice([None, "", " "])
-        organization_id = membership_mock_data['organization_id']
-        plan_id = membership_mock_data['plan_id']
-        plan_start_date = membership_mock_data['plan_start_date']
+        uid: Optional[str] = random.choice([None, "", " "])
+        organization_id: str = membership_mock_data['organization_id']
+        plan_id: str = membership_mock_data['plan_id']
+        plan_start_date: date = membership_mock_data['plan_start_date']
         with raises(InputError):
             membership_view_instance.add_membership(organization_id=organization_id, uid=uid,
                                                     plan_id=plan_id, plan_start_date=plan_start_date)
         # Note: testing for invalid organization_id
-        uid = create_id()
-        organization_id = random.choice([None, "", " "])
+        uid: str = create_id()
+        organization_id: Optional[str] = random.choice([None, "", " "])
         with raises(InputError):
             membership_view_instance.add_membership(organization_id=organization_id, uid=uid,
                                                     plan_id=plan_id, plan_start_date=plan_start_date)
         # Note: testing for invalid plan_start_date
-        organization_id = create_id()
-        plan_start_date = random.choice([None, "", " "])
+        organization_id: str = create_id()
+        plan_start_date: Optional[date] = random.choice([None, "", " "])
         with raises(InputError):
-            # noinspection PyTypeChecker
             membership_view_instance.add_membership(organization_id=organization_id, uid=uid,
                                                     plan_id=plan_id, plan_start_date=plan_start_date)
 
         # NOTE : testing for invalid plan id
-        plan_start_date = today()
-        plan_id = random.choice([None, "", " "])
+        plan_start_date: date = today()
+        plan_id: Optional[str] = random.choice([None, "", " "])
         with raises(InputError):
             # noinspection PyTypeChecker
             membership_view_instance.add_membership(organization_id=organization_id, uid=uid,
@@ -191,24 +193,35 @@ def test_create_memberships_input_errors(mocker) -> None:
 
 # noinspection PyShadowingNames
 def test_update_membership(mocker) -> None:
+    ***REMOVED***
+    **test_update_membership**
+        testing updated membership view function
+    :param mocker: mocker module used to patch functions for testing purposes
+    :return: None
+    ***REMOVED***
+    # Note: Patching put and Query Model requests so they do not perform the operations on the database
     mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
     mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
         membership_view_instance: MembershipsView = MembershipsView()
-        uid = membership_mock_data['uid']
-        organization_id = config_instance.ORGANIZATION_ID
-        plan_id = membership_mock_data['plan_id']
-        plan_start_date = membership_mock_data['plan_start_date']
+        uid: str = membership_mock_data['uid']
+        organization_id: str = config_instance.ORGANIZATION_ID
+        plan_id: str = membership_mock_data['plan_id']
+        plan_start_date: date = membership_mock_data['plan_start_date']
+        # Note: Mocking test utilities to return results which allows the update process to proceed
         mocker.patch('database.users.UserValidators.is_user_valid', return_value=True)
         mocker.patch('database.memberships.PlanValidators.plan_exist', return_value=False)
         mocker.patch('database.memberships.MembershipValidators.start_date_valid', return_value=True)
+
         response, status = membership_view_instance.update_membership(organization_id=organization_id, uid=uid,
                                                                       plan_id=plan_id, plan_start_date=plan_start_date)
+
         assert status == status_codes.successfully_updated_code, "Unable to update membership"
         response_data: dict = response.get_json()
         assert response_data.get('message') is not None, "message was not set properly"
         assert response_data.get('payload') is not None, response_data['message']
+        assert isinstance(response_data.get('payload'), dict), response_data['message']
 
     mocker.stopall()
 
