@@ -8,20 +8,17 @@ __email__ = "mobiusndou@gmail.com"
 __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
-
-import datetime
 import typing
 from typing import Optional
 from flask import current_app, jsonify
 from google.cloud import ndb
-
 from main import app_cache
 from database.affiliates import AffiliatesValidators as ValidAffiliate
 from database.affiliates import RecruitsValidators as ValidRecruit
 from database.affiliates import EarningsValidators as ValidEarnings
 from database.affiliates import Affiliates, Recruits
 from config.exceptions import DataServiceError, InputError, UnAuthenticatedError, error_codes, status_codes
-from utils.utils import create_id, return_ttl, datetime_now
+from utils.utils import create_id, return_ttl
 from config.exception_handlers import handle_view_errors
 from config.use_context import use_context
 from _sdk._email import Mailgun
