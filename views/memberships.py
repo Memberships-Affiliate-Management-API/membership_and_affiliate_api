@@ -943,8 +943,9 @@ class MembershipsView(Validators, MembershipsEmails):
             :return : tuple indicating if sending email as a success or failed        
             
         ***REMOVED***
-        # TODO- complete this and add email sending capability
-        return "Ok", status_codes.status_ok_code
+        _kwargs: dict = dict(organization_id=organization_id, uid=uid)
+        self._base_email_scheduler(func=self.send_memberships_welcome_email, kwargs=_kwargs)
+        return jsonify({'status': True, 'message': 'welcome email will be sent'}), status_codes.status_ok_code
 
     @use_context
     @handle_view_errors
