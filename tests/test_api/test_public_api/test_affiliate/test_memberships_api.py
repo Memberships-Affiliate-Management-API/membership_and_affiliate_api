@@ -5,7 +5,7 @@ from random import randint
 from google.cloud import ndb
 from config import config_instance
 from config.currencies import currency_util
-from config.exceptions import DataServiceError
+from config.exceptions import DataServiceError, status_codes, UnAuthenticatedError
 from database.mixins import AmountMixin
 from views.memberships import MembershipsView
 from database.memberships import Memberships, MembershipPlans
@@ -74,6 +74,12 @@ membership_mock_data: dict = {
 
 # noinspection PyShadowingNames
 def test_create_membership(mocker):
+    ***REMOVED***
+    **test_create_membership**
+        test if memberships can be created properly without errors
+    :param mocker:
+    :return:
+    ***REMOVED***
     mocker.patch('google.cloud.ndb.Model.put', return_value=create_id())
     mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
 
@@ -90,17 +96,39 @@ def test_create_membership(mocker):
 
         response, status = membership_view_instance.add_membership(
             organization_id=organization_id, uid=uid, plan_id=plan_id, plan_start_date=plan_start_date)
-
-        # mocker.patch('data_service.views.memberships.Validators.can_add_member', return_value=True)
-
-        response, status = membership_view_instance.add_membership(
-            organization_id=organization_id, uid=uid, plan_id=plan_id, plan_start_date=plan_start_date)
         response_data: dict = response.get_json()
-        assert status == 200, response_data['message']
+        print(response_data)
+        assert status == status_codes.successfully_updated_code, response_data['message']
 
     mocker.stopall()
 
-#
+
+# noinspection PyShadowingNames
+def test_memberships_create_memberships_un_auth(mocker):
+    ***REMOVED***
+    **test_memberships_create_memberships_un_auth**
+        tests if errors will be thrown in-case the application cannot determine the legitimacy of the user request
+        or if user isn't suppose to perform the action as needed
+
+    :param mocker:
+    :return:
+    ***REMOVED***
+    mocker.patch('google.cloud.ndb.Model.put', return_value=create_id())
+    mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
+
+    with test_app().app_context():
+        membership_view_instance: MembershipsView = MembershipsView()
+        uid = membership_mock_data['uid']
+        organization_id = membership_mock_data['organization_id']
+        plan_id = membership_mock_data['plan_id']
+        plan_start_date = membership_mock_data['plan_start_date']
+
+        with raises(UnAuthenticatedError):
+            response, status = membership_view_instance.add_membership(organization_id=organization_id, uid=uid,
+                                                                       plan_id=plan_id, plan_start_date=plan_start_date)
+
+    mocker.stopall()
+
 # # noinspection PyShadowingNames
 # def test_update_membership(mocker):
 #     mocker.patch('google.cloud.ndb.Model.put', return_value=create_id())
