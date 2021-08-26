@@ -186,7 +186,7 @@ class Services(BaseModel):
     def __bool__(self) -> bool:
         return bool(self.service_id)
 
-    @property
+    @ndb.model.ComputedProperty
     def service_details(self) -> dict:
         ***REMOVED***
             `Service Details Property`
@@ -199,5 +199,6 @@ class Services(BaseModel):
             'service_id': self.service_id,
             'name': self.name,
             'description': self.description,
+            'category': self.category,
             'image_url': self.image_url,
             'home_url': self.home_url}
