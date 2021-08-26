@@ -13,6 +13,8 @@ import datetime
 import typing
 from typing import Optional
 from flask import current_app, jsonify
+from google.cloud import ndb
+
 from main import app_cache
 from database.affiliates import AffiliatesValidators as ValidAffiliate
 from database.affiliates import RecruitsValidators as ValidRecruit
@@ -130,7 +132,7 @@ class AffiliatesView(Validator, CacheManager):
                                                     affiliate_id=affiliate_id,
                                                     uid=uid)
 
-        key = affiliate_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+        key: Optional[ndb.Key] = affiliate_instance.put(retries=self._max_retries, timeout=self._max_timeout)
         if not bool(key):
             message: str = "There was an error creating Affiliate"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
@@ -214,10 +216,10 @@ class AffiliatesView(Validator, CacheManager):
 
         affiliate_instance: Affiliates = Affiliates.query(Affiliates.organization_id == organization_id,
                                                           Affiliates.affiliate_id == affiliate_id).get()
-        if isinstance(affiliate_instance, Affiliates):
+        if isinstance(affiliate_instance, Affiliates) and affiliate_instance.affiliate_id == affiliate_id:
             affiliate_instance.is_active = False
             affiliate_instance.is_deleted = True
-            key = affiliate_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+            key: Optional[ndb.Key] = affiliate_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             if not bool(key):
                 message: str = 'something went wrong while deleting affiliate'
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
@@ -268,7 +270,7 @@ class AffiliatesView(Validator, CacheManager):
                 raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
             affiliate_instance.is_active = is_active
-            key = affiliate_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+            key: Optional[ndb.Key] = affiliate_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             if not bool(key):
                 message: str = "An Unknown Error occurred while trying to mark affiliate as in-active"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
