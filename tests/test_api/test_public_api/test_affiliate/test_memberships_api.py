@@ -80,7 +80,7 @@ def test_create_membership(mocker):
     :param mocker:
     :return:
     ***REMOVED***
-    mocker.patch('google.cloud.ndb.Model.put', return_value=create_id())
+    mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
     mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
@@ -113,7 +113,7 @@ def test_memberships_create_memberships_un_auth(mocker):
     :param mocker:
     :return:
     ***REMOVED***
-    mocker.patch('google.cloud.ndb.Model.put', return_value=create_id())
+    mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
     mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
@@ -128,6 +128,18 @@ def test_memberships_create_memberships_un_auth(mocker):
                                                                        plan_id=plan_id, plan_start_date=plan_start_date)
 
     mocker.stopall()
+
+
+# noinspection PyUnusedLocal
+def test_create_memberships_input_errors(mocker):
+    ***REMOVED***
+    **test_create_memberships_input_errors**
+        test create memberships in-case of faulty data
+
+    :param mocker:
+    :return:
+    ***REMOVED***
+    pass
 
 # # noinspection PyShadowingNames
 # def test_update_membership(mocker):

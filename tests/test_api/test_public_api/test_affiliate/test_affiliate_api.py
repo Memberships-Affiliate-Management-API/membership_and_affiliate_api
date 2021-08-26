@@ -134,7 +134,7 @@ def test_affiliate_input_error(mocker):
 
 # noinspection PyShadowingNames
 def test_increment_decrement_total_recruits(mocker):
-    mocker.patch('google.cloud.ndb.Model.put', return_value=create_id())
+    mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Affiliates'))
     mocker.patch('google.cloud.ndb.Model.query', return_value=AffiliateQueryMock())
 
     with test_app().app_context():
@@ -150,7 +150,7 @@ def test_increment_decrement_total_recruits(mocker):
 
 # noinspection PyShadowingNames
 def test_delete_affiliate(mocker):
-    mocker.patch('google.cloud.ndb.Model.put', return_value=create_id())
+    mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Affiliates'))
     mocker.patch('google.cloud.ndb.Model.query', return_value=AffiliateQueryMock())
 
     with test_app().app_context():
@@ -167,7 +167,7 @@ def test_delete_affiliate(mocker):
 
 # noinspection PyShadowingNames
 def test_mark_active(mocker):
-    mocker.patch('google.cloud.ndb.Model.put', return_value=create_id())
+    mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Affiliates'))
     mocker.patch('google.cloud.ndb.Model.query', return_value=AffiliateQueryMock())
 
     with test_app().app_context():
@@ -190,7 +190,7 @@ def test_mark_active(mocker):
 
 # noinspection PyShadowingNames
 def test_get_affiliate(mocker):
-    mocker.patch('google.cloud.ndb.Model.put', return_value=create_id())
+    mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Affiliates'))
     mocker.patch('google.cloud.ndb.Model.query', return_value=AffiliateQueryMock())
 
     with test_app().app_context():
@@ -206,7 +206,7 @@ def test_get_affiliate(mocker):
 
 # noinspection PyShadowingNames,DuplicatedCode
 def test_get_all_affiliate(mocker):
-    mocker.patch('google.cloud.ndb.Model.put', return_value=create_id())
+    mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Affiliates'))
     mocker.patch('google.cloud.ndb.Model.query', return_value=AffiliateQueryMock())
     # TODo complete the test cases
     with test_app().app_context():
@@ -222,7 +222,7 @@ def test_get_all_affiliate(mocker):
 
 # noinspection PyShadowingNames,DuplicatedCode
 def test_active_affiliates(mocker):
-    mocker.patch('google.cloud.ndb.Model.put', return_value=create_id())
+    mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Affiliates'))
     mocker.patch('google.cloud.ndb.Model.query', return_value=AffiliateQueryMock())
     with test_app().app_context():
         affiliate_instance: AffiliatesView = AffiliatesView()
@@ -237,7 +237,7 @@ def test_active_affiliates(mocker):
 
 # noinspection PyShadowingNames,DuplicatedCode
 def test_inactive_affiliates(mocker):
-    mocker.patch('google.cloud.ndb.Model.put', return_value=create_id())
+    mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Affiliates'))
     mocker.patch('google.cloud.ndb.Model.query', return_value=AffiliateQueryMock())
 
     with test_app().app_context():
@@ -252,7 +252,7 @@ def test_inactive_affiliates(mocker):
 
 # noinspection PyShadowingNames,DuplicatedCode
 def test_deleted_affiliates(mocker):
-    mocker.patch('google.cloud.ndb.Model.put', return_value=create_id())
+    mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Affiliates'))
     mocker.patch('google.cloud.ndb.Model.query', return_value=AffiliateQueryMock())
 
     with test_app().app_context():
@@ -267,7 +267,7 @@ def test_deleted_affiliates(mocker):
 
 # noinspection PyShadowingNames,DuplicatedCode
 def test_undeleted_affiliates(mocker):
-    mocker.patch('google.cloud.ndb.Model.put', return_value=create_id())
+    mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Affiliates'))
     mocker.patch('google.cloud.ndb.Model.query', return_value=AffiliateQueryMock())
 
     with test_app().app_context():
