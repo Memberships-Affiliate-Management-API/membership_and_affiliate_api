@@ -58,4 +58,6 @@ def test_register_affiliate(mocker):
         assert response_dict.get('payload') is not None, "affiliates payload is not being set correctly"
         assert response_dict.get('message') is not None, "affiliate message is not being set correctly"
 
+    mocker.stopall()
+
 
