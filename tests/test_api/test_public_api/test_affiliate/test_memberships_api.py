@@ -443,23 +443,3 @@ def test_payment_amount(mocker):
         response_data: dict = response.get_json()
         assert status == status_codes.data_not_found_code, response_data['message']
     mocker.stopall()
-#
-#
-# # noinspection PyShadowingNames
-# def test_set_payment_status(mocker):
-#     mocker.patch('google.cloud.ndb.Model.put', return_value=create_id())
-#     mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
-#
-#     with test_app().app_context():
-#         membership_view_instance: MembershipsView = MembershipsView()
-#         uid: str = membership_mock_data['uid']
-#         status: str = "paid"
-#         response, status = membership_view_instance.set_membership_payment_status(
-#             organization_id=config_instance.ORGANIZATION_ID, uid=uid, status=status)
-#         assert status == 200, "Unable to set payment status"
-#         status: str = "unpaid"
-#         response, status = membership_view_instance.set_membership_payment_status(
-#             organization_id=config_instance.ORGANIZATION_ID, uid=uid, status=status)
-#         assert status == 200, "Unable to set payment status"
-#
-#     mocker.stopall()
