@@ -216,13 +216,14 @@ def test_set_membership_status(mocker):
     with test_app().app_context():
         membership_view_instance: MembershipsView = MembershipsView()
         uid = membership_mock_data['uid']
+        organization_id = config_instance.ORGANIZATION_ID
         status = membership_mock_data['status']
-        response, status = membership_view_instance.set_membership_payment_status(
-            organization_id=config_instance.ORGANIZATION_ID, uid=uid, status=status)
-        assert status == 200, "Unable to set membership status"
-        response, status = membership_view_instance.set_membership_payment_status(
-            organization_id=config_instance.ORGANIZATION_ID, uid=uid, status="paid")
-        assert status == 200, "Unable to set membership status"
+        response, status = membership_view_instance.set_membership_payment_status(organization_id=organization_id,
+                                                                                   uid=uid, status=status)
+        assert status == status_codes.successfully_updated_code, "Unable to set membership status"
+        response, status = membership_view_instance.set_membership_payment_status(organization_id=organization_id,
+                                                                                  uid=uid, status="paid")
+        assert status == status_codes.successfully_updated_code, "Unable to set membership status"
     mocker.stopall()
 
 

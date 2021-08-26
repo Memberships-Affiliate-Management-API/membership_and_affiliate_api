@@ -716,7 +716,7 @@ class MembershipsView(Validators, MembershipsEmails):
 
             message: str = "Successfully update membership status"
             return jsonify({'status': True, 'payload': membership_instance.to_dict(),
-                            'message': message}), status_codes.status_ok_code
+                            'message': message}), status_codes.successfully_updated_code
 
         message: str = "Memberships record not found"
         return jsonify({'status': True, 'payload': membership_instance.to_dict(),
