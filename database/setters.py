@@ -11,10 +11,14 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
 import typing
+from typing import List, Optional
 from flask import escape
 from datetime import datetime, date
 from google.cloud import ndb
 from phonenumbers import NumberParseException
+
+from config import config_instance
+from utils import utils
 from utils.utils import get_payment_methods, get_plan_scheduled_terms, get_scheduled_term_days
 import re
 import socket
@@ -43,11 +47,23 @@ class Util:
     ***REMOVED***
     def __init__(self):
         # maximum length for coupon codes
-        self.__max_coupon_code_len: int = 12
+        self._max_coupon_code_len: int = 12
         # maximum len for _id
-        self.__max_id_len: int = 64
-        self.__payment_statuses: typing.List[str] = ['paid', 'unpaid']
-        self.__transaction_types: typing.List[str] = ['withdrawal', 'deposit', 'refund']
+        self._max_id_len: int = 64
+        self._payment_statuses: List[str] = ['paid', 'unpaid']
+        self._transaction_types: List[str] = ['withdrawal', 'deposit', 'refund']
+
+    @staticmethod
+    def return_payment_status_list() -> List[str]:
+        ***REMOVED***
+        **return this from config**
+        :return:
+        ***REMOVED***
+        return ['paid', 'unpaid']
+
+    @staticmethod
+    def return_transaction_types() -> List[str]:
+        return ['withdrawal', 'deposit', 'refund']
 
     @staticmethod
     def return_class_name(prop: ndb.Property) -> str:
@@ -206,7 +222,7 @@ class PropertySetters(Events, Util):
         if not (isinstance(value, str)):
             raise ValueError("Coupon Code, is an instance of: {} , and can only be a string".format(str(class_name)))
 
-        if len(value.strip()) != property_.__max_coupon_code_len:
+        if len(value.strip()) != property_._max_coupon_code_len:
             message: str = ***REMOVED***Coupon Code, is an instance of: {} , and must be 12 characters long
             ***REMOVED***.format(str(class_name))
             raise ValueError(message)
@@ -252,7 +268,7 @@ class PropertySetters(Events, Util):
             raise ValueError("transaction_type, is an instance of : {} , and can only be a string".format(class_name))
 
         # NOTE: valid transaction types "withdrawal", "deposit", "refund"
-        if value.strip().lower() not in property_.__transaction_types:
+        if value.strip().lower() not in property_.return_transaction_types():
             raise ValueError("{} is not a valid transaction_type".format(value))
 
         return value.strip().lower()
@@ -305,7 +321,7 @@ class PropertySetters(Events, Util):
         if not bool(temp):
             raise ValueError("status, is an instance of : {} , and cannot be Null".format(class_name))
 
-        if temp not in property_.__payment_statuses:
+        if temp not in property_.return_payment_status_list():
             message: str = ***REMOVED*** status should either paid or unpaid this {} is not a valid status***REMOVED***.format(value)
             raise TypeError("{} invalid status".format(message))
 
