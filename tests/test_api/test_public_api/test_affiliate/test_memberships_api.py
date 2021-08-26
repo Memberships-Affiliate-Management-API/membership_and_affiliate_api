@@ -5,7 +5,7 @@ from random import randint
 from google.cloud import ndb
 from config import config_instance
 from config.currencies import currency_util
-from config.exceptions import DataServiceError, status_codes, UnAuthenticatedError
+from config.exceptions import DataServiceError, status_codes, UnAuthenticatedError, InputError
 from database.mixins import AmountMixin
 from views.memberships import MembershipsView
 from database.memberships import Memberships, MembershipPlans
@@ -136,13 +136,13 @@ def test_memberships_create_memberships_un_auth(mocker):
         plan_start_date = membership_mock_data['plan_start_date']
 
         with raises(UnAuthenticatedError):
-            response, status = membership_view_instance.add_membership(organization_id=organization_id, uid=uid,
-                                                                       plan_id=plan_id, plan_start_date=plan_start_date)
+            membership_view_instance.add_membership(organization_id=organization_id, uid=uid,
+                                                    plan_id=plan_id, plan_start_date=plan_start_date)
 
     mocker.stopall()
 
 
-# noinspection PyUnusedLocal
+# noinspection PyUnusedLocal,PyShadowingNames
 def test_create_memberships_input_errors(mocker):
     ***REMOVED***
     **test_create_memberships_input_errors**
@@ -151,7 +151,19 @@ def test_create_memberships_input_errors(mocker):
     :param mocker:
     :return:
     ***REMOVED***
-    pass
+    mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
+    mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
+    with test_app().app_context():
+        membership_view_instance: MembershipsView = MembershipsView()
+        uid = ''
+        organization_id = membership_mock_data['organization_id']
+        plan_id = membership_mock_data['plan_id']
+        plan_start_date = membership_mock_data['plan_start_date']
+        with raises(InputError):
+            membership_view_instance.add_membership(organization_id=organization_id, uid=uid,
+                                                    plan_id=plan_id, plan_start_date=plan_start_date)
+
+    mocker.stopall()
 
 # # noinspection PyShadowingNames
 # def test_update_membership(mocker):
