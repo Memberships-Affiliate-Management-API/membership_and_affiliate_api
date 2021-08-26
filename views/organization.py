@@ -84,7 +84,7 @@ class OrganizationEmails(Mailgun):
         '''
         email: Optional[str] = user_data.get('email')
         if email_verified and bool(email):
-            self.__do_schedule_mail(to_email=email, subject=subject, text=text, html=html)
+            self._do_schedule_mail(to_email=email, subject=subject, text=text, html=html)
 
         message: str = "Bad Request Error: Email not verified please verify your account"
         raise RequestError(status=error_codes.bad_request_error_code, description=message)
@@ -121,7 +121,7 @@ class OrganizationEmails(Mailgun):
         '''
         email: Optional[str] = user_data.get('email')
         if email_verified and bool(email):
-            self.__do_schedule_mail(to_email=email, subject=subject, text=text, html=html)
+            self._do_schedule_mail(to_email=email, subject=subject, text=text, html=html)
 
         message: str = "Bad Request Error: Email not verified please verify your account"
         raise RequestError(status=error_codes.bad_request_error_code, description=message)
@@ -171,7 +171,7 @@ class OrganizationEmails(Mailgun):
         '''
         email: Optional[str] = user_data.get('email')
         if email_verified and bool(email):
-            self.__do_schedule_mail(to_email=email, subject=subject, text=text, html=html)
+            self._do_schedule_mail(to_email=email, subject=subject, text=text, html=html)
 
         message: str = "Bad Request Error: Email not verified please verify your account"
         raise RequestError(status=error_codes.bad_request_error_code, description=message)
@@ -239,7 +239,7 @@ class OrganizationEmails(Mailgun):
 
         email: str = user_data.get('email')
         if email_verified and bool(email):
-            self.__do_schedule_mail(to_email=email, subject=subject, text=text, html=html)
+            self._do_schedule_mail(to_email=email, subject=subject, text=text, html=html)
 
         message: str = "Bad Request Error: Email not verified please verify your account"
         raise RequestError(status=error_codes.bad_request_error_code, description=message)
@@ -382,8 +382,8 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
             self._schedule_cache_deletion(func=self._delete_organization_cache, kwargs=_kwargs)
 
             kwargs: dict = dict(organization_id=organization_id, uid=uid)
-            self.__base_email_scheduler(func=self.send_organization_wallet_created_email, kwargs=kwargs)
-            self.__base_email_scheduler(func=self.send_successfully_created_organization, kwargs=kwargs)
+            self._base_email_scheduler(func=self.send_organization_wallet_created_email, kwargs=kwargs)
+            self._base_email_scheduler(func=self.send_successfully_created_organization, kwargs=kwargs)
 
             message: str = "Successfully created Organization"
             return jsonify({'status': True, 'payload': organization_instance.to_dict(),
@@ -439,7 +439,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
                 self._schedule_cache_deletion(func=self._delete_organization_cache, kwargs=_kwargs)
 
                 kwargs: dict = dict(organization_id=organization_id, uid=uid)
-                self.__base_email_scheduler(func=self.send_organization_updated_email, kwargs=kwargs)
+                self._base_email_scheduler(func=self.send_organization_updated_email, kwargs=kwargs)
 
                 message: str = "Successfully updated organization"
                 return jsonify({'status': True, 'payload': org_instance.to_dict(),

@@ -364,10 +364,15 @@ def test_send_welcome_email(mocker):
     with test_app().app_context():
         membership_view_instance: MembershipsView = MembershipsView()
         uid: str = membership_mock_data['uid']
+        organization_id: str = config_instance.ORGANIZATION_ID
         plan_id: str = membership_mock_data['plan_id']
-        response, status = membership_view_instance.send_welcome_email(organization_id=config_instance.ORGANIZATION_ID,
-                                                                       uid=uid, plan_id=plan_id)
+        response, status = membership_view_instance.send_welcome_email(organization_id=organization_id, uid=uid,
+                                                                       plan_id=plan_id)
+        response_data: dict = response.get_json()
+        assert isinstance(response_data, dict), 'bad payload format'
         assert status == status_codes.status_ok_code, "unable to send welcome email"
+        assert response_data.get('payload') is not None, response_data['message']
+        assert isinstance(response_data.get('payload'), dict), "bad payload format"
 
     mocker.stopall()
 
@@ -379,13 +384,14 @@ def test_plan_members_payment_status(mocker):
 
     with test_app().app_context():
         membership_view_instance: MembershipsView = MembershipsView()
-        organization_id = config_instance.ORGANIZATION_ID
+        organization_id: str = config_instance.ORGANIZATION_ID
         plan_id: str = membership_mock_data['plan_id']
         status: str = membership_mock_data['payment_status']
         response, status = membership_view_instance.return_plan_members_by_payment_status(
             organization_id=organization_id, plan_id=plan_id, status=status)
 
         response_data: dict = response.get_json()
+
         assert isinstance(response_data, dict), 'badly formatted data'
         assert status == status_codes.status_ok_code, "unable to fetch plan members by status"
         assert isinstance(response_data.get('payload'), list), response_data['message']
@@ -401,9 +407,10 @@ def test_return_plan_members(mocker):
     with test_app().app_context():
         membership_view_instance: MembershipsView = MembershipsView()
         plan_id: str = membership_mock_data['plan_id']
-        response, status = membership_view_instance.return_plan_members(organization_id=config_instance.ORGANIZATION_ID,
-                                                                        plan_id=plan_id)
+        organization_id: str = config_instance.ORGANIZATION_ID
+        response, status = membership_view_instance.return_plan_members(organization_id=organization_id, plan_id=plan_id)
         response_data: dict = response.get_json()
+
         assert isinstance(response_data, dict), 'badly formatted data'
         assert status == status_codes.status_ok_code, response_data['message']
         assert isinstance(response_data.get('payload'), list), response_data['message']
@@ -419,7 +426,7 @@ def test_is_member_off(mocker):
     with test_app().app_context():
         membership_view_instance: MembershipsView = MembershipsView()
         uid: str = membership_mock_data['uid']
-        organization_id = config_instance.ORGANIZATION_ID
+        organization_id: str = config_instance.ORGANIZATION_ID
         response, status = membership_view_instance.is_member_off(organization_id=organization_id, uid=uid)
 
         response_data: dict = response.get_json()
@@ -438,7 +445,7 @@ def test_payment_amount(mocker):
     with test_app().app_context():
         membership_view_instance: MembershipsView = MembershipsView()
         uid: str = membership_mock_data['uid']
-        organization_id = config_instance.ORGANIZATION_ID
+        organization_id: str = config_instance.ORGANIZATION_ID
         response, status = membership_view_instance.payment_amount(organization_id=organization_id, uid=uid)
         response_data: dict = response.get_json()
         assert status == status_codes.data_not_found_code, response_data['message']

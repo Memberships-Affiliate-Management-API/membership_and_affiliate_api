@@ -140,7 +140,7 @@ class MembershipsEmails(Mailgun):
         subject: str = 'Welcome to : {}'.format(organization_name)
         email_verified: bool = user_data.get('email_verified')
         if email_verified and bool(email):
-            self.__do_schedule_mail(to_email=email, subject=subject, text=text_body, html=html_body)
+            self._do_schedule_mail(to_email=email, subject=subject, text=text_body, html=html_body)
 
         message: str = "Bad Request Error: Email not verified please verify your account"
         raise RequestError(status=error_codes.bad_request_error_code, description=message)
@@ -193,7 +193,7 @@ class MembershipsEmails(Mailgun):
         '''
         email: str = user_data.get('email')
         if email_verified and bool(email):
-            self.__do_schedule_mail(to_email=email, subject=subject, text=text, html=html)
+            self._do_schedule_mail(to_email=email, subject=subject, text=text, html=html)
 
         message: str = "Bad Request Error: Email not verified please verify your account"
         raise RequestError(status=error_codes.bad_request_error_code, description=message)
@@ -240,7 +240,7 @@ class MembershipsEmails(Mailgun):
         '''
         email: str = user_data.get('email')
         if email_verified and bool(email):
-            self.__do_schedule_mail(to_email=email, subject=subject, text=text, html=html)
+            self._do_schedule_mail(to_email=email, subject=subject, text=text, html=html)
 
         message: str = "Bad Request Error: Email not verified please verify your account"
         raise RequestError(status=error_codes.bad_request_error_code, description=message)
@@ -924,7 +924,9 @@ class MembershipsView(Validators, MembershipsEmails):
             :param plan_id: -> str: unique plan_id
             :return : tuple indicating if sending email as a success or failed
         ***REMOVED***
-        return "Ok", status_codes.status_ok_code
+        self.send_memberships_welcome_email(organization_id=organization_id, uid=uid)
+        self.__
+        return self.send_memberships_welcome_email(organization_id=organization_id, uid=uid)
 
     # noinspection PyUnusedLocal
     @use_context

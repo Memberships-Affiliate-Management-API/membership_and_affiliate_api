@@ -55,7 +55,7 @@ class UserJobs(Mailgun):
         <strong>{org_data.get('organization_name')} Team</strong> 
         <a href="{org_data.get('home_url')}">{org_data.get('home_url')}</a>
         '''
-        self.__do_schedule_mail(to_email=user_instance.email, subject=subject, text=text, html=html)
+        self._do_schedule_mail(to_email=user_instance.email, subject=subject, text=text, html=html)
 
     async def send_login_reminders(self) -> None:
         ***REMOVED***

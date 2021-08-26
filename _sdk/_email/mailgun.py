@@ -142,9 +142,9 @@ class Mailgun:
         event_loop.close()
         return user_data, organization_data
 
-    def __do_schedule_mail(self, to_email: str, subject: str, text: str, html: str) -> None:
+    def _do_schedule_mail(self, to_email: str, subject: str, text: str, html: str) -> None:
         ***REMOVED***
-            **__do_schedule_mail**
+            **_do_schedule_mail**
                 using APScheduler schedule the emails to be sent at a later period
 
         :param to_email: email address to send the email to
@@ -162,7 +162,7 @@ class Mailgun:
                                kwargs=_kwargs, id=create_id(), name="do_schedule_mail_send", misfire_grace_time=360)
 
     @staticmethod
-    def __base_email_scheduler(func, kwargs) -> None:
+    def _base_email_scheduler(func, kwargs) -> None:
         ***REMOVED***
 
         :param func:

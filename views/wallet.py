@@ -73,7 +73,7 @@ class WalletEmails(Mailgun):
         {organization_data.get('organization_name')}                         
         '''
         if email_verified:
-            self.__do_schedule_mail(to_email=email, subject=subject, text=text, html=html)
+            self._do_schedule_mail(to_email=email, subject=subject, text=text, html=html)
 
     def wallet_created_successfully(self, wallet_instance: WalletModel, organization_id: str, uid: str) -> None:
         ***REMOVED***
@@ -114,7 +114,7 @@ class WalletEmails(Mailgun):
                {organization_data.get('organization_name')}                 
                '''
         if email_verified:
-            self.__do_schedule_mail(to_email=email, subject=subject, text=text, html=html)
+            self._do_schedule_mail(to_email=email, subject=subject, text=text, html=html)
 
     def wallet_details_changed(self, wallet_instance: WalletModel, organization_id: str, uid: str) -> None:
         ***REMOVED***
@@ -161,7 +161,7 @@ class WalletEmails(Mailgun):
                {organization_data.get('organization_name')}                 
                '''
         if email_verified:
-            self.__do_schedule_mail(to_email=email, subject=subject, text=text, html=html)
+            self._do_schedule_mail(to_email=email, subject=subject, text=text, html=html)
 
 
 class Validator(WalletValidator):
@@ -383,7 +383,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
 
         # Sending an email notification to the user informing them that the wallet has been created successfully
         kwargs: dict = dict(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
-        self.__base_email_scheduler(func=self.wallet_created_successfully, kwargs=kwargs)
+        self._base_email_scheduler(func=self.wallet_created_successfully, kwargs=kwargs)
 
         return jsonify({'status': True, 'message': 'successfully created wallet',
                         'payload': wallet_instance.to_dict()}), status_codes.successfully_updated_code
@@ -424,7 +424,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
 
         # Sending an email notification to the user informing them that the wallet has been created successfully
         kwargs: dict = dict(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
-        self.__base_email_scheduler(func=self.wallet_created_successfully, kwargs=kwargs)
+        self._base_email_scheduler(func=self.wallet_created_successfully, kwargs=kwargs)
 
         return jsonify({'status': True, 'message': 'successfully created wallet',
                         'payload': wallet_instance.to_dict()}), status_codes.successfully_updated_code
@@ -529,7 +529,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
         self._schedule_cache_deletion(func=self._delete_wallet_cache, kwargs=_kwargs)
 
         kwargs: dict = dict(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
-        self.__base_email_scheduler(func=self.wallet_details_changed, kwargs=kwargs)
+        self._base_email_scheduler(func=self.wallet_details_changed, kwargs=kwargs)
 
         return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
                         'message': 'successfully updated wallet'}), status_codes.successfully_updated_code
@@ -587,7 +587,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
         self._schedule_cache_deletion(func=self._delete_wallet_cache, kwargs=_kwargs)
 
         kwargs: dict = dict(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
-        self.__base_email_scheduler(func=self.wallet_details_changed, kwargs=kwargs)
+        self._base_email_scheduler(func=self.wallet_details_changed, kwargs=kwargs)
 
         return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
                         'message': 'successfully updated wallet'}), status_codes.successfully_updated_code
@@ -631,7 +631,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
 
         # Note scheduling an email to send wallet details changed notifications
         kwargs: dict = dict(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
-        self.__base_email_scheduler(func=self.wallet_details_changed, kwargs=kwargs)
+        self._base_email_scheduler(func=self.wallet_details_changed, kwargs=kwargs)
 
         return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
                         'message': 'wallet is rest'}), status_codes.successfully_updated_code
@@ -676,7 +676,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
 
         # Note scheduling task to send Emails
         kwargs: dict = dict(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
-        self.__base_email_scheduler(func=self.wallet_details_changed, kwargs=kwargs)
+        self._base_email_scheduler(func=self.wallet_details_changed, kwargs=kwargs)
 
         return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
                         'message': 'wallet is rest'}), status_codes.successfully_updated_code
@@ -845,7 +845,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
 
             # Scheduling emails
             kwargs: dict = dict(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
-            self.__base_email_scheduler(func=self.send_balance_changed_notification, kwargs=kwargs)
+            self._base_email_scheduler(func=self.send_balance_changed_notification, kwargs=kwargs)
 
             message: str = "Successfully created transaction"
             return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
