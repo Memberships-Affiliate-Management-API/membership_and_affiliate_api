@@ -8,7 +8,7 @@ __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
-from typing import Optional
+from typing import Optional, List
 from google.cloud import ndb
 from config.use_context import use_context
 
@@ -56,15 +56,16 @@ class BaseModel(ndb.Model):
         return self.key.urlsafe() if isinstance(self.key, ndb.Key) else None
 
     # Turns the class to dict and include instance key
-    def to_dict(self, include=all, exclude=None) -> dict:
+    def to_dict(self, include: Optional[List[str]] = None, exclude:  Optional[List[str]] = None) -> dict:
         ***REMOVED***
-            **to_dict**
-                based on the super dict method of ndb.Model
-                return a customized dict with the difference that every result
-                includes ndb.Key
-        :return: dict rep of instance
+            **to_dict method**
+                returns a full dict representing user except password property
+
+        :param include: all
+        :param exclude: password
+        :return: dict -> all user properties excluding password
         ***REMOVED***
-        return super().to_dict(include=[include], exclude=[exclude]).update(key=self.urlsafe_key)
+        return super().to_dict(include=[prop._code_name for prop in self._properties.values()], exclude=exclude)
 
     @staticmethod
     @use_context
