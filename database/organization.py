@@ -108,7 +108,7 @@ class Organization(BaseModel):
     def __bool__(self) -> bool:
         return bool(self.organization_id)
 
-    @property
+    @ndb.model.ComputedProperty
     def balance(self) -> AmountMixin:
         amount = self.total_membership_payments.amount - self.total_paid.amount
         return AmountMixin(amount=amount, currency=self.total_paid.currency)

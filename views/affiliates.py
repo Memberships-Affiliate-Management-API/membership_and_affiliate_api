@@ -71,7 +71,7 @@ class Validator(ValidAffiliate, ValidRecruit, ValidEarnings):
             raise InputError(status=error_codes.input_error_code, description=message)
 
         if not isinstance(uid, str) or not bool(uid.strip()):
-            message: str = "organization_id is required"
+            message: str = "uid is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
         # this means the user recruiting this affiliate is already a registered affiliate
@@ -138,6 +138,7 @@ class AffiliatesView(Validator, CacheManager):
             message: str = "There was an error creating Affiliate"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
+        print('affiliate instance: ', affiliate_instance)
         # scheduling cache deletions
         _kwargs: dict = dict(affiliates_view=self, organization_id=organization_id, affiliate_id=affiliate_id)
         self._schedule_cache_deletion(func=self._delete_affiliate_cache, kwargs=_kwargs)
