@@ -7,7 +7,7 @@ from pytest import raises
 from pytest_mock import mocker
 from datetime import datetime
 from random import randint
-from typing import List, Optional
+from typing import List
 from google.cloud import ndb
 from config.exceptions import status_codes, InputError, UnAuthenticatedError, DataServiceError
 from database.affiliates import Affiliates
@@ -89,7 +89,7 @@ def test_affiliate_raises_data_service_error(mocker):
     with test_app().app_context():
         with raises(DataServiceError):
             affiliates_view_instance = AffiliatesView()
-            response, status = affiliates_view_instance.register_affiliate(affiliate_data=data_mock)
+            affiliates_view_instance.register_affiliate(affiliate_data=data_mock)
 
     mocker.stopall()
 
@@ -104,11 +104,11 @@ def test_un_auth_error(mocker):
         # Raises Error
         with raises(UnAuthenticatedError):
             affiliates_view_instance = AffiliatesView()
-            response, status = affiliates_view_instance.register_affiliate(affiliate_data=data_mock)
+            affiliates_view_instance.register_affiliate(affiliate_data=data_mock)
         # Does not raise an error
         mocker.patch('database.affiliates.AffiliatesValidators.recruiter_registered', return_value=False)
         affiliates_view_instance = AffiliatesView()
-        response, status = affiliates_view_instance.register_affiliate(affiliate_data=data_mock)
+        affiliates_view_instance.register_affiliate(affiliate_data=data_mock)
 
     mocker.stopall()
 
@@ -120,11 +120,11 @@ def test_affiliate_input_error(mocker):
         data_mock: dict = affiliate_data_mock
         with raises(InputError):
             data_mock.update(uid='')
-            response, status = affiliates_view_instance.register_affiliate(affiliate_data=data_mock)
+            affiliates_view_instance.register_affiliate(affiliate_data=data_mock)
 
         with raises(InputError):
             data_mock.update(organization_id='')
-            response, status = affiliates_view_instance.register_affiliate(affiliate_data=data_mock)
+            affiliates_view_instance.register_affiliate(affiliate_data=data_mock)
         # NOTE: restoring data to its original form
         data_mock.update(uid=create_id())
         data_mock.update(organization_id=config_instance.ORGANIZATION_ID)
@@ -176,14 +176,15 @@ def test_mark_active(mocker):
         assert status == status_codes.successfully_updated_code, "Unable to mark affiliate as in-active"
         response, status = affiliates_view_instance.mark_active(affiliate_data=affiliate_data_mock, is_active=True)
         assert status == status_codes.successfully_updated_code, "Unable to mark affiliate as active"
-        # noinspection PyTypeChecker
+
         with raises(InputError):
-            response, status = affiliates_view_instance.mark_active(affiliate_data=affiliate_data_mock, is_active="True")
+            # noinspection PyTypeChecker
+            affiliates_view_instance.mark_active(affiliate_data=affiliate_data_mock, is_active="True")
 
         with raises(InputError):
             affiliate_data_mock['affiliate_id'] = None
             # noinspection PyTypeChecker
-            response, status = affiliates_view_instance.mark_active(affiliate_data=affiliate_data_mock, is_active=True)
+            affiliates_view_instance.mark_active(affiliate_data=affiliate_data_mock, is_active=True)
     mocker.stopall()
 
 
