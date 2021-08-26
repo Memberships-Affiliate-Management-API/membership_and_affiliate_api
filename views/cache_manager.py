@@ -53,7 +53,7 @@ class CacheManager:
         pass
 
     @staticmethod
-    def __delete_user_cache(user_view, organization_id, uid, cell, email) -> bool:
+    def _delete_user_cache(user_view, organization_id, uid, cell, email) -> bool:
         ***REMOVED***
             **deletes or invalidates invalid user cache
         :param organization_id:
@@ -73,9 +73,9 @@ class CacheManager:
         return True
 
     @staticmethod
-    def __delete_organization_cache(org_view, organization_id) -> bool:
+    def _delete_organization_cache(org_view, organization_id) -> bool:
         ***REMOVED***
-            **__delete_organization_cache**
+            **_delete_organization_cache**
                 deletes or invalidates organization cache items
         :param org_view: OrganizationView Class
         :param organization_id: organization_id
@@ -86,9 +86,9 @@ class CacheManager:
         return True
 
     @staticmethod
-    def __delete_wallet_cache(wallet_view, organization_id, uid) -> bool:
+    def _delete_wallet_cache(wallet_view, organization_id, uid) -> bool:
         ***REMOVED***
-            **__delete_wallet_cache**
+            **_delete_wallet_cache**
                 deletes cache items for wallets when a update event occurs on the database
         :param wallet_view:
         :param organization_id:
@@ -102,9 +102,9 @@ class CacheManager:
         return True
 
     @staticmethod
-    def __delete_membership_cache(membership_view, organization_id, uid, plan_id, status) -> bool:
+    def _delete_membership_cache(membership_view, organization_id, uid, plan_id, status) -> bool:
         ***REMOVED***
-            **__delete_membership_cache**
+            **_delete_membership_cache**
                 delete cache items for memberships view
 
         :param organization_id:
@@ -117,9 +117,9 @@ class CacheManager:
         return True
 
     @staticmethod
-    def __delete_api_keys_cache(api_keys_view, api_key, organization_id) -> bool:
+    def _delete_api_keys_cache(api_keys_view, api_key, organization_id) -> bool:
         ***REMOVED***
-            **__delete_api_keys_cache**
+            **_delete_api_keys_cache**
                 delete stale api_keys cache instances
         :return:
         ***REMOVED***
@@ -130,9 +130,9 @@ class CacheManager:
         return True
 
     @staticmethod
-    def __delete_affiliate_cache(affiliates_view, organization_id, affiliate_id):
+    def _delete_affiliate_cache(affiliates_view, organization_id, affiliate_id):
         ***REMOVED***
-            **__delete_affiliate_cache**
+            **_delete_affiliate_cache**
                 deleting affiliate cache on the event that the cache contains outdated data
         :param affiliates_view:
         :param organization_id:
@@ -147,9 +147,9 @@ class CacheManager:
         app_cache.delete_memoized(affiliates_view.get_not_deleted_affiliates, affiliates_view, organization_id)
 
     @staticmethod
-    def __delete_recruits_cache(recruits_view, organization_id: str, is_active: Optional[bool] = None,
-                                is_deleted: Optional[bool] = None, affiliate_data: Optional[dict] = None,
-                                recruit_data: Optional[dict] = None) -> bool:
+    def _delete_recruits_cache(recruits_view, organization_id: str, is_active: Optional[bool] = None,
+                               is_deleted: Optional[bool] = None, affiliate_data: Optional[dict] = None,
+                               recruit_data: Optional[dict] = None) -> bool:
         ***REMOVED***
 
         :param recruits_view:
@@ -171,7 +171,7 @@ class CacheManager:
         return True
 
     @staticmethod
-    def __delete_services_cache(services_view, organization_id: str, service_id: str) -> bool:
+    def _delete_services_cache(services_view, organization_id: str, service_id: str) -> bool:
         ***REMOVED***
 
         :param services_view:
@@ -185,7 +185,7 @@ class CacheManager:
         return True
 
     @staticmethod
-    def __schedule_cache_deletion(func: Callable, kwargs: dict) -> None:
+    def _schedule_cache_deletion(func: Callable, kwargs: dict) -> None:
         ***REMOVED***
         **schedule_cache_deletion**
             schedule cache deletion such that it occurs sometime time in the future

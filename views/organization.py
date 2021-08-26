@@ -379,7 +379,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
 
             # NOTE: scheduling cache deletions
             _kwargs: dict = dict(org_view=OrganizationView, organization_id=organization_id)
-            self.__schedule_cache_deletion(func=self.__delete_organization_cache, kwargs=_kwargs)
+            self._schedule_cache_deletion(func=self._delete_organization_cache, kwargs=_kwargs)
 
             kwargs: dict = dict(organization_id=organization_id, uid=uid)
             self.__base_email_scheduler(func=self.send_organization_wallet_created_email, kwargs=kwargs)
@@ -436,7 +436,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
 
                 # NOTE: scheduling cache deletions
                 _kwargs: dict = dict(org_view=OrganizationView, organization_id=organization_id)
-                self.__schedule_cache_deletion(func=self.__delete_organization_cache, kwargs=_kwargs)
+                self._schedule_cache_deletion(func=self._delete_organization_cache, kwargs=_kwargs)
 
                 kwargs: dict = dict(organization_id=organization_id, uid=uid)
                 self.__base_email_scheduler(func=self.send_organization_updated_email, kwargs=kwargs)
@@ -568,7 +568,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
             # NOTE: scheduling cache deletions
             _kwargs: dict = dict(org_view=OrganizationView, organization_id=organization_id)
-            self.__schedule_cache_deletion(func=self.__delete_organization_cache, kwargs=_kwargs)
+            self._schedule_cache_deletion(func=self._delete_organization_cache, kwargs=_kwargs)
 
             message: str = "Successfully updated affiliate count"
             return jsonify({'status': False,
@@ -622,7 +622,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
 
             # NOTE: scheduling cache deletions
             _kwargs: dict = dict(org_view=OrganizationView, organization_id=organization_id)
-            self.__schedule_cache_deletion(func=self.__delete_organization_cache, kwargs=_kwargs)
+            self._schedule_cache_deletion(func=self._delete_organization_cache, kwargs=_kwargs)
 
             message: str = "Successfully updated total paid amount on Organization"
             return jsonify({'status': True,
@@ -663,7 +663,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
 
             # NOTE: scheduling cache deletions
             _kwargs: dict = dict(org_view=OrganizationView, organization_id=organization_id)
-            self.__schedule_cache_deletion(func=self.__delete_organization_cache, kwargs=_kwargs)
+            self._schedule_cache_deletion(func=self._delete_organization_cache, kwargs=_kwargs)
 
             message: str = "Successfully updated total members on organization"
             return jsonify({'status': True,
@@ -707,7 +707,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
 
             # NOTE: scheduling cache deletions
             _kwargs: dict = dict(org_view=OrganizationView, organization_id=organization_id)
-            self.__schedule_cache_deletion(func=self.__delete_organization_cache, kwargs=_kwargs)
+            self._schedule_cache_deletion(func=self._delete_organization_cache, kwargs=_kwargs)
 
             message: str = "Successfully updated projected_membership_payments"
             return jsonify({'status': True,
@@ -750,7 +750,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
 
             # NOTE: scheduling cache deletions
             _kwargs: dict = dict(org_view=OrganizationView, organization_id=organization_id)
-            self.__schedule_cache_deletion(func=self.__delete_organization_cache, kwargs=_kwargs)
+            self._schedule_cache_deletion(func=self._delete_organization_cache, kwargs=_kwargs)
 
             message: str = "Successfully updated total_membership_payments"
             return jsonify({'status': True,

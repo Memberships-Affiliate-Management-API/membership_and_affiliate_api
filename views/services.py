@@ -104,7 +104,7 @@ class ServicesView(ServiceValidator, CacheManager):
                     raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
                 _kwargs: dict = dict(services_view=ServicesView, organization_id=organization_id, service_id=service_id)
-                self.__schedule_cache_deletion(func=self.__delete_services_cache, kwargs=_kwargs)
+                self._schedule_cache_deletion(func=self._delete_services_cache, kwargs=_kwargs)
                 message: str = '''Successfully created plan service you may proceed to 
                 create payment plans for this service'''
                 return jsonify({'status': False, 'message': message}), status_codes.successfully_updated_code
@@ -158,7 +158,7 @@ class ServicesView(ServiceValidator, CacheManager):
                     raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
                 _kwargs: dict = dict(services_view=ServicesView, organization_id=organization_id, service_id=service_id)
-                self.__schedule_cache_deletion(func=self.__delete_services_cache, kwargs=_kwargs)
+                self._schedule_cache_deletion(func=self._delete_services_cache, kwargs=_kwargs)
 
                 message: str = "Successfully updated service or product"
                 return jsonify({'status': True, 'payload': service_instance.to_dict(),
@@ -199,7 +199,7 @@ class ServicesView(ServiceValidator, CacheManager):
                     raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
                 _kwargs: dict = dict(services_view=ServicesView, organization_id=organization_id, service_id=service_id)
-                self.__schedule_cache_deletion(func=self.__delete_services_cache, kwargs=_kwargs)
+                self._schedule_cache_deletion(func=self._delete_services_cache, kwargs=_kwargs)
 
                 message: str = "successfully activated service"
                 return jsonify({'status': True, 'payload': service_instance.to_dict(),

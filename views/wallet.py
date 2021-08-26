@@ -379,7 +379,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
         _kwargs: dict = dict(wallet_view=WalletView, organization_id=organization_id, uid=uid)
-        self.__schedule_cache_deletion(func=self.__delete_wallet_cache, kwargs=_kwargs)
+        self._schedule_cache_deletion(func=self._delete_wallet_cache, kwargs=_kwargs)
 
         # Sending an email notification to the user informing them that the wallet has been created successfully
         kwargs: dict = dict(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
@@ -420,7 +420,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
                                    description="An Error occurred creating Wallet")
 
         _kwargs: dict = dict(wallet_view=WalletView, organization_id=organization_id, uid=uid)
-        self.__schedule_cache_deletion(func=self.__delete_wallet_cache, kwargs=_kwargs)
+        self._schedule_cache_deletion(func=self._delete_wallet_cache, kwargs=_kwargs)
 
         # Sending an email notification to the user informing them that the wallet has been created successfully
         kwargs: dict = dict(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
@@ -526,7 +526,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
         _kwargs: dict = dict(wallet_view=WalletView, organization_id=organization_id, uid=uid)
-        self.__schedule_cache_deletion(func=self.__delete_wallet_cache, kwargs=_kwargs)
+        self._schedule_cache_deletion(func=self._delete_wallet_cache, kwargs=_kwargs)
 
         kwargs: dict = dict(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
         self.__base_email_scheduler(func=self.wallet_details_changed, kwargs=kwargs)
@@ -584,7 +584,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
         _kwargs: dict = dict(wallet_view=WalletView, organization_id=organization_id, uid=uid)
-        self.__schedule_cache_deletion(func=self.__delete_wallet_cache, kwargs=_kwargs)
+        self._schedule_cache_deletion(func=self._delete_wallet_cache, kwargs=_kwargs)
 
         kwargs: dict = dict(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
         self.__base_email_scheduler(func=self.wallet_details_changed, kwargs=kwargs)
@@ -627,7 +627,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
 
         # Note scheduling cache deletion function
         _kwargs: dict = dict(wallet_view=WalletView, organization_id=organization_id, uid=uid)
-        self.__schedule_cache_deletion(func=self.__delete_wallet_cache, kwargs=_kwargs)
+        self._schedule_cache_deletion(func=self._delete_wallet_cache, kwargs=_kwargs)
 
         # Note scheduling an email to send wallet details changed notifications
         kwargs: dict = dict(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
@@ -672,7 +672,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
 
         # Note Scheduling task to delete caches
         _kwargs: dict = dict(wallet_view=WalletView, organization_id=organization_id, uid=uid)
-        self.__schedule_cache_deletion(func=self.__delete_wallet_cache, kwargs=_kwargs)
+        self._schedule_cache_deletion(func=self._delete_wallet_cache, kwargs=_kwargs)
 
         # Note scheduling task to send Emails
         kwargs: dict = dict(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
@@ -841,7 +841,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
 
             # Scheduling cache deletions
             _kwargs: dict = dict(wallet_view=WalletView, organization_id=organization_id, uid=uid)
-            self.__schedule_cache_deletion(func=self.__delete_wallet_cache, kwargs=_kwargs)
+            self._schedule_cache_deletion(func=self._delete_wallet_cache, kwargs=_kwargs)
 
             # Scheduling emails
             kwargs: dict = dict(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
@@ -895,7 +895,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
             _kwargs: dict = dict(wallet_view=WalletView, organization_id=organization_id, uid=uid)
-            self.__schedule_cache_deletion(func=self.__delete_wallet_cache, kwargs=_kwargs)
+            self._schedule_cache_deletion(func=self._delete_wallet_cache, kwargs=_kwargs)
 
             message: str = "Successfully created transaction"
             return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
@@ -928,6 +928,6 @@ class WalletView(Validator, WalletEmails, CacheManager):
         # TODO - complete this method
 
         _kwargs: dict = dict(wallet_view=WalletView, organization_id=organization_id, uid=uid)
-        self.__schedule_cache_deletion(func=self.__delete_wallet_cache, kwargs=_kwargs)
+        self._schedule_cache_deletion(func=self._delete_wallet_cache, kwargs=_kwargs)
 
         return "OK", status_codes.status_ok_code

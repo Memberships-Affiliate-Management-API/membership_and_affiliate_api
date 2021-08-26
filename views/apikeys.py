@@ -121,7 +121,7 @@ class APIKeysView(APIKeysValidators, CacheManager):
 
             # Scheduling deletion of Memoized items which will need this item as part of the results
             _kwargs: dict = dict(api_keys_view=APIKeysView, api_key=key, organization_id=organization_id)
-            self.__schedule_cache_deletion(func=self.__delete_api_keys_cache, kwargs=_kwargs)
+            self._schedule_cache_deletion(func=self._delete_api_keys_cache, kwargs=_kwargs)
 
             message: str = "successfully created api_key secret_token combo"
             return jsonify({'status': True, 'payload': api_key_instance.to_dict(),
@@ -154,7 +154,7 @@ class APIKeysView(APIKeysValidators, CacheManager):
             organization_id: str = api_key_instance.organization_id
             # Scheduling deletion of Memoized items which will need this item as part of the results
             _kwargs: dict = dict(api_keys_view=APIKeysView, api_key=key, organization_id=organization_id)
-            self.__schedule_cache_deletion(func=self.__delete_api_keys_cache, kwargs=_kwargs)
+            self._schedule_cache_deletion(func=self._delete_api_keys_cache, kwargs=_kwargs)
 
             message: str = "successfully deactivated api_key"
             return jsonify({'status': True, 'payload': api_key_instance.to_dict(),
@@ -190,7 +190,7 @@ class APIKeysView(APIKeysValidators, CacheManager):
             organization_id: str = api_key_instance.organization_id
             # Scheduling deletion of Memoized items which will need this item as part of the results
             _kwargs: dict = dict(api_keys_view=APIKeysView, api_key=key, organization_id=organization_id)
-            self.__schedule_cache_deletion(func=self.__delete_api_keys_cache, kwargs=_kwargs)
+            self._schedule_cache_deletion(func=self._delete_api_keys_cache, kwargs=_kwargs)
 
             message: str = "successfully activated api_key"
             return jsonify({'status': True, 'payload': api_key_instance.to_dict(),
