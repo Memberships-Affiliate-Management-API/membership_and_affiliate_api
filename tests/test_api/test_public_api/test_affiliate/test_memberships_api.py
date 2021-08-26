@@ -11,7 +11,6 @@ from views.memberships import MembershipsView
 from database.memberships import Memberships, MembershipPlans
 from utils import create_id, today, datetime_now
 from tests import test_app
-# noinspection PyUnresolvedReferences
 from pytest import raises
 # noinspection PyUnresolvedReferences
 from pytest_mock import mocker
@@ -148,7 +147,7 @@ def test_memberships_create_memberships_un_auth(mocker) -> None:
     mocker.stopall()
 
 
-# noinspection PyUnusedLocal,PyShadowingNames
+# noinspection PyShadowingNames
 def test_create_memberships_input_errors(mocker) -> None:
     ***REMOVED***
     **test_create_memberships_input_errors**
@@ -293,6 +292,43 @@ def test_set_membership_status(mocker) -> None:
         assert response_data.get('payload') is not None, response_data['message']
 
     mocker.stopall()
+
+
+# noinspection PyShadowingNames
+def test_set_membership_status_errors(mocker) -> None:
+    ***REMOVED***
+    **test_set_membership_status_errors**
+        test set_membership_payment_status with faulty data
+
+    :param mocker:
+    :return: None
+    ***REMOVED***
+    mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
+    mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
+
+    with test_app().app_context():
+        membership_view_instance: MembershipsView = MembershipsView()
+        uid: Optional[str] = random.choice([None, "", " "])
+        organization_id: str = config_instance.ORGANIZATION_ID
+        status: str = membership_mock_data['payment_status']
+        with raises(InputError):
+            membership_view_instance.set_membership_payment_status(organization_id=organization_id,
+                                                                   uid=uid, status=status)
+
+        uid: str = create_id()
+        organization_id: Optional[str] = random.choice([None, " ", ""])
+        with raises(InputError):
+            membership_view_instance.set_membership_payment_status(organization_id=organization_id,
+                                                                   uid=uid, status=status)
+
+        status: Optional[str] = random.choice([None, "", " "])
+        organization_id: str = config_instance.ORGANIZATION_ID
+        with raises(InputError):
+            membership_view_instance.set_membership_payment_status(organization_id=organization_id,
+                                                                   uid=uid, status=status)
+
+    mocker.stopall()
+
 
 # # noinspection PyShadowingNames
 # def test_change_membership(mocker):
