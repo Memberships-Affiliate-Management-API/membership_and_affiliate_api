@@ -293,7 +293,7 @@ class AffiliateTransactionItems(BaseModel):
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
             return False
-        if self.amount != other.amount:
+        if self.amount != other.amount_cents:
             return False
         if self.transaction_id != other.transaction_id:
             return False

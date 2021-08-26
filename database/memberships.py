@@ -439,11 +439,11 @@ class MembershipInvoices(BaseModel):
             return False
         if self.invoice_id != other.invoice_id:
             return False
-        if self.payment_amount.amount != other.payment_amount.amount:
+        if self.payment_amount.amount_cents != other.payment_amount.amount_cents:
             return False
         if self.payment_amount.currency != other.payment_amount.currency:
             return False
-        if self.amount_paid.amount != other.amount_paid.amount:
+        if self.amount_paid.amount_cents != other.amount_paid.amount_cents:
             return False
         if self.amount_paid.currency != other.amount_paid.currency:
             return False
@@ -452,12 +452,12 @@ class MembershipInvoices(BaseModel):
     def __sub__(self, other) -> int:
         if self.payment_amount.currency != other.payment_amount.currency:
             raise TypeError("Incompatible currencies")
-        return self.payment_amount.amount - other.payment_amount.amount
+        return self.payment_amount.amount_cents - other.payment_amount.amount_cents
 
     def __add__(self, other) -> int:
         if self.payment_amount.currency != other.payment_amount.currency:
             raise TypeError("Incompatible currencies")
-        return self.payment_amount.amount + other.payment_amount.amount
+        return self.payment_amount.amount_cents + other.payment_amount.amount_cents
 
     def __str__(self) -> str:
         return "<Invoice invoice_number: organization_id: {}, uid: {}, plan_id: {}, invoice_id: {}, " \

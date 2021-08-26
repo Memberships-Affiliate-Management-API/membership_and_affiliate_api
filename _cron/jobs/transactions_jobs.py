@@ -75,7 +75,7 @@ class TransactionsJobs:
 
         is_currency_valid: bool = wallet_instance.available_funds.currency == transaction.amount.currency
         if isinstance(wallet_instance, WalletModel) and is_currency_valid:
-            wallet_instance.available_funds.amount += transaction.amount.amount
+            wallet_instance.available_funds.amount_cents += transaction.amount.amount_cents
             key: Optional[ndb.Key] = wallet_instance.put_async(
                 retries=self._max_retries, timeout=self._max_timeout).get_result()
             if bool(key):

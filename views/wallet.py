@@ -830,9 +830,9 @@ class WalletView(Validator, WalletEmails, CacheManager):
         if isinstance(wallet_instance, WalletModel):
             # NOTE: insure that this works or perform this operation in another way
             if isinstance(sub, int):
-                wallet_instance.available_funds.amount -= sub
+                wallet_instance.available_funds.amount_cents -= sub
             if isinstance(add, int):
-                wallet_instance.available_funds.amount += sub
+                wallet_instance.available_funds.amount_cents += sub
                 
             key = wallet_instance.put()
             if not bool(key):
@@ -885,9 +885,9 @@ class WalletView(Validator, WalletEmails, CacheManager):
 
             # NOTE: insure that this works or perform this operation in another way
             if isinstance(sub, int):
-                wallet_instance.available_funds.amount -= sub
+                wallet_instance.available_funds.amount_cents -= sub
             if isinstance(add, int):
-                wallet_instance.available_funds.amount += add
+                wallet_instance.available_funds.amount_cents += add
 
             key = wallet_instance.put_async().get_result()
             if not bool(key):

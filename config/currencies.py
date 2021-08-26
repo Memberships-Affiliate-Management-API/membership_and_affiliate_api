@@ -100,8 +100,8 @@ class CurrencyUtils:
                                                                               to_symbol=convert_to_symbol)
         if convert_to_symbol is not None:
             from_amount.currency = convert_to_symbol
-            converted = from_amount.amount * conversion_rate
-            from_amount.amount = int(converted)
+            converted = from_amount.amount_cents * conversion_rate
+            from_amount.amount_cents = int(converted)
             return from_amount
         return None
 

@@ -132,7 +132,7 @@ class WalletModel(BaseModel):
         minimum_withdrawal: int = currency_util.return_minimum_withdrawal_by_currency(
             currency_symbol=self.available_funds.currency)
 
-        return minimum_withdrawal <= self.available_funds.amount if self.paypal_address and self.is_verified else False
+        return minimum_withdrawal <= self.available_funds.amount_cents if self.paypal_address and self.is_verified else False
 
     @property
     def drawable_amount(self) -> AmountMixin:
@@ -152,8 +152,8 @@ class WalletModel(BaseModel):
         if self.monthly_withdrawal_allowance.currency != self.available_funds.currency:
             raise ValueError("Wallet is configured in-properly currencies do not match")
         # NOTE taking cents from AmountMixin
-        avail_funds: int = self.available_funds.amount
-        allowance: int = self.monthly_withdrawal_allowance.amount
+        avail_funds: int = self.available_funds.amount_cents
+        allowance: int = self.monthly_withdrawal_allowance.amount_cents
 
         return self.monthly_withdrawal_allowance if avail_funds > allowance else self.available_funds
 
@@ -194,7 +194,7 @@ class WalletTransactionsModel(BaseModel):
             return False
         if self.item_id != other.item_id:
             return False
-        if self.amount != other.amount:
+        if self.amount != other.amount_cents:
             return False
         return True
 

@@ -24,13 +24,21 @@ class AmountMixin(BaseModel):
         1. property: Amount: Integer -> Money in Cents
         2. property: Currency: String ->  Currency symbol
     ***REMOVED***
-    amount: int = ndb.IntegerProperty(default=None, validator=property_.set_value_amount)
+    amount_cents: int = ndb.IntegerProperty(default=None, validator=property_.set_value_amount)
     currency: str = ndb.StringProperty(default=config_instance.CURRENCY, validator=property_.set_currency)
+
+    @property
+    def amount(self):
+        return self.amount_cents
+
+    @amount.setter
+    def amount(self, value):
+        self.amount_cents = value
 
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
             return False
-        if self.amount != other.amount:
+        if self.amount_cents != other.amount_cents:
             return False
         if self.currency != other.currency:
             return False
@@ -42,7 +50,7 @@ class AmountMixin(BaseModel):
             raise TypeError("Invalid type")
         if self.currency != other.currency:
             raise TypeError("Incompatible Currency")
-        self.amount += other.amount
+        self.amount_cents += other.amount_cents
         return self
 
     def __sub__(self, other) -> any:
@@ -51,15 +59,15 @@ class AmountMixin(BaseModel):
             raise TypeError("Invalid type")
         if self.currency != other.currency:
             raise TypeError("Incompatible Currency")
-        self.amount -= other.amount
+        self.amount_cents -= other.amount_cents
         return self
 
     def __str__(self) -> str:
-        return "Amount: {} {}".format(self.currency, self.amount)
+        return "Amount: {} {}".format(self.currency, self.amount_cents)
 
     def __bool__(self) -> bool:
         # if term payment amount is set to even zero bool will return True
-        return True if self.amount is not None else False
+        return True if self.amount_cents is not None else False
 
 
 class UserMixin(BaseModel):

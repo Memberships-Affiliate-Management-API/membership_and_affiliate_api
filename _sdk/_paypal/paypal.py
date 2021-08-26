@@ -50,7 +50,7 @@ class PayPalOrders(PayPalClient):
                     "soft_descriptor": "{}".format(self.soft_descriptor),
                     "amount": {
                         "currency_code": "{}".format(self.payment_amount.currency_code),
-                        "value": "".format(self.payment_amount.amount)
+                        "value": "".format(self.payment_amount.amount_cents)
                     }
                 }
             ]
@@ -77,8 +77,8 @@ class PayPalOrders(PayPalClient):
             print('Links:')
             for link in response.result.links:
                 print('\t{}: {}\tCall Type: {}'.format(link.rel, link.href, link.method))
-            print('Total Amount: {} {}'.format(response.result.purchase_units[0].amount.currency_code,
-                                               response.result.purchase_units[0].amount.value))
+            print('Total Amount: {} {}'.format(response.result.purchase_units[0].amount_cents.currency_code,
+                                               response.result.purchase_units[0].amount_cents.value))
             json_data = self.object_to_json(response.result)
             print("json_data: ", json.dumps(json_data, indent=4))
         self.order_id = response.result.id
@@ -273,7 +273,7 @@ class PayPalRecurring(PayPalClient):
                         "total_cycles": total_cycles,
                         "pricing_scheme": {
                             "fixed_price": {
-                                "value": "{}".format(plan_amount.amount),
+                                "value": "{}".format(plan_amount.amount_cents),
                                 "currency_code": "{}".format(plan_amount.currency)
                             }
                         }
@@ -282,7 +282,7 @@ class PayPalRecurring(PayPalClient):
                 "payment_preferences": {
                     "auto_bill_outstanding": True,
                     "setup_fee": {
-                        "value": "{}".format(setup_amount.amount),
+                        "value": "{}".format(setup_amount.amount_cents),
                         "currency_code": "{}".format(setup_amount.currency)
                     },
                     "setup_fee_failure_action": "CONTINUE",
@@ -309,7 +309,7 @@ class PayPalRecurring(PayPalClient):
                     "total_cycles": total_cycles,
                     "pricing_scheme": {
                         "fixed_price": {
-                            "value": "{}".format(plan_amount.amount),
+                            "value": "{}".format(plan_amount.amount_cents),
                             "currency_code": "{}".format(plan_amount.currency)
                         }
                     }
@@ -318,7 +318,7 @@ class PayPalRecurring(PayPalClient):
             "payment_preferences": {
                 "auto_bill_outstanding": True,
                 "setup_fee": {
-                    "value": "{}".format(setup_amount.amount),
+                    "value": "{}".format(setup_amount.amount_cents),
                     "currency_code": "{}".format(setup_amount.currency)
                 },
                 "setup_fee_failure_action": "CONTINUE",

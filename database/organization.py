@@ -110,7 +110,7 @@ class Organization(BaseModel):
 
     @ndb.model.ComputedProperty
     def balance(self) -> AmountMixin:
-        amount = self.total_membership_payments.amount - self.total_paid.amount
+        amount = self.total_membership_payments.amount_cents - self.total_paid.amount_cents
         return AmountMixin(amount=amount, currency=self.total_paid.currency)
 
 

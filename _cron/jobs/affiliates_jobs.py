@@ -45,12 +45,12 @@ class AffiliateJobs:
                                                                WalletModel.uid == earnings.affiliate_id).get_async()
 
         if wallet_instance.is_verified and (wallet_instance.available_funds.currency == earnings.total_earned.currency):
-            wallet_instance.available_funds.amount += earnings.total_earned.amount
+            wallet_instance.available_funds.amount_cents += earnings.total_earned.amount_cents
             key: Optional[ndb.Key] = wallet_instance.put_async(retries=self._max_retries,
                                                                timeout=self._max_timeout).get_result()
             if bool(key):
                 amount_earned: AmountMixin = earnings.total_earned
-                earnings.total_earned.amount = 0
+                earnings.total_earned.amount_cents = 0
                 today: date = datetime.now().date()
                 earnings.start_date = today
                 earnings.last_updated = today

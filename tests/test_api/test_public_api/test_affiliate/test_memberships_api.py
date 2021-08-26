@@ -56,6 +56,9 @@ class MembershipPlansQueryMock:
     results_range: int = randint(0, 100)
 
     def __init__(self):
+        self.membership_plan_instance.service_id = create_id()
+        self.membership_plan_instance.organization_id = create_id()
+        self.membership_plan_instance.plan_id = create_id()
         self.membership_plan_instance.date_created = datetime.now()
         self.membership_plan_instance.plan_name = "bronze"
         self.membership_plan_instance.description = "bronze plan"
@@ -63,9 +66,9 @@ class MembershipPlansQueryMock:
         self.membership_plan_instance.schedule_day = 1
         self.membership_plan_instance.schedule_term = "monthly"
         self.membership_plan_instance.term_payment_amount = AmountMixin(
-            amount=100, currency=random.choice(currency_util.currency_symbols()))
+            amount_cents=10000, currency=random.choice(currency_util.currency_symbols()))
         self.membership_plan_instance.registration_amount = AmountMixin(
-            amount=100, currency=random.choice(currency_util.currency_symbols()))
+            amount_cents=10000, currency=random.choice(currency_util.currency_symbols()))
 
     def fetch(self) -> List[MembershipPlans]:
         return [self.membership_plan_instance for _ in range(self.results_range)]
@@ -78,7 +81,7 @@ membership_mock_data: dict = {
     "uid": create_id(),
     "organization_id": config_instance.ORGANIZATION_ID,
     "plan_id": create_id(),
-    "status": "unpaid",
+    "payment_status": "unpaid",
     "date_created": datetime.now(),
     "plan_start_date": datetime.date(datetime.now() + timedelta(days=5))
 }
@@ -268,20 +271,30 @@ def test_update_membership_input_errors(mocker) -> None:
 
 # noinspection PyShadowingNames
 def test_set_membership_status(mocker) -> None:
+    ***REMOVED***
+    **test_set_membership_status**
+        testing the ability to set membership payment status
+
+    :param mocker:
+    :return:
+    ***REMOVED***
     mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
     mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
         membership_view_instance: MembershipsView = MembershipsView()
-        uid = membership_mock_data['uid']
-        organization_id = config_instance.ORGANIZATION_ID
-        status = membership_mock_data['status']
+        uid: str = membership_mock_data['uid']
+        organization_id: str = config_instance.ORGANIZATION_ID
+        status: str = membership_mock_data['payment_status']
         response, status = membership_view_instance.set_membership_payment_status(organization_id=organization_id,
-                                                                                  uid=uid, status=status)
+                                                                                  uid=uid, payment_status=status)
+
         assert status == status_codes.successfully_updated_code, "Unable to set membership status"
+
         response, status = membership_view_instance.set_membership_payment_status(organization_id=organization_id,
-                                                                                  uid=uid, status="paid")
+                                                                                  uid=uid, payment_status="paid")
         assert status == status_codes.successfully_updated_code, "Unable to set membership status"
+
         response_data: dict = response.get_json()
         assert response_data.get('payload') is not None, response_data['message']
     mocker.stopall()
