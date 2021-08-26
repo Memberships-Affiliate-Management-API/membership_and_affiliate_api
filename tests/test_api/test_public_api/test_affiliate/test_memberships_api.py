@@ -330,25 +330,27 @@ def test_set_membership_status_errors(mocker) -> None:
     mocker.stopall()
 
 
-# # noinspection PyShadowingNames
-# def test_change_membership(mocker):
-#     mocker.patch('google.cloud.ndb.Model.put', return_value=create_id())
-#     membership_query_mock_instance = MembershipsQueryMock()
-#     membership_query_mock_instance.membership_instance.plan_id = membership_mock_data['plan_id']
-#     mocker.patch('google.cloud.ndb.Model.query', return_value=membership_query_mock_instance)
-#     with test_app().app_context():
-#         membership_view_instance: MembershipsView = MembershipsView()
-#         uid: str = membership_mock_data['uid']
-#         plan_id: str = membership_mock_data['plan_id']
-#         dest_plan_id: str = create_id()
-#         mocker.patch('views.memberships.MembershipsView.plan_exist', return_value=True)
-#         response, status = membership_view_instance.change_membership(
-#             organization_id=config_instance.ORGANIZATION_ID, uid=uid, origin_plan_id=plan_id, dest_plan_id=dest_plan_id)
-#         assert status == 200, "Unable to change membership"
-#
-#     mocker.stopall()
-#
-#
+# noinspection PyShadowingNames
+def test_change_membership(mocker):
+    mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
+    membership_query_mock_instance = MembershipsQueryMock()
+    membership_query_mock_instance.membership_instance.plan_id = membership_mock_data['plan_id']
+    mocker.patch('google.cloud.ndb.Model.query', return_value=membership_query_mock_instance)
+
+    with test_app().app_context():
+        membership_view_instance: MembershipsView = MembershipsView()
+        uid: str = membership_mock_data['uid']
+        organization_id: str = config_instance.ORGANIZATION_ID
+        plan_id: str = membership_mock_data['plan_id']
+        dest_plan_id: str = create_id()
+        mocker.patch('views.memberships.MembershipsView.plan_exist', return_value=True)
+        response, status = membership_view_instance.change_membership(organization_id=organization_id, uid=uid,
+                                                                      origin_plan_id=plan_id, dest_plan_id=dest_plan_id)
+        assert status == status_codes.data_not_found_code, "Unable to change membership"
+
+    mocker.stopall()
+
+
 # # noinspection PyShadowingNames
 # def test_send_welcome_email(mocker):
 #     mocker.patch('google.cloud.ndb.Model.put', return_value=create_id())

@@ -751,7 +751,7 @@ class MembershipsView(Validators, MembershipsEmails):
         membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                              Memberships.uid == uid).get_async().get_result()
 
-        if isinstance(membership_instance, Memberships) and membership_instance.uid == uid:
+        if bool(membership_instance):
             membership_instance.payment_status = status
             key: Optional[ndb.Key] = membership_instance.put_async(retries=self._max_retries,
                                                                    timeout=self._max_timeout).get_result()
@@ -798,7 +798,7 @@ class MembershipsView(Validators, MembershipsEmails):
         membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                              Memberships.uid == uid).get()
 
-        if isinstance(membership_instance, Memberships) and (membership_instance.plan_id == origin_plan_id):
+        if bool(membership_instance):
 
             if self.plan_exist(organization_id=organization_id, plan_id=dest_plan_id) is True:
                 membership_instance.plan_id = dest_plan_id
@@ -845,7 +845,7 @@ class MembershipsView(Validators, MembershipsEmails):
         membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                              Memberships.uid == uid).get_async().get_result()
 
-        if isinstance(membership_instance, Memberships) and (membership_instance.plan_id == origin_plan_id):
+        if bool(membership_instance):
             if await self.plan_exist_async(organization_id=organization_id, plan_id=dest_plan_id) is True:
                 membership_instance.plan_id = dest_plan_id
                 key: Optional[ndb.Key] = membership_instance.put_async(retries=self._max_retries,
@@ -894,7 +894,7 @@ class MembershipsView(Validators, MembershipsEmails):
 
         membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                              Memberships.uid == uid).get()
-        if isinstance(membership_instance, Memberships) and membership_instance.uid == uid:
+        if bool(membership_instance):
             membership_instance.payment_method = payment_method
             key: Optional[ndb.Key] = membership_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             if not bool(key):
