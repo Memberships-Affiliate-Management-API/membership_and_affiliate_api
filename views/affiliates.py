@@ -9,7 +9,7 @@ __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
 import typing
-from typing import Optional
+from typing import Optional, List
 from flask import current_app, jsonify
 from google.cloud import ndb
 from main import app_cache
@@ -349,10 +349,10 @@ class AffiliatesView(Validator, CacheManager):
             message: str = 'organization_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        affiliates_list: typing.List[Affiliates] = Affiliates.query(
+        affiliates_list: List[Affiliates] = Affiliates.query(
             Affiliates.organization_id == organization_id).fetch()
 
-        payload: typing.List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
+        payload: List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
 
         if len(payload):
             message: str = "Successfully returned all affiliates"
@@ -379,10 +379,10 @@ class AffiliatesView(Validator, CacheManager):
             message: str = 'organization_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        affiliates_list: typing.List[Affiliates] = Affiliates.query(
+        affiliates_list: List[Affiliates] = Affiliates.query(
             Affiliates.organization_id == organization_id,
             Affiliates.is_active == True, Affiliates.is_deleted == False).fetch()
-        payload: typing.List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
+        payload: List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
         if len(payload):
             return jsonify({'status': True, 'message': 'successfully returned all affiliates',
                             'payload': payload}), status_codes.status_ok_code
@@ -406,11 +406,11 @@ class AffiliatesView(Validator, CacheManager):
             message: str = 'organization_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        affiliates_list: typing.List[Affiliates] = Affiliates.query(
+        affiliates_list: List[Affiliates] = Affiliates.query(
             Affiliates.organization_id == organization_id, Affiliates.is_active == False,
             Affiliates.is_deleted == False).fetch()
 
-        payload: typing.List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
+        payload: List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
         if len(payload):
             message: str = "successfully returned all affiliates"
             return jsonify({'status': True,
@@ -435,11 +435,11 @@ class AffiliatesView(Validator, CacheManager):
             message: str = 'organization_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        affiliates_list: typing.List[Affiliates] = Affiliates.query(
+        affiliates_list: List[Affiliates] = Affiliates.query(
             Affiliates.organization_id == organization_id,
             Affiliates.is_deleted == True).fetch()
 
-        payload: typing.List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
+        payload: List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
         if len(payload):
             message: str = "Successfully returned deleted affiliates"
             return jsonify({'status': True,
@@ -463,10 +463,10 @@ class AffiliatesView(Validator, CacheManager):
             message: str = 'organization_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        affiliates_list: typing.List[Affiliates] = Affiliates.query(Affiliates.organization_id == organization_id,
+        affiliates_list: List[Affiliates] = Affiliates.query(Affiliates.organization_id == organization_id,
                                                                     Affiliates.is_deleted == False).fetch()
 
-        payload: typing.List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
+        payload: List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
         if len(payload):
             message: str = "Successfully returned affiliates which are not deleted"
             return jsonify({'status': True,
@@ -673,10 +673,10 @@ class RecruitsView(Validator, CacheManager):
             message: str = 'is_active status is required and its boolean'
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        recruits_list: typing.List[Recruits] = Recruits.query(Recruits.organization_id == organization_id,
+        recruits_list: List[Recruits] = Recruits.query(Recruits.organization_id == organization_id,
                                                               Recruits.is_active == is_active).fetch()
 
-        payload: typing.List[dict] = [recruit.to_dict() for recruit in recruits_list]
+        payload: List[dict] = [recruit.to_dict() for recruit in recruits_list]
         message: str = "{} recruits successfully fetched recruits by active status".format(str(len(recruits_list)))
         return jsonify({'status': True, 'message': message, 'payload': payload}), status_codes.status_ok_code
 
@@ -701,7 +701,7 @@ class RecruitsView(Validator, CacheManager):
             message: str = 'is_deleted status is required and is boolean'
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        recruits_list: typing.List[Recruits] = Recruits.query(Recruits.organization_id == organization_id,
+        recruits_list: List[Recruits] = Recruits.query(Recruits.organization_id == organization_id,
                                                               Recruits.is_deleted == is_deleted).fetch()
 
         payload = [recruit.to_dict() for recruit in recruits_list]
@@ -730,10 +730,10 @@ class RecruitsView(Validator, CacheManager):
             message: str = 'organization_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        recruits_list: typing.List[Recruits] = Recruits.query(Recruits.organization_id == organization_id,
+        recruits_list: List[Recruits] = Recruits.query(Recruits.organization_id == organization_id,
                                                               Recruits.affiliate_id == affiliate_id).fetch()
 
-        payload: typing.List[dict] = [recruit.to_dict() for recruit in recruits_list]
+        payload: List[dict] = [recruit.to_dict() for recruit in recruits_list]
         if len(payload):
             message: str = "{} recruits successfully fetched recruits by active status".format(str(len(recruits_list)))
             return jsonify({'status': True, 'message': message, 'payload': payload}), status_codes.status_ok_code
@@ -766,11 +766,11 @@ class RecruitsView(Validator, CacheManager):
             message: str = 'is_active status is required and can only be a boolean'
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        recruits_list: typing.List[Recruits] = Recruits.query(Recruits.organization_id == organization_id,
+        recruits_list: List[Recruits] = Recruits.query(Recruits.organization_id == organization_id,
                                                               Recruits.affiliate_id == affiliate_id,
                                                               Recruits.is_active == is_active).fetch()
 
-        payload: typing.List[dict] = [recruit.to_dict() for recruit in recruits_list]
+        payload: List[dict] = [recruit.to_dict() for recruit in recruits_list]
         if len(payload):
             message: str = "{} recruits successfully fetched affiliate recruits by status".format(
                 str(len(recruits_list)))
