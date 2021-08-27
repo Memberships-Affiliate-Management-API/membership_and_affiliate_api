@@ -68,7 +68,7 @@ class RecruitsValidators:
             Input Validations for recruits class
     ***REMOVED***
 
-    def __init__(self):
+    def __init__(self) -> None:
         super(RecruitsValidators, self).__init__()
 
     # noinspection DuplicatedCode
@@ -120,7 +120,7 @@ class EarningsValidators:
             membership payments
     ***REMOVED***
 
-    def __init__(self):
+    def __init__(self) -> None:
         super(EarningsValidators, self).__init__()
 
     @staticmethod
