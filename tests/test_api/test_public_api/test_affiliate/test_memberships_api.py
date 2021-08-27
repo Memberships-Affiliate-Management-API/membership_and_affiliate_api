@@ -358,8 +358,29 @@ def test_change_membership(mocker) -> None:
         response, status = membership_view_instance.change_membership(organization_id=organization_id, uid=uid,
                                                                       origin_plan_id=plan_id, dest_plan_id=dest_plan_id)
         assert status == status_codes.status_ok_code, "Unable to change membership"
+        
 
     mocker.stopall()
+
+
+# noinspection PyShadowingNames
+def test_change_memberships_input_errors(mocker):
+    ***REMOVED***
+    **test_change_memberships_input_errors**
+
+    :param mocker:
+    :return:
+    ***REMOVED***
+    mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
+    mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
+
+    with test_app().app_context():
+        membership_view_instance: MembershipsView = MembershipsView()
+        uid: str = random.choice([None, "", " "])
+        organization_id: str = config_instance.ORGANIZATION_ID
+        plan_id: str = membership_mock_data['plan_id']
+        dest_plan_id: str = create_id()
+
 
 
 # noinspection PyShadowingNames
