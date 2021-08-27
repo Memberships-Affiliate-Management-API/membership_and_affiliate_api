@@ -18,7 +18,7 @@ import requests
 from flask import current_app
 from _cron.scheduler import task_scheduler
 from config import config_instance
-from typing import List, Optional
+from typing import List, Optional,Callable
 import aiohttp
 import asyncio
 from main import app_cache
@@ -162,7 +162,7 @@ class Mailgun:
                                kwargs=_kwargs, id=create_id(), name="do_schedule_mail_send", misfire_grace_time=360)
 
     @staticmethod
-    def _base_email_scheduler(func, kwargs) -> None:
+    def _base_email_scheduler(func: Callable, kwargs: dict) -> None:
         ***REMOVED***
 
         :param func:
