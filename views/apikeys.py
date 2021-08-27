@@ -269,7 +269,7 @@ class APIKeysView(APIKeysValidators, CacheManager):
         api_instance: APIKeys = APIKeys.query(APIKeys.organization_id == organization_id,
                                               APIKeys.api_key == api_key).get()
 
-        if isinstance(api_instance, APIKeys):
+        if bool(api_instance):
             message: str = "successfully fetched api_key record"
             return jsonify({'status': True, 'payload': api_instance.to_dict(),
                             'message': message}), status_codes.status_ok_code
