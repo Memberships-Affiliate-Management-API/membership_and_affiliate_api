@@ -548,7 +548,8 @@ class MembershipsView(Validators, MembershipsEmails):
 
             if new_member:
                 # Note only sending welcome emails for new members
-                self.send_memberships_welcome_email(organization_id=organization_id, uid=uid)
+                _kwargs: dict = dict(organization_id=organization_id, uid=uid)
+                self._base_email_scheduler(func=self.send_memberships_welcome_email, kwargs=_kwargs)
 
             return jsonify({'status': True, 'message': 'successfully subscribed to membership',
                             'payload': membership_instance.to_dict()}), status_codes.successfully_updated_code
@@ -705,7 +706,7 @@ class MembershipsView(Validators, MembershipsEmails):
 
         membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                              Memberships.uid == uid).get()
-        print(f'membership_instance : {membership_instance}')
+
         if bool(membership_instance):
             membership_instance.payment_status = status
             key: Optional[ndb.Key] = membership_instance.put(retries=self._max_retries, timeout=self._max_timeout)
@@ -861,7 +862,8 @@ class MembershipsView(Validators, MembershipsEmails):
                 message: str = "Database Error: Unable to update Membership, please try again later"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-            self.send_change_of_membership_notification_email(organization_id=organization_id, uid=uid)
+            _kwargs: dict = dict(organization_id=organization_id, uid=uid)
+            self._base_email_scheduler(func=self.send_change_of_membership_notification_email, kwargs=_kwargs)
 
             return jsonify({'status': True, 'message': 'successfully updated membership',
                             'payload': membership_instance.to_dict()}), status_codes.successfully_updated_code
@@ -903,8 +905,8 @@ class MembershipsView(Validators, MembershipsEmails):
                 raise InputError(status=error_codes.input_error_code, description=message)
 
             # Sending User payment method changed notification
-            self.send_payment_method_changed_email(organization_id=organization_id, uid=uid,
-                                                   membership_instance=membership_instance)
+            _kwargs: dict = dict(organization_id=organization_id, uid=uid, membership_instance=membership_instance)
+            self._base_email_scheduler(func=self.send_payment_method_changed_email, kwargs=_kwargs)
 
             message: str = "successfully updated payment method"
             return jsonify({'status': True, 'payload': membership_instance.to_dict(),
