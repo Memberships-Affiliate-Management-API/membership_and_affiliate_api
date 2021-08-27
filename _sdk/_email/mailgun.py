@@ -34,7 +34,7 @@ class Mailgun:
         TODO - feature development add Mailgun Templates see Email-templates on Github Repos
     ***REMOVED***
 
-    def __init__(self):
+    def __init__(self) -> None:
         ***REMOVED***
             mailgun_domain : domain name registered with mailgun
             MAILGUN_API_KEY : can be found from mailgun control panel
