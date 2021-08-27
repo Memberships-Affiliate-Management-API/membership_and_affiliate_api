@@ -41,10 +41,10 @@ class ServicesView(ServiceValidator, CacheManager):
             and then payment plans for that service in order to activate the plan
     ***REMOVED***
 
-    def __init__(self):
+    def __init__(self) -> None:
         super(ServicesView, self).__init__()
-        self._max_retries = current_app.config.get('DATASTORE_RETRIES')
-        self._max_timeout = current_app.config.get('DATASTORE_TIMEOUT')
+        self._max_retries: int = current_app.config.get('DATASTORE_RETRIES')
+        self._max_timeout: int = current_app.config.get('DATASTORE_TIMEOUT')
 
     @use_context
     @handle_view_errors
@@ -76,7 +76,7 @@ class ServicesView(ServiceValidator, CacheManager):
             services_instance: Services = Services.query(Services.name == name,
                                                          Services.organization_id == organization_id).get()
 
-            if isinstance(services_instance, Services):
+            if bool(services_instance):
                 message: str = '''a service with that name already exist in your organization 
                 please use a different name'''
 
@@ -92,7 +92,7 @@ class ServicesView(ServiceValidator, CacheManager):
             service_response = paypal_services_instance.create_service()
             # TODO -Alternatively Use webhooks to capture the results of service creation
 
-            if service_response.status_code == 201:
+            if service_response.status_code == status_codes.successfully_updated_code:
                 # NOTE: Status Code or 201 mean the service was created successfully
                 service_id = service_response.result.id
                 services_instance: Services = Services(organization_id=organization_id, created_by_uid=uid,
@@ -146,7 +146,7 @@ class ServicesView(ServiceValidator, CacheManager):
 
             service_instance: Optional[Services] = Services.query(Services.service_id == service_id).get()
 
-            if isinstance(service_instance, Services):
+            if bool(service_instance):
                 service_instance.name = name
                 service_instance.description = description
                 service_instance.category = category
@@ -191,7 +191,7 @@ class ServicesView(ServiceValidator, CacheManager):
         if self.can_update_service(service_id=service_id, organization_id=organization_id, uid=uid):
             service_instance: Optional[Services] = Services.query(Services.service_id == service_id).get()
 
-            if isinstance(service_instance, Services):
+            if bool(service_instance):
                 service_instance.is_service_active = is_active
                 key: Optional[ndb.Key] = service_instance.put(retries=self._max_retries, timeout=self._max_timeout)
                 if not isinstance(key, ndb.Key):
@@ -232,7 +232,7 @@ class ServicesView(ServiceValidator, CacheManager):
 
         service_instance: Services = Services.query(Services.organization_id == organization_id,
                                                     Services.service_id == service_id).get()
-        if isinstance(service_instance, Services):
+        if bool(service_instance):
             message: str = "successfully retrieved service"
             return jsonify({'status': True, 'payload': service_instance.to_dict(),
                             'message': message}), status_codes.status_ok_code
