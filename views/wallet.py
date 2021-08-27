@@ -10,7 +10,7 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 
 
 import typing
-from typing import Optional
+from typing import Optional, List
 from flask import jsonify, current_app
 from google.cloud import ndb
 from _sdk._email import Mailgun
@@ -171,7 +171,7 @@ class Validator(WalletValidator):
         TODO- improve the validators to validate all aspects of wallet transactions
     ***REMOVED***
 
-    def __init__(self):
+    def __init__(self) -> None:
         super(Validator, self).__init__()
         self._max_retries: int = current_app.config.get('DATASTORE_RETRIES')
         self._max_timeout: int = current_app.config.get('DATASTORE_TIMEOUT')
@@ -342,7 +342,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
             7. wallet_transact -> create a wallet transaction
     ***REMOVED***
 
-    def __init__(self):
+    def __init__(self) -> None:
         super(WalletView, self).__init__()
 
     @use_context
@@ -367,7 +367,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
             raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
         # creating new Wallet for a new user
-        amount_instance: AmountMixin = AmountMixin(amount=0, currency=currency)
+        amount_instance: AmountMixin = AmountMixin(amount_cents=0, currency=currency)
 
         wallet_instance: WalletModel = WalletModel(organization_id=organization_id, uid=uid,
                                                    is_org_wallet=is_org_wallet, available_funds=amount_instance,
@@ -408,10 +408,11 @@ class WalletView(Validator, WalletEmails, CacheManager):
             message: str = "Operation Denied: cannot create a new Wallet"
             raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
 
-        amount_instance: AmountMixin = AmountMixin(amount=0, currency=currency)
+        amount_instance: AmountMixin = AmountMixin(amount_cents=0, currency=currency)
 
         wallet_instance: WalletModel = WalletModel(organization_id=organization_id, uid=uid,
-                                                   is_org_wallet=is_org_wallet, available_funds=amount_instance,
+                                                   is_org_wallet=is_org_wallet,
+                                                   available_funds=amount_instance,
                                                    paypal_address=paypal_address)
 
         key: Optional[ndb.Key] = wallet_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
@@ -447,7 +448,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
 
         wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
                                                          WalletModel.uid == uid).get()
-        if isinstance(wallet_instance, WalletModel):
+        if isinstance(wallet_instance, WalletModel) and wallet_instance.uid == uid:
             return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
                             'message': 'wallet found'}), status_codes.status_ok_code
 
@@ -469,7 +470,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
 
         wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
                                                          WalletModel.uid == uid).get_async().get_result()
-        if isinstance(wallet_instance, WalletModel):
+        if isinstance(wallet_instance, WalletModel) and wallet_instance.uid == uid:
             return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
                             'message': 'wallet found'}), status_codes.status_ok_code
 
@@ -517,7 +518,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
                                                          WalletModel.uid == uid).get()
 
         # No need to test for wallet availability as can update returned True
-        amount_instance: AmountMixin = AmountMixin(amount=available_funds, currency=currency)
+        amount_instance: AmountMixin = AmountMixin(amount_cents=available_funds, currency=currency)
         wallet_instance.available_funds = amount_instance
         wallet_instance.paypal_address = paypal_address
         key: Optional[ndb.Key] = wallet_instance.put(retries=self._max_retries, timeout=self._max_timeout)
@@ -549,7 +550,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
         # NOTE checking if organization_id or uid is present
         self.raise_input_error_if_not_available(organization_id=organization_id, uid=uid)
 
-        available_funds: typing.Union[int, None] = int(wallet_data.get("available_funds", 0))
+        available_funds: int = int(wallet_data.get("available_funds", 0))
 
         if not isinstance(available_funds, int):
             message: str = "available_funds is required"
@@ -575,7 +576,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
 
         # No need to test for wallet availability as can update returned True
 
-        amount_instance: AmountMixin = AmountMixin(amount=available_funds, currency=currency)
+        amount_instance: AmountMixin = AmountMixin(amount_cents=available_funds, currency=currency)
         wallet_instance.available_funds = amount_instance
         wallet_instance.paypal_address = paypal_address
         key = wallet_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
@@ -618,7 +619,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
         wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
                                                          WalletModel.uid == uid).get()
 
-        amount_instance: AmountMixin = AmountMixin(amount=0, currency=currency)
+        amount_instance: AmountMixin = AmountMixin(amount_cents=0, currency=currency)
         wallet_instance.available_funds = amount_instance
         key: Optional[ndb.Key] = wallet_instance.put(retries=self._max_retries, timeout=self._max_timeout)
         if not bool(key):
@@ -663,7 +664,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
         wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
                                                          WalletModel.uid == uid).get_async().get_result()
 
-        amount_instance: AmountMixin = AmountMixin(amount=0, currency=currency)
+        amount_instance: AmountMixin = AmountMixin(amount_cents=0, currency=currency)
         wallet_instance.available_funds = amount_instance
         key = wallet_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
         if not bool(key):
@@ -696,8 +697,8 @@ class WalletView(Validator, WalletEmails, CacheManager):
             message: str = "organization_id is required"
             raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
-        wallet_list: typing.List[WalletModel] = WalletModel.query(WalletModel.organization_id == organization_id).fetch()
-        payload: typing.List[dict] = [wallet.to_dict() for wallet in wallet_list]
+        wallet_list: List[WalletModel] = WalletModel.query(WalletModel.organization_id == organization_id).fetch()
+        payload: List[dict] = [wallet.to_dict() for wallet in wallet_list]
 
         if len(payload):
             return jsonify({'status': True,
@@ -720,10 +721,10 @@ class WalletView(Validator, WalletEmails, CacheManager):
             message: str = "organization_id is required"
             raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
-        wallet_list: typing.List[WalletModel] = WalletModel.query(
+        wallet_list: List[WalletModel] = WalletModel.query(
             WalletModel.organization_id == organization_id).fetch_async().get_result()
 
-        payload: typing.List[dict] = [wallet.to_dict() for wallet in wallet_list]
+        payload: List[dict] = [wallet.to_dict() for wallet in wallet_list]
 
         if len(payload):
             return jsonify({'status': True,
@@ -752,11 +753,11 @@ class WalletView(Validator, WalletEmails, CacheManager):
             message: str = "lower_bound and higher_bound are required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        wallet_list: typing.List[WalletModel] = WalletModel.query(WalletModel.organization_id == organization_id,
-                                                                  WalletModel.available_funds > lower_bound,
-                                                                  WalletModel.available_funds < higher_bound).fetch()
+        wallet_list: List[WalletModel] = WalletModel.query(WalletModel.organization_id == organization_id).fetch()
 
-        payload: typing.List[dict] = [wallet.to_dict() for wallet in wallet_list]
+        payload: List[dict] = [wallet.to_dict() for wallet in wallet_list if
+                               higher_bound < wallet.available_funds.amount_cents > lower_bound]
+
         if len(payload):
             return jsonify({'status': True, 'payload': payload,
                             'message': 'wallets returned'}), status_codes.status_ok_code
@@ -787,11 +788,12 @@ class WalletView(Validator, WalletEmails, CacheManager):
             message: str = "lower_bound and higher_bound are required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        wallet_list: typing.List[WalletModel] = WalletModel.query(
-            WalletModel.organization_id == organization_id, WalletModel.available_funds > lower_bound,
-            WalletModel.available_funds < higher_bound).fetch_async().get_result()
+        wallet_list: List[WalletModel] = WalletModel.query(
+            WalletModel.organization_id == organization_id).fetch_async().get_result()
 
-        payload: typing.List[dict] = [wallet.to_dict() for wallet in wallet_list]
+        payload: List[dict] = [wallet.to_dict() for wallet in wallet_list if
+                               higher_bound < wallet.available_funds.amount_cents > lower_bound]
+
         if len(payload):
             return jsonify({'status': True, 'payload': payload,
                             'message': 'wallets returned'}), status_codes.status_ok_code
