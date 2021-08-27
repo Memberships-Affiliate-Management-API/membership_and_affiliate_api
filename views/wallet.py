@@ -29,7 +29,7 @@ class WalletEmails(Mailgun):
         **Class WalletEmails**
             Class used to send Wallet related Emails and Notifications
     ***REMOVED***
-    def __init__(self):
+    def __init__(self) -> None:
         super(WalletEmails, self).__init__()
 
     def send_balance_changed_notification(self, wallet_instance: WalletModel, organization_id: str, uid: str) -> None:
