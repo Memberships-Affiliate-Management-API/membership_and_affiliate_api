@@ -2278,7 +2278,7 @@ class CouponsView(Validators):
         coupon_instance: Coupons = Coupons.query(Coupons.organization_id == organization_id,
                                                  Coupons.code == code).get()
 
-        if isinstance(coupon_instance, Coupons):
+        if bool(coupon_instance):
             coupon_instance.is_valid = False
             key: Optional[ndb.Key] = coupon_instance.put(retries=self._max_retries, timeout=self._max_timeout)
 
@@ -2315,7 +2315,7 @@ class CouponsView(Validators):
         coupon_instance: Coupons = Coupons.query(Coupons.organization_id == organization_id,
                                                  Coupons.code == code).get_async().get_result()
 
-        if isinstance(coupon_instance, Coupons):
+        if bool(coupon_instance):
             coupon_instance.is_valid = False
             key: Optional[ndb.Key] = coupon_instance.put_async(retries=self._max_retries,
                                                                timeout=self._max_timeout).get_result()
@@ -2507,7 +2507,7 @@ class CouponsView(Validators):
         coupon_instance: Coupons = Coupons.query(Coupons.organization_id == organization_id,
                                                  Coupons.code == code).get()
 
-        if isinstance(coupon_instance, Coupons):
+        if bool(coupon_instance):
             message: str = "Coupon has been found"
             return jsonify({'status': True, 'message': message,
                             'payload': coupon_instance.to_dict()}), status_codes.status_ok_code
@@ -2533,7 +2533,7 @@ class CouponsView(Validators):
         coupon_instance: Coupons = Coupons.query(Coupons.organization_id == organization_id,
                                                  Coupons.code == code).get_async().get_result()
 
-        if isinstance(coupon_instance, Coupons):
+        if bool(coupon_instance):
             message: str = "Coupon found"
             return jsonify({'status': True,
                             'message': message,
