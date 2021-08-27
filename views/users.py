@@ -293,7 +293,6 @@ class Validators(UserValidators, OrgValidators):
             message: str = "cell is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-
     @staticmethod
     def check_org_and_uid(organization_id: Optional[str], uid: Optional[str]) -> None:
         ***REMOVED***
@@ -309,7 +308,6 @@ class Validators(UserValidators, OrgValidators):
         if not isinstance(uid, str) or not bool(uid.strip()):
             message: str = "uid is required"
             raise InputError(status=error_codes.input_error_code, description=message)
-
 
     def can_add_user(self, organization_id: Optional[str], email: Optional[str],
                      cell: Optional[str]) -> bool:
@@ -660,7 +658,8 @@ class UserView(Validators, UserEmails, CacheManager):
 
                 cell: str = user_instance.cell
                 email: str = old_email
-                _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+                _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email,
+                                     cell=cell)
                 self._schedule_cache_deletion(func=self._delete_user_cache, kwargs=_kwargs)
 
                 message: str = "Successfully Updated Email Record please check your email inbox for verification email"
@@ -847,7 +846,7 @@ class UserView(Validators, UserEmails, CacheManager):
 
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.uid == uid).get()
-        if isinstance(user_instance, UserModel)  and user_instance.uid == uid:
+        if isinstance(user_instance, UserModel) and user_instance.uid == uid:
             address_instance = AddressMixin(organization_id=organization_id, uid=uid, line_1=line_1, city=city,
                                             zip_code=zip_code, province=province, state=state, country=country)
             address_instance.put()
@@ -887,7 +886,7 @@ class UserView(Validators, UserEmails, CacheManager):
         if isinstance(uid, str) and bool(uid.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.uid == uid).get()
-            if isinstance(user_instance, UserModel)  and user_instance.uid == uid:
+            if isinstance(user_instance, UserModel) and user_instance.uid == uid:
                 user_instance.key.delete()
                 return jsonify({'status': True,
                                 'message': 'successfully deleted user'}), status_codes.successfully_updated_code
@@ -903,10 +902,11 @@ class UserView(Validators, UserEmails, CacheManager):
         elif isinstance(cell, str) and bool(cell.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.cell == cell).get()
-            if isinstance(user_instance, UserModel)  and user_instance.uid == uid:
+            if isinstance(user_instance, UserModel) and user_instance.uid == uid:
                 cell: str = user_instance.cell
                 email: str = user_instance.email
-                _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+                _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email,
+                                     cell=cell)
                 self._schedule_cache_deletion(func=self._delete_user_cache, kwargs=_kwargs)
 
                 # TODO- rather mark user as deleted
@@ -956,7 +956,8 @@ class UserView(Validators, UserEmails, CacheManager):
                 # TODO- rather mark user as deleted
                 cell: str = user_instance.cell
                 email: str = user_instance.email
-                _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+                _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email,
+                                     cell=cell)
                 self._schedule_cache_deletion(func=self._delete_user_cache, kwargs=_kwargs)
 
                 user_instance.key.delete()
@@ -1187,7 +1188,7 @@ class UserView(Validators, UserEmails, CacheManager):
         if isinstance(cell, str) and bool(cell.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.cell == cell).get_async().get_result()
-            if isinstance(user_instance, UserModel)  and user_instance.cell == cell:
+            if isinstance(user_instance, UserModel) and user_instance.cell == cell:
                 message: str = 'successfully retrieved user by cell'
                 return jsonify({'status': True,
                                 'payload': user_instance.to_dict(),
@@ -1198,7 +1199,7 @@ class UserView(Validators, UserEmails, CacheManager):
         if isinstance(email, str) and bool(email.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.email == email).get_async().get_result()
-            if isinstance(user_instance, UserModel)  and user_instance.email == email:
+            if isinstance(user_instance, UserModel) and user_instance.email == email:
                 message: str = 'successfully retrieved user by email'
                 return jsonify({'status': True,
                                 'payload': user_instance.to_dict(),
@@ -1268,7 +1269,7 @@ class UserView(Validators, UserEmails, CacheManager):
 
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.uid == uid).get_async().get_result()
-        if isinstance(user_instance, UserModel):
+        if isinstance(user_instance, UserModel) and user_instance.uid == uid:
             if check_password_hash(password=password, pwhash=user_instance.password) is True:
                 return jsonify({'status': True, 'message': 'passwords match'}), status_codes.status_ok_code
 
@@ -1296,7 +1297,7 @@ class UserView(Validators, UserEmails, CacheManager):
 
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.uid == uid).get()
-        if isinstance(user_instance, UserModel):
+        if isinstance(user_instance, UserModel) and user_instance.uid == uid:
             user_instance.is_active = False
             user_instance.put()
 
@@ -1329,7 +1330,7 @@ class UserView(Validators, UserEmails, CacheManager):
 
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.uid == uid).get_async().get_result()
-        if isinstance(user_instance, UserModel):
+        if isinstance(user_instance, UserModel) and user_instance.uid == uid:
             user_instance.is_active = False
             user_instance.put_async().get_result()
             cell: str = user_instance.cell
@@ -1370,7 +1371,7 @@ class UserView(Validators, UserEmails, CacheManager):
         user_model: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                 UserModel.email == email).get()
 
-        if not isinstance(user_model, UserModel):
+        if not isinstance(user_model, UserModel) and user_model.email == email:
             message: str = "uid is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
@@ -1402,13 +1403,15 @@ class UserView(Validators, UserEmails, CacheManager):
 
         user_model: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                 UserModel.email == email).get()
-        if isinstance(user_model, UserModel):
+        if isinstance(user_model, UserModel) and user_model.email == email:
             user_model.recovery_code = create_id()
             key: Optional[ndb.Key] = user_model.put(retries=self._max_retries, timeout=self._max_timeout)
             if not bool(key):
                 message: str = "Database Error: Unable to create recovery code please try again later"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
+            uid: str = user_model.uid
+            cell: str = user_model.cell
             _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
             self._schedule_cache_deletion(func=self._delete_user_cache, kwargs=_kwargs)
             # Using super method to send recovery email
