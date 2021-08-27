@@ -139,8 +139,6 @@ class AffiliatesView(Validator, CacheManager):
         _kwargs: dict = dict(affiliates_view=self, organization_id=organization_id, affiliate_id=affiliate_id)
         self._schedule_cache_deletion(func=self._delete_affiliate_cache, kwargs=_kwargs)
 
-        print('affiliate instance: ', affiliate_instance.to_dict())
-
         return jsonify({'status': True,
                         'message': 'successfully registered an affiliate',
                         'payload': affiliate_instance.to_dict()}), status_codes.successfully_updated_code
