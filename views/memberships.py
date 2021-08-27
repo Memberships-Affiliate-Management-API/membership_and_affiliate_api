@@ -813,7 +813,8 @@ class MembershipsView(Validators, MembershipsEmails):
                 message: str = "Unable to Change Membership, please try again later"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-            self.send_change_of_membership_notification_email(organization_id=organization_id, uid=uid)
+            _kwargs: dict = dict(organization_id=organization_id, uid=uid)
+            self._base_email_scheduler(func=self.send_change_of_membership_notification_email, kwargs=_kwargs)
 
             return jsonify({'status': True, 'message': 'successfully updated membership',
                             'payload': membership_instance.to_dict()}), status_codes.successfully_updated_code
