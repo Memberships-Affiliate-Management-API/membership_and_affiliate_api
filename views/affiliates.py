@@ -304,7 +304,7 @@ class AffiliatesView(Validator, CacheManager):
         affiliate_id: Optional[str] = affiliate_data.get('affiliate_id')
 
         # Initializing affiliate_instance to None in order to allow testing for valid data
-        affiliate_instance: typing.Union[Affiliates, None] = None
+        affiliate_instance: Optional[Affiliates] = None
         valid_input: bool = False
         # NOTE this means if affiliate_id is valid
         if isinstance(affiliate_id, str) and bool(affiliate_id.strip()):
