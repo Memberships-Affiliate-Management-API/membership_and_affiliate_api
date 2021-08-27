@@ -87,7 +87,6 @@ class Validator(ValidAffiliate, ValidRecruit, ValidEarnings):
         ***REMOVED***
         _id = create_id()
         affiliate_instance: Affiliates = Affiliates.query(Affiliates.affiliate_id == _id).get()
-        print(affiliate_instance)
         return self._create_unique_affiliate_id() if affiliate_instance.uid == _id else _id
 
 
