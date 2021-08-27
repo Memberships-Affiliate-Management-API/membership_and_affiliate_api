@@ -464,7 +464,7 @@ class AffiliatesView(Validator, CacheManager):
             raise InputError(status=error_codes.input_error_code, description=message)
 
         affiliates_list: List[Affiliates] = Affiliates.query(Affiliates.organization_id == organization_id,
-                                                                    Affiliates.is_deleted == False).fetch()
+                                                             Affiliates.is_deleted == False).fetch()
 
         payload: List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
         if len(payload):
@@ -674,7 +674,7 @@ class RecruitsView(Validator, CacheManager):
             raise InputError(status=error_codes.input_error_code, description=message)
 
         recruits_list: List[Recruits] = Recruits.query(Recruits.organization_id == organization_id,
-                                                              Recruits.is_active == is_active).fetch()
+                                                       Recruits.is_active == is_active).fetch()
 
         payload: List[dict] = [recruit.to_dict() for recruit in recruits_list]
         message: str = "{} recruits successfully fetched recruits by active status".format(str(len(recruits_list)))
@@ -702,7 +702,7 @@ class RecruitsView(Validator, CacheManager):
             raise InputError(status=error_codes.input_error_code, description=message)
 
         recruits_list: List[Recruits] = Recruits.query(Recruits.organization_id == organization_id,
-                                                              Recruits.is_deleted == is_deleted).fetch()
+                                                       Recruits.is_deleted == is_deleted).fetch()
 
         payload = [recruit.to_dict() for recruit in recruits_list]
         message: str = "{} recruits successfully fetched recruits by deleted status".format(str(len(recruits_list)))
@@ -731,7 +731,7 @@ class RecruitsView(Validator, CacheManager):
             raise InputError(status=error_codes.input_error_code, description=message)
 
         recruits_list: List[Recruits] = Recruits.query(Recruits.organization_id == organization_id,
-                                                              Recruits.affiliate_id == affiliate_id).fetch()
+                                                       Recruits.affiliate_id == affiliate_id).fetch()
 
         payload: List[dict] = [recruit.to_dict() for recruit in recruits_list]
         if len(payload):
@@ -767,8 +767,8 @@ class RecruitsView(Validator, CacheManager):
             raise InputError(status=error_codes.input_error_code, description=message)
 
         recruits_list: List[Recruits] = Recruits.query(Recruits.organization_id == organization_id,
-                                                              Recruits.affiliate_id == affiliate_id,
-                                                              Recruits.is_active == is_active).fetch()
+                                                       Recruits.affiliate_id == affiliate_id,
+                                                       Recruits.is_active == is_active).fetch()
 
         payload: List[dict] = [recruit.to_dict() for recruit in recruits_list]
         if len(payload):
