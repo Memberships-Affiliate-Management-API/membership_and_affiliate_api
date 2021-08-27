@@ -403,6 +403,7 @@ def test_change_memberships_input_errors(mocker):
 
         mocker.stopall()
 
+
 # noinspection PyShadowingNames
 def test_send_welcome_email(mocker) -> None:
     ***REMOVED***
