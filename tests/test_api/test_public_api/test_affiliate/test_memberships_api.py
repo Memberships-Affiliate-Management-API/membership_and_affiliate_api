@@ -358,7 +358,6 @@ def test_change_membership(mocker) -> None:
         response, status = membership_view_instance.change_membership(organization_id=organization_id, uid=uid,
                                                                       origin_plan_id=plan_id, dest_plan_id=dest_plan_id)
         assert status == status_codes.status_ok_code, "Unable to change membership"
-        
 
     mocker.stopall()
 
@@ -380,6 +379,25 @@ def test_change_memberships_input_errors(mocker):
         organization_id: str = config_instance.ORGANIZATION_ID
         plan_id: str = membership_mock_data['plan_id']
         dest_plan_id: str = create_id()
+        with raises(InputError):
+            membership_view_instance.change_membership(organization_id=organization_id, uid=uid,
+                                                       origin_plan_id=plan_id, dest_plan_id=dest_plan_id)
+
+        uid: str = create_id()
+        organization_id: str = random.choice([None, "", " "])
+        with raises(InputError):
+            membership_view_instance.change_membership(organization_id=organization_id, uid=uid,
+                                                       origin_plan_id=plan_id, dest_plan_id=dest_plan_id)
+
+        organization_id: str  = create_id()
+        plan_id: str = random.choice([None, "", " "])
+        with raises(InputError):
+            membership_view_instance.change_membership(organization_id=organization_id, uid=uid,
+                                                       origin_plan_id=plan_id, dest_plan_id=dest_plan_id)
+        
+
+
+
 
 
 
