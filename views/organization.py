@@ -251,10 +251,10 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
             Utilities to validate UserInput Data and also validate access rights of those using the API, While
             accessing and manipulating information related to Client Organization.
     ***REMOVED***
-    def __init__(self):
+    def __init__(self) -> None:
         super(OrganizationView, self).__init__()
-        self._max_retries = current_app.config.get('DATASTORE_RETRIES')
-        self._max_timeout = current_app.config.get('DATASTORE_TIMEOUT')
+        self._max_retries: int = current_app.config.get('DATASTORE_RETRIES')
+        self._max_timeout: int = current_app.config.get('DATASTORE_TIMEOUT')
 
     def can_create_organization(self, uid: Optional[str], organization_name: Optional[str]) -> bool:
         ***REMOVED***
@@ -292,10 +292,8 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
         ***REMOVED***
         organization_id: str = create_id()
         org_instance: Optional[Organization] = Organization.query(Organization.organization_id == organization_id).get()
-        if isinstance(org_instance, Organization):
-            # NOTE: Calling the function again to create a new key the present key is being used
-            self._create_org_id()
-        return organization_id
+        # NOTE: Calling the function again to create a new key if present key is being used or return un-used key
+        return organization_id if not bool(org_instance) else self._create_org_id()
 
     @staticmethod
     def _create_org_wallet(organization_id: Optional[str], uid: Optional[str], currency: Optional[str],
@@ -422,7 +420,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
         if self.can_update_organization(uid=uid, organization_id=organization_id):
 
             org_instance: Optional[Organization] = Organization.query(Organization.organization_id == organization_id).get()
-            if isinstance(org_instance, Organization):
+            if bool(org_instance):
                 org_instance.organization_name = organization_name
                 org_instance.description = description
                 org_instance.home_url = home_url
@@ -479,7 +477,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
         organization_instance: Optional[Organization] = Organization.query(
             Organization.organization_id == organization_id, Organization.uid == uid).get()
 
-        if isinstance(organization_instance, Organization):
+        if bool(organization_instance):
             message: str = 'successfully fetched organization'
             return jsonify({'status': True,
                             'payload': organization_instance.to_dict(),
@@ -522,7 +520,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
         organization_instance: Optional[Organization] = Organization.query(
             Organization.organization_id == organization_id).get()
 
-        if isinstance(organization_instance, Organization):
+        if bool(organization_instance):
             message: str = 'successfully retrieved organizations'
             return jsonify({'status': True,
                             'payload': organization_instance.to_dict(),
@@ -554,7 +552,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
         organization_instance: Optional[Organization] = Organization.query(
             Organization.organization_id == organization_id).get()
 
-        if isinstance(organization_instance, Organization):
+        if bool(organization_instance):
             if isinstance(subtract, int):
                 organization_instance.total_affiliates -= subtract
             elif isinstance(add, int):
@@ -603,7 +601,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
 
         organization_instance: Optional[Organization] = Organization.query(Organization.organization_id == organization_id).get()
 
-        if isinstance(organization_instance, Organization):
+        if bool(organization_instance):
             calculated: bool = False
             if isinstance(add_amount, AmountMixin):
                 organization_instance.total_paid.__add__(add_amount)
@@ -652,7 +650,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
 
         organization_instance: Optional[Organization] = Organization.query(Organization.organization_id == organization_id).get()
 
-        if isinstance(organization_instance, Organization):
+        if bool(organization_instance):
             if subtract:
                 organization_instance.total_members -= subtract
             elif add:
@@ -696,7 +694,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
 
         organization_instance: Optional[Organization] = Organization.query(Organization.organization_id == organization_id).get()
 
-        if isinstance(organization_instance, Organization):
+        if bool(organization_instance):
             if isinstance(add_payment, AmountMixin):
                 organization_instance.projected_membership_payments.__add__(add_payment)
             elif isinstance(subtract_payment, AmountMixin):
@@ -738,7 +736,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
 
         organization_instance: Optional[Organization] = Organization.query(Organization.organization_id == organization_id).get()
 
-        if isinstance(organization_instance, Organization):
+        if bool(organization_instance):
             if isinstance(subtract_total_membership_payment, AmountMixin):
                 organization_instance.total_membership_payments.__sub__(subtract_total_membership_payment)
             elif isinstance(add_total_membership_amount, AmountMixin):
