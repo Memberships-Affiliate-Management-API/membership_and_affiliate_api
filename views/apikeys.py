@@ -43,7 +43,7 @@ class APIKeysValidators(OrgValidators, AuthUserValidators):
         does_organization_exist: typing.Union[bool, None] = self.is_organization_exist(organization_id=organization_id)
         if isinstance(does_organization_exist, bool):
             return does_organization_exist
-        raise DataServiceError(status=500, description="Database Error: Unable to verify organization")
+        raise DataServiceError(status=error_codes.data_service_error_code, description="Database Error: Unable to verify organization")
 
     @app_cache.memoize(timeout=return_ttl('short'))
     def user_can_create_key(self, uid: Optional[str], organization_id: Optional[str]) -> bool:
@@ -65,7 +65,8 @@ class APIKeysValidators(OrgValidators, AuthUserValidators):
         user_is_admin: typing.Union[bool, None] = self.org_user_is_admin(uid=uid, organization_id=organization_id)
         if isinstance(is_member_of_org, bool) and isinstance(user_is_admin, bool):
             return is_member_of_org and user_is_admin
-        raise DataServiceError(status=500, description="Database Error: Unable to verify user")
+        message: str = "Database Error: Unable to verify user"
+        raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
 
 class APIKeysView(APIKeysValidators, CacheManager):
@@ -78,12 +79,12 @@ class APIKeysView(APIKeysValidators, CacheManager):
     def _create_unique_api_key(self) -> str:
         _key = create_id()
         api_instance: APIKeys = APIKeys.query(APIKeys.api_key == _key).get()
-        return self._create_unique_secret_key() if isinstance(api_instance, APIKeys) else _key
+        return self._create_unique_secret_key() if bool(api_instance) else _key
 
     def _create_unique_secret_key(self) -> str:
         _secret = create_id()
         api_instance: APIKeys = APIKeys.query(APIKeys.secret_token == _secret).get()
-        return self._create_unique_secret_key() if isinstance(api_instance, APIKeys) else _secret
+        return self._create_unique_secret_key() if bool(api_instance) else _secret
 
     @use_context
     @handle_view_errors
