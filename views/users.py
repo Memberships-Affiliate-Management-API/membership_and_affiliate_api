@@ -475,7 +475,7 @@ class UserView(Validators, UserEmails, CacheManager):
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.uid == uid).get()
 
-        if isinstance(user_instance, UserModel):
+        if isinstance(user_instance, UserModel) and user_instance.uid == uid:
             user_instance.names = names
             user_instance.surname = surname
             user_instance.cell = cell
@@ -524,7 +524,7 @@ class UserView(Validators, UserEmails, CacheManager):
 
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.uid == uid).get_async().get_result()
-        if isinstance(user_instance, UserModel):
+        if isinstance(user_instance, UserModel) and user_instance.uid == uid:
             user_instance.names = names
             user_instance.surname = surname
             user_instance.cell = cell
@@ -570,7 +570,7 @@ class UserView(Validators, UserEmails, CacheManager):
 
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.uid == uid).get()
-        if isinstance(user_instance, UserModel):
+        if isinstance(user_instance, UserModel) and user_instance.uid == uid:
             user_instance.names = names
             user_instance.surname = surname
             key = user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
@@ -609,7 +609,7 @@ class UserView(Validators, UserEmails, CacheManager):
 
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.uid == uid).get()
-        if isinstance(user_instance, UserModel):
+        if isinstance(user_instance, UserModel) and user_instance.uid == uid:
             old_cell: str = user_instance.cell
             user_instance.cell = cell
             # TODO - run a function to send verification sms if available_funds
@@ -648,7 +648,7 @@ class UserView(Validators, UserEmails, CacheManager):
 
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.uid == uid).get()
-        if isinstance(user_instance, UserModel):
+        if isinstance(user_instance, UserModel) and user_instance.uid == uid:
             if user_instance.email != email:
                 old_email: str = user_instance.emai
                 user_instance.email = email
@@ -700,7 +700,7 @@ class UserView(Validators, UserEmails, CacheManager):
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.uid == uid).get()
 
-        if isinstance(user_instance, UserModel):
+        if isinstance(user_instance, UserModel) and user_instance.uid == uid:
             # Note: checking if old password is equal to the password on file
             if not check_password_hash(password=password, pwhash=user_instance.password):
                 message: str = "Passwords do not match - please try again"
@@ -744,7 +744,7 @@ class UserView(Validators, UserEmails, CacheManager):
 
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.uid == uid).get()
-        if isinstance(user_instance, UserModel):
+        if isinstance(user_instance, UserModel) and user_instance.uid == uid:
             user_instance.is_admin = is_admin
             key = user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             if not bool(key):
@@ -783,7 +783,7 @@ class UserView(Validators, UserEmails, CacheManager):
 
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.uid == uid).get()
-        if isinstance(user_instance, UserModel):
+        if isinstance(user_instance, UserModel) and user_instance.uid == uid:
             user_instance.is_support = is_support
             key = user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             if not bool(key):
@@ -847,7 +847,7 @@ class UserView(Validators, UserEmails, CacheManager):
 
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.uid == uid).get()
-        if isinstance(user_instance, UserModel):
+        if isinstance(user_instance, UserModel)  and user_instance.uid == uid:
             address_instance = AddressMixin(organization_id=organization_id, uid=uid, line_1=line_1, city=city,
                                             zip_code=zip_code, province=province, state=state, country=country)
             address_instance.put()
@@ -887,7 +887,7 @@ class UserView(Validators, UserEmails, CacheManager):
         if isinstance(uid, str) and bool(uid.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.uid == uid).get()
-            if isinstance(user_instance, UserModel):
+            if isinstance(user_instance, UserModel)  and user_instance.uid == uid:
                 user_instance.key.delete()
                 return jsonify({'status': True,
                                 'message': 'successfully deleted user'}), status_codes.successfully_updated_code
@@ -903,7 +903,7 @@ class UserView(Validators, UserEmails, CacheManager):
         elif isinstance(cell, str) and bool(cell.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.cell == cell).get()
-            if isinstance(user_instance, UserModel):
+            if isinstance(user_instance, UserModel)  and user_instance.uid == uid:
                 cell: str = user_instance.cell
                 email: str = user_instance.email
                 _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
@@ -936,7 +936,7 @@ class UserView(Validators, UserEmails, CacheManager):
         if isinstance(uid, str) and bool(uid.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.uid == uid).get_async().get_result()
-            if isinstance(user_instance, UserModel):
+            if isinstance(user_instance, UserModel) and user_instance.uid == uid:
                 user_instance.key.delete()
                 return jsonify({'status': True,
                                 'message': 'successfully deleted user'}), status_codes.data_not_found_code
@@ -944,7 +944,7 @@ class UserView(Validators, UserEmails, CacheManager):
         elif isinstance(email, str) and bool(email.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.email == email).get_async().get_result()
-            if isinstance(user_instance, UserModel):
+            if isinstance(user_instance, UserModel) and user_instance.email == email:
                 user_instance.key.delete()
                 return jsonify({'status': True,
                                 'message': 'successfully deleted user'}), status_codes.data_not_found_code
@@ -952,7 +952,7 @@ class UserView(Validators, UserEmails, CacheManager):
         elif isinstance(cell, str) and bool(cell.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.cell == cell).get_async().get_result()
-            if isinstance(user_instance, UserModel):
+            if isinstance(user_instance, UserModel) and user_instance.cell == cell:
                 # TODO- rather mark user as deleted
                 cell: str = user_instance.cell
                 email: str = user_instance.email
@@ -1051,7 +1051,7 @@ class UserView(Validators, UserEmails, CacheManager):
         users_list: typing.List[dict] = [user.to_dict() for user in UserModel.query(
             UserModel.organization_id == organization_id, UserModel.is_active == False).fetch_async().get_result()]
 
-        if len(users_list) > 0:
+        if len(users_list):
             return jsonify({'status': True,
                             'payload': users_list,
                             'message': 'successfully retrieved active users'}), status_codes.status_ok_code
@@ -1075,7 +1075,7 @@ class UserView(Validators, UserEmails, CacheManager):
         users_list: typing.List[dict] = [user.to_dict() for user in UserModel.query(
             UserModel.organization_id == organization_id).fetch()]
 
-        if len(users_list) > 0:
+        if len(users_list):
             message: str = 'successfully retrieved active users'
             return jsonify({'status': True,
                             'payload': users_list, 'message': message}), status_codes.status_ok_code
@@ -1099,7 +1099,7 @@ class UserView(Validators, UserEmails, CacheManager):
         users_list: typing.List[dict] = [user.to_dict() for user in UserModel.query(
             UserModel.organization_id == organization_id).fetch_async().get_result()]
 
-        if len(users_list) > 0:
+        if len(users_list):
             message: str = 'successfully retrieved active users'
             return jsonify({'status': True,
                             'payload': users_list, 'message': message}), status_codes.status_ok_code
@@ -1176,7 +1176,7 @@ class UserView(Validators, UserEmails, CacheManager):
         if isinstance(uid, str) and bool(uid.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.uid == uid).get_async().get_result()
-            if isinstance(user_instance, UserModel):
+            if isinstance(user_instance, UserModel) and user_instance.uid == uid:
                 message: str = 'successfully retrieved user by uid'
                 return jsonify({'status': True,
                                 'payload': user_instance.to_dict(),
@@ -1187,7 +1187,7 @@ class UserView(Validators, UserEmails, CacheManager):
         if isinstance(cell, str) and bool(cell.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.cell == cell).get_async().get_result()
-            if isinstance(user_instance, UserModel):
+            if isinstance(user_instance, UserModel)  and user_instance.cell == cell:
                 message: str = 'successfully retrieved user by cell'
                 return jsonify({'status': True,
                                 'payload': user_instance.to_dict(),
@@ -1198,7 +1198,7 @@ class UserView(Validators, UserEmails, CacheManager):
         if isinstance(email, str) and bool(email.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.email == email).get_async().get_result()
-            if isinstance(user_instance, UserModel):
+            if isinstance(user_instance, UserModel)  and user_instance.email == email:
                 message: str = 'successfully retrieved user by email'
                 return jsonify({'status': True,
                                 'payload': user_instance.to_dict(),
@@ -1234,7 +1234,7 @@ class UserView(Validators, UserEmails, CacheManager):
 
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.uid == uid).get()
-        if isinstance(user_instance, UserModel):
+        if isinstance(user_instance, UserModel) and user_instance.uid == uid:
             if check_password_hash(password=password, pwhash=user_instance.password) is True:
                 return jsonify({'status': True, 'message': 'passwords match'}), status_codes.status_ok_code
 
