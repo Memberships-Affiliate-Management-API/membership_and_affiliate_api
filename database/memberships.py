@@ -157,7 +157,7 @@ class PlanValidators:
             MembershipPlans.organization_id == organization_id,
             MembershipPlans.plan_name == plan_name.strip().lower()).get_async().get_result()
 
-        return isinstance(plan_instance, MembershipPlans)
+        return bool(plan_instance)
 
 
 class CouponsValidator:
@@ -191,7 +191,7 @@ class CouponsValidator:
         coupons_instance: Coupons = Coupons.query(Coupons.organization_id == organization_id,
                                                   Coupons.code == code.strip().lower()).get()
 
-        return isinstance(coupons_instance, Coupons)
+        return bool(coupons_instance)
 
     # noinspection DuplicatedCode
     @staticmethod
@@ -217,7 +217,7 @@ class CouponsValidator:
         coupons_instance: Coupons = Coupons.query(
             Coupons.organization_id == organization_id, Coupons.code == code.strip().lower()).get_async().get_result()
 
-        return isinstance(coupons_instance, Coupons)
+        return bool(coupons_instance)
 
     @staticmethod
     def expiration_valid(expiration_time: int) -> bool:

@@ -9,7 +9,7 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
 import functools
-from typing import Optional, List
+from typing import Optional, List, Callable
 from google.api_core.exceptions import RetryError, Aborted
 from flask import jsonify, current_app
 from datetime import datetime, date
@@ -255,8 +255,8 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
 
     def __init__(self):
         super(Validators, self).__init__()
-        self._max_retries = current_app.config.get('DATASTORE_RETRIES')
-        self._max_timeout = current_app.config.get('DATASTORE_TIMEOUT')
+        self._max_retries: int = current_app.config.get('DATASTORE_RETRIES')
+        self._max_timeout: int = current_app.config.get('DATASTORE_TIMEOUT')
 
     @app_cache.memoize(timeout=return_ttl('short'))
     def can_add_member(self, organization_id: Optional[str], uid: Optional[str],
@@ -274,8 +274,6 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         # TODO - may need to revise this, there is no reason to check if a plan_exist - just if a membership exist
         plan_exist: Optional[bool] = self.plan_exist(organization_id=organization_id, plan_id=plan_id)
         date_valid: Optional[bool] = self.start_date_valid(start_date=start_date)
-
-        print(user_valid, plan_exist, date_valid)
 
         if isinstance(user_valid, bool) and isinstance(plan_exist, bool) and isinstance(date_valid, bool):
             return user_valid and not plan_exist and date_valid
@@ -531,7 +529,7 @@ class MembershipsView(Validators, MembershipsEmails):
             membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                                  Memberships.uid == uid).get()
             new_member: bool = False
-            if not (isinstance(membership_instance, Memberships)):
+            if not bool(membership_instance):
                 membership_instance: Memberships = Memberships()
                 membership_instance.uid = uid
                 membership_instance.organization_id = organization_id
@@ -580,7 +578,7 @@ class MembershipsView(Validators, MembershipsEmails):
             membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                                  Memberships.uid == uid).get_async().get_result()
 
-            if not (isinstance(membership_instance, Memberships)):
+            if not bool(membership_instance):
                 membership_instance: Memberships = Memberships()
 
                 membership_instance.uid = uid
@@ -800,7 +798,6 @@ class MembershipsView(Validators, MembershipsEmails):
                                                              Memberships.uid == uid).get()
 
         if bool(membership_instance):
-
             if self.plan_exist(organization_id=organization_id, plan_id=dest_plan_id) is True:
                 membership_instance.plan_id = dest_plan_id
                 key: Optional[ndb.Key] = membership_instance.put(retries=self._max_retries,
@@ -1597,7 +1594,7 @@ class MembershipPlansView(Validators):
             membership_plans_instance: MembershipPlans = MembershipPlans.query(
                 MembershipPlans.organization_id == organization_id, MembershipPlans.plan_id == plan_id).get()
 
-            if isinstance(membership_plans_instance, MembershipPlans):
+            if bool(membership_plans_instance):
                 curr_term_payment: AmountMixin = AmountMixin(amount=term_payment, currency=currency)
                 curr_registration_amount: AmountMixin = AmountMixin(amount=registration_amount,
                                                                     currency=currency)
@@ -1652,7 +1649,7 @@ class MembershipPlansView(Validators):
                 MembershipPlans.organization_id == organization_id,
                 MembershipPlans.plan_id == plan_id).get_async().get_result()
 
-            if isinstance(membership_plans_instance, MembershipPlans):
+            if bool(membership_plans_instance):
                 curr_term_payment: AmountMixin = AmountMixin(amount=term_payment, currency=currency)
                 curr_registration_amount: AmountMixin = AmountMixin(amount=registration_amount,
                                                                     currency=currency)
@@ -1704,7 +1701,7 @@ class MembershipPlansView(Validators):
         membership_plans_instance: MembershipPlans = MembershipPlans.query(
             MembershipPlans.organization_id == organization_id, MembershipPlans.plan_id == plan_id).get()
 
-        if isinstance(membership_plans_instance, MembershipPlans) and membership_plans_instance.organization_id == organization_id:
+        if bool(membership_plans_instance) and membership_plans_instance.organization_id == organization_id:
             membership_plans_instance.is_active = is_active
             key: Optional[ndb.Key] = membership_plans_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             if not bool(key):
@@ -1745,7 +1742,7 @@ class MembershipPlansView(Validators):
             MembershipPlans.organization_id == organization_id,
             MembershipPlans.plan_id == plan_id).get_async().get_result()
 
-        if isinstance(membership_plans_instance, MembershipPlans) and membership_plans_instance.organization_id == organization_id:
+        if bool(membership_plans_instance) and membership_plans_instance.organization_id == organization_id:
             membership_plans_instance.is_active = is_active
             # TODO- this action has to be updated also in PayPal
             key: Optional[ndb.Key] = membership_plans_instance.put_async(retries=self._max_retries,
@@ -1845,7 +1842,6 @@ class MembershipPlansView(Validators):
             Memberships.organization_id == organization_id, MembershipPlans.plan_id == plan_id).get()
 
         return membership_plan_instance if bool(membership_plan_instance) else None
-
 
     @staticmethod
     @handle_store_errors
@@ -2026,10 +2022,8 @@ class AccessRightsView:
             try:
                 access_rights_instance: AccessRights = AccessRights.query(
                     AccessRights.organization_id == organization_id, AccessRights.plan_id == plan_id).get()
+                return access_rights_instance if bool(access_rights_instance) else None
 
-                if isinstance(access_rights_instance, AccessRights):
-                    return access_rights_instance
-                return None
             except ConnectionRefusedError:
                 return None
             except RetryError:
@@ -2045,10 +2039,8 @@ class AccessRightsView:
                 access_rights_instance: AccessRights = AccessRights.query(
                     AccessRights.organization_id == organization_id,
                     AccessRights.plan_id == plan_id).get_async().get_result()
+                return access_rights_instance if bool(access_rights_instance) else None
 
-                if isinstance(access_rights_instance, AccessRights):
-                    return access_rights_instance
-                return None
             except ConnectionRefusedError:
                 return None
             except RetryError:
@@ -2059,16 +2051,16 @@ class AccessRightsView:
 
 
 # Coupon data wrapper
-def get_coupon_data(func):
+def get_coupon_data(func: Callable) -> Callable:
     ***REMOVED***
+    **get_coupon_data**
             data wrapper designed to gather coupon variables and checks for validity
         :param func: returns a function populated with the required variables otherwise returns an error indicating the
                     the problem
         :return: func
     ***REMOVED***
-
     @functools.wraps(func)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args, **kwargs) -> Callable:
         coupon_data: Optional[dict] = kwargs.get('coupon_data')
         # either its dict in which case it may contain our data and we will find out below
         # or coupon_data is Null in which case it will raise an InputError
@@ -2111,7 +2103,7 @@ class CouponsView(Validators):
         manages the view instance for organization coupon codes..
     ***REMOVED***
 
-    def __init__(self):
+    def __init__(self) -> None:
         super(CouponsView, self).__init__()
 
     @get_coupon_data
