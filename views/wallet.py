@@ -829,7 +829,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
         wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
                                                          WalletModel.uid == uid).get()
 
-        if isinstance(wallet_instance, WalletModel):
+        if isinstance(wallet_instance, WalletModel) and wallet_instance.uid == uid:
             # NOTE: insure that this works or perform this operation in another way
             if isinstance(sub, int):
                 wallet_instance.available_funds.amount_cents -= sub
@@ -883,7 +883,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
         wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
                                                          WalletModel.uid == uid).get_async().get_result()
 
-        if isinstance(wallet_instance, WalletModel):
+        if isinstance(wallet_instance, WalletModel) and wallet_instance.uid == uid:
 
             # NOTE: insure that this works or perform this operation in another way
             if isinstance(sub, int):
