@@ -53,12 +53,9 @@ class Mailgun:
     async def __async_request(_url, json_data, headers) -> Optional[dict]:
         async with aiohttp.ClientSession() as session:
             async with session.post(url=_url, json=json_data, headers=headers) as response:
-                response, status = response
-                json_data = response.json()
-                if json_data.get('status'):
-                    user_data: dict = json_data.get('payload')
-                    return user_data
-                return None
+                response, _ = response
+                json_data: dict = response.json()
+                return json_data.get('payload') if json_data.get('status') else None
 
     @app_cache.memoize(timeout=return_ttl('short'))
     async def __get_user_data_async(self, organization_id: str, uid: str) -> Optional[dict]:
@@ -69,8 +66,8 @@ class Mailgun:
         :return:
         ***REMOVED***
         _url: str = f'{self._base_url}{self._admin_get_user_endpoint}'
-        json_data = dict(organization_id=organization_id, uid=uid, SECRET_KEY=self._secret_key)
-        headers = {'content-type': 'application/json'}
+        json_data: dict = dict(organization_id=organization_id, uid=uid, SECRET_KEY=self._secret_key)
+        headers: dict = {'content-type': 'application/json'}
         return await self.__async_request(_url=_url, json_data=json_data, headers=headers)
 
     @app_cache.memoize(timeout=return_ttl('short'))
@@ -84,7 +81,7 @@ class Mailgun:
         ***REMOVED***
         _url: str = f'{self._base_url}{self._admin_get_membership_plan_endpoint}'
         json_data = dict(organization_id=organization_id, uid=uid, SECRET_KEY=self._secret_key)
-        headers = {'content-type': 'application/json'}
+        headers: dict = {'content-type': 'application/json'}
         return await self.__async_request(_url=_url, json_data=json_data, headers=headers)
 
     @app_cache.memoize(timeout=return_ttl('short'))
