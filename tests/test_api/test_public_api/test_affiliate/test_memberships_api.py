@@ -22,6 +22,9 @@ class MembershipsQueryMock:
 
     def __init__(self) -> None:
         self.membership_instance.plan_id = create_id()
+        self.membership_instance.organization_id = config_instance.ORGANIZATION_ID
+        self.membership_instance.uid = create_id()
+        self.membership_instance.plan_id = create_id()
         self.membership_instance.payment_status = "paid"
         self.membership_instance.date_created = datetime.now()
         self.membership_instance.plan_start_date = datetime.now().date()
@@ -92,7 +95,7 @@ def test_create_membership(mocker) -> None:
     **test_create_membership**
         test if memberships can be created properly without errors
     :param mocker:
-    :return:
+    :return: None
     ***REMOVED***
     # Note: Patching put and Query Model requests so they do not perform the operations on the database
     mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
@@ -127,7 +130,7 @@ def test_memberships_create_memberships_un_auth(mocker) -> None:
         or if user isn't suppose to perform the action as needed
 
     :param mocker:
-    :return:
+    :return: None
     ***REMOVED***
     # Note: Patching put and Query Model requests so they do not perform the operations on the database
     mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
@@ -154,7 +157,7 @@ def test_create_memberships_input_errors(mocker) -> None:
         test create memberships in-case of faulty data
 
     :param mocker:
-    :return:
+    :return: None
     ***REMOVED***
     # Note: Patching put and Query Model requests so they do not perform the operations on the database
     mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
@@ -198,6 +201,7 @@ def test_update_membership(mocker) -> None:
     ***REMOVED***
     **test_update_membership**
         testing updated membership view function
+
     :param mocker: mocker module used to patch functions for testing purposes
     :return: None
     ***REMOVED***
@@ -236,7 +240,7 @@ def test_update_membership_input_errors(mocker) -> None:
             tries to run update membership with faulty data,  if an error is not raised
             the test fails
     :param mocker:
-    :return:
+    :return: None
     ***REMOVED***
     # Note: Patching put and Query Model requests so they do not perform the operations on the database
     mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
@@ -275,7 +279,7 @@ def test_set_membership_status(mocker) -> None:
         testing the ability to set membership payment status
 
     :param mocker:
-    :return:
+    :return: None
     ***REMOVED***
     mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
     mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
@@ -288,7 +292,7 @@ def test_set_membership_status(mocker) -> None:
         response, status = membership_view_instance.set_membership_payment_status(organization_id=organization_id,
                                                                                   uid=uid, status=status)
         response_data: dict = response.get_json()
-        assert status == status_codes.data_not_found_code, response_data['message']
+        assert status == status_codes.status_ok_code, response_data['message']
         assert response_data.get('payload') is not None, response_data['message']
 
     mocker.stopall()
@@ -331,7 +335,14 @@ def test_set_membership_status_errors(mocker) -> None:
 
 
 # noinspection PyShadowingNames
-def test_change_membership(mocker):
+def test_change_membership(mocker) -> None:
+    ***REMOVED***
+    **test_change_membership**
+        testing the ability to change_membership
+
+    :param mocker:
+    :return: None
+    ***REMOVED***
     mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
     membership_query_mock_instance = MembershipsQueryMock()
     membership_query_mock_instance.membership_instance.plan_id = membership_mock_data['plan_id']
@@ -346,17 +357,19 @@ def test_change_membership(mocker):
         mocker.patch('views.memberships.MembershipsView.plan_exist', return_value=True)
         response, status = membership_view_instance.change_membership(organization_id=organization_id, uid=uid,
                                                                       origin_plan_id=plan_id, dest_plan_id=dest_plan_id)
-        assert status == status_codes.data_not_found_code, "Unable to change membership"
+        assert status == status_codes.status_ok_code, "Unable to change membership"
 
     mocker.stopall()
 
 
 # noinspection PyShadowingNames
-def test_send_welcome_email(mocker):
+def test_send_welcome_email(mocker) -> None:
     ***REMOVED***
+    **test_send_welcome_email**
+        tests the ability to schedule a welcome email for members
 
     :param mocker:
-    :return:
+    :return: None
     ***REMOVED***
     mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
     mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
@@ -376,7 +389,13 @@ def test_send_welcome_email(mocker):
 
 
 # noinspection PyShadowingNames
-def test_plan_members_payment_status(mocker):
+def test_plan_members_payment_status(mocker) -> None:
+    ***REMOVED***
+    **test_plan_members_payment_status**
+        test the ability to return members with a certain payment status
+    :param mocker:
+    :return: None
+    ***REMOVED***
     mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
     mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
 
@@ -398,7 +417,13 @@ def test_plan_members_payment_status(mocker):
 
 
 # noinspection PyShadowingNames
-def test_return_plan_members(mocker):
+def test_return_plan_members(mocker) -> None:
+    ***REMOVED***
+    **test_return_plan_members**
+        testing the ability to return plan members
+    :param mocker:
+    :return: None
+    ***REMOVED***
     mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
     mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
 
@@ -417,7 +442,13 @@ def test_return_plan_members(mocker):
 
 
 # noinspection PyShadowingNames
-def test_is_member_off(mocker):
+def test_is_member_off(mocker) -> None:
+    ***REMOVED***
+    **test_is_member_off**
+        checks membership plan of a certain member
+    :param mocker:
+    :return: None
+    ***REMOVED***
     mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
     mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
 
@@ -429,13 +460,20 @@ def test_is_member_off(mocker):
 
         response_data: dict = response.get_json()
         assert isinstance(response_data, dict), 'badly formatted data'
-        assert status == status_codes.data_not_found_code, response_data['message']
+        assert status == status_codes.status_ok_code, response_data['message']
 
     mocker.stopall()
 
 
 # noinspection PyShadowingNames
-def test_payment_amount(mocker):
+def test_payment_amount(mocker) -> None:
+    ***REMOVED***
+    **test_payment_amount**
+        test the ability to return payment amount for a user
+
+    :param mocker:
+    :return: None
+    ***REMOVED***
     mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
     mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
     mocker.patch('views.memberships.MembershipPlansView._get_plan', return_value=MembershipPlansQueryMock().get())
@@ -446,5 +484,5 @@ def test_payment_amount(mocker):
         organization_id: str = config_instance.ORGANIZATION_ID
         response, status = membership_view_instance.payment_amount(organization_id=organization_id, uid=uid)
         response_data: dict = response.get_json()
-        assert status == status_codes.data_not_found_code, response_data['message']
+        assert status == status_codes.status_ok_code, response_data['message']
     mocker.stopall()
