@@ -10,7 +10,7 @@ __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
-from datetime import timedelta
+from datetime import timedelta, datetime
 from _cron.scheduler import task_scheduler
 from main import app_cache
 from typing import Optional, Callable
@@ -193,6 +193,6 @@ class CacheManager:
         :param kwargs:
         :return:
         ***REMOVED***
-        twenty_seconds_after = datetime_now() + timedelta(seconds=20)
+        twenty_seconds_after: datetime = datetime_now() + timedelta(seconds=20)
         task_scheduler.add_job(func=func, trigger='date', run_date=twenty_seconds_after, kwargs=kwargs, id=create_id(),
                                name="cache_deletion", misfire_grace_time=360)
