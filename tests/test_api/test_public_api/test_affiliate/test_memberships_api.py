@@ -375,7 +375,7 @@ def test_change_memberships_input_errors(mocker):
 
     with test_app().app_context():
         membership_view_instance: MembershipsView = MembershipsView()
-        uid: str = random.choice([None, "", " "])
+        uid: Optional[str] = random.choice([None, "", " "])
         organization_id: str = config_instance.ORGANIZATION_ID
         plan_id: str = membership_mock_data['plan_id']
         dest_plan_id: str = create_id()
@@ -384,22 +384,24 @@ def test_change_memberships_input_errors(mocker):
                                                        origin_plan_id=plan_id, dest_plan_id=dest_plan_id)
 
         uid: str = create_id()
-        organization_id: str = random.choice([None, "", " "])
+        organization_id: Optional[str] = random.choice([None, "", " "])
         with raises(InputError):
             membership_view_instance.change_membership(organization_id=organization_id, uid=uid,
                                                        origin_plan_id=plan_id, dest_plan_id=dest_plan_id)
 
-        organization_id: str  = create_id()
-        plan_id: str = random.choice([None, "", " "])
+        organization_id: str = create_id()
+        plan_id: Optional[str] = random.choice([None, "", " "])
         with raises(InputError):
             membership_view_instance.change_membership(organization_id=organization_id, uid=uid,
                                                        origin_plan_id=plan_id, dest_plan_id=dest_plan_id)
-        
 
+        plan_id: str = create_id()
+        dest_plan_id: Optional[str] = random.choice([None, "", " "])
+        with raises(InputError):
+            membership_view_instance.change_membership(organization_id=organization_id, uid=uid,
+                                                       origin_plan_id=plan_id, dest_plan_id=dest_plan_id)
 
-
-
-
+        mocker.stopall()
 
 # noinspection PyShadowingNames
 def test_send_welcome_email(mocker) -> None:
