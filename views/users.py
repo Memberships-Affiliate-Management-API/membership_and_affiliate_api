@@ -37,7 +37,7 @@ class UserEmails(Mailgun):
             used to send emails and notifications to users
     ***REMOVED***
 
-    def __init__(self):
+    def __init__(self) -> None:
         ***REMOVED***
            NOTE: initializing mail gun rest api
         ***REMOVED***
@@ -265,10 +265,10 @@ class Validators(UserValidators, OrgValidators):
         User Validators
     ***REMOVED***
 
-    def __init__(self):
+    def __init__(self) -> None:
         super(Validators, self).__init__()
-        self._max_retries = current_app.config.get('DATASTORE_RETRIES')
-        self._max_timeout = current_app.config.get('DATASTORE_TIMEOUT')
+        self._max_retries: int = current_app.config.get('DATASTORE_RETRIES')
+        self._max_timeout: int = current_app.config.get('DATASTORE_TIMEOUT')
 
     @staticmethod
     def check_required(organization_id: Optional[str], email: Optional[str],
@@ -293,7 +293,6 @@ class Validators(UserValidators, OrgValidators):
             message: str = "cell is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        pass
 
     @staticmethod
     def check_org_and_uid(organization_id: Optional[str], uid: Optional[str]) -> None:
@@ -311,7 +310,6 @@ class Validators(UserValidators, OrgValidators):
             message: str = "uid is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        pass
 
     def can_add_user(self, organization_id: Optional[str], email: Optional[str],
                      cell: Optional[str]) -> bool:
@@ -344,13 +342,17 @@ class UserView(Validators, UserEmails, CacheManager):
         User-View handling business logic for UserModel
     ***REMOVED***
 
-    def __init__(self):
+    def __init__(self) -> None:
         super(UserView, self).__init__()
+
+    @staticmethod
+    def is_user(user_instance: Optional[UserModel], _uid: str) -> bool:
+        return isinstance(user_instance, UserModel) and user_instance.uid == _uid
 
     def _create_unique_uid(self) -> str:
         _uid = create_id()
         user_instance: UserModel = UserModel.query(UserModel.uid == _uid).get()
-        return self._create_unique_uid() if isinstance(user_instance, UserModel) else _uid
+        return self._create_unique_uid() if self.is_user(user_instance=user_instance, _uid=_uid) else _uid
 
     # TODO - note that user manipulations invalidates organizations cache
 
