@@ -13,12 +13,12 @@ __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
-from datetime import timedelta
+from datetime import timedelta, datetime
 import requests
 from flask import current_app
 from _cron.scheduler import task_scheduler
 from config import config_instance
-from typing import List, Optional,Callable
+from typing import List, Optional, Callable, Coroutine
 import aiohttp
 import asyncio
 from main import app_cache
@@ -97,8 +97,8 @@ class Mailgun:
         ***REMOVED***
         # TODO ensure this endpoints works
         _url: str = f'{config_instance.BASE_URL}{self._admin_get_organization_endpoint}'
-        json_data = dict(organization_id=organization_id, SECRET_KEY=self._secret_key)
-        headers = {'content-type': 'application/json'}
+        json_data: dict = dict(organization_id=organization_id, SECRET_KEY=self._secret_key)
+        headers: dict = {'content-type': 'application/json'}
         return await self.__async_request(_url=_url, json_data=json_data, headers=headers)
 
     def __send_with_mailgun_rest_api(self, to_list: List[str], subject: str, text: str, html: str,
@@ -115,12 +115,12 @@ class Mailgun:
         :return: tuple indicating the status of the message sent
         ***REMOVED***
         # NOTE: from mail must be registered with MAILGUN
-        from_str = f'{config_instance.APP_NAME} <{self._mailgun_no_response_email}>'
-        to_str = to_list
-        api_instance = ("api", "{}".format(self._mailgun_api_key))
+        from_str: str = f'{config_instance.APP_NAME} <{self._mailgun_no_response_email}>'
+        to_str: List[str] = to_list
+        api_instance: tuple = ("api", f"{self._mailgun_api_key}")
         requests.post(url=self._mailgun_end_point, auth=api_instance,
-                      data={"from": from_str, "to": to_str, "subject": subject, "text": text, "html": html,
-                            "o:tag": o_tag})
+                      data={"from": from_str, "to": to_str, "subject": subject,
+                            "text": text, "html": html, "o:tag": o_tag})
 
         return True
 
@@ -133,8 +133,8 @@ class Mailgun:
         :return:
         ***REMOVED***
         event_loop = asyncio.get_event_loop()
-        tasks = [self.__get_user_data_async(organization_id=organization_id, uid=uid),
-                 self.__get_organization_data_async(organization_id=organization_id)]
+        tasks: List[Coroutine] = [self.__get_user_data_async(organization_id=organization_id, uid=uid),
+                                  self.__get_organization_data_async(organization_id=organization_id)]
         results, _ = event_loop.run_until_complete(asyncio.wait(tasks))
         user_data_future, organization_data_future = results
         user_data: dict = user_data_future.result()
@@ -157,7 +157,7 @@ class Mailgun:
         # Note: creating arguments dict
         _kwargs: dict = dict(to_list=[to_email], sbject=subject, text=text, html=html)
         # 5 seconds after now the email will be sent
-        five_seconds_after = datetime_now() + timedelta(seconds=5)
+        five_seconds_after: datetime = datetime_now() + timedelta(seconds=5)
         task_scheduler.add_job(func=self.__send_with_mailgun_rest_api, trigger='date', run_date=five_seconds_after,
                                kwargs=_kwargs, id=create_id(), name="do_schedule_mail_send", misfire_grace_time=360)
 
@@ -169,6 +169,6 @@ class Mailgun:
         :param kwargs:
         :return:
         ***REMOVED***
-        seconds_after = datetime_now() + timedelta(seconds=10)
+        seconds_after: datetime = datetime_now() + timedelta(seconds=10)
         task_scheduler.add_job(func=func, trigger='date', run_date=seconds_after, kwargs=kwargs, id=create_id(),
                                name="base_email_scheduler", misfire_grace_time=360)
