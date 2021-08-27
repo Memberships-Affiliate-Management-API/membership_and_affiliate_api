@@ -292,7 +292,7 @@ def test_set_membership_status(mocker) -> None:
         response, status = membership_view_instance.set_membership_payment_status(organization_id=organization_id,
                                                                                   uid=uid, status=status)
         response_data: dict = response.get_json()
-        assert status == status_codes.status_ok_code, response_data['message']
+        assert status == status_codes.successfully_updated_code, response_data['message']
         assert response_data.get('payload') is not None, response_data['message']
 
     mocker.stopall()
@@ -357,7 +357,7 @@ def test_change_membership(mocker) -> None:
         mocker.patch('views.memberships.MembershipsView.plan_exist', return_value=True)
         response, status = membership_view_instance.change_membership(organization_id=organization_id, uid=uid,
                                                                       origin_plan_id=plan_id, dest_plan_id=dest_plan_id)
-        assert status == status_codes.status_ok_code, "Unable to change membership"
+        assert status == status_codes.successfully_updated_code, "Unable to change membership"
 
     mocker.stopall()
 
