@@ -529,7 +529,7 @@ class MembershipsView(Validators, MembershipsEmails):
             membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                                  Memberships.uid == uid).get()
             new_member: bool = False
-            if not bool(membership_instance):
+            if not bool(membership_instance) and membership_instance.uid == uid:
                 membership_instance: Memberships = Memberships()
                 membership_instance.uid = uid
                 membership_instance.organization_id = organization_id
@@ -578,7 +578,7 @@ class MembershipsView(Validators, MembershipsEmails):
             membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                                  Memberships.uid == uid).get_async().get_result()
 
-            if not bool(membership_instance):
+            if not bool(membership_instance) and Memberships.uid == uid:
                 membership_instance: Memberships = Memberships()
 
                 membership_instance.uid = uid
