@@ -18,9 +18,9 @@ class Validators:
     ***REMOVED***
         **Utilities and Validators for GithubAuthView Class**
     ***REMOVED***
-    def __init__(self):
-        self._admin_check_user_endpoint = "_api/admin/users/is-user-unique"
-        self._base_url = current_app.config.get('BASE_URL')
+    def __init__(self) -> None:
+        self._admin_check_user_endpoint: str = "_api/admin/users/is-user-unique"
+        self._base_url: str = current_app.config.get('BASE_URL')
         self._user_dict: Optional[dict] = None
 
     def account_lookup(self, email: str) -> Optional[str]:
@@ -36,14 +36,14 @@ class Validators:
             return self._user_dict.get('uid')
 
         _url: str = "{}{}".format(self._base_url, self._admin_check_user_endpoint)
-        response, status = requests.post(url=_url, json=json.dumps(dict(email=email)))
-        user_instance_dict: dict = response.to_dict()
+        response, _ = requests.post(url=_url, json=json.dumps(dict(email=email)))
+        user_instance_dict: dict = response.get_json()
 
         # NOTE: if user is found it means there is a user with this record -
         # then return the uid of this user
         # TODO insure that one user can belong to multiple organizations with a single uid
         if user_instance_dict['status']:
-            self._user_dict = user_instance_dict
+            self._user_dict = user_instance_dict['payload']
             return self._user_dict.get('uid')
 
         return None
@@ -53,16 +53,14 @@ class Validators:
             **create_unique_id**
                 creates a unique user id
 
-        :return:
+        :return: str -> uid
         ***REMOVED***
         _uid: str = create_id()
-        _url: str = "{}{}".format(self._base_url, self._admin_check_user_endpoint)
-        response, status = requests.post(url=_url, json=json.dumps(dict(uid=_uid)))
+        _url: str = f"{self._base_url}{self._admin_check_user_endpoint}"
+        response, _ = requests.post(url=_url, json=json.dumps(dict(uid=_uid)))
         user_instance_dict: dict = response.to_dict()
         # if user not found then this means there is no user with such an ID
-        if not user_instance_dict['status']:
-            return _uid
-        self.create_unique_id()
+        return _uid if not user_instance_dict['status'] else self.create_unique_id()
 
 
 class GithubAuthView(Validators):
@@ -72,10 +70,10 @@ class GithubAuthView(Validators):
 
     ***REMOVED***
 
-    def __init__(self):
+    def __init__(self) -> None:
         super(GithubAuthView, self).__init__()
-        self._max_retries = current_app.config.get('DATASTORE_RETRIES')
-        self._max_timeout = current_app.config.get('DATASTORE_TIMEOUT')
+        self._max_retries: int = current_app.config.get('DATASTORE_RETRIES')
+        self._max_timeout: int = current_app.config.get('DATASTORE_TIMEOUT')
 
     @use_context
     @handle_view_errors
