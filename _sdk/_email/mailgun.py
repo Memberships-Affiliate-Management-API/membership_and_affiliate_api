@@ -60,7 +60,9 @@ class Mailgun:
     @app_cache.memoize(timeout=return_ttl('short'))
     async def __get_user_data_async(self, organization_id: str, uid: str) -> Optional[dict]:
         ***REMOVED***
+        **__get_user_data_async**
             from an api obtain user details related to the parameters
+
         :param organization_id: organization_id related to the user
         :param uid: uid of the user
         :return:
@@ -75,6 +77,7 @@ class Mailgun:
         ***REMOVED***
             **__get_membership_data_async**
                 asynchronously from an api obtain membership plan details related to the parameters
+
         :param organization_id:
         :param uid:
         :return:
@@ -89,6 +92,7 @@ class Mailgun:
         ***REMOVED***
             **__get_organization_data**
                 asynchronously returns the organization details based on the organization id and uid
+
         :param organization_id:
         :return:
         ***REMOVED***
@@ -109,7 +113,7 @@ class Mailgun:
         :param subject: the subject of the email
         :param text: the text part of the email
         :param html: the html part of the email
-        :return: tuple indicating the status of the message sent
+        :return: bool
         ***REMOVED***
         # NOTE: from mail must be registered with MAILGUN
         from_str: str = f'{config_instance.APP_NAME} <{self._mailgun_no_response_email}>'
@@ -125,9 +129,10 @@ class Mailgun:
         ***REMOVED***
         **return_organization_user**
         asynchronously returns organization data and user data
+
         :param organization_id:
         :param uid:
-        :return:
+        :return: tuple user_data, organization_data
         ***REMOVED***
         event_loop = asyncio.get_event_loop()
         tasks: List[Coroutine] = [self.__get_user_data_async(organization_id=organization_id, uid=uid),
@@ -148,7 +153,7 @@ class Mailgun:
         :param subject: subject of the email
         :param text: body in text format
         :param html: body in html format
-        :return: does not return anything
+        :return: None
         ***REMOVED***
         # Scheduling email to be sent later with mailgun api
         # Note: creating arguments dict
@@ -164,7 +169,7 @@ class Mailgun:
 
         :param func:
         :param kwargs:
-        :return:
+        :return: None
         ***REMOVED***
         seconds_after: datetime = datetime_now() + timedelta(seconds=10)
         task_scheduler.add_job(func=func, trigger='date', run_date=seconds_after, kwargs=kwargs, id=create_id(),
