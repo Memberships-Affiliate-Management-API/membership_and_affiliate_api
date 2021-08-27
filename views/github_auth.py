@@ -18,6 +18,7 @@ class Validators:
     ***REMOVED***
         **Utilities and Validators for GithubAuthView Class**
     ***REMOVED***
+
     def __init__(self) -> None:
         self._admin_check_user_endpoint: str = "_api/admin/users/is-user-unique"
         self._base_url: str = current_app.config.get('BASE_URL')
@@ -29,7 +30,7 @@ class Validators:
                 if the account with email address already exists on the users - records return the account uid
                 if not then return create a new uid and return it
         :param email: email address used to lookup account details
-        :return:
+        :return: uid -> str
         ***REMOVED***
 
         if self._user_dict and self._user_dict.get('email') == email.lower().strip():
@@ -63,6 +64,29 @@ class Validators:
         return _uid if not user_instance_dict['status'] else self.create_unique_id()
 
 
+def github_auth_get_user(user_details: dict) -> tuple:
+    ***REMOVED***
+    **github_auth_get_user**
+        obtain user details from user_details dict
+
+    :param user_details:
+    :return: tuple -> user details
+    ***REMOVED***
+    organization_id: Optional[str] = current_app.get('organization_id')
+    access_token: Optional[str] = user_details.get('access_token')
+    twitter_username: Optional[str] = user_details.get('twitter_username')
+    github_name: Optional[str] = user_details.get('github_name')
+    avatar_url: Optional[str] = user_details.get('avatar_url')
+    api_url: Optional[str] = user_details.get('api_url')
+    html_url: Optional[str] = user_details.get('html_url')
+    followers_url: Optional[str] = user_details.get('followers_url')
+    following_url: Optional[str] = user_details.get('following_url')
+    gists_url: Optional[str] = user_details.get('gists_url')
+    repos_url: Optional[str] = user_details.get('repos_url')
+    return (access_token, api_url, avatar_url, followers_url, following_url, gists_url, github_name, html_url,
+            organization_id, repos_url, twitter_username)
+
+
 class GithubAuthView(Validators):
     ***REMOVED***
         **Class GithubAuthView**
@@ -75,6 +99,7 @@ class GithubAuthView(Validators):
         self._max_retries: int = current_app.config.get('DATASTORE_RETRIES')
         self._max_timeout: int = current_app.config.get('DATASTORE_TIMEOUT')
 
+    # noinspection DuplicatedCode
     @use_context
     @handle_view_errors
     def create_user(self, user_details: dict) -> tuple:
@@ -82,7 +107,7 @@ class GithubAuthView(Validators):
             **create_user**
                 gets user details from user_details dict and then create a new user
         :param user_details:
-        :return:
+        :return: tuple
         ***REMOVED***
         email: Optional[str] = user_details.get('email')
         if not isinstance(email, str) or not bool(email.strip()):
@@ -97,19 +122,8 @@ class GithubAuthView(Validators):
 
         # NOTE: the users registration here is for the client dashboard section only
         # hence this is why we are using the organization_id of the main app
-        organization_id: Optional[str] = current_app.get('organization_id')
-
-        access_token: Optional[str] = user_details.get('access_token')
-
-        twitter_username: Optional[str] = user_details.get('twitter_username')
-        github_name: Optional[str] = user_details.get('github_name')
-        avatar_url: Optional[str] = user_details.get('avatar_url')
-        api_url: Optional[str] = user_details.get('api_url')
-        html_url: Optional[str] = user_details.get('html_url')
-        followers_url: Optional[str] = user_details.get('followers_url')
-        following_url: Optional[str] = user_details.get('following_url')
-        gists_url: Optional[str] = user_details.get('gists_url')
-        repos_url: Optional[str] = user_details.get('repos_url')
+        (access_token, api_url, avatar_url, followers_url, following_url, gists_url, github_name,
+         html_url, organization_id, repos_url, twitter_username) = github_auth_get_user(user_details)
 
         github_user_instance: GithubUser = GithubUser(
             uid=uid, organization_id=organization_id, access_token=access_token, email=email,
@@ -130,6 +144,8 @@ class GithubAuthView(Validators):
     @handle_view_errors
     def update_user(self, user_details: dict) -> tuple:
         ***REMOVED***
+        **update_user**
+            update github user
 
         :param user_details:
         :return:
@@ -144,24 +160,13 @@ class GithubAuthView(Validators):
             message: str = "uid is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        # TODO create a function to get this data
-        organization_id: Optional[str] = user_details.get('organization_id')
-        access_token: Optional[str] = user_details.get('access_token')
-
-        twitter_username: Optional[str] = user_details.get('twitter_username')
-        github_name: Optional[str] = user_details.get('github_name')
-        avatar_url: Optional[str] = user_details.get('avatar_url')
-        api_url: Optional[str] = user_details.get('api_url')
-        html_url: Optional[str] = user_details.get('html_url')
-        followers_url: Optional[str] = user_details.get('followers_url')
-        following_url: Optional[str] = user_details.get('following_url')
-        gists_url: Optional[str] = user_details.get('gists_url')
-        repos_url: Optional[str] = user_details.get('repos_url')
+        (access_token, api_url, avatar_url, followers_url, following_url, gists_url, github_name,
+         html_url, organization_id, repos_url, twitter_username) = github_auth_get_user(user_details)
 
         github_user_instance: Optional[GithubUser] = GithubUser.query(
             GithubUser.uid == GithubUser.uid, GithubUser.organization_id == organization_id).get()
 
-        if isinstance(github_user_instance, GithubUser):
+        if bool(github_user_instance):
             github_user_instance.email = email
             github_user_instance.twitter_username = twitter_username
             github_user_instance.github_name = github_name
@@ -191,6 +196,8 @@ class GithubAuthView(Validators):
     @handle_view_errors
     def delete_user(self, organization_id: Optional[str], uid: Optional[str]) -> tuple:
         ***REMOVED***
+        **delete_user**
+            delete github user
 
         :param organization_id:
         :param uid:
@@ -206,7 +213,7 @@ class GithubAuthView(Validators):
 
         user_instance: GithubUser = GithubUser.query(GithubUser.organization_id == organization_id,
                                                      GithubUser.uid == uid).get()
-        if isinstance(user_instance, GithubUser):
+        if bool(user_instance):
             user_instance.is_deleted = True
             key: Optional[ndb.Key] = user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
 
@@ -225,6 +232,8 @@ class GithubAuthView(Validators):
     @handle_view_errors
     def get_user(self, organization_id: Optional[str], uid: Optional[str]) -> tuple:
         ***REMOVED***
+        **get_user**
+            fetch github user
 
         :param organization_id:
         :param uid:
@@ -240,7 +249,7 @@ class GithubAuthView(Validators):
 
         github_user_instance: GithubUser = GithubUser.query(GithubUser.organization_id == organization_id,
                                                             GithubUser.uid == uid).get()
-        if isinstance(github_user_instance, GithubUser):
+        if bool(github_user_instance):
             message: str = 'user record found'
             return jsonify({'status': True, 'payload': github_user_instance.to_dict(),
                             'message': message}), status_codes.status_ok_code
@@ -252,6 +261,8 @@ class GithubAuthView(Validators):
     @handle_view_errors
     def return_organization_users(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
+        **return_organization_users**
+            return organizational users
 
         :param organization_id:
         :return:
