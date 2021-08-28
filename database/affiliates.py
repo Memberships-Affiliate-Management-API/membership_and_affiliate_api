@@ -204,8 +204,8 @@ class Recruits(BaseModel):
     datetime_updated: datetime = ndb.DateTimeProperty(auto_now=True, validator=property_.set_date)
     is_member: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
     # TODO - test this first may need to remove plan ID
-    recruit_plan_id: str = ndb.StringProperty(
-        validator=property_.set_id)  # Membership plan id allows to get payment fees
+    # Membership plan id allows to get payment fees
+    recruit_plan_id: str = ndb.StringProperty(validator=property_.set_id)
     is_active: bool = ndb.BooleanProperty(default=True, validator=property_.set_bool)
     is_deleted: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
 
