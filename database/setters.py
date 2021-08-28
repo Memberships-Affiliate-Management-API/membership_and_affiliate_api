@@ -321,7 +321,7 @@ class PropertySetters(Events, Util):
 
         if temp not in property_.return_payment_status_list():
             message: str = f***REMOVED***Status should either paid or unpaid this {value} is not a valid status***REMOVED***
-            raise TypeError("f{message} invalid status")
+            raise TypeError(f"{message} invalid status")
 
         return temp
 
@@ -335,12 +335,12 @@ class PropertySetters(Events, Util):
         :param value: string
         :return:
         ***REMOVED***
-        class_name: str = property_.return_property_name(prop=prop)
+        property_name: str = property_.return_property_name(prop=prop)
         if not (isinstance(value, str)):
-            raise TypeError("Is an instance of : {} , and can only be a string".format(class_name))
+            raise TypeError(f"Is an instance of : {property_name} , and can only be a string")
 
         if not bool(value.strip()):
-            raise ValueError("is an Instance of : {} , and cannot be Null".format(class_name))
+            raise ValueError(f"is an Instance of : {property_name} , and cannot be Null")
 
         return escape(value.strip().lower())
 
@@ -355,18 +355,18 @@ class PropertySetters(Events, Util):
         :param value:
         :return:
         ***REMOVED***
-        class_name: str = property_.return_property_name(prop=prop)
+        property_name: str = property_.return_property_name(prop=prop)
         if not (isinstance(value, str)):
-            raise TypeError("scheduled term, is an instance of : {} ,  and can only be a string ".format(class_name))
+            raise TypeError(f"scheduled term, is an instance of : {property_name} ,  and can only be a string ")
 
         if not bool(value.strip()):
-            raise ValueError("schedule term, is an instance of : {}, and cannot be Null".format(class_name))
+            raise ValueError(f"schedule term, is an instance of : {property_name}, and cannot be Null")
 
         temp = value.strip().lower()
         # TODO - Rewrite this or create a translator for paypal plans payment schedule
         schedule_terms: typing.List[str] = get_plan_scheduled_terms()
         if temp not in schedule_terms:
-            raise ValueError("scheduled term, can only be one of the following values : {} ".format(schedule_terms))
+            raise ValueError(f"scheduled term, can only be one of the following values : {schedule_terms}")
         return temp
 
     @staticmethod
@@ -379,13 +379,12 @@ class PropertySetters(Events, Util):
         :param value: value to set
         :return: scheduled day as integer
         ***REMOVED***
-        class_name: str = property_.return_property_name(prop=prop)
-
+        property_name: str = property_.return_property_name(prop=prop)
         if not (isinstance(value, int)):
-            raise TypeError('scheduled day, is an instance of : {}, and can only be an integer'.format(class_name))
+            raise TypeError(f'scheduled day, is an instance of : {property_name}, and can only be an integer')
         if value not in get_scheduled_term_days():
-            message: str = '''scheduled day, is an instance of : {}, and can 
-            only be a value between 1 -> 5 of every month'''.format(class_name)
+            message: str = f'''scheduled day, is an instance of : {property_name}, and can only be a value 
+            between 1 -> 5 of every month'''
             raise ValueError(message)
         return value
 
@@ -400,12 +399,12 @@ class PropertySetters(Events, Util):
         :param value: value being set must be integer
         :return: valid integer
         ***REMOVED***
-        class_name: str = property_.return_property_name(prop=prop)
+        property_name: str = property_.return_property_name(prop=prop)
         if not (isinstance(value, int)):
-            raise TypeError('Number, is a instance of : {}, and can only be an integer'.format(class_name))
+            raise TypeError(f'Number, is a instance of : {property_name}, and can only be an integer')
 
         if value < 0:
-            raise TypeError("Number, is an instance of :{} and cannot accept negative numbers".format(class_name))
+            raise TypeError(f"Number, is an instance of :{property_name} and cannot accept negative numbers")
 
         return value
 
