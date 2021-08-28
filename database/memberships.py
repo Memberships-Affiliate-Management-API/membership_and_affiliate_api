@@ -12,6 +12,7 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
 import typing
+from typing import Optional
 from datetime import datetime, date
 from google.cloud import ndb
 from config.exception_handlers import handle_store_errors
@@ -56,7 +57,7 @@ class PlanValidators:
     # noinspection DuplicatedCode
     @staticmethod
     @handle_store_errors
-    def plan_exist(organization_id: str, plan_id: str) -> typing.Union[None, bool]:
+    def plan_exist(organization_id: str, plan_id: str) -> Optional[bool]:
         ***REMOVED***
             **plan_exist**
                 checks if plan exist using plan_id if this is the case the returns True else False
@@ -82,7 +83,7 @@ class PlanValidators:
     # noinspection DuplicatedCode
     @staticmethod
     @handle_store_errors
-    async def plan_exist_async(organization_id: str, plan_id: str) -> typing.Union[None, bool]:
+    async def plan_exist_async(organization_id: str, plan_id: str) -> Optional[bool]:
         ***REMOVED***
             **asynchronous version of of plan_exist_async**
                 checks if plan already exist returns True if it does - uses plan id to check
@@ -109,7 +110,7 @@ class PlanValidators:
     # noinspection DuplicatedCode
     @staticmethod
     @handle_store_errors
-    def plan_name_exist(organization_id: str, plan_name: str) -> typing.Union[None, bool]:
+    def plan_name_exist(organization_id: str, plan_name: str) -> Optional[bool]:
         ***REMOVED***
             **plan_name_exist**
                 checks if a plan exists by using the plan name , if plan is found returns True, False otherwise
@@ -136,7 +137,7 @@ class PlanValidators:
     # noinspection DuplicatedCode
     @staticmethod
     @handle_store_errors
-    async def plan_name_exist_async(organization_id: str, plan_name: str) -> typing.Union[None, bool]:
+    async def plan_name_exist_async(organization_id: str, plan_name: str) -> Optional[bool]:
         ***REMOVED***
             **async version of plan_name_exist**
                 returns true in-case the plan name is already taken false otherwise
@@ -165,13 +166,13 @@ class CouponsValidator:
         **Class Coupons Validator**
             validating input and authenticating calls to Coupons database
     ***REMOVED***
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
     # noinspection DuplicatedCode
     @staticmethod
     @handle_store_errors
-    def coupon_exist(organization_id: str, code: str) -> typing.Union[None, bool]:
+    def coupon_exist(organization_id: str, code: str) -> Optional[bool]:
         ***REMOVED***
         **coupon_exist**
             checks if a coupon is already created
@@ -196,7 +197,7 @@ class CouponsValidator:
     # noinspection DuplicatedCode
     @staticmethod
     @handle_store_errors
-    async def coupon_exist_async(organization_id: str, code: str) -> typing.Union[None, bool]:
+    async def coupon_exist_async(organization_id: str, code: str) -> Optional[bool]:
         ***REMOVED***
         **coupon_exist_async**
             an asynchronous version of coupon_exist
@@ -449,15 +450,17 @@ class MembershipInvoices(BaseModel):
             return False
         return True
 
-    def __sub__(self, other) -> int:
+    def __sub__(self, other) -> AmountMixin:
         if self.payment_amount.currency != other.payment_amount.currency:
             raise TypeError("Incompatible currencies")
-        return self.payment_amount.amount_cents - other.payment_amount.amount_cents
+        self.payment_amount.amount_cents -= other.payment_amount.amount_cents
+        return self.payment_amount
 
-    def __add__(self, other) -> int:
+    def __add__(self, other) -> AmountMixin:
         if self.payment_amount.currency != other.payment_amount.currency:
             raise TypeError("Incompatible currencies")
-        return self.payment_amount.amount_cents + other.payment_amount.amount_cents
+        self.payment_amount.amount_cents += other.payment_amount.amount_cents
+        return self.payment_amount
 
     def __str__(self) -> str:
         return "<Invoice invoice_number: organization_id: {}, uid: {}, plan_id: {}, invoice_id: {}, " \
