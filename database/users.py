@@ -275,6 +275,7 @@ class GithubUser(BaseModel):
     ***REMOVED***
     uid: str = ndb.StringProperty(required=True, validator=property_.set_id)
     organization_id: str = ndb.StringProperty(required=True, validator=property_.set_id)
+    # TODO - May need to exclude access_token from to_dict results
     access_token: str = ndb.StringProperty(required=True, validator=property_.set_string)
     email: str = ndb.StringProperty(required=True, validator=property_.set_email)
     twitter_username: str = ndb.StringProperty(validator=property_.set_string)
