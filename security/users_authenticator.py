@@ -200,7 +200,7 @@ def handle_users_auth(func):
                 # NOTE: using client api to access user details
                 current_user: Optional[dict] = send_get_user_request(uid=uid)
                 if not isinstance(current_user, dict):
-                    message = '''Error connecting to database or user does not exist'''
+                    message: str = '''Error connecting to database or user does not exist'''
                     flash(message, 'warning')
                     current_user: Optional[dict] = None
             else:
