@@ -16,9 +16,6 @@ from flask import escape
 from datetime import datetime, date
 from google.cloud import ndb
 from phonenumbers import NumberParseException
-
-from config import config_instance
-from utils import utils
 from utils.utils import get_payment_methods, get_plan_scheduled_terms, get_scheduled_term_days
 import re
 import socket
@@ -66,15 +63,15 @@ class Util:
         return ['withdrawal', 'deposit', 'refund']
 
     @staticmethod
-    def return_class_name(prop: ndb.Property) -> str:
+    def return_property_name(prop: ndb.Property) -> str:
         ***REMOVED***
-            **return_class_name**
+            **return_property_name**
                 Returns the name of the ndb property
 
             :param prop: -> ndb.Property
             :return str: -> name of class
         ***REMOVED***
-        return prop.__class__.__name__
+        return prop._code_name
 
     @staticmethod
     def regex_check_email(email: str) -> bool:
@@ -197,15 +194,13 @@ class PropertySetters(Events, Util):
         :param value: value as id to set
         :return: returns id as string
         ***REMOVED***
-        class_name: str = property_.return_class_name(prop=prop)
+        property_name: str = property_.return_property_name(prop=prop)
         if not (isinstance(value, str)):
-            message: str = '''isinstance ID, should be an instance of : {} , and should represent an instance id'''.format(
-                class_name)
+            message: str = f'''isinstance ID, should be an instance of : {property_name} , and should represent an _id'''
             raise ValueError(message)
 
         if not bool(value.strip()):
-            raise ValueError(
-                "isinstance ID, should be an instance of : {} , and  cannot be Null".format(str(class_name)))
+            raise ValueError(f"isinstance ID, should be an instance of : {property_name} , and  cannot be Null")
 
         return value.strip()
 
@@ -218,13 +213,13 @@ class PropertySetters(Events, Util):
         :param value: coupon code
         :return:
         ***REMOVED***
-        class_name: str = property_.return_class_name(prop=prop)
+        property_name: str = property_.return_property_name(prop=prop)
         if not (isinstance(value, str)):
-            raise ValueError("Coupon Code, is an instance of: {} , and can only be a string".format(str(class_name)))
+            raise ValueError(f"Coupon Code, is an instance of: {property_name} , and can only be a string")
 
         if len(value.strip()) != property_._max_coupon_code_len:
-            message: str = ***REMOVED***Coupon Code, is an instance of: {} , and must be 12 characters long
-            ***REMOVED***.format(str(class_name))
+            message: str = f"Coupon Code, is an instance of: {property_name} , and must be 12 characters long"
+
             raise ValueError(message)
 
         return value.strip().lower()
@@ -241,14 +236,13 @@ class PropertySetters(Events, Util):
         :param value: paypal_address to set once validated
          :return: valid paypal_address only
         ***REMOVED***
-        class_name: str = property_.return_class_name(prop=prop)
+        property_name: str = property_.return_property_name(prop=prop)
         if not isinstance(value, str):
-            message: str = ***REMOVED***paypal address, an instance of: {} , and can only be a string representing 
-            a paypal email address***REMOVED***.format(class_name)
+            message: str = f"{property_name} , can only be a string representing paypal_address"
             raise ValueError(message)
 
         if not bool(value.strip()):
-            raise ValueError("paypal address, is an instance of : {} , and cannot be Null".format(class_name))
+            raise ValueError(f"{property_name} , cannot be Null")
 
         if property_.regex_check_email(email=value.strip().lower()):
             return value.strip().lower()
@@ -259,13 +253,14 @@ class PropertySetters(Events, Util):
         ***REMOVED***
             **set_transaction_types**
                 validated and set transaction_types
+
         :param prop: property representing transaction_types
         :param value: transaction type to check
         :return: valid transaction type, return to set
         ***REMOVED***
-        class_name: str = property_.return_class_name(prop=prop)
+        property_name: str = property_.return_property_name(prop=prop)
         if not (isinstance(value, str)):
-            raise ValueError("transaction_type, is an instance of : {} , and can only be a string".format(class_name))
+            raise ValueError(f"transaction_type, is an instance of : {property_name} , and can only be a string")
 
         # NOTE: valid transaction types "withdrawal", "deposit", "refund"
         if value.strip().lower() not in property_.return_transaction_types():
@@ -279,13 +274,14 @@ class PropertySetters(Events, Util):
             **set_datetime**
                 checks if value is a python datetime type, if not raise a type error indicating
                 what i should be
+
         :param prop: datetime property to set if value is also a python datetime value
         :param value: python datetime
         :return: datetime
         ***REMOVED***
-        class_name: str = property_.return_class_name(prop=prop)
+        property_name: str = property_.return_property_name(prop=prop)
         if not (isinstance(value, datetime)):
-            raise TypeError("datetime, is an instance of : {} , must represent a valid python date".format(class_name))
+            raise TypeError(f"datetime, is an instance of : {property_name} , must represent a valid python date")
         return value
 
     @staticmethod
@@ -293,13 +289,14 @@ class PropertySetters(Events, Util):
         ***REMOVED***
             **set_bool**
                 checks if value is boolean if not raises a TypeError, then returns the value if valid
+
         :param prop: property boolean to set if value is a boolean
         :param value: boolean value
         :return: returns value as boolean
         ***REMOVED***
-        class_name: str = property_.return_class_name(prop=prop)
+        property_name: str = property_.return_property_name(prop=prop)
         if not (isinstance(value, bool)):
-            raise TypeError("boolean, is an instance of : {} , and can only be Either True or False".format(class_name))
+            raise TypeError(f"boolean, is an instance of : {property_name} , and can only be Either True or False")
         return value
 
     @staticmethod
@@ -307,23 +304,24 @@ class PropertySetters(Events, Util):
         ***REMOVED***
             **set payment status**
                 only two valid statuses paid and unpaid check if input is valid and set
+
         :param prop:
         :param value:
         :return:
         ***REMOVED***
-        class_name: str = property_.return_class_name(prop=prop)
+        property_name: str = property_.return_property_name(prop=prop)
         if not (isinstance(value, str)):
-            message: str = ***REMOVED***status, is an instance of : {} , and can only be a string 
-            representing payment status***REMOVED***.format(class_name)
+            message: str = f***REMOVED***status, is an instance of : {property_name} , and can only be a string 
+            representing payment status***REMOVED***
             raise TypeError(message)
 
         temp = value.strip().lower()
         if not bool(temp):
-            raise ValueError("status, is an instance of : {} , and cannot be Null".format(class_name))
+            raise ValueError(f"status, is an instance of : {property_name} , and cannot be Null")
 
         if temp not in property_.return_payment_status_list():
-            message: str = ***REMOVED*** status should either paid or unpaid this {} is not a valid status***REMOVED***.format(value)
-            raise TypeError("{} invalid status".format(message))
+            message: str = f***REMOVED***Status should either paid or unpaid this {value} is not a valid status***REMOVED***
+            raise TypeError("f{message} invalid status")
 
         return temp
 
@@ -332,11 +330,12 @@ class PropertySetters(Events, Util):
         ***REMOVED***
             **Generic String Setter**
                 checks only that a string is a string
+
         :param prop: ndb -> property being set
         :param value: string
         :return:
         ***REMOVED***
-        class_name: str = property_.return_class_name(prop=prop)
+        class_name: str = property_.return_property_name(prop=prop)
         if not (isinstance(value, str)):
             raise TypeError("Is an instance of : {} , and can only be a string".format(class_name))
 
@@ -348,13 +347,15 @@ class PropertySetters(Events, Util):
     @staticmethod
     def set_schedule_term(prop: ndb.StringProperty, value: typing.Union[str, None]) -> str:
         ***REMOVED***
+        **set_schedule_term**
             set scheduled term - raises an error if scheduled term is not a string or not one of
             the valid scheduled terms
+
         :param prop:
         :param value:
         :return:
         ***REMOVED***
-        class_name: str = property_.return_class_name(prop=prop)
+        class_name: str = property_.return_property_name(prop=prop)
         if not (isinstance(value, str)):
             raise TypeError("scheduled term, is an instance of : {} ,  and can only be a string ".format(class_name))
 
@@ -371,13 +372,14 @@ class PropertySetters(Events, Util):
     @staticmethod
     def set_schedule_day(prop: ndb.IntegerProperty, value: typing.Union[int, None]) -> int:
         ***REMOVED***
+        **set_schedule_day**
             set scheduled day for this plan depending on this plans scheduled term the transaction will
             be made on the first transaction day coinciding with the scheduled term
         :param prop: scheduled day property
         :param value: value to set
         :return: scheduled day as integer
         ***REMOVED***
-        class_name: str = property_.return_class_name(prop=prop)
+        class_name: str = property_.return_property_name(prop=prop)
 
         if not (isinstance(value, int)):
             raise TypeError('scheduled day, is an instance of : {}, and can only be an integer'.format(class_name))
@@ -390,6 +392,7 @@ class PropertySetters(Events, Util):
     @staticmethod
     def set_number(prop: ndb.IntegerProperty, value: typing.Union[int, None]) -> int:
         ***REMOVED***
+        **set_number**
             set an integer number into a database property
             will check if input is really an integer and then returns the number if not
             raises TypeError if value is out of range will raise a ValueError
@@ -397,7 +400,7 @@ class PropertySetters(Events, Util):
         :param value: value being set must be integer
         :return: valid integer
         ***REMOVED***
-        class_name: str = property_.return_class_name(prop=prop)
+        class_name: str = property_.return_property_name(prop=prop)
         if not (isinstance(value, int)):
             raise TypeError('Number, is a instance of : {}, and can only be an integer'.format(class_name))
 
@@ -417,7 +420,7 @@ class PropertySetters(Events, Util):
         :param value: value to set to property
         :return: returns valid date only
         ***REMOVED***
-        class_name: str = property_.return_class_name(prop=prop)
+        class_name: str = property_.return_property_name(prop=prop)
         if not (isinstance(value, date)):
             raise TypeError("date is an instance of : {}, and can only be an instance of date".format(class_name))
         return value
@@ -432,7 +435,7 @@ class PropertySetters(Events, Util):
         :param value: the value to set
         :return: returns a payment method as string
         ***REMOVED***
-        class_name: str = property_.return_class_name(prop=prop)
+        class_name: str = property_.return_property_name(prop=prop)
         if not (isinstance(value, str)):
             message: str = ***REMOVED***payment method, is an instance of : {}, and can only be a string representing a 
             valid payment method***REMOVED***.format(class_name)
@@ -455,7 +458,7 @@ class PropertySetters(Events, Util):
         :param value: percentage as integer to set in property
         :return: percentage as an integer
         ***REMOVED***
-        class_name: str = property_.return_class_name(prop=prop)
+        class_name: str = property_.return_property_name(prop=prop)
         utils_instance: Util = Util()
 
         if not isinstance(value, int):
@@ -480,7 +483,7 @@ class PropertySetters(Events, Util):
         :return: will return currency symbol representing a string
         ***REMOVED***
         from config.currencies import currency_util
-        class_name: str = property_.return_class_name(prop=prop)
+        class_name: str = property_.return_property_name(prop=prop)
         if not (isinstance(value, str)):
             message: str = '''Currency is an Instance of : {}, and should be a string representation 
             of a currency symbol'''.format(class_name)
@@ -521,7 +524,7 @@ class PropertySetters(Events, Util):
         :param value: cell number
         :return: formatted cell number as string
         ***REMOVED***
-        class_name: str = property_.return_class_name(prop=prop)
+        class_name: str = property_.return_property_name(prop=prop)
         if not isinstance(value, str):
             message: str = '''An Instance of: {} : should be a string representing a 
             cell number in international format'''.format(class_name)
@@ -542,7 +545,7 @@ class PropertySetters(Events, Util):
             :return: password in hash format
         ***REMOVED***
         from werkzeug.security import generate_password_hash
-        class_name: str = property_.return_class_name(prop=prop)
+        class_name: str = property_.return_property_name(prop=prop)
         if not isinstance(value, str):
             message: str = '''password is an instance of : {} :  should be a string representing 
             user password'''.format(class_name)
@@ -564,7 +567,7 @@ class PropertySetters(Events, Util):
         :param value: amount in integer representing cents
         :return: integer representing money in cents of whatever currency is being represented
         ***REMOVED***
-        class_name: str = property_.return_class_name(prop=prop)
+        class_name: str = property_.return_property_name(prop=prop)
         if not (isinstance(value, int)):
             message: str = '''Amount is an instance of : {} : can only be an Integer 
             representing money in cents'''.format(class_name)
@@ -588,7 +591,7 @@ class PropertySetters(Events, Util):
             :param: value: value in string format representing a domain name
             :return: str representing verified domain name
         ***REMOVED***
-        class_name: str = property_.return_class_name(prop=prop)
+        class_name: str = property_.return_property_name(prop=prop)
         if not (isinstance(value, str)):
             message: str = ***REMOVED***domain, is an instance of : {} and can only be a string, representing 
             a valid domain name***REMOVED***.format(class_name)

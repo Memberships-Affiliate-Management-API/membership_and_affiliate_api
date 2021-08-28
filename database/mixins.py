@@ -28,11 +28,11 @@ class AmountMixin(BaseModel):
     currency: str = ndb.StringProperty(default=config_instance.CURRENCY, validator=property_.set_currency)
 
     @property
-    def amount(self):
+    def amount(self) -> int:
         return self.amount_cents
 
     @amount.setter
-    def amount(self, value):
+    def amount(self, value) -> None:
         self.amount_cents = value
 
     def __eq__(self, other) -> bool:
