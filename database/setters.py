@@ -419,9 +419,9 @@ class PropertySetters(Events, Util):
         :param value: value to set to property
         :return: returns valid date only
         ***REMOVED***
-        class_name: str = property_.return_property_name(prop=prop)
+        property_name: str = property_.return_property_name(prop=prop)
         if not (isinstance(value, date)):
-            raise TypeError("date is an instance of : {}, and can only be an instance of date".format(class_name))
+            raise TypeError(f"date is an instance of : {property_name}, and can only be an instance of date")
         return value
 
     @staticmethod
@@ -434,15 +434,15 @@ class PropertySetters(Events, Util):
         :param value: the value to set
         :return: returns a payment method as string
         ***REMOVED***
-        class_name: str = property_.return_property_name(prop=prop)
+        property_name: str = property_.return_property_name(prop=prop)
         if not (isinstance(value, str)):
-            message: str = ***REMOVED***payment method, is an instance of : {}, and can only be a string representing a 
-            valid payment method***REMOVED***.format(class_name)
+            message: str = f***REMOVED***payment method, is an instance of : {property_name}, and can only be a string 
+            representing a valid payment method***REMOVED***
             raise TypeError(message)
 
         if value.lower().strip() not in get_payment_methods():
-            message: str = ***REMOVED***this value : {}, is not a valid payment method, 
-            supported payment methods are : {}***REMOVED***.format(value, get_payment_methods())
+            message: str = f***REMOVED***this value : {value}, is not a valid payment method, supported payment 
+            methods are : {get_payment_methods()}***REMOVED***
             raise ValueError(message)
 
         return value.lower().strip()
@@ -457,17 +457,17 @@ class PropertySetters(Events, Util):
         :param value: percentage as integer to set in property
         :return: percentage as an integer
         ***REMOVED***
-        class_name: str = property_.return_property_name(prop=prop)
+        property_name: str = property_.return_property_name(prop=prop)
         utils_instance: Util = Util()
 
         if not isinstance(value, int):
-            message: str = ***REMOVED***Percent is an instance of : {} and can only be an 
-            integer representing a percentage***REMOVED***.format(class_name)
+            message: str = f***REMOVED***Percent is an instance of : {property_name} and can only be an 
+            integer representing a percentage***REMOVED***
             raise TypeError(message)
 
         if utils_instance.percent_valid(percent=value):
-            message: str = ***REMOVED***This value : {}, is not a valid Percentage, percent may be a value 
-            from 0 to 100***REMOVED***.format(value)
+            message: str = f***REMOVED***This value : {value}, is not a valid Percentage, percent may be a value 
+            from 0 to 100***REMOVED***
             raise ValueError(message)
         return value
 
@@ -482,13 +482,13 @@ class PropertySetters(Events, Util):
         :return: will return currency symbol representing a string
         ***REMOVED***
         from config.currencies import currency_util
-        class_name: str = property_.return_property_name(prop=prop)
+        property_name: str = property_.return_property_name(prop=prop)
         if not (isinstance(value, str)):
-            message: str = '''Currency is an Instance of : {}, and should be a string representation 
-            of a currency symbol'''.format(class_name)
+            message: str = f'''Currency is an Instance of : {property_name}, and should be a string representation 
+            of a currency symbol'''
             raise TypeError(message)
         if value not in currency_util.currency_symbols():
-            raise ValueError("This value : {} is not a valid currency symbol".format(value))
+            raise ValueError(f"This value : {value} is not a valid currency symbol")
         return value
 
     # noinspection PyUnusedLocal,DuplicatedCode
@@ -501,17 +501,17 @@ class PropertySetters(Events, Util):
             :param value: email address
             :param prop: email property
         ***REMOVED***
+        property_name: str = property_.return_property_name(prop=prop)
         if not (isinstance(value, str)):
-            message: str = '''An Instance of : {} ::  can only be a string representing email'''.format(
-                str(prop.__class__.__name__))
+            message: str = f"An Instance of : {property_name} ::  can only be a string representing email"
             raise ValueError(message)
 
         if not bool(value.strip()):
-            raise ValueError(" {} cannot be Null".format(str(prop.__class__.__name__)))
+            raise ValueError(f"{property_name} cannot be Null")
 
         if property_.regex_check_email(email=value.strip().lower()):
             return value.strip().lower()
-        raise ValueError(" {} is not a valid email address".format(value))
+        raise ValueError(f" {value} is not a valid email address")
 
     @staticmethod
     def set_cell(prop: ndb.StringProperty, value: typing.Union[str, None]) -> str:
@@ -523,14 +523,14 @@ class PropertySetters(Events, Util):
         :param value: cell number
         :return: formatted cell number as string
         ***REMOVED***
-        class_name: str = property_.return_property_name(prop=prop)
+        property_name: str = property_.return_property_name(prop=prop)
         if not isinstance(value, str):
-            message: str = '''An Instance of: {} : should be a string representing a 
-            cell number in international format'''.format(class_name)
+            message: str = f'''An Instance of: {property_name} : should be a string representing a 
+            cell number in international format'''
             raise TypeError(message)
         if property_.regex_check_cell(cell=value.strip()):
             return property_.format_cell_number(cell=value)
-        raise ValueError("This value: {} , is not a valid cell number".format(value))
+        raise ValueError(f"This value: {value} , is not a valid cell number")
 
     # noinspection PyUnusedLocal
     @staticmethod
