@@ -78,3 +78,12 @@ class BaseModel(ndb.Model):
         :return: ndb instance fetched by key
         ***REMOVED***
         return ndb.Key(urlsafe=key).get()
+
+    def property_names_list(self) -> List[str]:
+        ***REMOVED***
+        **property_names_list**
+            returns a list of property names
+
+        :return: List[str]
+        ***REMOVED***
+        return [prop._code_name for prop in self._properties.values()]
