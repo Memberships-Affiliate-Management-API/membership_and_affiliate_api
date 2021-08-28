@@ -566,16 +566,16 @@ class PropertySetters(Events, Util):
         :param value: amount in integer representing cents
         :return: integer representing money in cents of whatever currency is being represented
         ***REMOVED***
-        class_name: str = property_.return_property_name(prop=prop)
+        property_name: str = property_.return_property_name(prop=prop)
         if not (isinstance(value, int)):
-            message: str = '''Amount is an instance of : {} : can only be an Integer 
-            representing money in cents'''.format(class_name)
+            message: str = f'''Amount is an instance of : {property_name} : can only be an Integer 
+            representing money in cents'''
             raise TypeError(message)
 
         # NOTE: does not allow negative values
         if value < 0:
-            message: str = ***REMOVED***This value : {} , is not valid, it must be a currency amount in cents and 
-            must always be a positive integer***REMOVED***.format(value)
+            message: str = f***REMOVED***This value : {value} , is not valid, it must be a currency amount in cents and 
+            must always be a positive integer***REMOVED***
             raise ValueError(message)
 
         return value
@@ -590,10 +590,10 @@ class PropertySetters(Events, Util):
             :param: value: value in string format representing a domain name
             :return: str representing verified domain name
         ***REMOVED***
-        class_name: str = property_.return_property_name(prop=prop)
+        property_name: str = property_.return_property_name(prop=prop)
         if not (isinstance(value, str)):
-            message: str = ***REMOVED***domain, is an instance of : {} and can only be a string, representing 
-            a valid domain name***REMOVED***.format(class_name)
+            message: str = f***REMOVED***domain, is an instance of : {property_name} and can only be a string, representing 
+            a valid domain name***REMOVED***
             raise TypeError(message)
 
         domain = value.strip()
@@ -601,7 +601,7 @@ class PropertySetters(Events, Util):
         domain_valid = property_.resolve_domain_name(domain=domain)
         if regex_passes and domain_valid:
             return domain
-        raise ValueError("This value : {} is not a valid domain name, or the domain may not be accessible".format(value))
+        raise ValueError(f"This value : {value} is not a valid domain name, or the domain may not be accessible")
 
 
 property_: PropertySetters = PropertySetters()
