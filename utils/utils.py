@@ -9,7 +9,6 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
 import os
-import re
 import datetime
 import random
 import string
@@ -49,7 +48,7 @@ def is_valid_chars(value: str, chars: str = _input_character_set) -> bool:
     :param chars: valid characters
     :return: bool indicating if characters are valid or not
     ***REMOVED***
-    return bool([invalid_char for invalid_char in value if invalid_char not in chars])
+    return not bool([invalid_char for invalid_char in value if invalid_char not in chars])
 
 
 def is_development() -> bool:
