@@ -139,35 +139,35 @@ class OrganizationEmails(Mailgun):
         subject: str = f"{organization_data.get('organization_name')} Successfully updated"
 
         text: str = f'''
-        Hi {user_data.get('names', " ")} {user_data.get('surname', " ")}
-
-        Organization : {organization_data.get('organization_name')} has been updated successfully. 
-
-            Organization Name: {organization_data.get('organization_name')}
-            Description: {organization_data.get('description')}
-            Website Home: {organization_data.get('home_url')}
-            Login Callback URL : {organization_data.get('login_callback_url')}
-            Password Recovery Callback URL : {organization_data.get('recovery_callback_url')}
-
-
-        Thank you
-        {current_app.config.get('APP_NAME')}                
+            Hi {user_data.get('names', " ")} {user_data.get('surname', " ")}
+    
+            Organization : {organization_data.get('organization_name')} has been updated successfully. 
+    
+                Organization Name: {organization_data.get('organization_name')}
+                Description: {organization_data.get('description')}
+                Website Home: {organization_data.get('home_url')}
+                Login Callback URL : {organization_data.get('login_callback_url')}
+                Password Recovery Callback URL : {organization_data.get('recovery_callback_url')}
+    
+    
+            Thank you
+            {current_app.config.get('APP_NAME')}                
         '''
         html: str = f'''
-        <h3>Hi {user_data.get('names', " ")} {user_data.get('surname', " ")}</h3>
-
-        <p>Organization : {organization_data.get('organization_name')} has been updated successfully.</p> 
-
-        <ol>
-            <li>Organization Name: {organization_data.get('organization_name')}</li>
-            <li>Description: {organization_data.get('description')}</li>
-            <li>Website Home: {organization_data.get('home_url')}</li>
-            <li>Login Callback URL : {organization_data.get('login_callback_url')}</li>
-            <li>Password Recovery Callback URL : {organization_data.get('recovery_callback_url')}</li>
-        </ol>
-
-        <h4>Thank you</h4>
-        <strong>{current_app.config.get('APP_NAME')}</strong>                            
+            <h3>Hi {user_data.get('names', " ")} {user_data.get('surname', " ")}</h3>
+    
+            <p>Organization : {organization_data.get('organization_name')} has been updated successfully.</p> 
+    
+            <ol>
+                <li>Organization Name: {organization_data.get('organization_name')}</li>
+                <li>Description: {organization_data.get('description')}</li>
+                <li>Website Home: {organization_data.get('home_url')}</li>
+                <li>Login Callback URL : {organization_data.get('login_callback_url')}</li>
+                <li>Password Recovery Callback URL : {organization_data.get('recovery_callback_url')}</li>
+            </ol>
+    
+            <h4>Thank you</h4>
+            <strong>{current_app.config.get('APP_NAME')}</strong>                            
         '''
         email: Optional[str] = user_data.get('email')
         if email_verified and bool(email):
@@ -223,9 +223,7 @@ class OrganizationEmails(Mailgun):
                 <li>Total Affiliates : {organization_data.get('total_affiliates')}</li>
                 <li>Total Subscriptions : {organization_data.get('total_members')}</li>
                 <li>Total Users: {organization_data.get('total_users')}</li>
-            </ol>
-            
-            
+            </ol>                    
             <h3>Income Statistics</h3>                    
             <ol>    
                 <li>Total Memberships Payments: {organization_data.get('total_membership_payments')}</li>
@@ -379,9 +377,9 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
             _kwargs: dict = dict(org_view=OrganizationView, organization_id=organization_id)
             self._schedule_cache_deletion(func=self._delete_organization_cache, kwargs=_kwargs)
 
-            kwargs: dict = dict(organization_id=organization_id, uid=uid)
-            self._base_email_scheduler(func=self.send_organization_wallet_created_email, kwargs=kwargs)
-            self._base_email_scheduler(func=self.send_successfully_created_organization, kwargs=kwargs)
+            _schedule_kwargs: dict = dict(organization_id=organization_id, uid=uid)
+            self._base_email_scheduler(func=self.send_organization_wallet_created_email, kwargs=_schedule_kwargs)
+            self._base_email_scheduler(func=self.send_successfully_created_organization, kwargs=_schedule_kwargs)
 
             message: str = "Successfully created Organization"
             return jsonify({'status': True, 'payload': organization_instance.to_dict(),
@@ -436,8 +434,8 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
                 _kwargs: dict = dict(org_view=OrganizationView, organization_id=organization_id)
                 self._schedule_cache_deletion(func=self._delete_organization_cache, kwargs=_kwargs)
 
-                kwargs: dict = dict(organization_id=organization_id, uid=uid)
-                self._base_email_scheduler(func=self.send_organization_updated_email, kwargs=kwargs)
+                _schedule_kwargs: dict = dict(organization_id=organization_id, uid=uid)
+                self._base_email_scheduler(func=self.send_organization_updated_email, kwargs=_schedule_kwargs)
 
                 message: str = "Successfully updated organization"
                 return jsonify({'status': True, 'payload': org_instance.to_dict(),
@@ -558,7 +556,8 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
             elif isinstance(add, int):
                 organization_instance.total_affiliates += add
             else:
-                raise InputError(status=error_codes.input_error_code, description="Please either enter the amount to subtract or add")
+                message: str = "Please either enter the amount to subtract or add"
+                raise InputError(status=error_codes.input_error_code, description=message)
 
             key: Optional[ndb.Key] = organization_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             if not bool(key):
@@ -610,7 +609,8 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
                 organization_instance.total_paid.__sub__(subtract_amount)
                 calculated = True
             if not calculated:
-                raise InputError(status=error_codes.input_error_code, description="Please enter either the amount to add or subtract")
+                message: str = "Please enter either the amount to add or subtract"
+                raise InputError(status=error_codes.input_error_code, description=message)
 
             key: Optional[ndb.Key] = organization_instance.put(retries=self._max_retries, timeout=self._max_timeout)
 
@@ -648,7 +648,8 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        organization_instance: Optional[Organization] = Organization.query(Organization.organization_id == organization_id).get()
+        organization_instance: Optional[Organization] = Organization.query(
+            Organization.organization_id == organization_id).get()
 
         if bool(organization_instance):
             if subtract:
@@ -692,7 +693,8 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        organization_instance: Optional[Organization] = Organization.query(Organization.organization_id == organization_id).get()
+        organization_instance: Optional[Organization] = Organization.query(
+            Organization.organization_id == organization_id).get()
 
         if bool(organization_instance):
             if isinstance(add_payment, AmountMixin):
@@ -734,7 +736,8 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        organization_instance: Optional[Organization] = Organization.query(Organization.organization_id == organization_id).get()
+        organization_instance: Optional[Organization] = Organization.query(
+            Organization.organization_id == organization_id).get()
 
         if bool(organization_instance):
             if isinstance(subtract_total_membership_payment, AmountMixin):
