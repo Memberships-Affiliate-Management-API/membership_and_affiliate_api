@@ -339,8 +339,8 @@ class PropertySetters(Events, Util):
         :return:
         ***REMOVED***
         property_name: str = property_.return_property_name(prop=prop)
-        if value is None:
-            raise TypeError(f"{property_name} , cannot be Null")
+        if value is None or value == "None" or not bool(value):
+            raise TypeError(f"{property_name} value was{value} , cannot be Null")
 
         if not (isinstance(value, str)):
             raise TypeError(f"Is an instance of : {property_name} , and can only be a string")
