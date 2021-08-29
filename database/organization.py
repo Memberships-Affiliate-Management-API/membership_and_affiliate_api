@@ -75,9 +75,9 @@ class Organization(BaseModel):
 
     ***REMOVED***
     # TODO - fully intergrate total users and total members
-    owner_uid: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
-    organization_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
-    wallet_id: str = ndb.StringProperty(validator=property_.set_string, indexed=True, required=True)
+    owner_uid: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
+    organization_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
+    wallet_id: str = ndb.StringProperty(default=None, validator=property_.set_string, indexed=True, required=True)
     organization_name: str = ndb.StringProperty(validator=property_.set_string, required=True)
     description: str = ndb.StringProperty(validator=property_.set_string, required=True)
     total_affiliates: int = ndb.IntegerProperty(default=0, validator=property_.set_number)
@@ -106,7 +106,7 @@ class Organization(BaseModel):
         return True
 
     def __bool__(self) -> bool:
-        return bool(self.organization_id)
+        return bool(self.organization_id) and bool(self.owner_uid) and bool(self.wallet_id)
 
     @ndb.model.ComputedProperty
     def balance(self) -> AmountMixin:
@@ -185,16 +185,16 @@ class AuthorizedUsers(BaseModel):
             6. date_updated: datetime -> last date this instance was updated
 
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
-    uid: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
+    organization_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
+    uid: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
     role: str = ndb.StringProperty(validator=property_.set_string)
     is_active: bool = ndb.BooleanProperty(default=True, validator=property_.set_bool)
     date_created: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=property_.set_datetime)
     date_updated: datetime = ndb.DateTimeProperty(auto_now=True, validator=property_.set_datetime)
 
     def __str__(self) -> str:
-        return "<AuthorizedUser organization_id: {}, uid: {}, role: {}, is_active: {}".format(
-            self.organization_id, self.uid, self.role, self.is_active)
+        return f***REMOVED***<AuthorizedUser organization_id: {self.organization_id}, uid: {self.uid}, role: {self.role}, 
+        is_active: {self.is_active}***REMOVED***
 
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
@@ -208,7 +208,7 @@ class AuthorizedUsers(BaseModel):
         return True
 
     def __bool__(self) -> bool:
-        return bool(self.organization_id)
+        return bool(self.organization_id) and bool(self.uid)
 
 
 class OrgAccounts(BaseModel):
@@ -223,14 +223,13 @@ class OrgAccounts(BaseModel):
 
         # organizational Wallets in Wallets class can be indicated as such see Wallet Class
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
-    paypal_email: str = ndb.StringProperty(validator=property_.set_email, indexed=True, required=True)
-    is_verified: bool = ndb.BooleanProperty(default=property_.set_bool)
+    organization_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
+    paypal_email: str = ndb.StringProperty(default=None, validator=property_.set_email, indexed=True, required=True)
+    is_verified: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool, indexed=True, required=True)
 
     def __str__(self) -> str:
-        return "<OrgAccounts: organization_id: {}, Paypal Email {}, is_verified: {} ".format(self.organization_id,
-                                                                                             self.paypal_email,
-                                                                                             self.is_verified)
+        return f***REMOVED***<OrgAccounts: organization_id: {self.organization_id}, Paypal Email {self.paypal_email}, 
+        is_verified: {self.is_verified}***REMOVED***
 
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
@@ -240,7 +239,7 @@ class OrgAccounts(BaseModel):
         return True
 
     def __bool__(self) -> bool:
-        return bool(self.organization_id)
+        return bool(self.organization_id) and bool(self.is_verified) and bool(self.paypal_email)
 
 
 class PaymentResults(BaseModel):
@@ -252,15 +251,15 @@ class PaymentResults(BaseModel):
         Mainly this class is updated by the system through cron jobs and users can read its details
 
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
-    transaction_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
+    organization_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
+    transaction_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
     payment_result: str = ndb.StringProperty(validator=property_.set_string)
     time_created: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=property_.set_datetime)
     last_updated: datetime = ndb.DateTimeProperty(auto_now=True, validator=property_.set_datetime)
 
     def __str__(self) -> str:
-        return "<PaymentResults: Organization_id: {}, Transaction_id: {}, Payment_result: {}".format(
-            self.organization_id, self.transaction_id, self.payment_result)
+        return f***REMOVED***<PaymentResults: Organization_id: {self.organization_id}, Transaction_id: {self.transaction_id}, 
+        Payment_result: {self.payment_result}***REMOVED***
 
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
@@ -270,4 +269,4 @@ class PaymentResults(BaseModel):
         return True
 
     def __bool__(self) -> bool:
-        return bool(self.organization_id)
+        return bool(self.organization_id) and bool(self.transaction_id)

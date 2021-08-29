@@ -67,7 +67,7 @@ class AmountMixin(BaseModel):
 
     def __bool__(self) -> bool:
         # if term payment amount is set to even zero bool will return True
-        return True if self.amount_cents is not None else False
+        return bool(self.amount_cents) and bool(self.currency)
 
 
 class UserMixin(BaseModel):
