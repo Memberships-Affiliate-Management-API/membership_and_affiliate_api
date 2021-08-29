@@ -8,6 +8,7 @@ __email__ = "mobiusndou@gmail.com"
 __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
+
 import typing
 from typing import Optional, List
 from flask import current_app, jsonify
@@ -211,6 +212,8 @@ class AffiliatesView(Validator, CacheManager):
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
+
+        # TODO - need to add verifications only admin and owner of account can delete affiliate
 
         affiliate_instance: Affiliates = Affiliates.query(Affiliates.organization_id == organization_id,
                                                           Affiliates.affiliate_id == affiliate_id).get()

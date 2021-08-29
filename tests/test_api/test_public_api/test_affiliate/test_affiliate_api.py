@@ -6,7 +6,7 @@ from pytest import raises
 # noinspection PyUnresolvedReferences
 from pytest_mock import mocker
 from datetime import datetime
-from random import randint
+from random import randint, choice
 from typing import List
 from google.cloud import ndb
 from config.exceptions import status_codes, InputError, UnAuthenticatedError, DataServiceError
@@ -50,7 +50,8 @@ class AffiliateQueryMock:
         ***REMOVED***
         return Affiliates(affiliate_id=create_id(), organization_id=config_instance.ORGANIZATION_ID, uid=create_id(),
                           last_updated=datetime.now(), datetime_recruited=datetime.now(),
-                          total_recruits=randint(10, 1000), is_active=bool(randint(0, 1)), is_deleted=bool(randint(0, 1)))
+                          total_recruits=randint(10, 1000), is_active=bool(randint(0, 1)),
+                          is_deleted=bool(randint(0, 1)))
 
     def fetch(self) -> List[Affiliates]:
         return [self.rand_affiliate() for _ in range(self.results_range)]
@@ -68,7 +69,7 @@ def test_register_affiliate(mocker):
     mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.KeyProperty('Affiliates'))
     mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
     mocker.patch('database.affiliates.AffiliatesValidators.recruiter_registered', return_value=False)
-    data_mock: dict = affiliate_data_mock
+    data_mock: dict = affiliate_data_mock.copy()
 
     with test_app().app_context():
         affiliates_view_instance = AffiliatesView()
@@ -85,7 +86,7 @@ def test_register_affiliate(mocker):
 # noinspection PyShadowingNames
 def test_affiliate_raises_data_service_error(mocker):
     mocker.patch('database.affiliates.Affiliates.put', return_value=None)
-    data_mock: dict = affiliate_data_mock
+    data_mock: dict = affiliate_data_mock.copy()
     with test_app().app_context():
         with raises(DataServiceError):
             affiliates_view_instance = AffiliatesView()
@@ -99,7 +100,7 @@ def test_un_auth_error(mocker):
     mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.KeyProperty('Affiliates'))
     mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
     mocker.patch('database.affiliates.AffiliatesValidators.recruiter_registered', return_value=True)
-    data_mock: dict = affiliate_data_mock
+    data_mock: dict = affiliate_data_mock.copy()
     with test_app().app_context():
         # Raises Error
         with raises(UnAuthenticatedError):
@@ -117,17 +118,16 @@ def test_un_auth_error(mocker):
 def test_affiliate_input_error(mocker):
     with test_app().app_context():
         affiliates_view_instance = AffiliatesView()
-        data_mock: dict = affiliate_data_mock
-        with raises(InputError):
-            data_mock.update(uid='')
-            affiliates_view_instance.register_affiliate(affiliate_data=data_mock)
+        data_mock: dict = affiliate_data_mock.copy()
 
         with raises(InputError):
-            data_mock.update(organization_id='')
+            data_mock.update(uid=choice([None, '', ' ']))
+            affiliates_view_instance.register_affiliate(affiliate_data=data_mock)
+        data_mock: dict = affiliate_data_mock.copy()
+        with raises(InputError):
+            data_mock.update(organization_id=choice([None, '', ' ']))
             affiliates_view_instance.register_affiliate(affiliate_data=data_mock)
         # NOTE: restoring data to its original form
-        data_mock.update(uid=create_id())
-        data_mock.update(organization_id=config_instance.ORGANIZATION_ID)
 
     mocker.stopall()
 
@@ -139,9 +139,10 @@ def test_increment_decrement_total_recruits(mocker):
 
     with test_app().app_context():
         affiliates_view_instance = AffiliatesView()
-        response, status = affiliates_view_instance.total_recruits(affiliate_data=affiliate_data_mock, add=1)
+        data_mock: dict = affiliate_data_mock.copy()
+        response, status = affiliates_view_instance.total_recruits(affiliate_data=data_mock, add=1)
         affiliate_dict: dict = response.get_json()
-        print("affiliate_dict: ", affiliate_dict)
+
         assert affiliate_dict['payload']['total_recruits'] == 1, 'failed to increment number of affiliates'
         assert affiliate_dict['status'], "failing to set the return boolean status"
         assert affiliate_dict.get('message') is not None, "failed to set message"
@@ -155,7 +156,8 @@ def test_delete_affiliate(mocker):
 
     with test_app().app_context():
         affiliates_view_instance = AffiliatesView()
-        response, status = affiliates_view_instance.delete_affiliate(affiliate_data=affiliate_data_mock)
+        data_mock: dict = affiliate_data_mock.copy()
+        response, status = affiliates_view_instance.delete_affiliate(affiliate_data=data_mock)
         assert status == status_codes.successfully_updated_code, "unable to delete affiliate"
         affiliate_dict: dict = response.get_json()
         assert affiliate_dict.get('payload') is not None, "could not access delete affiliate payload"
@@ -166,15 +168,48 @@ def test_delete_affiliate(mocker):
 
 
 # noinspection PyShadowingNames
+def test_delete_affiliate_data_service_error(mocker):
+    mocker.patch('database.affiliates.Affiliates.put', return_value=None)
+    mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
+
+    with test_app().app_context():
+        affiliates_view_instance = AffiliatesView()
+        with raises(DataServiceError):
+            affiliates_view_instance.delete_affiliate(affiliate_data=affiliate_data_mock)
+    mocker.stopall()
+
+
+# noinspection PyShadowingNames
+def test_delete_affiliate_auth_error(mocker):
+    mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.KeyProperty('Affiliates'))
+    mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
+
+    with test_app().app_context():
+        affiliates_view_instance = AffiliatesView()
+
+        data_mock: dict = affiliate_data_mock.copy()
+        data_mock.update(affiliate_id=choice([None, '', ' ']))
+        with raises(InputError):
+            affiliates_view_instance.delete_affiliate(affiliate_data=data_mock)
+        data_mock_2: dict = affiliate_data_mock.copy()
+        data_mock_2.update(organization_id=choice([None, '', ' ']))
+        with raises(InputError):
+            affiliates_view_instance.delete_affiliate(affiliate_data=data_mock_2)
+
+    mocker.stopall()
+
+
+# noinspection PyShadowingNames
 def test_mark_active(mocker):
     mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.KeyProperty('Affiliates'))
     mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
 
     with test_app().app_context():
         affiliates_view_instance = AffiliatesView()
-        response, status = affiliates_view_instance.mark_active(affiliate_data=affiliate_data_mock, is_active=False)
+        data_mock: dict = affiliate_data_mock.copy()
+        response, status = affiliates_view_instance.mark_active(affiliate_data=data_mock, is_active=False)
         assert status == status_codes.successfully_updated_code, "Unable to mark affiliate as in-active"
-        response, status = affiliates_view_instance.mark_active(affiliate_data=affiliate_data_mock, is_active=True)
+        response, status = affiliates_view_instance.mark_active(affiliate_data=data_mock, is_active=True)
         assert status == status_codes.successfully_updated_code, "Unable to mark affiliate as active"
 
         with raises(InputError):
@@ -182,9 +217,10 @@ def test_mark_active(mocker):
             affiliates_view_instance.mark_active(affiliate_data=affiliate_data_mock, is_active="True")
 
         with raises(InputError):
-            affiliate_data_mock['affiliate_id'] = None
+            data_mock: dict = affiliate_data_mock.copy()
+            data_mock.update(affiliate_id=choice([None, '', ' ']))
             # noinspection PyTypeChecker
-            affiliates_view_instance.mark_active(affiliate_data=affiliate_data_mock, is_active=True)
+            affiliates_view_instance.mark_active(affiliate_data=data_mock, is_active=True)
     mocker.stopall()
 
 
@@ -195,7 +231,8 @@ def test_get_affiliate(mocker):
 
     with test_app().app_context():
         affiliates_view_instance = AffiliatesView()
-        response, status = affiliates_view_instance.get_affiliate(affiliate_data=affiliate_data_mock)
+        data_mock: dict = affiliate_data_mock.copy()
+        response, status = affiliates_view_instance.get_affiliate(affiliate_data=data_mock)
         assert status == status_codes.data_not_found_code, 'unable to locate affiliate'
         # response_data: dict = response.get_json()
         # assert isinstance(response_data['payload'], dict), 'payload is required'
@@ -272,7 +309,8 @@ def test_undeleted_affiliates(mocker):
 
     with test_app().app_context():
         affiliate_instance: AffiliatesView = AffiliatesView()
-        response, status = affiliate_instance.get_not_deleted_affiliates(organization_id=config_instance.ORGANIZATION_ID)
+        response, status = affiliate_instance.get_not_deleted_affiliates(
+            organization_id=config_instance.ORGANIZATION_ID)
         assert status == status_codes.status_ok_code, "get_not_deleted_affiliates unable to fetch affiliates"
         response_data: dict = response.get_json()
         assert response_data.get('payload') is not None, "get_not_deleted_affiliates payload is not set properly"
