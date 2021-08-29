@@ -37,6 +37,10 @@ class UserValidators:
             message: str = "uid cannot be Null"
             raise InputError(status=error_codes.input_error_code, description=message)
 
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id cannot be Null"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         user_instance: UserModel = UserModel.query(
             UserModel.organization_id == organization_id, UserModel.uid == uid).get()
         # if user_instance is valid return user_instance.is_active
