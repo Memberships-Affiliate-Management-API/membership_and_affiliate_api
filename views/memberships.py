@@ -115,9 +115,9 @@ class MembershipsEmails(Mailgun):
         # TODO find out how to create templates and allow clients to create their email templates
         loop = asyncio.get_event_loop()
 
-        data_tasks = asyncio.gather(self.__get_user_data_async(organization_id=organization_id, uid=uid),
-                                    self.__get_membership_data_async(organization_id=organization_id, uid=uid),
-                                    self.__get_organization_data_async(organization_id=organization_id))
+        data_tasks = asyncio.gather(self._get_user_data_async(organization_id=organization_id, uid=uid),
+                                    self._get_membership_data_async(organization_id=organization_id, uid=uid),
+                                    self._get_organization_data_async(organization_id=organization_id))
 
         results = loop.run_until_complete(data_tasks)
         membership_data, organization_data, user_data = self._get_requests_results(results)
@@ -156,7 +156,7 @@ class MembershipsEmails(Mailgun):
         ***REMOVED***
         # TODO find out how to create templates and allow clients to create their email templates
         user_data, organization_data = self.return_organization_user(organization_id=organization_id, uid=uid)
-        membership_data: dict = asyncio.run(self.__get_membership_data_async(organization_id=organization_id, uid=uid))
+        membership_data: dict = asyncio.run(self._get_membership_data_async(organization_id=organization_id, uid=uid))
 
         email_verified: bool = user_data.get('email_verified')
         subject: str = f"{organization_data.get('organization_name')} Your Membership Details have changed"
