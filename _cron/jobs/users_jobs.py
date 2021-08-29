@@ -33,7 +33,7 @@ class UserJobs(Mailgun):
         ***REMOVED***
         uid: str = user_instance.uid
         organization_id: str = user_instance.organization_id
-        org_data: Optional[dict] = await self.__get_organization_data_async(organization_id=organization_id, uid=uid)
+        org_data: Optional[dict] = await self._get_organization_data_async(organization_id=organization_id, uid=uid)
         subject: str = f"{org_data.get('organization_name')} We missed you"
         text: str = f'''
         Hi {user_instance.names} {user_instance.surname}
