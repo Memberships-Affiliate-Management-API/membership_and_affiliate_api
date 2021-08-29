@@ -12,7 +12,7 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 import functools
 from google.api_core.exceptions import Aborted, RetryError
 from google.cloud.ndb.exceptions import BadRequestError, BadQueryError
-from config.exceptions import InputError, RequestError, DataServiceError
+from config.exceptions import InputError, RequestError, DataServiceError, status_codes, error_codes
 from flask import current_app
 
 
@@ -30,39 +30,39 @@ def handle_view_errors(func):
             message: str = str(e)
             if debug:
                 print(message)
-            raise InputError(status=500, description=message)
+            raise InputError(status=error_codes.input_error_code, description=message)
         except TypeError as e:
             message: str = str(e)
             if debug:
                 print(e)
-            raise InputError(status=500, description=message)
+            raise InputError(status=error_codes.input_error_code, description=message)
         except BadRequestError as e:
             if debug:
                 print(e)
             message: str = '''<code>Bad Request:</code> while connecting to database'''
-            raise RequestError(status=500, description=message)
+            raise RequestError(status=error_codes.bad_request_error_code, description=message)
         except BadQueryError as e:
             if debug:
                 print(e)
             message: str = '''<code>Database Query Error:</code> Error while querying database please inform admin'''
-            raise DataServiceError(status=500, description=message)
+            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
         except ConnectionRefusedError as e:
             if debug:
                 print(e)
             message: str = '''<code>Connection Refused:</code> Unable to connect to database please try again later'''
-            raise RequestError(status=500, description=message)
+            raise RequestError(status=error_codes.remote_data_error, description=message)
         except RetryError as e:
             if debug:
                 print(e)
             message: str = '''<code>Retries Exceeded:</code> Unable to connect to database please try again later 
             or inform the administrator'''
-            raise RequestError(status=500, description=message)
+            raise RequestError(status=error_codes.remote_data_error, description=message)
         except Aborted as e:
             if debug:
                 print(e)
             message: str = '''<code>Abort Error:</code> due to some error on our servers your connection 
             was aborted try again later'''
-            raise RequestError(status=500, description=message)
+            raise RequestError(status=error_codes.remote_data_error, description=message)
 
     return wrapper
 
