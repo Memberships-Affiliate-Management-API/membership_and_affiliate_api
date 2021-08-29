@@ -84,10 +84,10 @@ def test_register_affiliate(mocker):
 
 
 # noinspection PyShadowingNames
-def test_affiliate_raises_data_service_error(mocker):
+def test_register_affiliate_raises_data_service_error(mocker):
     mocker.patch('database.affiliates.Affiliates.put', return_value=None)
     mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
-
+    mocker.patch('database.affiliates.AffiliatesValidators.recruiter_registered', return_value=False)
     data_mock: dict = affiliate_data_mock.copy()
     with test_app().app_context():
         affiliates_view_instance = AffiliatesView()
@@ -98,38 +98,38 @@ def test_affiliate_raises_data_service_error(mocker):
 
 
 # noinspection PyShadowingNames
-def test_un_auth_error(mocker):
+def test_register_affiliate_un_auth_error(mocker):
     mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.KeyProperty('Affiliates'))
     mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
-    mocker.patch('database.affiliates.AffiliatesValidators.recruiter_registered', return_value=True)
-    data_mock: dict = affiliate_data_mock.copy()
+
     with test_app().app_context():
         # Raises Error
+        mocker.patch('database.affiliates.AffiliatesValidators.recruiter_registered', return_value=True)
         with raises(UnAuthenticatedError):
             affiliates_view_instance = AffiliatesView()
+            data_mock: dict = affiliate_data_mock.copy()
             affiliates_view_instance.register_affiliate(affiliate_data=data_mock)
-        # Does not raise an error
-        mocker.patch('database.affiliates.AffiliatesValidators.recruiter_registered', return_value=False)
-        affiliates_view_instance = AffiliatesView()
-        affiliates_view_instance.register_affiliate(affiliate_data=data_mock)
 
     mocker.stopall()
 
 
 # noinspection PyShadowingNames
-def test_affiliate_input_error(mocker):
+def test_register_affiliate_input_error(mocker):
+    mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.KeyProperty('Affiliates'))
+    mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
+    mocker.patch('database.affiliates.AffiliatesValidators.recruiter_registered', return_value=False)
     with test_app().app_context():
         affiliates_view_instance = AffiliatesView()
-        data_mock: dict = affiliate_data_mock.copy()
 
         with raises(InputError):
+            data_mock: dict = affiliate_data_mock.copy()
             data_mock.update(uid=choice([None, '', ' ']))
             affiliates_view_instance.register_affiliate(affiliate_data=data_mock)
-        data_mock: dict = affiliate_data_mock.copy()
+
         with raises(InputError):
+            data_mock: dict = affiliate_data_mock.copy()
             data_mock.update(organization_id=choice([None, '', ' ']))
             affiliates_view_instance.register_affiliate(affiliate_data=data_mock)
-        # NOTE: restoring data to its original form
 
     mocker.stopall()
 
@@ -148,6 +148,31 @@ def test_increment_decrement_total_recruits(mocker):
         assert affiliate_dict['payload']['total_recruits'] == 1, 'failed to increment number of affiliates'
         assert affiliate_dict['status'], "failing to set the return boolean status"
         assert affiliate_dict.get('message') is not None, "failed to set message"
+    mocker.stopall()
+
+
+# noinspection PyShadowingNames
+def test_increment_decrement_total_recruits_errors(mocker):
+    mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.KeyProperty('Affiliates'))
+    mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
+
+    with test_app().app_context():
+        affiliates_view_instance = AffiliatesView()
+        data_mock: dict = affiliate_data_mock.copy()
+        with raises(InputError):
+            data_mock.update(affiliate_id=choice([None, '', ' ']))
+            affiliates_view_instance.total_recruits(affiliate_data=data_mock, add=1)
+
+        with raises(InputError):
+            data_mock: dict = affiliate_data_mock.copy()
+            data_mock.update(organization_id=choice([None, '', ' ']))
+            affiliates_view_instance.total_recruits(affiliate_data=data_mock, add=1)
+
+        with raises(InputError):
+            data_mock: dict = affiliate_data_mock.copy()
+            # noinspection PyTypeChecker
+            affiliates_view_instance.total_recruits(affiliate_data=data_mock, add=choice([None, '', ' ']))
+
     mocker.stopall()
 
 
