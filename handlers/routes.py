@@ -126,7 +126,7 @@ def handle_un_authorized_requests(e: Unauthorized) -> tuple:
 
 
 @default_handlers_bp.app_errorhandler(UnAuthenticatedError)
-def handle_un_authorized_requests(e: UnAuthenticatedError) -> tuple:
+def handle_un_authenticated_request(e: UnAuthenticatedError) -> tuple:
     ***REMOVED***
     **handle_un_authorized_requests**
         raised when a user is trying to access a resource without supplying the proper credentials for the resource.
