@@ -301,9 +301,9 @@ class Memberships(BaseModel):
             7. property payment_method: method of payment for the membership plan
             8. property is_active_subscription: is user still actively subscribed or not
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
-    uid: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
-    plan_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
+    organization_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
+    uid: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
+    plan_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
     payment_status: str = ndb.StringProperty(default="unpaid", validator=property_.set_status, required=True)  # Paid/ Unpaid
     date_created: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=property_.set_datetime)
     plan_start_date: date = ndb.DateProperty(validator=property_.set_date)  # the date this plan will
@@ -332,7 +332,7 @@ class Memberships(BaseModel):
                                        self.plan_start_date)
 
     def __bool__(self) -> bool:
-        return bool(self.uid)
+        return bool(self.uid) and bool(self.organization_id) and bool(self.plan_id)
 
 
 # noinspection DuplicatedCode
@@ -364,11 +364,11 @@ class MembershipPlans(BaseModel):
         12. property : date_created: the date the payment plan has been created
 
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
+    organization_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
     # Service ID will relate the plan to a specific service_id on Services here and on PayPal Products
-    service_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
+    service_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
     # NOTE a single service_id can be found on multiple plans
-    plan_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
+    plan_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
     plan_name: str = ndb.StringProperty(validator=property_.set_string, indexed=True, required=True)
     description: str = ndb.StringProperty(validator=property_.set_string, required=True)
     total_members: int = ndb.IntegerProperty(default=0, validator=property_.set_number)
@@ -398,7 +398,7 @@ class MembershipPlans(BaseModel):
                                   self.total_members, self.schedule_day, self.schedule_term)
 
     def __bool__(self) -> bool:
-        return bool(self.plan_id)
+        return bool(self.plan_id) and bool(self.organization_id) and bool(self.service_id)
 
 
 # noinspection DuplicatedCode
@@ -421,10 +421,10 @@ class MembershipInvoices(BaseModel):
             11. property : amount_paid: AmountMixin : the amount which has been paid for this invoice
 
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True)
-    uid: str = ndb.StringProperty(validator=property_.set_id, indexed=True)
-    plan_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True)
-    invoice_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True)
+    organization_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True)
+    uid: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True)
+    plan_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True)
+    invoice_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True)
     invoice_number: str = ndb.StringProperty(validator=property_.set_id, indexed=True)
     date_created: date = ndb.DateProperty(auto_now_add=True, validator=property_.set_date)
     invoice_sent: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
@@ -469,7 +469,13 @@ class MembershipInvoices(BaseModel):
                 self.payment_amount.__str__(), self.amount_paid.__str__())
 
     def __bool__(self) -> bool:
-        return bool(self.uid)
+        ***REMOVED***
+        **__bool__**
+            returns true if MembershipInvoices is valid
+        :return: bool
+        ***REMOVED***
+        user_bool: bool = bool(self.uid) and bool(self.organization_id)
+        return user_bool and bool(self.uid) and bool(self.plan_id) and bool(self.invoice_id)
 
 
 # noinspection DuplicatedCode
@@ -494,8 +500,8 @@ class Coupons(BaseModel):
             6. property: expiration_time: int: time in milliseconds when the coupon code will expire
 
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True)
-    code: str = ndb.StringProperty(validator=property_.set_coupon_code, indexed=True)
+    organization_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True)
+    code: str = ndb.StringProperty(default=None, validator=property_.set_coupon_code, indexed=True)
     discount_percent: int = ndb.IntegerProperty(default=0, validator=property_.set_number)
     is_valid: bool = ndb.BooleanProperty(default=True, validator=property_.set_bool)
     date_created: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=property_.set_datetime)
@@ -518,7 +524,7 @@ class Coupons(BaseModel):
         return True
 
     def __bool__(self) -> bool:
-        return bool(self.code)
+        return bool(self.code) and bool(self.organization_id)
 
 
 # noinspection DuplicatedCode
@@ -578,4 +584,4 @@ class MembershipDailyStats(BaseModel):
         return True
 
     def __bool__(self) -> bool:
-        return bool(self.daily_id)
+        return bool(self.daily_id) and bool(self.organization_id)
