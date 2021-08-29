@@ -35,7 +35,7 @@ class BaseModel(ndb.Model):
         ***REMOVED***
         return int(self.__bool__())
 
-    @property
+    @ndb.model.ComputedProperty
     def id(self) -> Optional[str]:
         ***REMOVED***
             **id**
