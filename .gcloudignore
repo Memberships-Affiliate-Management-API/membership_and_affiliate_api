@@ -10,5 +10,6 @@
 *.bat
 .gitignore
 .idea/
+.pytest_cache
 requirements-dev.txt
 runtime.txt
