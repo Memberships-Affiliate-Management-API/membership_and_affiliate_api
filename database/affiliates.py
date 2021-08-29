@@ -151,9 +151,9 @@ class Affiliates(BaseModel):
             7. is_active: bool -> indicates if the affiliate is active
             8. is_deleted: bool -> indicates if an affiliate is deleted or not.
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
-    affiliate_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
-    uid: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
+    organization_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
+    affiliate_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
+    uid: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
     last_updated: datetime = ndb.DateTimeProperty(auto_now=True, validator=property_.set_datetime)
     datetime_recruited: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=property_.set_datetime)
     total_recruits: int = ndb.IntegerProperty(default=0, validator=property_.set_number)
@@ -175,7 +175,7 @@ class Affiliates(BaseModel):
                                            self.total_recruits)
 
     def __bool__(self) -> bool:
-        return bool(self.affiliate_id)
+        return bool(self.affiliate_id) and bool(self.organization_id) and bool(self.uid)
         # return True if self.affiliate_id else False
 
 
@@ -197,9 +197,9 @@ class Recruits(BaseModel):
             9. is_deleted: bool -> indicates if a recruit is deleted
 
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
-    affiliate_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
-    referrer_uid: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
+    organization_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
+    affiliate_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
+    referrer_uid: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
     datetime_recruited: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=property_.set_date)
     datetime_updated: datetime = ndb.DateTimeProperty(auto_now=True, validator=property_.set_date)
     is_member: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
@@ -224,7 +224,7 @@ class Recruits(BaseModel):
         return True
 
     def __bool__(self) -> bool:
-        return bool(self.affiliate_id)
+        return bool(self.affiliate_id) and bool(self.organization_id) and bool(self.referrer_uid)
         # return True if self.affiliate_id else False
 
 
@@ -242,8 +242,8 @@ class EarningsData(BaseModel):
             6. is_paid: bool -> true if earnings has been paid
             7. on_hold: bool -> True if earnings has been put on hold
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
-    affiliate_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
+    organization_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
+    affiliate_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
     start_date: date = ndb.DateProperty(auto_now_add=True)
     last_updated: date = ndb.DateProperty(validator=property_.set_date)
     total_earned: AmountMixin = ndb.StructuredProperty(AmountMixin)
@@ -268,7 +268,7 @@ class EarningsData(BaseModel):
 
     def __bool__(self) -> bool:
         # return True if self.affiliate_id else False
-        return bool(self.affiliate_id)
+        return bool(self.affiliate_id) and bool(self.organization_id)
 
 
 class AffiliateTransactionItems(BaseModel):
@@ -285,8 +285,8 @@ class AffiliateTransactionItems(BaseModel):
         **NOTE:**
             Transactions here only relates to affiliate earnings so there is no transaction types
     ***REMOVED***
-    uid: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
-    transaction_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
+    uid: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
+    transaction_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
     amount: AmountMixin = ndb.StructuredProperty(AmountMixin, required=True)
     transaction_date: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=property_.set_date)
 
@@ -305,7 +305,7 @@ class AffiliateTransactionItems(BaseModel):
 
     def __bool__(self) -> bool:
         # return True if self.transaction_id else False
-        return bool(self.transaction_id)
+        return bool(self.transaction_id) and bool(self.uid)
 
 
 class AffiliateSettingsStats(BaseModel):
@@ -329,7 +329,7 @@ class AffiliateSettingsStats(BaseModel):
         **NOTE**
             all amounts are in cents
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
+    organization_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
     earnings_percent: int = ndb.IntegerProperty(default=0, validator=property_.set_percent, required=True)
     recurring_earnings: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
     total_affiliates_earnings: AmountMixin = ndb.StructuredProperty(AmountMixin)
@@ -353,4 +353,4 @@ class AffiliateSettingsStats(BaseModel):
 
     def __bool__(self) -> bool:
         # return True if self.earnings_percent is not None else False
-        return bool(self.earnings_percent)
+        return bool(self.earnings_percent) and bool(self.organization_id)
