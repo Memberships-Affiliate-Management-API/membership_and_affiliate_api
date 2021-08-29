@@ -3,7 +3,7 @@ from google.cloud import ndb
 from random import choice, randint, choices
 from string import digits as digits_characters
 from string import ascii_lowercase
-from typing import List
+from typing import List, Optional
 from pytest import raises
 from pytest_mock import mocker
 from config import config_instance
@@ -42,9 +42,9 @@ class UsersQueryMock:
         :return:
         ***REMOVED***
         return UserModel(uid=create_id(), organization_id=config_instance.ORGANIZATION_ID,
-                         names='john', surname='doe', cell=f'+278188{choices(population=digits_characters,k=5)}',
+                         names='john', surname='doe', cell=f'+278188{choices(population=digits_characters, k=5)}',
                          email=f'{choices(population=ascii_lowercase, k=12)}@example.com',
-                         email_verified=choice([True, False]), password=f'{choices(population=_char_set,k=12)}',
+                         email_verified=choice([True, False]), password=f'{choices(population=_char_set, k=12)}',
                          is_active=choice([True, False]), time_registered=timestamp(), is_admin=choice([True, False]),
                          is_support=choice([True, False]), last_login_date=today())
 
@@ -70,7 +70,6 @@ class UsersQueryMock:
 user_mock_data: dict = UsersQueryMock().user_mock_data()
 
 
-
 def get_user_data():
     users_view_instance: UserView = UserView()
     organization_id: str = user_mock_data.get('organization_id')
@@ -81,6 +80,15 @@ def get_user_data():
     password: str = user_mock_data.get('password')
     uid: str = user_mock_data.get('uid')
     return cell, email, names, organization_id, password, surname, uid, users_view_instance
+
+
+def nullish_value() -> Optional[str]:
+    ***REMOVED***
+    **nullish_value**
+        returns None Null or Empty String
+    :return:
+    ***REMOVED***
+    return choice([None, " ", ""])
 
 
 # noinspection PyUnusedLocal,PyShadowingNames
@@ -155,12 +163,26 @@ def test_create_user_input_errors(mocker):
         cell, email, names, organization_id, password, surname, uid, users_view_instance = get_user_data()
 
         with raises(InputError):
-            users_view_instance.add_user(organization_id=choice([None, " ", ""]), uid=uid, names=names, surname=surname,
+            users_view_instance.add_user(organization_id=nullish_value(), uid=uid, names=names, surname=surname,
                                          cell=cell, email=email, password=password)
         with raises(InputError):
-            users_view_instance.add_user(organization_id=organization_id, uid=uid, names=choice([None, " ", ""]),
+            users_view_instance.add_user(organization_id=organization_id, uid=uid, names=nullish_value(),
                                          surname=surname, cell=cell, email=email, password=password)
+
+        with raises(InputError):
+            users_view_instance.add_user(organization_id=organization_id, uid=uid, names=names,
+                                         surname=nullish_value(), cell=cell, email=email, password=password)
+
+        with raises(InputError):
+            users_view_instance.add_user(organization_id=organization_id, uid=uid, names=names,
+                                         surname=surname, cell=nullish_value(), email=email, password=password)
+
+        with raises(InputError):
+            users_view_instance.add_user(organization_id=organization_id, uid=uid, names=names,
+                                         surname=surname, cell=cell, email=nullish_value(), password=password)
+
+        with raises(InputError):
+            users_view_instance.add_user(organization_id=organization_id, uid=uid, names=names,
+                                         surname=surname, cell=cell, email=email, password=nullish_value())
+
     mocker.stopall()
-
-
-
