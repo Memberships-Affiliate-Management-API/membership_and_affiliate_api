@@ -10,7 +10,7 @@ __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
-import typing
+from typing import Optional
 from werkzeug.exceptions import HTTPException, BadRequest
 
 
@@ -72,7 +72,7 @@ class DataServiceError(HTTPException):
     code: int = error_codes.data_service_error_code
     description: str = 'We have a problem connection to the Database'
 
-    def __init__(self, status: typing.Union[int, None], description: typing.Union[str, None] = None):
+    def __init__(self, status: Optional[int], description: Optional[str] = None):
         if bool(description):
             self.description = description
         if bool(status):
@@ -81,7 +81,7 @@ class DataServiceError(HTTPException):
         super(DataServiceError, self).__init__()
 
     def __str__(self) -> str:
-        return "<DataServiceError {} Code: {}".format(self.description, str(self.code))
+        return f"<DataServiceError Description: {self.description} Code: {self.code}"
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -98,7 +98,7 @@ class InputError(Exception):
     code: int = error_codes.input_error_code
     description: str = "Unable to process input"
 
-    def __init__(self, status: typing.Union[int, None] = None, description: typing.Union[None, str] = None):
+    def __init__(self, status: Optional[int] = None, description: Optional[str] = None):
         if bool(description):
             self.description = description
         if bool(status):
@@ -106,7 +106,7 @@ class InputError(Exception):
         super(InputError, self).__init__()
 
     def __str__(self) -> str:
-        return "<InputError {} Code: {}".format(self.description, str(self.code))
+        return f"<InputError Description: {self.description} Code: {self.code}"
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -121,18 +121,16 @@ class UnAuthenticatedError(HTTPException):
     code: int = error_codes.un_auth_error_code
     description: str = "You are not authorized to use this resource"
 
-    def __init__(self, status: typing.Union[int, None] = None,
-                 description: typing.Union[None, str] = None):
+    def __init__(self, status: Optional[int] = None, description: Optional[str] = None):
+        super(UnAuthenticatedError, self).__init__()
         if bool(description):
             self.description = description
 
         if bool(status):
             self.code = status
 
-        super(UnAuthenticatedError, self).__init__()
-
     def __str__(self) -> str:
-        return "<UnAuthenticated {} Code: {}".format(self.description, str(self.code))
+        return f"<UnAuthenticated Description: {self.description} Code: {self.code}"
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -148,8 +146,8 @@ class RequestError(HTTPException):
     code: int = error_codes.bad_request_error_code
     description: str = "Bad Request Error: cannot proceed"
 
-    def __init__(self, status: typing.Union[int, None] = None, description: typing.Union[str, None] = None,
-                 url: typing.Union[str, None] = None):
+    def __init__(self, status: Optional[int] = None, description: Optional[str] = None,
+                 url: Optional[str] = None):
 
         super(RequestError, self).__init__()
 
@@ -163,7 +161,7 @@ class RequestError(HTTPException):
             self.code = status
 
     def __str__(self) -> str:
-        return "<RequestError {} Code: {}".format(self.description, str(self.code))
+        return f"<RequestError  Description: {self.description} Code: {self.code}"
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -183,9 +181,8 @@ class RemoteDataError(IOError):
     description: str = 'Error connecting to remote server'
     url: str = ""
 
-    def __init__(self, status: typing.Union[int, None] = 406,
-                 description: typing.Union[str, None] = None, url: str = None):
-
+    def __init__(self, status: Optional[int] = 406, description: Optional[str] = None,
+                 url: Optional[str] = None):
         super(RemoteDataError, self).__init__()
 
         if bool(description):
@@ -198,8 +195,7 @@ class RemoteDataError(IOError):
             self.url = url
 
     def __str__(self) -> str:
-        return "<RemoteDataError {} Code: {}, URL: {}".format(self.description, str(self.code),
-                                                              self.url)
+        return f"<RemoteDataError Description: {self.description} Code: {self.code} URL: {self.url}"
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -213,9 +209,8 @@ class EnvironNotSet(Exception):
     description: str = "environment variables not set please inform admin"
     url: str = ""
 
-    def __init__(self, status: typing.Union[int, None] = 406,
-                 description: typing.Union[str, None] = None, url: str = None):
-
+    def __init__(self, status: Optional[int] = 406, description: Optional[str] = None,
+                 url: Optional[str] = None):
         super(EnvironNotSet, self).__init__()
 
         if bool(description) and bool(url):
@@ -228,8 +223,7 @@ class EnvironNotSet(Exception):
             self.url = url
 
     def __str__(self) -> str:
-        return "<EnvironNotSet {} Code: {} Url: {}".format(self.description, str(self.code),
-                                                           self.url)
+        return f"<EnvironNotSet Description: {self.description} Code: {self.code} URL: {self.url}"
 
     def __repr__(self) -> str:
         return self.__str__()
