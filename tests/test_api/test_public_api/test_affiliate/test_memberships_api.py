@@ -98,8 +98,8 @@ def test_create_membership(mocker) -> None:
     :return: None
     ***REMOVED***
     # Note: Patching put and Query Model requests so they do not perform the operations on the database
-    mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
-    mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
+    mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
+    mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
         membership_view_instance: MembershipsView = MembershipsView()
@@ -133,8 +133,8 @@ def test_memberships_create_memberships_un_auth(mocker) -> None:
     :return: None
     ***REMOVED***
     # Note: Patching put and Query Model requests so they do not perform the operations on the database
-    mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
-    mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
+    mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
+    mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
         membership_view_instance: MembershipsView = MembershipsView()
@@ -143,7 +143,7 @@ def test_memberships_create_memberships_un_auth(mocker) -> None:
         plan_id: str = membership_mock_data['plan_id']
         plan_start_date: date = membership_mock_data['plan_start_date']
 
-        with raises(UnAuthenticatedError):
+        with raises(DataServiceError):
             membership_view_instance.add_membership(organization_id=organization_id, uid=uid, plan_id=plan_id,
                                                     plan_start_date=plan_start_date)
 
@@ -160,8 +160,8 @@ def test_create_memberships_input_errors(mocker) -> None:
     :return: None
     ***REMOVED***
     # Note: Patching put and Query Model requests so they do not perform the operations on the database
-    mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
-    mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
+    mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
+    mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
     with test_app().app_context():
         membership_view_instance: MembershipsView = MembershipsView()
         # Note: testing for invalid uid
@@ -206,8 +206,8 @@ def test_update_membership(mocker) -> None:
     :return: None
     ***REMOVED***
     # Note: Patching put and Query Model requests so they do not perform the operations on the database
-    mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
-    mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
+    mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
+    mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
         membership_view_instance: MembershipsView = MembershipsView()
@@ -243,8 +243,8 @@ def test_update_membership_input_errors(mocker) -> None:
     :return: None
     ***REMOVED***
     # Note: Patching put and Query Model requests so they do not perform the operations on the database
-    mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
-    mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
+    mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
+    mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
         membership_view_instance: MembershipsView = MembershipsView()
@@ -281,8 +281,8 @@ def test_set_membership_status(mocker) -> None:
     :param mocker:
     :return: None
     ***REMOVED***
-    mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
-    mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
+    mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
+    mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
         membership_view_instance: MembershipsView = MembershipsView()
@@ -307,8 +307,8 @@ def test_set_membership_status_errors(mocker) -> None:
     :param mocker:
     :return: None
     ***REMOVED***
-    mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
-    mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
+    mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
+    mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
         membership_view_instance: MembershipsView = MembershipsView()
@@ -343,10 +343,10 @@ def test_change_membership(mocker) -> None:
     :param mocker:
     :return: None
     ***REMOVED***
-    mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
+    mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
     membership_query_mock_instance = MembershipsQueryMock()
     membership_query_mock_instance.membership_instance.plan_id = membership_mock_data['plan_id']
-    mocker.patch('google.cloud.ndb.Model.query', return_value=membership_query_mock_instance)
+    mocker.patch('database.memberships.Memberships.query', return_value=membership_query_mock_instance)
 
     with test_app().app_context():
         membership_view_instance: MembershipsView = MembershipsView()
@@ -370,8 +370,8 @@ def test_change_memberships_input_errors(mocker):
     :param mocker:
     :return:
     ***REMOVED***
-    mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
-    mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
+    mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
+    mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
         membership_view_instance: MembershipsView = MembershipsView()
@@ -413,8 +413,8 @@ def test_send_welcome_email(mocker) -> None:
     :param mocker:
     :return: None
     ***REMOVED***
-    mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
-    mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
+    mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
+    mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
         membership_view_instance: MembershipsView = MembershipsView()
@@ -438,8 +438,8 @@ def test_plan_members_payment_status(mocker) -> None:
     :param mocker:
     :return: None
     ***REMOVED***
-    mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
-    mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
+    mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
+    mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
         membership_view_instance: MembershipsView = MembershipsView()
@@ -466,8 +466,8 @@ def test_return_plan_members(mocker) -> None:
     :param mocker:
     :return: None
     ***REMOVED***
-    mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
-    mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
+    mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
+    mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
         membership_view_instance: MembershipsView = MembershipsView()
@@ -491,8 +491,8 @@ def test_is_member_off(mocker) -> None:
     :param mocker:
     :return: None
     ***REMOVED***
-    mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
-    mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
+    mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
+    mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
         membership_view_instance: MembershipsView = MembershipsView()
@@ -516,8 +516,8 @@ def test_payment_amount(mocker) -> None:
     :param mocker:
     :return: None
     ***REMOVED***
-    mocker.patch('google.cloud.ndb.Model.put', return_value=ndb.KeyProperty('Memberships'))
-    mocker.patch('google.cloud.ndb.Model.query', return_value=MembershipsQueryMock())
+    mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
+    mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
     mocker.patch('views.memberships.MembershipPlansView._get_plan', return_value=MembershipPlansQueryMock().get())
 
     with test_app().app_context():
