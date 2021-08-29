@@ -53,24 +53,24 @@ class WalletEmails(Mailgun):
 
         subject = f"{organization_data.get('organization_name')} Your Wallet Balance Changed"
         text = f'''
-        hi {name} {surname} 
-        this email is intended to notify you that your wallet balance has changed.
-        
-        Available Funds: {str(new_balance)}
-        Monthly Withdrawal Allowance: {str(monthly_withdrawal_allowance)}
-        
-        Thank you
-        {organization_data.get('organization_name')}                 
+            hi {name} {surname} 
+            this email is intended to notify you that your wallet balance has changed.
+            
+            Available Funds: {str(new_balance)}
+            Monthly Withdrawal Allowance: {str(monthly_withdrawal_allowance)}
+            
+            Thank you
+            {organization_data.get('organization_name')}                 
         '''
         html = f'''
-        hi {name} {surname} 
-        this email is intended to notify you that your wallet balance has changed.
-        
-        Available Funds: {str(new_balance)}
-        Monthly Withdrawal Allowance: {str(monthly_withdrawal_allowance)}
-        
-        Thank you
-        {organization_data.get('organization_name')}                         
+            hi {name} {surname} 
+            this email is intended to notify you that your wallet balance has changed.
+            
+            Available Funds: {str(new_balance)}
+            Monthly Withdrawal Allowance: {str(monthly_withdrawal_allowance)}
+            
+            Thank you
+            {organization_data.get('organization_name')}                         
         '''
         if email_verified:
             self._do_schedule_mail(to_email=email, subject=subject, text=text, html=html)
