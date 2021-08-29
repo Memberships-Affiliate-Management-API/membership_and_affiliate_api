@@ -5,6 +5,12 @@
     is reached
 
 ***REMOVED***
+__author__ = "mobius-crypt"
+__email__ = "mobiusndou@gmail.com"
+__twitter__ = "@blueitserver"
+__github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
+__github_profile__ = "https://github.com/freelancing-solutions/"
+
 import asyncio
 from typing import Optional
 import aiohttp
@@ -16,7 +22,7 @@ from config.exceptions import status_codes
 async def __async_request(_url, json_data, headers) -> Optional[dict]:
     async with aiohttp.ClientSession() as session:
         async with session.post(url=_url, json=json_data, headers=headers) as response:
-            response, status = response
+            response, _ = response
             json_data = response.json()
             if json_data.get('status'):
                 user_data: dict = json_data.get('payload')
