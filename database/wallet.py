@@ -90,9 +90,9 @@ class WalletModel(BaseModel):
             7. paypal_address : the paypal address attached to this wallet
             8. is_verified: Indicates if paypal_address has been verified
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
+    organization_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
     is_org_wallet: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
-    uid: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)
+    uid: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
     available_funds: AmountMixin = ndb.StructuredProperty(AmountMixin, required=True)
     monthly_withdrawal_allowance: AmountMixin = ndb.StructuredProperty(AmountMixin)
     time_created: datetime = ndb.DateTimeProperty(auto_now_add=True)
@@ -114,7 +114,7 @@ class WalletModel(BaseModel):
         return True
 
     def __bool__(self) -> bool:
-        return bool(self.uid)
+        return bool(self.uid) and bool(self.organization_id)
 
     @property
     def can_withdraw(self) -> bool:
@@ -174,9 +174,9 @@ class WalletTransactionsModel(BaseModel):
             once a transaction has been verified amounts can change hands or transferred from
             actual accounts
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True)
-    uid: str = ndb.StringProperty(validator=property_.set_id, indexed=True)
-    transaction_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True)
+    organization_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True)
+    uid: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True)
+    transaction_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True)
     transaction_type: str = ndb.StringProperty(validator=property_.set_transaction_types)
     transaction_date: datetime = ndb.DateTimeProperty(auto_now_add=True, validator=property_.set_datetime)
     last_updated: datetime = ndb.DateTimeProperty(auto_now=True, validator=property_.set_datetime)
@@ -200,4 +200,4 @@ class WalletTransactionsModel(BaseModel):
 
     def __bool__(self) -> bool:
         # return True if self.transaction_id else False
-        return bool(self.transaction_id)
+        return bool(self.transaction_id) and bool(self.uid) and bool(self.organization_id)
