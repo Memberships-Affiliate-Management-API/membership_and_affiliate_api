@@ -50,7 +50,7 @@ class Mailgun:
 
     # TODO - replace requests with this all over the application
     @staticmethod
-    async def __async_request(_url, json_data, headers) -> Optional[dict]:
+    async def _async_request(_url, json_data, headers) -> Optional[dict]:
         async with aiohttp.ClientSession() as session:
             async with session.post(url=_url, json=json_data, headers=headers) as response:
                 response, _ = response
@@ -58,9 +58,9 @@ class Mailgun:
                 return json_data.get('payload') if json_data.get('status') else None
 
     @app_cache.memoize(timeout=return_ttl('short'))
-    async def __get_user_data_async(self, organization_id: str, uid: str) -> Optional[dict]:
+    async def _get_user_data_async(self, organization_id: str, uid: str) -> Optional[dict]:
         ***REMOVED***
-        **__get_user_data_async**
+        **_get_user_data_async**
             from an api obtain user details related to the parameters
 
         :param organization_id: organization_id related to the user
@@ -70,12 +70,12 @@ class Mailgun:
         _url: str = f'{self._base_url}{self._admin_get_user_endpoint}'
         json_data: dict = dict(organization_id=organization_id, uid=uid, SECRET_KEY=self._secret_key)
         headers: dict = {'content-type': 'application/json'}
-        return await self.__async_request(_url=_url, json_data=json_data, headers=headers)
+        return await self._async_request(_url=_url, json_data=json_data, headers=headers)
 
     @app_cache.memoize(timeout=return_ttl('short'))
-    async def __get_membership_data_async(self, organization_id: str, uid: str) -> Optional[dict]:
+    async def _get_membership_data_async(self, organization_id: str, uid: str) -> Optional[dict]:
         ***REMOVED***
-            **__get_membership_data_async**
+            **_get_membership_data_async**
                 asynchronously from an api obtain membership plan details related to the parameters
 
         :param organization_id:
@@ -85,10 +85,10 @@ class Mailgun:
         _url: str = f'{self._base_url}{self._admin_get_membership_plan_endpoint}'
         json_data = dict(organization_id=organization_id, uid=uid, SECRET_KEY=self._secret_key)
         headers: dict = {'content-type': 'application/json'}
-        return await self.__async_request(_url=_url, json_data=json_data, headers=headers)
+        return await self._async_request(_url=_url, json_data=json_data, headers=headers)
 
     @app_cache.memoize(timeout=return_ttl('short'))
-    async def __get_organization_data_async(self, organization_id: str) -> Optional[dict]:
+    async def _get_organization_data_async(self, organization_id: str) -> Optional[dict]:
         ***REMOVED***
             **__get_organization_data**
                 asynchronously returns the organization details based on the organization id and uid
@@ -100,12 +100,12 @@ class Mailgun:
         _url: str = f'{config_instance.BASE_URL}{self._admin_get_organization_endpoint}'
         json_data: dict = dict(organization_id=organization_id, SECRET_KEY=self._secret_key)
         headers: dict = {'content-type': 'application/json'}
-        return await self.__async_request(_url=_url, json_data=json_data, headers=headers)
+        return await self._async_request(_url=_url, json_data=json_data, headers=headers)
 
-    def __send_with_mailgun_rest_api(self, to_list: List[str], subject: str, text: str, html: str,
-                                     o_tag: List[str] = None) -> bool:
+    def _send_with_mailgun_rest_api(self, to_list: List[str], subject: str, text: str, html: str,
+                                    o_tag: List[str] = None) -> bool:
         ***REMOVED***
-        **__send_with_mailgun_rest_api**
+        **_send_with_mailgun_rest_api**
             a method to send email via rest api
 
         :param o_tag:  message o tag | format of o:tag  ["September newsletter", "newsletters"]
@@ -135,8 +135,8 @@ class Mailgun:
         :return: tuple user_data, organization_data
         ***REMOVED***
         event_loop = asyncio.get_event_loop()
-        tasks: List[Coroutine] = [self.__get_user_data_async(organization_id=organization_id, uid=uid),
-                                  self.__get_organization_data_async(organization_id=organization_id)]
+        tasks: List[Coroutine] = [self._get_user_data_async(organization_id=organization_id, uid=uid),
+                                  self._get_organization_data_async(organization_id=organization_id)]
         results, _ = event_loop.run_until_complete(asyncio.wait(tasks))
         user_data_future, organization_data_future = results
         user_data: dict = user_data_future.result()
@@ -160,7 +160,7 @@ class Mailgun:
         _kwargs: dict = dict(to_list=[to_email], sbject=subject, text=text, html=html)
         # 5 seconds after now the email will be sent
         five_seconds_after: datetime = datetime_now() + timedelta(seconds=5)
-        task_scheduler.add_job(func=self.__send_with_mailgun_rest_api, trigger='date', run_date=five_seconds_after,
+        task_scheduler.add_job(func=self._send_with_mailgun_rest_api, trigger='date', run_date=five_seconds_after,
                                kwargs=_kwargs, id=create_id(), name="do_schedule_mail_send", misfire_grace_time=360)
 
     @staticmethod
