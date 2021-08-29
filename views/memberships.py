@@ -524,12 +524,15 @@ class MembershipsView(Validators, MembershipsEmails):
             message: str = "payment_method is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        if self.can_add_member(organization_id=organization_id, uid=uid, plan_id=plan_id, start_date=plan_start_date):
+        if not isinstance(plan_id, str) or not bool(plan_id.strip()):
+            message: str = "plan_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
+        if self.can_add_member(organization_id=organization_id, uid=uid, plan_id=plan_id, start_date=plan_start_date):
             membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                                  Memberships.uid == uid).get()
             new_member: bool = False
-            if not bool(membership_instance) and membership_instance.uid == uid:
+            if not bool(membership_instance) and membership_instance.uid != uid:
                 membership_instance: Memberships = Memberships()
                 membership_instance.uid = uid
                 membership_instance.organization_id = organization_id
@@ -614,6 +617,17 @@ class MembershipsView(Validators, MembershipsEmails):
         :param payment_method:
         :return:
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(uid, str) or not bool(uid.strip()):
+            message: str = "uid is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(plan_id, str) or not bool(plan_id.strip()):
+            message: str = "plan_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         # TODO - some form of error checking must be conducted here
         return self._create_or_update_membership(organization_id=organization_id, uid=uid, plan_id=plan_id,
@@ -633,6 +647,17 @@ class MembershipsView(Validators, MembershipsEmails):
         :param payment_method:
         :return:
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(uid, str) or not bool(uid.strip()):
+            message: str = "uid is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(plan_id, str) or not bool(plan_id.strip()):
+            message: str = "plan_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         return await self._create_or_update_membership_async(organization_id=organization_id, uid=uid,
                                                              plan_id=plan_id, plan_start_date=plan_start_date,
@@ -652,6 +677,17 @@ class MembershipsView(Validators, MembershipsEmails):
         :param payment_method:
         :return:
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(uid, str) or not bool(uid.strip()):
+            message: str = "uid is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(plan_id, str) or not bool(plan_id.strip()):
+            message: str = "plan_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         return self._create_or_update_membership(organization_id=organization_id, uid=uid, plan_id=plan_id,
                                                  plan_start_date=plan_start_date, payment_method=payment_method)
@@ -670,6 +706,17 @@ class MembershipsView(Validators, MembershipsEmails):
         :param payment_method:
         :return:
         ***REMOVED***
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(uid, str) or not bool(uid.strip()):
+            message: str = "uid is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(plan_id, str) or not bool(plan_id.strip()):
+            message: str = "plan_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         return await self._create_or_update_membership_async(organization_id=organization_id, uid=uid, plan_id=plan_id,
                                                              plan_start_date=plan_start_date,

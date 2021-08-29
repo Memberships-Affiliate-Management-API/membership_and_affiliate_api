@@ -123,7 +123,7 @@ def test_create_membership(mocker) -> None:
 
 
 # noinspection PyShadowingNames
-def test_memberships_create_memberships_un_auth(mocker) -> None:
+def test_memberships_create_memberships_data_service_error(mocker) -> None:
     ***REMOVED***
     **test_memberships_create_memberships_un_auth**
         tests if errors will be thrown in-case the application cannot determine the legitimacy of the user request
@@ -142,6 +142,10 @@ def test_memberships_create_memberships_un_auth(mocker) -> None:
         organization_id: str = membership_mock_data['organization_id']
         plan_id: str = membership_mock_data['plan_id']
         plan_start_date: date = membership_mock_data['plan_start_date']
+
+        mocker.patch('database.users.UserValidators.is_user_valid', return_value=None)
+        mocker.patch('database.memberships.PlanValidators.plan_exist', return_value=None)
+        mocker.patch('database.memberships.MembershipValidators.start_date_valid', return_value=None)
 
         with raises(DataServiceError):
             membership_view_instance.add_membership(organization_id=organization_id, uid=uid, plan_id=plan_id,
@@ -162,6 +166,11 @@ def test_create_memberships_input_errors(mocker) -> None:
     # Note: Patching put and Query Model requests so they do not perform the operations on the database
     mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
     mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
+
+    mocker.patch('database.users.UserValidators.is_user_valid', return_value=True)
+    mocker.patch('database.memberships.PlanValidators.plan_exist', return_value=False)
+    mocker.patch('database.memberships.MembershipValidators.start_date_valid', return_value=True)
+
     with test_app().app_context():
         membership_view_instance: MembershipsView = MembershipsView()
         # Note: testing for invalid uid
@@ -246,6 +255,10 @@ def test_update_membership_input_errors(mocker) -> None:
     mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
     mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
+    mocker.patch('database.users.UserValidators.is_user_valid', return_value=True)
+    mocker.patch('database.memberships.PlanValidators.plan_exist', return_value=False)
+    mocker.patch('database.memberships.MembershipValidators.start_date_valid', return_value=True)
+
     with test_app().app_context():
         membership_view_instance: MembershipsView = MembershipsView()
         uid: Optional[str] = random.choice([None, "", " "])
@@ -263,7 +276,7 @@ def test_update_membership_input_errors(mocker) -> None:
             membership_view_instance.update_membership(organization_id=organization_id, uid=uid, plan_id=plan_id,
                                                        plan_start_date=plan_start_date)
 
-        organization_id: str = create_id()
+        organization_id: str = config_instance.ORGANIZATION_ID
         plan_id: Optional[str] = random.choice([None, "", " "])
         with raises(InputError):
             membership_view_instance.update_membership(organization_id=organization_id, uid=uid, plan_id=plan_id,
