@@ -1,19 +1,18 @@
-from datetime import datetime
-from google.cloud import ndb
 from random import choice, randint, choices
-from string import digits as digits_characters
 from string import ascii_lowercase
+from string import digits as digits_characters
 from typing import List, Optional
+
+from google.cloud import ndb
 from pytest import raises
+# noinspection PyUnresolvedReferences
 from pytest_mock import mocker
+
 from config import config_instance
 from config.exceptions import status_codes, UnAuthenticatedError, InputError
-from database.mixins import AmountMixin, AddressMixin
-from utils.utils import create_id, timestamp, today, _char_set
-from tests import int_positive, test_app
 from database.users import UserModel
-from werkzeug.security import check_password_hash
-
+from tests import test_app
+from utils.utils import create_id, timestamp, today, _char_set
 from views.users import UserView
 
 user_instance: UserModel = UserModel()
@@ -70,15 +69,21 @@ class UsersQueryMock:
 user_mock_data: dict = UsersQueryMock().user_mock_data()
 
 
-def get_user_data():
+def get_user_data() -> tuple:
+    ***REMOVED***
+    **get_user_data**
+        returns complete list of user data
+    :return: tuple -> user data
+    ***REMOVED***
     users_view_instance: UserView = UserView()
     organization_id: str = user_mock_data.get('organization_id')
+    uid: str = user_mock_data.get('uid')
     names: str = user_mock_data.get('names')
     surname: str = user_mock_data.get('surname')
     cell: str = user_mock_data.get('cell')
     email: str = user_mock_data.get('email')
     password: str = user_mock_data.get('password')
-    uid: str = user_mock_data.get('uid')
+    print(cell, email, names, organization_id, password, surname, uid, users_view_instance)
     return cell, email, names, organization_id, password, surname, uid, users_view_instance
 
 
@@ -86,7 +91,7 @@ def nullish_value() -> Optional[str]:
     ***REMOVED***
     **nullish_value**
         returns None Null or Empty String
-    :return:
+    :return: Nullish
     ***REMOVED***
     return choice([None, " ", ""])
 
@@ -168,21 +173,17 @@ def test_create_user_input_errors(mocker):
         with raises(InputError):
             users_view_instance.add_user(organization_id=organization_id, uid=uid, names=nullish_value(),
                                          surname=surname, cell=cell, email=email, password=password)
-
         with raises(InputError):
             users_view_instance.add_user(organization_id=organization_id, uid=uid, names=names,
                                          surname=nullish_value(), cell=cell, email=email, password=password)
-
         with raises(InputError):
             users_view_instance.add_user(organization_id=organization_id, uid=uid, names=names,
                                          surname=surname, cell=nullish_value(), email=email, password=password)
-
         with raises(InputError):
             users_view_instance.add_user(organization_id=organization_id, uid=uid, names=names,
                                          surname=surname, cell=cell, email=nullish_value(), password=password)
-
         with raises(InputError):
-            users_view_instance.add_user(organization_id=organization_id, uid=uid, names=names,
-                                         surname=surname, cell=cell, email=email, password=nullish_value())
+            users_view_instance.add_user(organization_id=organization_id, uid=uid, names=names, surname=surname,
+                                         cell=cell, email=email, password=nullish_value())
 
     mocker.stopall()
