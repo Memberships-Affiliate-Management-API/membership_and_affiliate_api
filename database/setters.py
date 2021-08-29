@@ -310,6 +310,9 @@ class PropertySetters(Events, Util):
         :return:
         ***REMOVED***
         property_name: str = property_.return_property_name(prop=prop)
+        if value is None:
+            raise TypeError(f"{property_name} , cannot be Null")
+
         if not (isinstance(value, str)):
             message: str = f***REMOVED***status, is an instance of : {property_name} , and can only be a string 
             representing payment status***REMOVED***
@@ -336,6 +339,9 @@ class PropertySetters(Events, Util):
         :return:
         ***REMOVED***
         property_name: str = property_.return_property_name(prop=prop)
+        if value is None:
+            raise TypeError(f"{property_name} , cannot be Null")
+
         if not (isinstance(value, str)):
             raise TypeError(f"Is an instance of : {property_name} , and can only be a string")
 
@@ -356,6 +362,9 @@ class PropertySetters(Events, Util):
         :return:
         ***REMOVED***
         property_name: str = property_.return_property_name(prop=prop)
+        if value is None:
+            raise TypeError(f"{property_name} , cannot be Null")
+
         if not (isinstance(value, str)):
             raise TypeError(f"scheduled term, is an instance of : {property_name} ,  and can only be a string ")
 
@@ -435,6 +444,9 @@ class PropertySetters(Events, Util):
         :return: returns a payment method as string
         ***REMOVED***
         property_name: str = property_.return_property_name(prop=prop)
+        if value is None:
+            raise TypeError(f"{property_name} , cannot be Null")
+
         if not (isinstance(value, str)):
             message: str = f***REMOVED***payment method, is an instance of : {property_name}, and can only be a string 
             representing a valid payment method***REMOVED***
@@ -483,6 +495,9 @@ class PropertySetters(Events, Util):
         ***REMOVED***
         from config.currencies import currency_util
         property_name: str = property_.return_property_name(prop=prop)
+        if value is None:
+            raise TypeError(f"{property_name} , cannot be Null")
+
         if not (isinstance(value, str)):
             message: str = f'''Currency is an Instance of : {property_name}, and should be a string representation 
             of a currency symbol'''
@@ -502,6 +517,9 @@ class PropertySetters(Events, Util):
             :param prop: email property
         ***REMOVED***
         property_name: str = property_.return_property_name(prop=prop)
+        if value is None:
+            raise TypeError(f"{property_name} , cannot be Null")
+
         if not (isinstance(value, str)):
             message: str = f"An Instance of : {property_name} ::  can only be a string representing email"
             raise ValueError(message)
@@ -524,6 +542,9 @@ class PropertySetters(Events, Util):
         :return: formatted cell number as string
         ***REMOVED***
         property_name: str = property_.return_property_name(prop=prop)
+        if value is None:
+            raise TypeError(f"{property_name} , cannot be Null")
+
         if not isinstance(value, str):
             message: str = f'''An Instance of: {property_name} : should be a string representing a 
             cell number in international format'''
@@ -544,6 +565,9 @@ class PropertySetters(Events, Util):
             :return: password in hash format
         ***REMOVED***
         from werkzeug.security import generate_password_hash
+        if value is None:
+            raise TypeError(f"{property_name} , cannot be Null")
+
         class_name: str = property_.return_property_name(prop=prop)
         if not isinstance(value, str):
             message: str = '''password is an instance of : {} :  should be a string representing 
@@ -591,6 +615,9 @@ class PropertySetters(Events, Util):
             :return: str representing verified domain name
         ***REMOVED***
         property_name: str = property_.return_property_name(prop=prop)
+        if value is None:
+            raise TypeError(f"{property_name} , cannot be Null")
+
         if not (isinstance(value, str)):
             message: str = f***REMOVED***domain, is an instance of : {property_name} and can only be a string, representing 
             a valid domain name***REMOVED***
