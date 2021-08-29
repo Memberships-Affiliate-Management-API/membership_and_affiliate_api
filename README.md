@@ -1,4 +1,5 @@
-## Memberships & Affiliate Management API
+## Memberships & Affiliate Management API 
+![MembershipsLogo](resource/profile.png)
 
  **How it Works?**
  --
