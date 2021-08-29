@@ -199,6 +199,7 @@ class APIKeysView(APIKeysValidators, CacheManager):
 
         return jsonify({'status': False, 'message': 'api key not found'}), status_codes.data_not_found_code
 
+    # noinspection DuplicatedCode
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
@@ -222,6 +223,7 @@ class APIKeysView(APIKeysValidators, CacheManager):
         message: str = "organization api keys not found"
         return jsonify({'status': False, 'payload': payload, 'message': message}), status_codes.data_not_found_code
 
+    # noinspection DuplicatedCode
     @use_context
     @handle_view_errors
     @app_cache.memoize(timeout=return_ttl('short'))
