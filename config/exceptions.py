@@ -72,13 +72,12 @@ class DataServiceError(HTTPException):
     code: int = error_codes.data_service_error_code
     description: str = 'We have a problem connection to the Database'
 
-    def __init__(self, status: Optional[int], description: Optional[str] = None):
+    def __init__(self, status: Optional[int] = None, description: Optional[str] = None):
+        super(DataServiceError, self).__init__(description=description)
         if bool(description):
             self.description = description
         if bool(status):
             self.code = status
-
-        super(DataServiceError, self).__init__()
 
     def __str__(self) -> str:
         return f"<DataServiceError Description: {self.description} Code: {self.code}"
@@ -99,11 +98,11 @@ class InputError(Exception):
     description: str = "Unable to process input"
 
     def __init__(self, status: Optional[int] = None, description: Optional[str] = None):
+        super(InputError, self).__init__()
         if bool(description):
             self.description = description
         if bool(status):
             self.code = status
-        super(InputError, self).__init__()
 
     def __str__(self) -> str:
         return f"<InputError Description: {self.description} Code: {self.code}"
@@ -122,7 +121,7 @@ class UnAuthenticatedError(HTTPException):
     description: str = "You are not authorized to use this resource"
 
     def __init__(self, status: Optional[int] = None, description: Optional[str] = None):
-        super(UnAuthenticatedError, self).__init__()
+        super(UnAuthenticatedError, self).__init__(description=description)
         if bool(description):
             self.description = description
 
@@ -148,9 +147,7 @@ class RequestError(HTTPException):
 
     def __init__(self, status: Optional[int] = None, description: Optional[str] = None,
                  url: Optional[str] = None):
-
-        super(RequestError, self).__init__()
-
+        super(RequestError, self).__init__(description=description)
         if bool(description):
             self.description = description
 
@@ -181,7 +178,7 @@ class RemoteDataError(IOError):
     description: str = 'Error connecting to remote server'
     url: str = ""
 
-    def __init__(self, status: Optional[int] = 406, description: Optional[str] = None,
+    def __init__(self, status: Optional[int] = None, description: Optional[str] = None,
                  url: Optional[str] = None):
         super(RemoteDataError, self).__init__()
 
@@ -209,7 +206,7 @@ class EnvironNotSet(Exception):
     description: str = "environment variables not set please inform admin"
     url: str = ""
 
-    def __init__(self, status: Optional[int] = 406, description: Optional[str] = None,
+    def __init__(self, status: Optional[int] = None, description: Optional[str] = None,
                  url: Optional[str] = None):
         super(EnvironNotSet, self).__init__()
 
