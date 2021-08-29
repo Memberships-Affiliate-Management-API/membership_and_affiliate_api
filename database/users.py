@@ -148,8 +148,8 @@ class UserModel(BaseModel):
             5. user_details: dict -> user general details in dict form
 
     ***REMOVED***
-    organization_id: str = ndb.StringProperty(required=True, indexed=True, validator=property_.set_id)
-    uid: str = ndb.StringProperty(required=True, indexed=True, validator=property_.set_id)
+    organization_id: str = ndb.StringProperty(default=None, required=True, indexed=True, validator=property_.set_id)
+    uid: str = ndb.StringProperty(default=None, required=True, indexed=True, validator=property_.set_id)
     names: str = ndb.StringProperty(validator=property_.set_string)
     surname: str = ndb.StringProperty(validator=property_.set_string)
     cell: str = ndb.StringProperty(indexed=True, validator=property_.set_cell)
@@ -179,7 +179,7 @@ class UserModel(BaseModel):
 
     def __bool__(self) -> bool:
         # return True if self.uid else False
-        return bool(self.uid)
+        return bool(self.uid) and bool(self.organization_id)
 
     @ndb.model.ComputedProperty
     def full_names(self) -> str:
@@ -277,10 +277,10 @@ class GithubUser(BaseModel):
     ***REMOVED***
         used to stored login with github client details
     ***REMOVED***
-    uid: str = ndb.StringProperty(required=True, validator=property_.set_id)
-    organization_id: str = ndb.StringProperty(required=True, validator=property_.set_id)
+    uid: str = ndb.StringProperty(default=None, required=True, validator=property_.set_id)
+    organization_id: str = ndb.StringProperty(default=None, required=True, validator=property_.set_id)
     # TODO - May need to exclude access_token from to_dict results
-    access_token: str = ndb.StringProperty(required=True, validator=property_.set_string)
+    access_token: str = ndb.StringProperty(default=None, required=True, validator=property_.set_string)
     email: str = ndb.StringProperty(required=True, validator=property_.set_email)
     twitter_username: str = ndb.StringProperty(validator=property_.set_string)
     github_name: str = ndb.StringProperty(required=True, validator=property_.set_string)
@@ -310,5 +310,5 @@ class GithubUser(BaseModel):
             self.uid, self.email, self.twitter_username, self.github_name, self.avatar_url, self.html_url)
 
     def __bool__(self) -> bool:
-        return bool(self.uid)
+        return bool(self.uid) and bool(self.organization_id) and bool(self.access_token)
 
