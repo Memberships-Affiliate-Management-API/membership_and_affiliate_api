@@ -18,6 +18,9 @@ import aiohttp
 class APIRequests:
     ***REMOVED***
         **Class APIRequests**
+            this class handles creating api calls then scheduling them and handles results as they are
+            returned asynchronously.
+
     ***REMOVED***
 
     def __init__(self, app):
