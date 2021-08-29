@@ -9,8 +9,6 @@ __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
-
-
 class APIRequests:
     ***REMOVED***
         **Class APIRequests**
