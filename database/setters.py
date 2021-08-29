@@ -340,13 +340,13 @@ class PropertySetters(Events, Util):
         ***REMOVED***
         property_name: str = property_.return_property_name(prop=prop)
         if value is None or value == "None" or not bool(value):
-            raise TypeError(f"{property_name} value was{value} , cannot be Null")
+            raise TypeError(f"{property_name} , cannot be Null")
 
         if not (isinstance(value, str)):
-            raise TypeError(f"Is an instance of : {property_name} , and can only be a string")
+            raise TypeError(f"{property_name} , and can only be a string")
 
         if not bool(value.strip()):
-            raise ValueError(f"is an Instance of : {property_name} , and cannot be Null")
+            raise ValueError(f"{property_name} , and cannot be Null")
 
         return escape(value.strip().lower())
 
@@ -366,10 +366,10 @@ class PropertySetters(Events, Util):
             raise TypeError(f"{property_name} , cannot be Null")
 
         if not (isinstance(value, str)):
-            raise TypeError(f"scheduled term, is an instance of : {property_name} ,  and can only be a string ")
+            raise TypeError(f"{property_name} ,  and can only be a string ")
 
         if not bool(value.strip()):
-            raise ValueError(f"schedule term, is an instance of : {property_name}, and cannot be Null")
+            raise ValueError(f"{property_name}, and cannot be Null")
 
         temp = value.strip().lower()
         # TODO - Rewrite this or create a translator for paypal plans payment schedule
@@ -390,10 +390,9 @@ class PropertySetters(Events, Util):
         ***REMOVED***
         property_name: str = property_.return_property_name(prop=prop)
         if not (isinstance(value, int)):
-            raise TypeError(f'scheduled day, is an instance of : {property_name}, and can only be an integer')
+            raise TypeError(f'{property_name}, can only be an integer')
         if value not in get_scheduled_term_days():
-            message: str = f'''scheduled day, is an instance of : {property_name}, and can only be a value 
-            between 1 -> 5 of every month'''
+            message: str = f'''{property_name}, can only be a value between 1 -> 5 of every month'''
             raise ValueError(message)
         return value
 
@@ -410,10 +409,10 @@ class PropertySetters(Events, Util):
         ***REMOVED***
         property_name: str = property_.return_property_name(prop=prop)
         if not (isinstance(value, int)):
-            raise TypeError(f'Number, is a instance of : {property_name}, and can only be an integer')
+            raise TypeError(f'{property_name}, can only be an integer')
 
         if value < 0:
-            raise TypeError(f"Number, is an instance of :{property_name} and cannot accept negative numbers")
+            raise TypeError(f"{property_name} cannot accept negative numbers")
 
         return value
 
@@ -430,7 +429,7 @@ class PropertySetters(Events, Util):
         ***REMOVED***
         property_name: str = property_.return_property_name(prop=prop)
         if not (isinstance(value, date)):
-            raise TypeError(f"date is an instance of : {property_name}, and can only be an instance of date")
+            raise TypeError(f"{property_name}, can only be an instance of date")
         return value
 
     @staticmethod
@@ -448,8 +447,7 @@ class PropertySetters(Events, Util):
             raise TypeError(f"{property_name} , cannot be Null")
 
         if not (isinstance(value, str)):
-            message: str = f***REMOVED***payment method, is an instance of : {property_name}, and can only be a string 
-            representing a valid payment method***REMOVED***
+            message: str = f***REMOVED***{property_name}, and can only be a string representing a valid payment method***REMOVED***
             raise TypeError(message)
 
         if value.lower().strip() not in get_payment_methods():
@@ -473,8 +471,7 @@ class PropertySetters(Events, Util):
         utils_instance: Util = Util()
 
         if not isinstance(value, int):
-            message: str = f***REMOVED***Percent is an instance of : {property_name} and can only be an 
-            integer representing a percentage***REMOVED***
+            message: str = f***REMOVED***{property_name} and can only be an integer representing a percentage***REMOVED***
             raise TypeError(message)
 
         if utils_instance.percent_valid(percent=value):
@@ -499,8 +496,7 @@ class PropertySetters(Events, Util):
             raise TypeError(f"{property_name} , cannot be Null")
 
         if not (isinstance(value, str)):
-            message: str = f'''Currency is an Instance of : {property_name}, and should be a string representation 
-            of a currency symbol'''
+            message: str = f'''{property_name}, should be a string representation of a currency symbol'''
             raise TypeError(message)
         if value not in currency_util.currency_symbols():
             raise ValueError(f"This value : {value} is not a valid currency symbol")
@@ -521,7 +517,7 @@ class PropertySetters(Events, Util):
             raise TypeError(f"{property_name} , cannot be Null")
 
         if not (isinstance(value, str)):
-            message: str = f"An Instance of : {property_name} ::  can only be a string representing email"
+            message: str = f"{property_name},  can only be a string representing email"
             raise ValueError(message)
 
         if not bool(value.strip()):
@@ -546,7 +542,7 @@ class PropertySetters(Events, Util):
             raise TypeError(f"{property_name} , cannot be Null")
 
         if not isinstance(value, str):
-            message: str = f'''An Instance of: {property_name} : should be a string representing a 
+            message: str = f'''{property_name}, should be a string representing a 
             cell number in international format'''
             raise TypeError(message)
         if property_.regex_check_cell(cell=value.strip()):
@@ -565,19 +561,19 @@ class PropertySetters(Events, Util):
             :return: password in hash format
         ***REMOVED***
         from werkzeug.security import generate_password_hash
+        property_name: str = property_.return_property_name(prop=prop)
         if value is None:
             raise TypeError(f"{property_name} , cannot be Null")
 
-        class_name: str = property_.return_property_name(prop=prop)
         if not isinstance(value, str):
-            message: str = '''password is an instance of : {} :  should be a string representing 
-            user password'''.format(class_name)
+            message: str = f'''{property_name} :  should be a string representing 
+            user password'''
             raise TypeError(message)
 
         if property_.password_complexity(password=value.strip()):
             return generate_password_hash(value, method="pbkdf2:sha256", salt_length=8)
-        message: str = '''password must be at least 8 characters in length, and contain lower-case and upper-case letters, 
-        numbers and at least a special character'''
+        message: str = '''password must be at least 8 characters in length, and contain lower-case and upper-case 
+        letters, numbers and at least a special character'''
         raise ValueError(message)
 
     @staticmethod
@@ -592,8 +588,7 @@ class PropertySetters(Events, Util):
         ***REMOVED***
         property_name: str = property_.return_property_name(prop=prop)
         if not (isinstance(value, int)):
-            message: str = f'''Amount is an instance of : {property_name} : can only be an Integer 
-            representing money in cents'''
+            message: str = f'''{property_name} : can only be an Integer representing money in cents'''
             raise TypeError(message)
 
         # NOTE: does not allow negative values
@@ -619,8 +614,7 @@ class PropertySetters(Events, Util):
             raise TypeError(f"{property_name} , cannot be Null")
 
         if not (isinstance(value, str)):
-            message: str = f***REMOVED***domain, is an instance of : {property_name} and can only be a string, representing 
-            a valid domain name***REMOVED***
+            message: str = f***REMOVED***{property_name}, can only be a string, representing a valid domain name***REMOVED***
             raise TypeError(message)
 
         domain = value.strip()
