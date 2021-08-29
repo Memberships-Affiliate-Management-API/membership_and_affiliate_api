@@ -321,6 +321,9 @@ class AffiliatesView(Validator, CacheManager):
             affiliate_instance = Affiliates.query(Affiliates.organization_id == organization_id,
                                                   Affiliates.uid == uid).get()
 
+        print(affiliate_instance)
+
+
         # if we are here and still dont have a valid input set to true then we have a problem with input data
         if not valid_input:
             message: str = "affiliate_id or uid is required to get affiliate record"
