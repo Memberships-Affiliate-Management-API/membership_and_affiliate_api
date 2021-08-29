@@ -15,8 +15,8 @@ from flask import jsonify, current_app
 from google.cloud import ndb
 from werkzeug.security import check_password_hash
 from _sdk._email import Mailgun
-from config.exceptions import (error_codes, status_codes, InputError, UnAuthenticatedError, DataServiceError,
-                               RequestError)
+from config.exceptions import (error_codes, status_codes, InputError, UnAuthenticatedError,
+                               DataServiceError, RequestError)
 from database.mixins import AddressMixin
 from database.organization import OrgValidators
 from main import app_cache
@@ -26,8 +26,6 @@ from utils.utils import create_id, return_ttl
 from config.exception_handlers import handle_view_errors
 from config.use_context import use_context
 from views.cache_manager import CacheManager
-
-users_type = typing.List[UserModel]
 
 
 # noinspection DuplicatedCode
@@ -361,7 +359,8 @@ class UserView(Validators, UserEmails, CacheManager):
                  surname: Optional[str], cell: Optional[str], email: Optional[str],
                  password: Optional[str], uid: Optional[str] = None) -> tuple:
         ***REMOVED***
-            Register a new User
+            **add_user**
+                Register a new User
                 this is called for registering a new user
             :param organization_id:
             :param names:
@@ -383,8 +382,21 @@ class UserView(Validators, UserEmails, CacheManager):
             # This is a new user who has not created a uid from another login service - create a unique uid
             uid = self._create_unique_uid()
 
+        if not isinstance(names, str) or not bool(names.strip()):
+            message: str = 'names are required'
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(surname, str) or not bool(surname.strip()):
+            message: str = 'surname is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not isinstance(password, str) or not bool(password.strip()):
+            message: str = 'password is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         user_instance: UserModel = UserModel(organization_id=organization_id, uid=uid, names=names,
-                                             surname=surname, cell=cell, email=email, password=password, is_active=True)
+                                             surname=surname, cell=cell, email=email, password=password,
+                                             is_active=True)
 
         key = user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
         if not bool(key):
@@ -405,7 +417,9 @@ class UserView(Validators, UserEmails, CacheManager):
                              cell: Optional[str], email: Optional[str],
                              password: Optional[str], uid: Optional[str] = None) -> tuple:
         ***REMOVED***
+        **add_user_async**
             creates a new user asynchronously - all parameters are required
+
         :param organization_id:
         :param names:
         :param surname:
