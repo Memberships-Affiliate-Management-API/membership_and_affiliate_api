@@ -50,8 +50,8 @@ def create_app(config_class=config_instance):
 
     # import client app blueprints
     # TODO remove this routes to Client Dashboard APP
-    from main.app.client.routes.dashboard import client_dashboard_bp
-    from main.app.client.routes.home import client_home_bp
+    # from main.app.client.routes.dashboard import client_dashboard_bp
+    # from main.app.client.routes.home import client_home_bp
 
     # importing client api blueprints
     from _api.client_api.api.apikeys.routes import client_api_keys_bp
@@ -64,7 +64,7 @@ def create_app(config_class=config_instance):
 
     # import main app blueprints
     # TODO remove to main application
-    from main.app.memberships_main.routes.routes import memberships_main_bp
+    # from main.app.memberships_main.routes.routes import memberships_main_bp
 
     # importing main api
     from main.app.memberships_main.api.api import main_api_bp
@@ -94,8 +94,8 @@ def create_app(config_class=config_instance):
     app.register_blueprint(heroku_ipn_bp)
 
     # client app default_handlers_bp
-    app.register_blueprint(client_dashboard_bp)
-    app.register_blueprint(client_home_bp)
+    # app.register_blueprint(client_dashboard_bp)
+    # app.register_blueprint(client_home_bp)
 
     # client app api handlers
     app.register_blueprint(client_api_keys_bp)
@@ -107,7 +107,7 @@ def create_app(config_class=config_instance):
     app.register_blueprint(memberships_client_api_bp)
 
     # main app handlers
-    app.register_blueprint(memberships_main_bp)
+    # app.register_blueprint(memberships_main_bp)
 
     # registering main api handlers
     app.register_blueprint(main_api_bp)
