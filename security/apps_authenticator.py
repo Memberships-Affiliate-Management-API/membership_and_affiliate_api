@@ -21,6 +21,7 @@ from config.exceptions import UnAuthenticatedError, error_codes
 import functools
 from main import app_cache
 from database.app_authenticator import MicroAuthDetails
+from utils import is_development
 
 
 @app_cache.memoize(timeout=16*60)
@@ -51,6 +52,10 @@ def handle_apps_authentication(func):
         domain: Optional[str] = request.headers.get('Referrer')
         secret_key: Optional[str] = kwargs.get('SECRET_KEY')
         auth_token: Optional[str] = kwargs.get('auth_token')
+
+        if not is_development() and ("localhost" in domain or "127.0.0.1" in domain):
+            message: str = "request not authorized"
+            raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
         if is_app_authenticated(domain=domain, secret_key=secret_key, auth_token=auth_token):
             return func(*args, **kwargs)
