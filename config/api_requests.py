@@ -90,7 +90,7 @@ class APIRequests:
         **get_response**
             from responses_queue retrieve response
             as a result of caching a request can be obtained multiple times from response _queue as it would be cached
-        :return: dict -> containing response or None
+        :return: dict -> containing response or None - None wont be cached
         ***REMOVED***
         if isinstance(self._responses_queue, list) and len(self._responses_queue):
             # at Best will return None if response not found
