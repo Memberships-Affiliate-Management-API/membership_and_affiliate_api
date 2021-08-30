@@ -31,7 +31,8 @@ def is_app_authenticated(domain: str, secret_key: str, auth_token: str) -> bool:
     :param auth_token:
     :return:
     ***REMOVED***
-    pass
+    # TODO use system database to get details for authenticated applications
+    return True
 
 
 def handle_apps_authentication(func):

@@ -121,7 +121,8 @@ def encode_auth_token(uid: str) -> str:
             'sub': uid
         }
         token = jwt.encode(payload=payload, key=str(current_app.config.get('SECRET_KEY')), algorithm='HS256')
-        return token.decode()
+        print('token: ', token)
+        return token
     except jwt.InvalidAlgorithmError as e:
         return str(e)
 
