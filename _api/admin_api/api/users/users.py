@@ -1,3 +1,5 @@
+import hmac
+
 from flask import Blueprint, request, current_app, jsonify
 
 from config import config_instance
@@ -42,25 +44,44 @@ def admin_users(path: str) -> tuple:
         user_view_instance: UserView = UserView()
         return user_view_instance._system_user_exist(email=email, uid=uid)
 
-    elif path == "login":
+
+@admin_users_api_bp.route('/_api/v1/admin/auth/<string:path>', methods=["GET", "POST"])
+def auth_admin(path: str) -> tuple:
+    ***REMOVED***
+
+    :param path:
+    :return:
+    ***REMOVED***
+    if_bad_request_raise(request)
+
+    json_data: dict = request.get_json()
+    secret_key: Optional[str] = json_data.get("SECRET_KEY")
+    if not isinstance(secret_key, str) or secret_key != current_app.config.get('SECRET_KEY'):
+        message: str = 'User Not Authorized: you cannot perform this action'
+        raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
+
+    if path == "login":
         email: Optional[str] = json_data.get("email")
         password: Optional[str] = json_data.get("password")
         uid: Optional[str] = json_data.get("uid")
         organization_id: Optional[str] = json_data.get("organization_id")
-        user_view_instance: UserView = UserView()
 
-        if email == config_instance.ADMIN_EMAIL and password == config_instance.ADMIN_PASSWORD \
-                and uid == config_instance.ADMIN_UID and organization_id == config_instance.ORGANIZATION_ID:
+        # Comparing Digests
+        compare_email: bool = hmac.compare_digest(email, config_instance.ADMIN_EMAIL)
+        compare_password: bool = hmac.compare_digest(password, config_instance.ADMIN_PASSWORD)
+        compare_uid: bool = hmac.compare_digest(uid, config_instance.ADMIN_UID)
+        compare_org: bool = hmac.compare_digest(organization_id, config_instance.ORGANIZATION_ID)
+
+        user_view_instance: UserView = UserView()
+        if compare_email and compare_password and compare_uid and compare_org:
             user_instance = get_admin_user()
+            user_instance.update(password="")
             token = encode_auth_token(uid=uid)
             message: str = 'welcome admin'
             payload: dict = dict(token=token, user=user_instance)
             return jsonify({'status': True, 'payload': payload, 'message': message})
 
-        raise UnAuthenticatedError()
-
-
-
+        raise UnAuthenticatedError(description='You are not authorized to login as admin')
 
 
 
