@@ -39,6 +39,10 @@ class AffiliatesValidators:
         :param affiliate_id:
         :return: boolean -> indicating if affiliate_exist or not
         ***REMOVED***
+        if not isinstance(affiliate_id, str) or not bool(affiliate_id.strip()):
+            message: str = 'affiliate_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
+
         affiliate_instance: Affiliates = Affiliates.query(Affiliates.affiliate_id == affiliate_id).get()
 
         # returns true if affiliate exists
