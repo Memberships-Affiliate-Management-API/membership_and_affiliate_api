@@ -24,8 +24,8 @@ def schedule_func(func: Callable, kwargs: dict) -> None:
         schedule cache deletion such that it occurs sometime time in the future
     :param func:
     :param kwargs:
-    :return:
+    :return: None
     ***REMOVED***
-    twenty_seconds_after = datetime.now() + timedelta(seconds=20)
+    twenty_seconds_after = datetime.now() + timedelta(seconds=30)
     task_scheduler.add_job(func=func, trigger='date', run_date=twenty_seconds_after, kwargs=kwargs, id=create_unique_id(),
                            name="schedule_func", misfire_grace_time=360)

@@ -19,11 +19,10 @@ from _cron.scheduler import cron_scheduler
 from config.exceptions import status_codes
 
 
-async def __async_request(_url, json_data, headers) -> Optional[dict]:
+async def _async_request(_url, json_data, headers) -> Optional[dict]:
     async with aiohttp.ClientSession() as session:
         async with session.post(url=_url, json=json_data, headers=headers) as response:
-            response, _ = response
-            json_data = response.json()
+            json_data = await response.json()
             if json_data.get('status'):
                 user_data: dict = json_data.get('payload')
                 return user_data
@@ -42,7 +41,7 @@ def send_cron_request(_endpoint: str) -> None:
     organization_id: str = config_instance.ORGANIZATION_ID
     headers: dict = {'content-type': 'application/json'}
     json_data = dict(organization_id=organization_id, SECRET_KEY=config_instance.SECRET_KEY)
-    asyncio.run(__async_request(_url=_url, json_data=json_data, headers=headers))
+    asyncio.run(_async_request(_url=_url, json_data=json_data, headers=headers))
 
 
 @cron_scheduler.scheduled_job(trigger='cron', day_of_week='mon-sun', hour=1)

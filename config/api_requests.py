@@ -36,8 +36,7 @@ class APIRequests:
     async def _async_request(_url, json_data, headers) -> Optional[dict]:
         async with aiohttp.ClientSession() as session:
             async with session.post(url=_url, json=json_data, headers=headers) as response:
-                response, _ = response
-                json_data: dict = response.json()
+                json_data: dict = await response.json()
                 return json_data.get('payload') if json_data.get('status') else None
 
     def _request(self, _url: str, json_data: dict, headers: dict) -> None:
