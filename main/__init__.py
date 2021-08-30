@@ -24,6 +24,8 @@ github_authorize = oauth.register(
     api_base_url='https://api.github.com/',
     client_kwargs={'scope': 'user:email'})
 
+# TODO divide the public api offering and client api and also admin api to be offered as different micro-services
+
 
 # noinspection DuplicatedCode
 def create_app(config_class=config_instance):
@@ -38,17 +40,16 @@ def create_app(config_class=config_instance):
     from _api.public_api.memberships.routes import memberships_bp
     from _api.public_api.coupons.routes import coupons_bp
     from _api.public_api.wallet.routes import wallet_bp
+    from _api.public_api.services.routes import services_public_api_bp
+
     from handlers.routes import default_handlers_bp
     # importing IPN
     from _ipn.email import email_ipn_bp
     from _ipn.paypal import paypal_ipn_bp
     from _ipn.heroku import heroku_ipn_bp
 
-    # importing admin app blueprints
-    from main.app.admin.routes.dashboard import admin_dashboard_bp
-    from main.app.admin.routes.home import admin_bp
-
     # import client app blueprints
+    # TODO remove this routes to Client Dashboard APP
     from main.app.client.routes.dashboard import client_dashboard_bp
     from main.app.client.routes.home import client_home_bp
 
@@ -62,6 +63,7 @@ def create_app(config_class=config_instance):
     from _api.client_api.api.services.routes import services_client_api_bp
 
     # import main app blueprints
+    # TODO remove to main application
     from main.app.memberships_main.routes.routes import memberships_main_bp
 
     # importing main api
@@ -72,29 +74,24 @@ def create_app(config_class=config_instance):
     from _api.admin_api.api.organizations.organization import admin_organization_api_bp
     from _api.admin_api.api.memberships.memberships import membership_plans_admin_api_bp
 
-    from _api.public_api.services.routes import services_public_api_bp
-
-    # Cron Jobs
+    # v1 cron jobs
     from _cron.transactions import cron_transactions_bp
     from _cron.users import cron_users_bp
     from _cron.memberships import cron_memberships_bp
     from _cron.affiliates import cron_affiliate_bp
 
-    # Routes registrations
+    # v1 public api routes
     app.register_blueprint(affiliates_bp)
     app.register_blueprint(users_bp)
     app.register_blueprint(memberships_bp)
     app.register_blueprint(coupons_bp)
     app.register_blueprint(wallet_bp)
+    app.register_blueprint(services_public_api_bp)
 
-    # registering IPN
+    # v1 ipn routes
     app.register_blueprint(email_ipn_bp)
     app.register_blueprint(paypal_ipn_bp)
     app.register_blueprint(heroku_ipn_bp)
-
-    # admin app handlers
-    app.register_blueprint(admin_dashboard_bp)
-    app.register_blueprint(admin_bp)
 
     # client app default_handlers_bp
     app.register_blueprint(client_dashboard_bp)
@@ -104,6 +101,10 @@ def create_app(config_class=config_instance):
     app.register_blueprint(client_api_keys_bp)
     app.register_blueprint(client_github_users_api_bp)
     app.register_blueprint(client_organizations_api_bp)
+    app.register_blueprint(client_users_api_bp)
+    app.register_blueprint(contact_api_bp)
+    app.register_blueprint(services_client_api_bp)
+    app.register_blueprint(memberships_client_api_bp)
 
     # main app handlers
     app.register_blueprint(memberships_main_bp)
@@ -115,12 +116,6 @@ def create_app(config_class=config_instance):
     app.register_blueprint(admin_users_api_bp)
     app.register_blueprint(admin_organization_api_bp)
     app.register_blueprint(membership_plans_admin_api_bp)
-    app.register_blueprint(contact_api_bp)
-    app.register_blueprint(client_users_api_bp)
-    app.register_blueprint(memberships_client_api_bp)
-    app.register_blueprint(services_client_api_bp)
-
-    app.register_blueprint(services_public_api_bp)
 
     # cron jobs
     app.register_blueprint(cron_transactions_bp)
