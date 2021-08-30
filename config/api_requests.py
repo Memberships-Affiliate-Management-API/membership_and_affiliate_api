@@ -84,7 +84,7 @@ class APIRequests:
         # returning the _request_id so it can be used to retrieve the results at a later stage
         return _request_id
 
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.memoize(timeout=return_ttl('short'), cache_none=False)
     def get_response(self, request_id: str) -> Optional[dict]:
         ***REMOVED***
         **get_response**
@@ -96,4 +96,5 @@ class APIRequests:
             # at Best will return None if response not found
             return [_response.get('response') for _response in self._responses_queue
                     if _response.get('_request_id') == request_id][0] or None
+        # Note: None results will not be cached
         return None
