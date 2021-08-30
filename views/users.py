@@ -1386,7 +1386,7 @@ class UserView(Validators, UserEmails, CacheManager):
                                                 UserModel.email == email).get()
 
         if not isinstance(user_model, UserModel) and user_model.email == email:
-            message: str = "uid is required"
+            message: str = "user not found"
             raise InputError(status=error_codes.input_error_code, description=message)
 
         if not user_model.is_active:
@@ -1395,7 +1395,9 @@ class UserView(Validators, UserEmails, CacheManager):
 
         if check_password_hash(user_model.password, password):
             token = encode_auth_token(uid=user_model.uid)
-            return jsonify({'token': token,
+            payload: dict = dict(token=token, user=user_model.to_dict())
+            return jsonify({'status': True,
+                            'payload': payload,
                             'message': "you have successfully logged in"}), status_codes.status_ok_code
 
         message: str = 'login was not successful please check your <strong>email: <code>{}</code> </strong> or ' \
