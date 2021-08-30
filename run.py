@@ -1,11 +1,12 @@
 ***REMOVED***
-    will start main application as a web service
+    **main api run module for memberships and affiliate api **
+
 ***REMOVED***
 import os
 from config import config_instance
 from main import create_app
 from utils.utils import is_development
-
+# TODO create separate run files for client api, admin api, and public_api
 app = create_app(config_class=config_instance)
 
 debug = is_development() and config_instance.DEBUG
