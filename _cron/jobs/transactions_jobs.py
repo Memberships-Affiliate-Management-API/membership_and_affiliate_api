@@ -3,6 +3,7 @@ from typing import List, Coroutine, Optional
 from flask import current_app
 from google.cloud import ndb
 from config.use_context import use_context
+from database.mixins import AmountMixin
 from database.wallet import WalletTransactionsModel, WalletModel
 
 
@@ -35,7 +36,7 @@ class TransactionsJobs:
 
         if wallet_instance.is_verified:
             paypal_address = wallet_instance.paypal_address
-            amount = transaction.amount
+            amount_to_send: AmountMixin = transaction.amount
             # TODO send amount to paypal using paypal address from wallet and amount from transactions
             transaction.is_settled = True
             tran_key: Optional[ndb.Key] = transaction.put_async(retries=self._max_retries,
