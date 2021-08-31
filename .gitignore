@@ -8,4 +8,3 @@ gen/
 .vscode/
 .pytest_cache/
 *.pyc
-open-api.json
