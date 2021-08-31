@@ -4,7 +4,7 @@
     the module will also trigger events when some database properties are being set or reset.
     allowing certain actions to be triggered if its necessary to do so.
 ***REMOVED***
-__author__ = "mobius-crypt"
+__developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
 __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"

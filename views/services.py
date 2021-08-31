@@ -11,7 +11,7 @@
          users will be able to access any such website admin section upon registering
          and becoming a member of such a service.
 ***REMOVED***
-__author__ = "mobius-crypt"
+__developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
 __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"

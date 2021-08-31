@@ -1,11 +1,23 @@
+***REMOVED***
+    **api keys system admin module**
+        controls access to api keys for system admin application
+***REMOVED***
+
+__developer__ = "mobius-crypt"
+__email__ = "mobiusndou@gmail.com"
+__twitter__ = "@blueitserver"
+__github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
+__github_profile__ = "https://github.com/freelancing-solutions/"
+__licence__ = "MIT"
+
 import hmac
+from typing import Optional
+
 from flask import Blueprint, request, current_app
 
 from config import config_instance
 from config.exceptions import UnAuthenticatedError, error_codes
-from security.apps_authenticator import handle_apps_authentication
 from views.apikeys import APIKeysView
-from typing import Optional
 
 admin_api_keys_api_bp = Blueprint("admin_api_keys_api", __name__)
 

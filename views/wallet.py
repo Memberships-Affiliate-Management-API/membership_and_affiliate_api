@@ -2,7 +2,7 @@
     **Module Wallet View Controller**
         Class Definitions for handling Wallet data input and validations
 ***REMOVED***
-__author__ = "mobius-crypt"
+__developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
 __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"

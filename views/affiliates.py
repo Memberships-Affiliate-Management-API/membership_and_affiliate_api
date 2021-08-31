@@ -3,7 +3,7 @@
     *Class Definitions for managing access to the database and validation of user input*
 
 ***REMOVED***
-__author__ = "mobius-crypt"
+__developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
 __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"

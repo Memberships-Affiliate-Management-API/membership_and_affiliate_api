@@ -6,7 +6,7 @@
     the _ipn for user deposit to certain organization must be given to the owner of the account
     the owner may use the endpoint while setting up paypal payments on their website
 ***REMOVED***
-__author__ = "mobius-crypt"
+__developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
 __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
