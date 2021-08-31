@@ -2,11 +2,13 @@
     **Client Home Route**
         entry page to client dashboard
 ***REMOVED***
+
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
 __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
+__licence__ = "MIT"
 
 from typing import Optional
 
