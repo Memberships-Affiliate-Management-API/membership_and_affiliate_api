@@ -3,6 +3,14 @@
         will be used by clients and application to get access to api keys
         for authentication purposes
 ***REMOVED***
+
+__developer__ = "mobius-crypt"
+__email__ = "mobiusndou@gmail.com"
+__twitter__ = "@blueitserver"
+__github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
+__github_profile__ = "https://github.com/freelancing-solutions/"
+__licence__ = "MIT"
+
 from typing import Optional
 from flask import Blueprint, request, current_app
 from config.exceptions import UnAuthenticatedError, error_codes, if_bad_request_raise
