@@ -102,6 +102,20 @@ def auth_admin(path: str) -> tuple:
 
             payload: dict = dict(token=token, user=user_dict)
             return jsonify({'status': True, 'payload': payload, 'message': message})
+    elif path == "get-admin-user":
+        uid: Optional[str] = json_data.get("uid")
+        organization_id: Optional[str] = json_data.get("organization_id")
+        compare_uid: bool = hmac.compare_digest(uid, config_instance.ADMIN_UID)
+        compare_org: bool = hmac.compare_digest(organization_id, config_instance.ORGANIZATION_ID)
+
+        if compare_org and compare_uid:
+            user_dict: dict = get_admin_user()
+            user_dict.update(password="")
+            message: str = 'user successfully retrieved'
+            return jsonify({'status': True, 'payload': user_dict, 'message': message})
+
+
+
 
 
 
