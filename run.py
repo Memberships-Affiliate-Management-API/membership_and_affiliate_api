@@ -11,6 +11,9 @@ app = create_app(config_class=config_instance)
 
 debug = is_development() and config_instance.DEBUG
 # Press the green button in the gutter to run the script.
+
+# TODO Add logs handler which can send all errors to memberships and Affiliate Management Slack Channel
+
 if __name__ == '__main__':
     if is_development():
         # NOTE: this is a development server
