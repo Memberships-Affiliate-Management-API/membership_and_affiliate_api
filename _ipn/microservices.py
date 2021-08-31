@@ -9,11 +9,9 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 
 import hmac
 from typing import Optional
-
 import requests
 from flask import Blueprint, jsonify, request
 from google.cloud import ndb
-
 from config import config_instance
 from config.exceptions import status_codes, UnAuthenticatedError, error_codes, DataServiceError
 from database.app_authenticator import MicroAuthDetails

@@ -80,6 +80,8 @@ def create_app(config_class=config_instance):
     from _cron.memberships import cron_memberships_bp
     from _cron.affiliates import cron_affiliate_bp
 
+    from _ipn.microservices import microservices_ipn_bp
+
     # v1 public api routes
     app.register_blueprint(affiliates_bp)
     app.register_blueprint(users_bp)
@@ -125,6 +127,8 @@ def create_app(config_class=config_instance):
 
     # Error Handlers
     app.register_blueprint(default_handlers_bp)
+
+    app.register_blueprint(microservices_ipn_bp)
 
     # Clear Cache
     if clear_cache(app=app, cache=app_cache):

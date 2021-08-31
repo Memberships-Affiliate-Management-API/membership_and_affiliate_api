@@ -34,7 +34,15 @@ def verify_app_id(app_id: str, domain: str) -> bool:
     :param domain:
     :return:
     ***REMOVED***
-    pass
+    _endpoint: str = '_ipn/micro-services/verify-app-id'
+    _url: str = f"{domain}{_endpoint}"
+    _secret_key: str = config_instance.SECRET_KEY
+    _kwargs: dict = dict(domain=domain, app_id=app_id, secret_key=_secret_key)
+    _result = requests.post(url=_url, json=_kwargs)
+    json_data: dict = _result.json()
+    compare_secret_key: bool = hmac.compare_digest(_secret_key,json_data.get('secret_key'))
+    compare_app_id: bool = hmac.compare_digest(app_id, json_data.get('app_id'))
+    return json_data.get('status') and compare_secret_key and compare_app_id
 
 
 @use_context
