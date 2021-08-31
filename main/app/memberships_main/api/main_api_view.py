@@ -2,6 +2,14 @@
     **Main API View**
         Main View module to enable api calls for use in main memberships website
 ***REMOVED***
+
+__developer__ = "mobius-crypt"
+__email__ = "mobiusndou@gmail.com"
+__twitter__ = "@blueitserver"
+__github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
+__github_profile__ = "https://github.com/freelancing-solutions/"
+__licence__ = "MIT"
+
 import requests
 from typing import Optional
 from flask import current_app, jsonify
