@@ -2,11 +2,13 @@
     **NDB Database Common Mixins**
         This Module defines common Mixins which are useful in defining main database classes on the applications
 ***REMOVED***
+
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
 __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
+__licence__ = "MIT"
 
 from dataclasses import dataclass
 from google.cloud import ndb
