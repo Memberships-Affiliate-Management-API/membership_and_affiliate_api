@@ -2,11 +2,13 @@
     **Module For Common Error Handlers for the application**
     *Routes Definitions for handling common application errors*
 ***REMOVED***
+
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
 __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
+__licence__ = "MIT"
 
 from authlib.integrations.base_client import OAuthError
 from flask import Blueprint, jsonify
