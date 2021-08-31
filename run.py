@@ -7,7 +7,7 @@ __email__ = "mobiusndou@gmail.com"
 __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
-
+__licence__ = "MIT"
 
 import os
 from config import config_instance
