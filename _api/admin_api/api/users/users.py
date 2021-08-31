@@ -6,7 +6,7 @@ from config import config_instance
 from config.exceptions import error_codes, UnAuthenticatedError, if_bad_request_raise
 from database.users import UserModel
 from security.apps_authenticator import handle_apps_authentication
-from security.users_authenticator import get_admin_user, encode_auth_token
+from security.users_authenticator import get_admin_user, encode_auth_token, decode_auth_token
 from views.users import UserView
 from typing import Optional
 
@@ -72,16 +72,44 @@ def auth_admin(path: str) -> tuple:
         compare_uid: bool = hmac.compare_digest(uid, config_instance.ADMIN_UID)
         compare_org: bool = hmac.compare_digest(organization_id, config_instance.ORGANIZATION_ID)
 
-        user_view_instance: UserView = UserView()
         if compare_email and compare_password and compare_uid and compare_org:
-            user_instance = get_admin_user()
-            user_instance.update(password="")
-            token = encode_auth_token(uid=uid)
+            user_dict: dict = get_admin_user()
+            user_dict.update(password="")
+            token: Optional[str] = encode_auth_token(uid=uid)
             message: str = 'welcome admin'
-            payload: dict = dict(token=token, user=user_instance)
+            payload: dict = dict(token=token, user=user_dict)
             return jsonify({'status': True, 'payload': payload, 'message': message})
 
         raise UnAuthenticatedError(description='You are not authorized to login as admin')
+
+    elif path == "logout":
+        email: Optional[str] = json_data.get("email")
+        token: str = json_data.get('token')
+        uid: Optional[str] = json_data.get("uid")
+        organization_id: Optional[str] = json_data.get("organization_id")
+        token_uid: str = decode_auth_token(auth_token=token)
+        # Comparing Digests
+        compare_email: bool = hmac.compare_digest(email, config_instance.ADMIN_EMAIL)
+        compare_uid: bool = hmac.compare_digest(uid, token_uid)
+        compare_org: bool = hmac.compare_digest(organization_id, config_instance.ORGANIZATION_ID)
+
+        # NOTE remove any cached tokens
+        if compare_email and compare_uid and compare_org:
+            user_dict: dict = get_admin_user()
+            user_dict.update(password="")
+            token: Optional[str] = None
+            message: str = 'successfully logged out user'
+
+            payload: dict = dict(token=token, user=user_dict)
+            return jsonify({'status': True, 'payload': payload, 'message': message})
+
+
+
+
+
+
+
+
 
 
 
