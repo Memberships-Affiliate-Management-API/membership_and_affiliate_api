@@ -1,3 +1,4 @@
+import hmac
 from flask import Blueprint, request, current_app
 from config.exceptions import UnAuthenticatedError, error_codes
 from database.mixins import AmountMixin
@@ -22,12 +23,12 @@ def organization_admin_api(path: str) -> tuple:
     :param path:
     :return:
     ***REMOVED***
-    # TODO - verify this uid against system admin user id
     org_view_instance: OrganizationView = OrganizationView()
     json_data: dict = request.get_json()
     secret_key: Optional[str] = json_data.get('SECRET_KEY')
 
-    if not isinstance(secret_key, str) or secret_key != current_app.config.get('SECRET_KEY'):
+    compare_secret_key: bool = hmac.compare_digest(secret_key, current_app.config.get('SECRET_KEY'))
+    if not compare_secret_key:
         message: str = 'User Not Authorized: you cannot perform this action'
         raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
 

@@ -190,7 +190,7 @@ def handle_users_auth(func):
         # print('token headers: {}'.format(request.headers))
         if 'x-access-token' in request.headers:
             token = request.headers.get('x-access-token')
-            # print('token found : {}'.format(token))
+            print('token found : {}'.format(token))
         # NOTE: if running on development server by-pass authentication and return admin user
         if not token:
             return redirect(url_for('memberships_main.memberships_main_routes', path='login'))

@@ -27,7 +27,8 @@ def admin_users(path: str) -> tuple:
 
     json_data: dict = request.get_json()
     secret_key: Optional[str] = json_data.get("SECRET_KEY")
-    if not isinstance(secret_key, str) or secret_key != current_app.config.get('SECRET_KEY'):
+    compare_secret_key: bool = hmac.compare_digest(secret_key, current_app.config.get('SECRET_KEY'))
+    if not compare_secret_key:
         message: str = 'User Not Authorized: you cannot perform this action'
         raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
 
@@ -97,11 +98,15 @@ def auth_admin(path: str) -> tuple:
             token: Optional[str] = encode_auth_token(uid=uid)
             message: str = 'welcome admin'
             payload: dict = dict(token=token, user=user_dict)
+            # TODO - save auth details on MicroAuthDetails
+            # NOTE: when applications communicate amongst each other they must authenticate using admin credentials
+            # NOTE: in order to renew authentication details
             return jsonify({'status': True, 'payload': payload, 'message': message})
 
         raise UnAuthenticatedError(description='You are not authorized to login as admin')
 
     elif path == "logout":
+
         email: Optional[str] = json_data.get("email")
         token: str = json_data.get('token')
         uid: Optional[str] = json_data.get("uid")
@@ -121,6 +126,7 @@ def auth_admin(path: str) -> tuple:
 
             payload: dict = dict(token=token, user=user_dict)
             return jsonify({'status': True, 'payload': payload, 'message': message})
+
     elif path == "get-admin-user":
         uid: Optional[str] = json_data.get("uid")
         organization_id: Optional[str] = json_data.get("organization_id")
