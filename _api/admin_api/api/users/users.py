@@ -35,14 +35,33 @@ def admin_users(path: str) -> tuple:
         organization_id: Optional[str] = json_data.get("organization_id")
         uid: Optional[str] = json_data.get("uid")
         user_view_instance: UserView = UserView()
-        return user_view_instance.get_user(uid=uid, organization_id=organization_id)
+        compare_organization: bool = hmac.compare_digest(organization_id, config_instance.ORGANIZATION_ID)
+        compare_uid: bool = hmac.compare_digest(uid, config_instance.ADMIN_UID)
+
+        if compare_organization and compare_uid:
+            return user_view_instance.get_user(uid=uid, organization_id=organization_id)
+
+    # NOTE: get all main organizations users
+    elif path == "get-all":
+        organization_id: Optional[str] = json_data.get("organization_id")
+        uid: Optional[str] = json_data.get("uid")
+        user_view_instance: UserView = UserView()
+        compare_organization: bool = hmac.compare_digest(organization_id, config_instance.ORGANIZATION_ID)
+        compare_uid: bool = hmac.compare_digest(uid, config_instance.ADMIN_UID)
+
+        if compare_organization and compare_uid:
+            return user_view_instance.get_all_users(organization_id=organization_id)
 
     elif path == "is-user-unique":
         # checks if user exists based on either email or uid - used for administration purposes
         email: Optional[str] = json_data.get("email")
         uid: Optional[str] = json_data.get("uid")
         user_view_instance: UserView = UserView()
-        return user_view_instance._system_user_exist(email=email, uid=uid)
+        compare_uid: bool = hmac.compare_digest(uid, config_instance.ADMIN_UID)
+        compare_email: bool = hmac.compare_digest(email, config_instance.ADMIN_EMAIL)
+
+        if compare_email and compare_uid:
+            return user_view_instance._system_user_exist(email=email, uid=uid)
 
 
 @admin_users_api_bp.route('/_api/v1/admin/auth/<string:path>', methods=["GET", "POST"])
