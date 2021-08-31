@@ -2,6 +2,14 @@
     **Main Memberships & Affiliates Management API Website Routes**
         Routes for requests related to main website for Memberships & Affiliates Management API.
 ***REMOVED***
+
+__developer__ = "mobius-crypt"
+__email__ = "mobiusndou@gmail.com"
+__twitter__ = "@blueitserver"
+__github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
+__github_profile__ = "https://github.com/freelancing-solutions/"
+__licence__ = "MIT"
+
 from typing import Optional
 from flask import Blueprint, render_template, get_flashed_messages, make_response, redirect, url_for, flash
 from config.exceptions import status_codes
