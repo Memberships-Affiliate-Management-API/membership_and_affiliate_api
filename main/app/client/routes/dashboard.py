@@ -1,6 +1,14 @@
 ***REMOVED***
     this is a private route
 ***REMOVED***
+
+__developer__ = "mobius-crypt"
+__email__ = "mobiusndou@gmail.com"
+__twitter__ = "@blueitserver"
+__github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
+__github_profile__ = "https://github.com/freelancing-solutions/"
+__licence__ = "MIT"
+
 from typing import List, Optional
 
 from flask import Blueprint, request, render_template, url_for, get_flashed_messages, redirect, flash
