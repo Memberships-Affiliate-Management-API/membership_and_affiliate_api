@@ -9,15 +9,15 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 __licence__ = "MIT"
 
 import hmac
+from typing import Optional
+
 from flask import Blueprint, request, current_app, jsonify
 
 from config import config_instance
 from config.exceptions import error_codes, UnAuthenticatedError, if_bad_request_raise
-from database.users import UserModel
 from security.apps_authenticator import handle_apps_authentication
 from security.users_authenticator import get_admin_user, encode_auth_token, decode_auth_token
 from views.users import UserView
-from typing import Optional
 
 admin_users_api_bp = Blueprint("admin_users_api", __name__)
 
@@ -152,17 +152,3 @@ def auth_admin(path: str) -> tuple:
             return jsonify({'status': True, 'payload': user_dict, 'message': message})
 
     raise UnAuthenticatedError(description='You are not authorized access this resource')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
