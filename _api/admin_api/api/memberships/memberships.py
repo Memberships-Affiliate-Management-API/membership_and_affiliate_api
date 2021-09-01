@@ -1,5 +1,5 @@
 ***REMOVED***
-    handle users and admin authentication
+    **memberships system admin api**
 ***REMOVED***
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
