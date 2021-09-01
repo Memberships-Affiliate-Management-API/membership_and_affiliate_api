@@ -9,16 +9,14 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
 import hmac
-from typing import Optional
 
 from flask import Blueprint, jsonify, request
-from google.cloud import ndb
 
 from config import config_instance
-from config.exceptions import status_codes, UnAuthenticatedError, error_codes, DataServiceError
-from database.app_authenticator import MicroAuthDetails
+from config.exceptions import status_codes, UnAuthenticatedError, error_codes
 from security.apps_authenticator import verify_app_id
 from security.users_authenticator import encode_auth_token
+from utils import is_development
 
 microservices_ipn_bp = Blueprint("microservices_ipn", __name__)
 
@@ -34,8 +32,13 @@ def micro_services_auth() -> tuple:
     app_id: str = json_data.get('app_id')
     secret_key: str = json_data.get('secret_key')
 
+    # TODO consider checking if the domain which makes the call is the same as the domain which was passed
+
     # Note: adding forward slash to the domain name to match internal domain formatting
     _domain = f"{domain}/" if not domain.endswith("/") else domain
+    # NOTE: the following statement will only run if api is running
+    # in development server or on staging sever
+    _domain = _domain.replace('localhost', '127.0.0.1') if is_development() else _domain
 
     # Note: checking if domain matches a known client domain
     _client_domain: str = config_instance.CLIENT_APP_BASEURL
@@ -58,29 +61,21 @@ def micro_services_auth() -> tuple:
         message: str = "Application not authorized"
         raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
-    app_auth_details: MicroAuthDetails = MicroAuthDetails.query(MicroAuthDetails.domain == domain).get()
-
     # If auth details are found and app id is valid and secret_key matches default key proceed to
     # authenticate
-    if bool(app_auth_details) and is_id_valid and compare_secret_key:
-        # comparing domain name with auth details domain name
-        compare_domain: bool = hmac.compare_digest(domain, app_auth_details.domain)
-        if compare_domain:
-            # Updating app_id and auth token
-            app_auth_details.app_id = app_id
-            token_id: str = f"{secret_key}.{app_id}"
-            app_auth_details.auth_token = encode_auth_token(uid=token_id)
-            _retries: int = config_instance.DATASTORE_RETRIES
-            _timeout: int = config_instance.DATASTORE_TIMEOUT
-            key: Optional[ndb.Key] = app_auth_details.put(retries=_retries, timeout=_timeout)
-            if not isinstance(key, ndb.Key):
-                message: str = "Database Error: Unable to authenticate"
-                raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+    if not is_id_valid or not compare_secret_key:
+        message: str = "Application not authorized"
+        raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
-            _result: dict = {'status': True, 'payload': app_auth_details.to_dict(),
-                             'message': 'successfully authenticated'}
+    _token_id: str = f"{domain}#{secret_key}#{app_id}"
+    _auth_token = encode_auth_token(uid=_token_id, expiration_days=30)
+    if not _auth_token:
+        message: str = "Application not authorized"
+        raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
-            return jsonify(_result), status_codes.successfully_updated_code
+    _payload: dict = dict(app_id=app_id, domain=domain, secret_key=secret_key, auth_token=_auth_token)
+    _message: str = 'application successfully authenticated'
+    _result: dict = dict(result=True, payload=_payload, message=_message)
 
-    message: str = "Application not authorized"
-    raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
+    return jsonify(_result), status_codes.successfully_updated_code
+

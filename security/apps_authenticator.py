@@ -12,6 +12,7 @@ __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
 __licence__ = "MIT"
+
 import hmac
 from typing import Optional
 import requests
@@ -22,6 +23,7 @@ import functools
 from config.use_context import use_context
 from main import app_cache
 from database.app_authenticator import MicroAuthDetails
+from security.users_authenticator import decode_auth_token
 from utils import is_development, return_ttl
 
 
@@ -36,17 +38,29 @@ def verify_app_id(app_id: str, domain: str) -> bool:
     ***REMOVED***
     _endpoint: str = '_ipn/micro-services/verify-app-id'
     _url: str = f"{domain}{_endpoint}"
+
     _secret_key: str = config_instance.SECRET_KEY
     _kwargs: dict = dict(domain=domain, app_id=app_id, secret_key=_secret_key)
+
     _result = requests.post(url=_url, json=_kwargs)
+
     json_data: dict = _result.json()
-    compare_secret_key: bool = hmac.compare_digest(_secret_key,json_data.get('secret_key'))
-    compare_app_id: bool = hmac.compare_digest(app_id, json_data.get('app_id'))
+
+    if not json_data.get('status'):
+        # TODO if app not authenticated adding the ip address to a black list may be a good idea
+        message: str = "application un-authenticated"
+        raise UnAuthenticatedError(description=message)
+
+    _payload: dict = json_data.get('payload')
+
+    # Note: comparing a known secret_key with the returned secret_key
+    compare_secret_key: bool = hmac.compare_digest(_secret_key, _payload.get('secret_key'))
+
+    compare_app_id: bool = hmac.compare_digest(app_id, _payload.get('app_id'))
     return json_data.get('status') and compare_secret_key and compare_app_id
 
 
 @use_context
-@app_cache.memoize(timeout=return_ttl('short'))
 def is_app_authenticated(domain: Optional[str], secret_key: Optional[str],
                          auth_token: Optional[str]) -> bool:
     ***REMOVED***
@@ -57,27 +71,18 @@ def is_app_authenticated(domain: Optional[str], secret_key: Optional[str],
     :param auth_token:
     :return: True
     ***REMOVED***
-    # TODO use system database to get details for authenticated applications
-    if not is_development():
+    decoded_token = decode_auth_token(auth_token=auth_token)
+    if not bool(decoded_token):
+        return False
+    _domain, _secret_key, _app_id = decoded_token.split('#')
+    print(f"DOMAIN: {domain} SECRET_KEY: {secret_key}, app_id: {_app_id}")
+    domain = f"{domain}/" if not domain.endswith("/") else domain
 
-        # NOTE: this is an applications Authentication Token not users Authentication Token
-        compare_auth_token: bool = False
-        # NOTE: ON launching the application to be live create MicroAuthDetails on main database
-        # NOTE:  after every authentication save auth token on live database
-        app_auth_details: MicroAuthDetails = MicroAuthDetails.query(MicroAuthDetails.domain == domain).get()
-        compare_domain: bool = hmac.compare_digest(domain, app_auth_details.domain)
+    compare_secret_key: bool = hmac.compare_digest(_secret_key, secret_key)
+    compare_domain: bool = hmac.compare_digest(_domain, domain)
+    print(f"domain : {domain}, _domain: {_domain}")
 
-        if isinstance(app_auth_details, MicroAuthDetails) and compare_domain:
-            compare_auth_token: bool = hmac.compare_digest(auth_token, app_auth_details.auth_token)
-
-        compare_admin_domain: bool = hmac.compare_digest(domain, config_instance.ADMIN_APP_BASEURL)
-        compare_client_domain: bool = hmac.compare_digest(domain, config_instance.CLIENT_APP_BASEURL)
-        compare_secret_key: bool = hmac.compare_digest(secret_key, config_instance.SECRET_KEY)
-
-        # NOTE if either admin domain or client domain is the same as is known then proceed
-        return compare_secret_key and (compare_client_domain or compare_admin_domain) and compare_auth_token
-
-    return True
+    return compare_secret_key and compare_domain and verify_app_id(app_id=_app_id, domain=_domain)
 
 
 def handle_apps_authentication(func):
@@ -86,10 +91,8 @@ def handle_apps_authentication(func):
         json_data: dict = request.get_json()
         domain: Optional[str] = json_data.get('domain')
         secret_key: Optional[str] = json_data.get('SECRET_KEY')
-        auth_token: Optional[str] = json_data.get('token')
-        print(f"domain: {domain}, secret_key: {secret_key}, auth_token: {auth_token}")
-        print(json_data)
-        print(args)
+        auth_token: Optional[str] = json_data.get('app_token')
+        print(f"Domain: {domain}, Secret_key: {secret_key}, Auth_token: {auth_token}")
 
         if not is_development() and ("localhost" in domain or "127.0.0.1" in domain):
             message: str = "request not authorized"
@@ -102,6 +105,6 @@ def handle_apps_authentication(func):
 
     return auth_wrapper
 
+
 def is_domain_authorised(domain) -> bool:
     pass
-

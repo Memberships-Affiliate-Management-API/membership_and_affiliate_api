@@ -105,7 +105,7 @@ def is_app_admin(current_user: any) -> bool:
     return current_user and current_user.uid and (current_user.organization_id == config_instance.ORGANIZATION_ID)
 
 
-def encode_auth_token(uid: str) -> str:
+def encode_auth_token(uid: str, expiration_days: int = 0) -> Optional[str]:
     ***REMOVED***
     **encode_auth_token**
         Generates the Auth Token for JWT Authentication
@@ -115,19 +115,16 @@ def encode_auth_token(uid: str) -> str:
         :return: string -> auth-token
     ***REMOVED***
     try:
-        payload = {
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, minutes=30, seconds=5),
-            'iat': datetime.datetime.utcnow(),
-            'sub': uid
-        }
-        token = jwt.encode(payload=payload, key=str(current_app.config.get('SECRET_KEY')), algorithm='HS256')
-        print('token: ', token)
+        _payload: dict = dict(exp=datetime.datetime.utcnow() + datetime.timedelta(days=expiration_days, minutes=30, seconds=5),
+                              iat=datetime.datetime.utcnow(),
+                              sub=uid)
+        token = jwt.encode(payload=_payload, key=str(current_app.config.get('SECRET_KEY')), algorithm='HS256')
         return token
     except jwt.InvalidAlgorithmError as e:
-        return str(e)
+        return None
 
 
-def decode_auth_token(auth_token):
+def decode_auth_token(auth_token: str) -> Optional[str]:
     ***REMOVED***
     **decode_auth_token**
         Decodes the auth token
@@ -140,10 +137,8 @@ def decode_auth_token(auth_token):
         payload = jwt.decode(jwt=auth_token, key=current_app.config.get('SECRET_KEY'), algorithms=['HS256'])
         return payload['sub']
     except jwt.ExpiredSignatureError:
-        print("Error Expired Signature")
         return None
     except jwt.InvalidTokenError:
-        print("Error : invalid token")
         return None
 
 
