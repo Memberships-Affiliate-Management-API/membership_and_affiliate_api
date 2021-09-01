@@ -83,10 +83,13 @@ def is_app_authenticated(domain: Optional[str], secret_key: Optional[str],
 def handle_apps_authentication(func):
     @functools.wraps(func)
     def auth_wrapper(*args, **kwargs):
-        domain: Optional[str] = kwargs.get('domain')
-        secret_key: Optional[str] = request.headers.get('SECRET_KEY')
-        auth_token: Optional[str] = kwargs.get('token')
+        json_data: dict = request.get_json()
+        domain: Optional[str] = json_data.get('domain')
+        secret_key: Optional[str] = json_data.get('SECRET_KEY')
+        auth_token: Optional[str] = json_data.get('token')
         print(f"domain: {domain}, secret_key: {secret_key}, auth_token: {auth_token}")
+        print(json_data)
+        print(args)
 
         if not is_development() and ("localhost" in domain or "127.0.0.1" in domain):
             message: str = "request not authorized"
@@ -98,3 +101,7 @@ def handle_apps_authentication(func):
         raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
     return auth_wrapper
+
+def is_domain_authorised(domain) -> bool:
+    pass
+
