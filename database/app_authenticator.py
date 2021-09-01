@@ -59,4 +59,4 @@ class MicroAuthDetails(BaseModel):
                 returns True if valid instance of MicroAuthDetails
         :return: True if Instance
         ***REMOVED***
-        return bool(self.domain) and bool(self.secret_key) and bool(self.auth_token) and bool(self.app_id)
+        return bool(self.domain) and bool(self.secret_key) and bool(self.app_id)
