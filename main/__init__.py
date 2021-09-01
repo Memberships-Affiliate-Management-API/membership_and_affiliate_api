@@ -92,7 +92,7 @@ def create_app(config_class=config_instance):
     from _cron.memberships import cron_memberships_bp
     from _cron.affiliates import cron_affiliate_bp
 
-    from _ipn.microservices import microservices_ipn_bp
+    from _ipn.micro_auth import microservices_ipn_bp
 
     # v1 public api routes
     app.register_blueprint(affiliates_bp)
