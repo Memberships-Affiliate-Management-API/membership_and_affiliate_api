@@ -84,7 +84,7 @@ def create_app(config_class=config_instance):
     from _api.admin_api.api.users.users import admin_users_api_bp
     from _api.admin_api.api.organizations.organization import admin_organization_api_bp
     from _api.admin_api.api.memberships.memberships import membership_plans_admin_api_bp
-    from _api.admin_api.api.apikeys.routes import admin_api_keys_api_bp
+    from _api.admin_api.api.apikeys.apikeys import admin_api_keys_api_bp
 
     # v1 cron jobs
     from _cron.transactions import cron_transactions_bp

@@ -27,6 +27,7 @@ class Config:
         self.BASE_URL: str = os.environ.get("BASE_URL") or config("BASE_URL")
         self.ADMIN_APP_BASEURL = os.environ.get("ADMIN_APP_BASEURL") or config("ADMIN_APP_BASEURL")
         self.CLIENT_APP_BASEURL = os.environ.get("CLIENT_APP_BASEURL") or config("CLIENT_APP_BASEURL")
+        self.AUTH_URLS: list = [self.BASE_URL, self.ADMIN_APP_BASEURL, self.CLIENT_APP_BASEURL]
 
         # MAILGUN Keys
         self.MAILGUN_DOMAIN: str = os.environ.get("MAILGUN_DOMAIN") or config("MAILGUN_DOMAIN")
