@@ -17,12 +17,14 @@ from flask import Blueprint, request, current_app
 
 from config import config_instance
 from config.exceptions import UnAuthenticatedError, error_codes
+from security.apps_authenticator import handle_apps_authentication
 from views.apikeys import APIKeysView
 
 admin_api_keys_api_bp = Blueprint("admin_api_keys_api", __name__)
 
 
 @admin_api_keys_api_bp.route('/_api/v1/admin/api-keys/<string:path>', methods=["POST"])
+@handle_apps_authentication
 def api_keys(path: str) -> tuple:
     ***REMOVED***
     **api_keys**

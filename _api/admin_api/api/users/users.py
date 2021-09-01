@@ -1,5 +1,14 @@
-import hmac
+***REMOVED***
+    handle users and admin authentication
+***REMOVED***
+__developer__ = "mobius-crypt"
+__email__ = "mobiusndou@gmail.com"
+__twitter__ = "@blueitserver"
+__github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
+__github_profile__ = "https://github.com/freelancing-solutions/"
+__licence__ = "MIT"
 
+import hmac
 from flask import Blueprint, request, current_app, jsonify
 
 from config import config_instance
@@ -66,6 +75,7 @@ def admin_users(path: str) -> tuple:
 
 
 @admin_users_api_bp.route('/_api/v1/admin/auth/<string:path>', methods=["GET", "POST"])
+@handle_apps_authentication
 def auth_admin(path: str) -> tuple:
     ***REMOVED***
 
@@ -75,8 +85,10 @@ def auth_admin(path: str) -> tuple:
     if_bad_request_raise(request)
 
     json_data: dict = request.get_json()
-    secret_key: Optional[str] = json_data.get("SECRET_KEY")
-    if not isinstance(secret_key, str) or secret_key != current_app.config.get('SECRET_KEY'):
+    secret_key: Optional[str] = json_data.get('SECRET_KEY')
+
+    compare_secret_key: bool = hmac.compare_digest(secret_key, current_app.config.get('SECRET_KEY'))
+    if not compare_secret_key:
         message: str = 'User Not Authorized: you cannot perform this action'
         raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
 
@@ -139,6 +151,7 @@ def auth_admin(path: str) -> tuple:
             message: str = 'user successfully retrieved'
             return jsonify({'status': True, 'payload': user_dict, 'message': message})
 
+    raise UnAuthenticatedError(description='You are not authorized access this resource')
 
 
 
