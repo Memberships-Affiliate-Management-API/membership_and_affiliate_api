@@ -13,7 +13,7 @@ from config.exceptions import status_codes, UnAuthenticatedError, InputError
 from database.users import UserModel
 from tests import test_app
 from utils.utils import create_id, timestamp, today, _char_set
-from views.users import UserView
+from views import user_view
 
 user_instance: UserModel = UserModel()
 
@@ -83,7 +83,7 @@ def get_user_data() -> tuple:
         returns complete list of user data
     :return: tuple -> user data
     ***REMOVED***
-    users_view_instance: UserView = UserView()
+
     organization_id: str = user_mock_data.get('organization_id')
     uid: str = user_mock_data.get('uid')
     names: str = user_mock_data.get('names')
@@ -91,8 +91,8 @@ def get_user_data() -> tuple:
     cell: str = user_mock_data.get('cell')
     email: str = user_mock_data.get('email')
     password: str = user_mock_data.get('password')
-    print(cell, email, names, organization_id, password, surname, uid, users_view_instance)
-    return cell, email, names, organization_id, password, surname, uid, users_view_instance
+    print(cell, email, names, organization_id, password, surname, uid)
+    return cell, email, names, organization_id, password, surname, uid
 
 
 def nullish_value() -> Optional[str]:
