@@ -7,7 +7,7 @@ from config import config_instance
 from config.currencies import currency_util
 from config.exceptions import DataServiceError, status_codes, UnAuthenticatedError, InputError
 from database.mixins import AmountMixin
-from views import memberships_view
+
 from database.memberships import Memberships, MembershipPlans
 from utils import create_id, today, datetime_now
 from tests import test_app
@@ -15,6 +15,8 @@ from pytest import raises
 # noinspection PyUnresolvedReferences
 from pytest_mock import mocker
 
+with test_app().app_context():
+    from views import MembershipsView
 
 class MembershipsQueryMock:
     membership_instance: Memberships = Memberships()
@@ -102,14 +104,15 @@ def test_create_membership(mocker) -> None:
     mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
+        memberships_view: MembershipsView = MembershipsView()
         uid: str = membership_mock_data['uid']
         organization_id: str = membership_mock_data['organization_id']
         plan_id: str = membership_mock_data['plan_id']
         plan_start_date: date = membership_mock_data['plan_start_date']
 
-        mocker.patch('database.users.UserValidators.is_user_valid', return_value=True)
-        mocker.patch('database.memberships.PlanValidators.plan_exist', return_value=False)
-        mocker.patch('database.memberships.MembershipValidators.start_date_valid', return_value=True)
+        mocker.patch('views.MembershipsView.is_user_valid', return_value=True)
+        mocker.patch('views.MembershipsView.plan_exist', return_value=False)
+        mocker.patch('views.MembershipsView.start_date_valid', return_value=True)
 
         response, status = memberships_view.add_membership(organization_id=organization_id, uid=uid,
                                                            plan_id=plan_id, plan_start_date=plan_start_date)
@@ -135,19 +138,21 @@ def test_memberships_create_memberships_data_service_error(mocker) -> None:
     mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
     mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
+    mocker.patch('views.MembershipsView.is_user_valid', return_value=None)
+    mocker.patch('views.MembershipsView.plan_exist', return_value=None)
+    mocker.patch('views.MembershipsView.start_date_valid', return_value=None)
+
     with test_app().app_context():
+        memberships_view: MembershipsView = MembershipsView()
+
         uid: str = membership_mock_data['uid']
         organization_id: str = membership_mock_data['organization_id']
         plan_id: str = membership_mock_data['plan_id']
         plan_start_date: date = membership_mock_data['plan_start_date']
 
-        mocker.patch('database.users.UserValidators.is_user_valid', return_value=None)
-        mocker.patch('database.memberships.PlanValidators.plan_exist', return_value=None)
-        mocker.patch('database.memberships.MembershipValidators.start_date_valid', return_value=None)
-
         with raises(DataServiceError):
             memberships_view.add_membership(organization_id=organization_id, uid=uid, plan_id=plan_id,
-                                            plan_start_date=plan_start_date)
+                                                                        plan_start_date=plan_start_date)
 
     mocker.stopall()
 
@@ -165,11 +170,13 @@ def test_create_memberships_input_errors(mocker) -> None:
     mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
     mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
-    mocker.patch('database.users.UserValidators.is_user_valid', return_value=True)
-    mocker.patch('database.memberships.PlanValidators.plan_exist', return_value=False)
-    mocker.patch('database.memberships.MembershipValidators.start_date_valid', return_value=True)
-
     with test_app().app_context():
+        memberships_view: MembershipsView = MembershipsView()
+
+        mocker.patch('views.MembershipsView.is_user_valid', return_value=True)
+        mocker.patch('views.MembershipsView.plan_exist', return_value=False)
+        mocker.patch('views.MembershipsView.start_date_valid', return_value=True)
+
         # Note: testing for invalid uid
         uid: Optional[str] = random.choice([None, "", " "])
         organization_id: str = membership_mock_data['organization_id']
@@ -216,14 +223,16 @@ def test_update_membership(mocker) -> None:
     mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
+        memberships_view: MembershipsView = MembershipsView()
+
         uid: str = membership_mock_data['uid']
         organization_id: str = config_instance.ORGANIZATION_ID
         plan_id: str = membership_mock_data['plan_id']
         plan_start_date: date = membership_mock_data['plan_start_date']
         # Note: Mocking test utilities to return results which allows the update process to proceed
-        mocker.patch('database.users.UserValidators.is_user_valid', return_value=True)
-        mocker.patch('database.memberships.PlanValidators.plan_exist', return_value=False)
-        mocker.patch('database.memberships.MembershipValidators.start_date_valid', return_value=True)
+        mocker.patch('views.MembershipsView.is_user_valid', return_value=True)
+        mocker.patch('views.MembershipsView.plan_exist', return_value=False)
+        mocker.patch('views.MembershipsView.start_date_valid', return_value=True)
 
         response, status = memberships_view.update_membership(organization_id=organization_id, uid=uid,
                                                               plan_id=plan_id, plan_start_date=plan_start_date)
@@ -251,11 +260,13 @@ def test_update_membership_input_errors(mocker) -> None:
     mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
     mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
-    mocker.patch('database.users.UserValidators.is_user_valid', return_value=True)
-    mocker.patch('database.memberships.PlanValidators.plan_exist', return_value=False)
-    mocker.patch('database.memberships.MembershipValidators.start_date_valid', return_value=True)
 
     with test_app().app_context():
+        memberships_view: MembershipsView = MembershipsView()
+        mocker.patch('views.MembershipsView.is_user_valid', return_value=True)
+        mocker.patch('views.MembershipsView.plan_exist', return_value=False)
+        mocker.patch('views.MembershipsView.start_date_valid', return_value=True)
+
         uid: Optional[str] = random.choice([None, "", " "])
         organization_id: str = config_instance.ORGANIZATION_ID
         plan_id: str = membership_mock_data['plan_id']
@@ -293,6 +304,8 @@ def test_set_membership_status(mocker) -> None:
     mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
+        memberships_view: MembershipsView = MembershipsView()
+
         uid: str = membership_mock_data['uid']
         organization_id: str = config_instance.ORGANIZATION_ID
         status: str = membership_mock_data['payment_status']
@@ -318,6 +331,8 @@ def test_set_membership_status_errors(mocker) -> None:
     mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
+        memberships_view: MembershipsView = MembershipsView()
+
         uid: Optional[str] = random.choice([None, "", " "])
         organization_id: str = config_instance.ORGANIZATION_ID
         status: str = membership_mock_data['payment_status']
@@ -355,11 +370,13 @@ def test_change_membership(mocker) -> None:
     mocker.patch('database.memberships.Memberships.query', return_value=membership_query_mock_instance)
 
     with test_app().app_context():
+        memberships_view: MembershipsView = MembershipsView()
+
         uid: str = membership_mock_data['uid']
         organization_id: str = config_instance.ORGANIZATION_ID
         plan_id: str = membership_mock_data['plan_id']
         dest_plan_id: str = create_id()
-        mocker.patch('views.memberships.MembershipsView.plan_exist', return_value=True)
+        mocker.patch('views.MembershipsView.plan_exist', return_value=True)
         response, status = memberships_view.change_membership(organization_id=organization_id, uid=uid,
                                                               origin_plan_id=plan_id, dest_plan_id=dest_plan_id)
         assert status == status_codes.successfully_updated_code, "Unable to change membership"
@@ -379,6 +396,8 @@ def test_change_memberships_input_errors(mocker):
     mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
+        memberships_view: MembershipsView = MembershipsView()
+
         uid: Optional[str] = random.choice([None, "", " "])
         organization_id: str = config_instance.ORGANIZATION_ID
         plan_id: str = membership_mock_data['plan_id']
@@ -421,6 +440,8 @@ def test_send_welcome_email(mocker) -> None:
     mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
+        memberships_view: MembershipsView = MembershipsView()
+
         uid: str = membership_mock_data['uid']
         organization_id: str = config_instance.ORGANIZATION_ID
         plan_id: str = membership_mock_data['plan_id']
@@ -445,6 +466,8 @@ def test_plan_members_payment_status(mocker) -> None:
     mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
+        memberships_view: MembershipsView = MembershipsView()
+
         organization_id: str = config_instance.ORGANIZATION_ID
         plan_id: str = membership_mock_data['plan_id']
         status: str = membership_mock_data['payment_status']
@@ -472,6 +495,8 @@ def test_return_plan_members(mocker) -> None:
     mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
+        memberships_view: MembershipsView = MembershipsView()
+
         plan_id: str = membership_mock_data['plan_id']
         organization_id: str = config_instance.ORGANIZATION_ID
         response, status = memberships_view.return_plan_members(organization_id=organization_id, plan_id=plan_id)
@@ -496,6 +521,8 @@ def test_is_member_off(mocker) -> None:
     mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
+        memberships_view: MembershipsView = MembershipsView()
+
         uid: str = membership_mock_data['uid']
         organization_id: str = config_instance.ORGANIZATION_ID
         response, status = memberships_view.is_member_off(organization_id=organization_id, uid=uid)
@@ -518,9 +545,10 @@ def test_payment_amount(mocker) -> None:
     ***REMOVED***
     mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
     mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
-    mocker.patch('views.memberships.MembershipPlansView._get_plan', return_value=MembershipPlansQueryMock().get())
+    mocker.patch('views.MembershipPlansView._get_plan', return_value=MembershipPlansQueryMock().get())
 
     with test_app().app_context():
+        memberships_view: MembershipsView = MembershipsView()
         uid: str = membership_mock_data['uid']
         organization_id: str = config_instance.ORGANIZATION_ID
         response, status = memberships_view.payment_amount(organization_id=organization_id, uid=uid)

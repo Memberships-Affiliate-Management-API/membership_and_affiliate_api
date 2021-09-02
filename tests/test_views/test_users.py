@@ -13,7 +13,6 @@ from config.exceptions import status_codes, UnAuthenticatedError, InputError
 from database.users import UserModel
 from tests import test_app
 from utils.utils import create_id, timestamp, today, _char_set
-from views import user_view
 
 user_instance: UserModel = UserModel()
 
@@ -116,14 +115,15 @@ def test_create_user(mocker):
     mocker.patch('database.users.UserModel.put', return_value=ndb.KeyProperty('Users'))
     mocker.patch('database.users.UserModel.query', return_value=UsersQueryMock())
 
-    mocker.patch('views.users.UserView.is_organization_exist', return_value=True)
-    mocker.patch('views.users.UserView.is_email_available', return_value=True)
-    mocker.patch('views.users.UserView.is_cell_available', return_value=True)
-
     with test_app().app_context():
-        cell, email, names, organization_id, password, surname, uid, users_view_instance = get_user_data()
-        response, status = users_view_instance.add_user(organization_id=organization_id, uid=uid, names=names,
-                                                        surname=surname, cell=cell, email=email, password=password)
+        from views import user_view
+        mocker.patch('views.users.UserView.is_organization_exist', return_value=True)
+        mocker.patch('views.users.UserView.is_email_available', return_value=True)
+        mocker.patch('views.users.UserView.is_cell_available', return_value=True)
+
+        cell, email, names, organization_id, password, surname, uid = get_user_data()
+        response, status = user_view.add_user(organization_id=organization_id, uid=uid, names=names,
+                                              surname=surname, cell=cell, email=email, password=password)
         assert status == status_codes.successfully_updated_code
         json_data: dict = response.get_json()
         assert isinstance(json_data, dict), 'response data not formatted correctly'
@@ -143,15 +143,16 @@ def test_create_user_un_auth(mocker):
     mocker.patch('database.users.UserModel.put', return_value=ndb.KeyProperty('Users'))
     mocker.patch('database.users.UserModel.query', return_value=UsersQueryMock())
 
-    mocker.patch('views.users.UserView.is_organization_exist', return_value=False)
-    mocker.patch('views.users.UserView.is_email_available', return_value=False)
-    mocker.patch('views.users.UserView.is_cell_available', return_value=True)
-
     with test_app().app_context():
-        cell, email, names, organization_id, password, surname, uid, users_view_instance = get_user_data()
+        from views import user_view
+        mocker.patch('views.users.UserView.is_organization_exist', return_value=False)
+        mocker.patch('views.users.UserView.is_email_available', return_value=False)
+        mocker.patch('views.users.UserView.is_cell_available', return_value=True)
+
+        cell, email, names, organization_id, password, surname, uid = get_user_data()
         with raises(UnAuthenticatedError):
-            users_view_instance.add_user(organization_id=organization_id, uid=uid, names=names, surname=surname,
-                                         cell=cell, email=email, password=password)
+            user_view.add_user(organization_id=organization_id, uid=uid, names=names, surname=surname,
+                               cell=cell, email=email, password=password)
 
     mocker.stopall()
 
@@ -168,30 +169,31 @@ def test_create_user_input_errors(mocker):
     mocker.patch('database.users.UserModel.put', return_value=ndb.KeyProperty('Users'))
     mocker.patch('database.users.UserModel.query', return_value=UsersQueryMock())
 
-    mocker.patch('views.users.UserView.is_organization_exist', return_value=True)
-    mocker.patch('views.users.UserView.is_email_available', return_value=True)
-    mocker.patch('views.users.UserView.is_cell_available', return_value=True)
-
     with test_app().app_context():
-        cell, email, names, organization_id, password, surname, uid, users_view_instance = get_user_data()
+        from views import user_view
+        mocker.patch('views.users.UserView.is_organization_exist', return_value=True)
+        mocker.patch('views.users.UserView.is_email_available', return_value=True)
+        mocker.patch('views.users.UserView.is_cell_available', return_value=True)
+
+        cell, email, names, organization_id, password, surname, uid = get_user_data()
 
         with raises(InputError):
-            users_view_instance.add_user(organization_id=nullish_value(), uid=uid, names=names, surname=surname,
-                                         cell=cell, email=email, password=password)
+            user_view.add_user(organization_id=nullish_value(), uid=uid, names=names, surname=surname,
+                               cell=cell, email=email, password=password)
         with raises(InputError):
-            users_view_instance.add_user(organization_id=organization_id, uid=uid, names=nullish_value(),
-                                         surname=surname, cell=cell, email=email, password=password)
+            user_view.add_user(organization_id=organization_id, uid=uid, names=nullish_value(),
+                               surname=surname, cell=cell, email=email, password=password)
         with raises(InputError):
-            users_view_instance.add_user(organization_id=organization_id, uid=uid, names=names,
-                                         surname=nullish_value(), cell=cell, email=email, password=password)
+            user_view.add_user(organization_id=organization_id, uid=uid, names=names,
+                               surname=nullish_value(), cell=cell, email=email, password=password)
         with raises(InputError):
-            users_view_instance.add_user(organization_id=organization_id, uid=uid, names=names,
-                                         surname=surname, cell=nullish_value(), email=email, password=password)
+            user_view.add_user(organization_id=organization_id, uid=uid, names=names,
+                               surname=surname, cell=nullish_value(), email=email, password=password)
         with raises(InputError):
-            users_view_instance.add_user(organization_id=organization_id, uid=uid, names=names,
-                                         surname=surname, cell=cell, email=nullish_value(), password=password)
+            user_view.add_user(organization_id=organization_id, uid=uid, names=names,
+                               surname=surname, cell=cell, email=nullish_value(), password=password)
         with raises(InputError):
-            users_view_instance.add_user(organization_id=organization_id, uid=uid, names=names, surname=surname,
-                                         cell=cell, email=email, password=nullish_value())
+            user_view.add_user(organization_id=organization_id, uid=uid, names=names, surname=surname,
+                               cell=cell, email=email, password=nullish_value())
 
     mocker.stopall()
