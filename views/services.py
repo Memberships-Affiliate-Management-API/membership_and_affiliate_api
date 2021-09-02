@@ -26,14 +26,14 @@ from config.exception_handlers import handle_view_errors
 from config.exceptions import InputError, error_codes, status_codes, DataServiceError
 from config.use_context import use_context
 from database.services import ServiceValidator, Services
-from main import app_cache
+
 from utils import return_ttl
-from cache.cache_manager import CacheManager
+from cache.cache_manager import app_cache
 
 
 # TODO add notification emails
 
-class ServicesView(ServiceValidator, CacheManager):
+class ServicesView(ServiceValidator):
     ***REMOVED***
         **Class ServicesView**
 
@@ -104,7 +104,7 @@ class ServicesView(ServiceValidator, CacheManager):
                     raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
                 _kwargs: dict = dict(services_view=ServicesView, organization_id=organization_id, service_id=service_id)
-                self._schedule_cache_deletion(func=self._delete_services_cache, kwargs=_kwargs)
+                app_cache._schedule_cache_deletion(func=app_cache._delete_services_cache, kwargs=_kwargs)
                 message: str = '''Successfully created plan service you may proceed to 
                 create payment plans for this service'''
                 return jsonify({'status': False, 'message': message}), status_codes.successfully_updated_code
@@ -158,7 +158,7 @@ class ServicesView(ServiceValidator, CacheManager):
                     raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
                 _kwargs: dict = dict(services_view=ServicesView, organization_id=organization_id, service_id=service_id)
-                self._schedule_cache_deletion(func=self._delete_services_cache, kwargs=_kwargs)
+                app_cache._schedule_cache_deletion(func=app_cache._delete_services_cache, kwargs=_kwargs)
 
                 message: str = "Successfully updated service or product"
                 return jsonify({'status': True, 'payload': service_instance.to_dict(),
@@ -199,7 +199,7 @@ class ServicesView(ServiceValidator, CacheManager):
                     raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
                 _kwargs: dict = dict(services_view=ServicesView, organization_id=organization_id, service_id=service_id)
-                self._schedule_cache_deletion(func=self._delete_services_cache, kwargs=_kwargs)
+                app_cache._schedule_cache_deletion(func=app_cache._delete_services_cache, kwargs=_kwargs)
 
                 message: str = "successfully activated service"
                 return jsonify({'status': True, 'payload': service_instance.to_dict(),
@@ -213,7 +213,7 @@ class ServicesView(ServiceValidator, CacheManager):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     def get_service(self, service_id: Optional[str], organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             **get_service**
@@ -241,7 +241,7 @@ class ServicesView(ServiceValidator, CacheManager):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     def return_services(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             **return_services**
