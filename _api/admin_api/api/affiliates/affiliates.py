@@ -18,7 +18,7 @@ from flask import Blueprint, request, current_app
 from config import config_instance
 from config.exceptions import UnAuthenticatedError, error_codes
 from security.apps_authenticator import handle_apps_authentication
-from views.affiliates import AffiliatesView
+from views import affiliates_view
 
 admin_affiliates_api_bp = Blueprint("admin_affiliates_api", __name__)
 
@@ -31,7 +31,6 @@ def admin_affiliates(path: str) -> tuple:
     :param path:
     :return:
     ***REMOVED***
-    affiliates_view_instance: AffiliatesView = AffiliatesView()
     json_data: dict = request.get_json()
     secret_key: Optional[str] = json_data.get('SECRET_KEY')
 
@@ -48,7 +47,7 @@ def admin_affiliates(path: str) -> tuple:
 
         if compare_organization and compare_uid:
             # NOTE: this returns the affiliates to the main application
-            return affiliates_view_instance.get_all_affiliates(organization_id=organization_id)
+            return affiliates_view.get_all_affiliates(organization_id=organization_id)
         message: str = "You are not authorized to access this resource"
         raise UnAuthenticatedError(description=message)
 
