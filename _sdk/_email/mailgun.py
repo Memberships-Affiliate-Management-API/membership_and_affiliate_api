@@ -21,7 +21,7 @@ from config import config_instance
 from typing import List, Optional, Callable, Coroutine
 import aiohttp
 import asyncio
-from main import app_cache
+from cache.cache_manager import app_cache
 from utils import return_ttl, datetime_now, create_id
 
 
@@ -56,7 +56,7 @@ class Mailgun:
                 json_data: dict = await response.json()
                 return json_data.get('payload') if json_data.get('status') else None
 
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     async def _get_user_data_async(self, organization_id: str, uid: str) -> Optional[dict]:
         ***REMOVED***
         **_get_user_data_async**
@@ -71,7 +71,7 @@ class Mailgun:
         headers: dict = {'content-type': 'application/json'}
         return await self._async_request(_url=_url, json_data=json_data, headers=headers)
 
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     async def _get_membership_data_async(self, organization_id: str, uid: str) -> Optional[dict]:
         ***REMOVED***
             **_get_membership_data_async**
@@ -86,7 +86,7 @@ class Mailgun:
         headers: dict = {'content-type': 'application/json'}
         return await self._async_request(_url=_url, json_data=json_data, headers=headers)
 
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     async def _get_organization_data_async(self, organization_id: str) -> Optional[dict]:
         ***REMOVED***
             **__get_organization_data**
