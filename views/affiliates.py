@@ -822,3 +822,4 @@ class EarningsView(Validator):
             wallet earnings can be sent to paypal or through EFT
         ***REMOVED***
         pass
+
