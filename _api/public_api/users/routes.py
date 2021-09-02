@@ -8,12 +8,12 @@ __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
-
 import typing
 from flask import Blueprint, request, jsonify
 from config.exceptions import if_bad_request_raise
 from security.api_authenticator import handle_api_auth
-from views.users import UserView
+from views import user_view
+
 users_bp = Blueprint("users", __name__)
 
 
@@ -37,8 +37,6 @@ def create_user() -> tuple:
     ***REMOVED***
     # created new user
     user_data: dict = request.get_json()
-
-    users_view_instance: UserView = UserView()
     names: str = user_data.get("names")
     surname: str = user_data.get("surname")
     cell: str = user_data.get("cell")
@@ -48,8 +46,8 @@ def create_user() -> tuple:
     organization_id: str = user_data.get("organization_id")
 
     # Add User View will perform error checking
-    return users_view_instance.add_user(organization_id=organization_id, uid=uid, names=names, surname=surname,
-                                        cell=cell, email=email, password=password)
+    return user_view.add_user(organization_id=organization_id, uid=uid, names=names, surname=surname,
+                              cell=cell, email=email, password=password)
 
 
 # NOTE: use "<uid>@<organization_id>" as path to obtain user
@@ -62,11 +60,10 @@ def user(path: str) -> tuple:
         :return: json response as tuple
     ***REMOVED***
 
-    users_view_instance: UserView = UserView()
     if request.method == "GET":
         # get a specific user
         uid, organization_id = path.split("@")
-        return users_view_instance.get_user(organization_id=organization_id, uid=uid)
+        return user_view.get_user(organization_id=organization_id, uid=uid)
     else:
         # Updating user details
         if path == "update":
@@ -79,17 +76,17 @@ def user(path: str) -> tuple:
             email: str = user_data.get("email")
             is_admin: bool = user_data.get('is_admin')
             is_support: bool = user_data.get('is_support')
-            return users_view_instance.update_user(organization_id=organization_id, uid=uid, names=names,
-                                                   surname=surname, cell=cell, email=email, is_admin=is_admin,
-                                                   is_support=is_support)
+            return user_view.update_user(organization_id=organization_id, uid=uid, names=names,
+                                         surname=surname, cell=cell, email=email, is_admin=is_admin,
+                                         is_support=is_support)
         elif path == "delete":
             user_data: dict = request.get_json()
             organization_id, uid, email, cell = get_kwargs(user_data=user_data)
-            return users_view_instance.delete_user(organization_id=organization_id, uid=uid, email=email, cell=cell)
+            return user_view.delete_user(organization_id=organization_id, uid=uid, email=email, cell=cell)
         elif path == "get":
             user_data: dict = request.get_json()
             organization_id, uid, email, cell = get_kwargs(user_data=user_data)
-            return users_view_instance.get_user(organization_id=organization_id, uid=uid, email=email, cell=cell)
+            return user_view.get_user(organization_id=organization_id, uid=uid, email=email, cell=cell)
 
 
 @users_bp.route("/api/v1/public/users/<string:path>", methods=["GET", "POST"])
@@ -103,18 +100,15 @@ def get_all(path: str) -> tuple:
     if path == "all":
         user_data: dict = request.get_json()
         organization_id: str = user_data.get("organization_id")
-        users_view_instance: UserView = UserView()
-        return users_view_instance.get_all_users(organization_id=organization_id)
+        return user_view.get_all_users(organization_id=organization_id)
     if path == "active":
         user_data: dict = request.get_json()
         organization_id: str = user_data.get("organization_id")
-        users_view_instance: UserView = UserView()
-        return users_view_instance.get_active_users(organization_id=organization_id)
+        return user_view.get_active_users(organization_id=organization_id)
     if path == "in-active":
         user_data: dict = request.get_json()
         organization_id: str = user_data.get("organization_id")
-        users_view_instance: UserView = UserView()
-        return users_view_instance.get_in_active_users(organization_id=organization_id)
+        return user_view.get_in_active_users(organization_id=organization_id)
 
     return jsonify({"status": False, "message": "general error fetching users"}), 500
 
@@ -130,8 +124,8 @@ def check_password() -> tuple:
     uid: str = user_data.get("uid")
     organization_id: str = user_data.get("organization_id")
     password: str = user_data.get("password")
-    user_view_instance: UserView = UserView()
-    return user_view_instance.check_password(organization_id=organization_id, uid=uid, password=password)
+
+    return user_view.check_password(organization_id=organization_id, uid=uid, password=password)
 
 
 @users_bp.route("/api/v1/public/deactivate-user", methods=["POST"])
@@ -144,8 +138,8 @@ def de_activate_user() -> tuple:
     user_data: dict = request.get_json()
     uid: str = user_data.get("uid")
     organization_id: str = user_data.get("organization_id")
-    user_view_instance: UserView = UserView()
-    return user_view_instance.deactivate_user(organization_id=organization_id, uid=uid)
+
+    return user_view.deactivate_user(organization_id=organization_id, uid=uid)
 
 
 @users_bp.route("/api/v1/public/auth/login", methods=["POST"])
@@ -156,13 +150,13 @@ def login() -> tuple:
             called by main application in order to login
     :return:
     ***REMOVED***
-    user_view_instance: UserView = UserView()
+
     user_data: dict = request.get_json()
     email: typing.Union[str, None] = user_data.get("email")
     password: typing.Union[str, None] = user_data.get("password")
     organization_id: typing.Union[str, None] = user_data.get("organization_id")
     # Note error checking will be performed on View
-    return user_view_instance.login(organization_id=organization_id, email=email, password=password)
+    return user_view.login(organization_id=organization_id, email=email, password=password)
 
 
 @users_bp.route("/api/v1/public/auth/logout", methods=["POST"])
@@ -174,8 +168,6 @@ def logout() -> tuple:
     ***REMOVED***
     # Raises Bad Request error if request is not in json format
     if_bad_request_raise(request)
-
-    user_view_instance: UserView = UserView()
     user_data: dict = request.get_json()
     # TODO- handle logout procedure
     return "OK", 200
@@ -186,8 +178,6 @@ def logout() -> tuple:
 def register() -> tuple:
     # Raises Bad Request error if request is not in json format
     if_bad_request_raise(request)
-
-    user_view_instance: UserView = UserView()
     user_data: dict = request.get_json()
 
     email: str = user_data.get("email")
@@ -197,5 +187,5 @@ def register() -> tuple:
     surname: str = user_data.get("surname")
     organization_id: typing.Union[str, None] = user_data.get("organization_id")
 
-    return user_view_instance.add_user(organization_id=organization_id, names=names, surname=surname, cell=cell,
-                                       email=email, password=password)
+    return user_view.add_user(organization_id=organization_id, names=names, surname=surname, cell=cell,
+                              email=email, password=password)
