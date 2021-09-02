@@ -14,10 +14,10 @@ from flask import request
 from config import config_instance
 from config.exceptions import UnAuthenticatedError, error_codes
 import functools
-from main import app_cache
+from cache.cache_manager import app_cache
 
 
-@app_cache.memoize(timeout=15 * 60)  # timeout equals fifteen minutes // 900 seconds
+@app_cache.cache.memoize(timeout=15 * 60)  # timeout equals fifteen minutes // 900 seconds
 def is_request_valid(api_key: str, secret: str, domain: str) -> bool:
     ***REMOVED***
     **is_api_key_valid**
