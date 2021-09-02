@@ -19,13 +19,13 @@ from config.exceptions import (error_codes, status_codes, InputError, UnAuthenti
                                DataServiceError, RequestError)
 from database.mixins import AddressMixin
 from database.organization import OrgValidators
-from main import app_cache
+
 from database.users import UserModel, UserValidators
 from security.users_authenticator import encode_auth_token
 from utils.utils import create_id, return_ttl
 from config.exception_handlers import handle_view_errors
 from config.use_context import use_context
-from cache.cache_manager import CacheManager
+from cache.cache_manager import app_cache
 
 
 # noinspection DuplicatedCode
@@ -333,7 +333,7 @@ class Validators(UserValidators, OrgValidators):
 
 # TODO create test cases for User View and Documentations
 # noinspection DuplicatedCode
-class UserView(Validators, UserEmails, CacheManager):
+class UserView(Validators, UserEmails):
     ***REMOVED***
         User-View handling business logic for UserModel
     ***REMOVED***
@@ -404,7 +404,7 @@ class UserView(Validators, UserEmails, CacheManager):
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
         _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
-        self._schedule_cache_deletion(func=self._delete_user_cache, kwargs=_kwargs)
+        app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
 
         return jsonify({'status': True,
                         "message": "Successfully created new user",
@@ -450,7 +450,7 @@ class UserView(Validators, UserEmails, CacheManager):
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
         _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
-        self._schedule_cache_deletion(func=self._delete_user_cache, kwargs=_kwargs)
+        app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
 
         return jsonify({'status': True,
                         "message": "Successfully created new user",
@@ -500,7 +500,7 @@ class UserView(Validators, UserEmails, CacheManager):
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
             _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
-            self._schedule_cache_deletion(func=self._delete_user_cache, kwargs=_kwargs)
+            app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
 
             return jsonify({'status': True, 'message': 'successfully updated user details',
                             'payload': user_instance.to_dict()}), status_codes.successfully_updated_code
@@ -549,7 +549,7 @@ class UserView(Validators, UserEmails, CacheManager):
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
             _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
-            self._schedule_cache_deletion(func=self._delete_user_cache, kwargs=_kwargs)
+            app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
 
             return jsonify({'status': True, 'message': 'successfully updated user details',
                             'payload': user_instance.to_dict()}), status_codes.successfully_updated_code
@@ -594,7 +594,7 @@ class UserView(Validators, UserEmails, CacheManager):
             email: str = user_instance.email
 
             _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
-            self._schedule_cache_deletion(func=self._delete_user_cache, kwargs=_kwargs)
+            app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
 
             message: str = "Successfully updated user names"
             return jsonify({'status': True, 'payload': user_instance.to_dict(),
@@ -634,7 +634,7 @@ class UserView(Validators, UserEmails, CacheManager):
             cell: str = old_cell
             email: str = user_instance.email
             _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
-            self._schedule_cache_deletion(func=self._delete_user_cache, kwargs=_kwargs)
+            app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
 
             message: str = "Successfully Updated Cell Number"
             return jsonify({'status': True, 'payload': user_instance.to_dict(),
@@ -674,7 +674,7 @@ class UserView(Validators, UserEmails, CacheManager):
                 email: str = old_email
                 _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email,
                                      cell=cell)
-                self._schedule_cache_deletion(func=self._delete_user_cache, kwargs=_kwargs)
+                app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
 
                 message: str = "Successfully Updated Email Record please check your email inbox for verification email"
                 return jsonify({'status': True, 'payload': user_instance.to_dict(),
@@ -728,7 +728,7 @@ class UserView(Validators, UserEmails, CacheManager):
             cell: str = user_instance.cell
             email: str = user_instance.email
             _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
-            self._schedule_cache_deletion(func=self._delete_user_cache, kwargs=_kwargs)
+            app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
 
             # TODO - logoff the user
             message: str = "Successfully Updated Password - please login again"
@@ -772,7 +772,7 @@ class UserView(Validators, UserEmails, CacheManager):
             cell: str = user_instance.cell
             email: str = user_instance.email
             _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
-            self._schedule_cache_deletion(func=self._delete_user_cache, kwargs=_kwargs)
+            app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
 
             message: str = "Successfully Update admin status"
             return jsonify({'status': True, 'payload': user_instance.to_dict(),
@@ -811,7 +811,7 @@ class UserView(Validators, UserEmails, CacheManager):
             cell: str = user_instance.cell
             email: str = user_instance.email
             _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
-            self._schedule_cache_deletion(func=self._delete_user_cache, kwargs=_kwargs)
+            app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
 
             message: str = "Successfully Update support status"
             return jsonify({'status': True, 'payload': user_instance.to_dict(),
@@ -873,7 +873,7 @@ class UserView(Validators, UserEmails, CacheManager):
             cell: str = user_instance.cell
             email: str = user_instance.email
             _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
-            self._schedule_cache_deletion(func=self._delete_user_cache, kwargs=_kwargs)
+            app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
 
             message: str = "Successfully updated user address"
             return jsonify({'status': True, 'payload': user_instance.to_dict(),
@@ -921,7 +921,7 @@ class UserView(Validators, UserEmails, CacheManager):
                 email: str = user_instance.email
                 _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email,
                                      cell=cell)
-                self._schedule_cache_deletion(func=self._delete_user_cache, kwargs=_kwargs)
+                app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
 
                 # TODO- rather mark user as deleted
                 user_instance.key.delete()
@@ -972,7 +972,7 @@ class UserView(Validators, UserEmails, CacheManager):
                 email: str = user_instance.email
                 _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email,
                                      cell=cell)
-                self._schedule_cache_deletion(func=self._delete_user_cache, kwargs=_kwargs)
+                app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
 
                 user_instance.key.delete()
                 return jsonify({'status': True,
@@ -982,7 +982,7 @@ class UserView(Validators, UserEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     def get_active_users(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             return a list of all users
@@ -1003,7 +1003,7 @@ class UserView(Validators, UserEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     async def get_active_users_async(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             get active users list
@@ -1028,7 +1028,7 @@ class UserView(Validators, UserEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     def get_in_active_users(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             get in-active  list
@@ -1052,7 +1052,7 @@ class UserView(Validators, UserEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     async def get_in_active_users_async(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             return a list of non active users
@@ -1076,7 +1076,7 @@ class UserView(Validators, UserEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     def get_all_users(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             get a list of all users
@@ -1100,7 +1100,7 @@ class UserView(Validators, UserEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     async def get_all_users_async(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             get a list of all users
@@ -1124,7 +1124,7 @@ class UserView(Validators, UserEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     def get_user(self, organization_id: Optional[str], uid: Optional[str] = None, cell: Optional[str] = None,
                  email: Optional[str] = None) -> tuple:
         ***REMOVED***
@@ -1177,7 +1177,7 @@ class UserView(Validators, UserEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     async def get_user_async(self, organization_id: Optional[str], uid: Optional[str] = None,
                              cell: Optional[str] = None, email: Optional[str] = None) -> tuple:
         ***REMOVED***
@@ -1318,7 +1318,7 @@ class UserView(Validators, UserEmails, CacheManager):
             cell: str = user_instance.cell
             email: str = user_instance.email
             _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
-            self._schedule_cache_deletion(func=self._delete_user_cache, kwargs=_kwargs)
+            app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
 
             return jsonify({'status': True, 'message': 'user deactivated'}), status_codes.status_ok_code
 
@@ -1350,7 +1350,7 @@ class UserView(Validators, UserEmails, CacheManager):
             cell: str = user_instance.cell
             email: str = user_instance.email
             _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
-            self._schedule_cache_deletion(func=self._delete_user_cache, kwargs=_kwargs)
+            app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
 
             return jsonify({'status': True, 'message': 'user deactivated'}), status_codes.status_ok_code
 
@@ -1429,7 +1429,7 @@ class UserView(Validators, UserEmails, CacheManager):
             uid: str = user_model.uid
             cell: str = user_model.cell
             _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
-            self._schedule_cache_deletion(func=self._delete_user_cache, kwargs=_kwargs)
+            app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
             # Using super method to send recovery email
             kwargs: dict = dict(organization_id=organization_id, uid=user_model.uid,
                                 recovery_code=user_model.recovery_code)
