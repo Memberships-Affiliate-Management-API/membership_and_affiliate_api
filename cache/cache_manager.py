@@ -23,7 +23,7 @@ from utils import datetime_now, create_id
 class CacheManager:
     ***REMOVED***
         **Memberships Cache Management**
-            utilities to manage cache items for the whole api
+            utilities to manage cache items for memberships api
     ***REMOVED***
 
     def __init__(self) -> None:
