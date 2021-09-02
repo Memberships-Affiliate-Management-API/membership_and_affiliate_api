@@ -13,18 +13,18 @@ __licence__ = "MIT"
 from typing import Optional
 
 from flask import Blueprint, render_template, get_flashed_messages
+
+from cache.cache_manager import app_cache
 from config.exceptions import status_codes
-from database.users import UserModel
-from main import app_cache
 from security.users_authenticator import logged_user
-from utils.utils import return_ttl, can_cache
+from utils.utils import return_ttl
 
 client_home_bp = Blueprint('client_home', __name__)
 
 
 @client_home_bp.route('/client', methods=["GET"])
 @logged_user
-@app_cache.cached(timeout=return_ttl('short'))
+@app_cache.cache.cached(timeout=return_ttl('short'))
 def client_home(current_user: Optional[dict]) -> tuple:
     ***REMOVED***
         **client_home**
