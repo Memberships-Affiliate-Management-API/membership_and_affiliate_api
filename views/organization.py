@@ -24,7 +24,7 @@ from database.organization import Organization, OrgValidators
 # TODO finish up organization  view
 from main import app_cache
 from utils.utils import create_id, return_ttl
-from views.cache_manager import CacheManager
+from cache.cache_manager import CacheManager
 
 
 class OrganizationEmails(Mailgun):

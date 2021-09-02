@@ -28,7 +28,7 @@ from config.use_context import use_context
 from database.services import ServiceValidator, Services
 from main import app_cache
 from utils import return_ttl
-from views.cache_manager import CacheManager
+from cache.cache_manager import CacheManager
 
 
 # TODO add notification emails

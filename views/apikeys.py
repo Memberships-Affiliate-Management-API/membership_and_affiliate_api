@@ -20,7 +20,7 @@ from database.organization import OrgValidators, AuthUserValidators
 from database.apikeys import APIKeys
 from main import app_cache
 from utils.utils import create_id, return_ttl
-from views.cache_manager import CacheManager
+from cache.cache_manager import CacheManager
 
 
 class APIKeysValidators(OrgValidators, AuthUserValidators):

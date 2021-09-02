@@ -25,7 +25,7 @@ from security.users_authenticator import encode_auth_token
 from utils.utils import create_id, return_ttl
 from config.exception_handlers import handle_view_errors
 from config.use_context import use_context
-from views.cache_manager import CacheManager
+from cache.cache_manager import CacheManager
 
 
 # noinspection DuplicatedCode

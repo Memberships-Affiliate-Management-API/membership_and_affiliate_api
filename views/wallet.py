@@ -21,7 +21,7 @@ from config.exceptions import DataServiceError, UnAuthenticatedError, status_cod
 from config.exception_handlers import handle_view_errors
 from config.use_context import use_context
 from main import app_cache
-from views.cache_manager import CacheManager
+from cache.cache_manager import CacheManager
 
 
 class WalletEmails(Mailgun):

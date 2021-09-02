@@ -44,6 +44,7 @@ class Util:
         **Class Util**
             ndb property validators utilities, constants and helpers
     ***REMOVED***
+
     def __init__(self):
         # maximum length for coupon codes
         self._max_coupon_code_len: int = 12
@@ -167,7 +168,8 @@ class Util:
 
     # checks if percentage is valid
     @staticmethod
-    def percent_valid(percent: typing.Union[int, float]) -> bool: return 0 < percent > 100
+    def percent_valid(percent: typing.Union[int, float]) -> bool:
+        return 0 < percent > 100
 
 
 class PropertySetters(Events, Util):
