@@ -292,7 +292,7 @@ class AffiliatesView(Validator):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     def get_affiliate(self, affiliate_data: dict) -> tuple:
         ***REMOVED***
             **get_affiliate**
@@ -340,7 +340,7 @@ class AffiliatesView(Validator):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     def get_all_affiliates(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             **get_all_affiliates**
@@ -371,7 +371,7 @@ class AffiliatesView(Validator):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     def get_active_affiliates(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             **get_active_affiliates**
@@ -399,7 +399,7 @@ class AffiliatesView(Validator):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     def get_in_active_affiliates(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             **get_in_active_affiliates**
@@ -428,7 +428,7 @@ class AffiliatesView(Validator):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     def get_deleted_affiliates(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             **get_deleted_affiliates**
@@ -456,7 +456,7 @@ class AffiliatesView(Validator):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     def get_not_deleted_affiliates(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             **get_not_deleted_affiliates**
@@ -632,7 +632,7 @@ class RecruitsView(Validator, CacheManager):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     def get_recruit(self, recruit_data: dict) -> tuple:
         ***REMOVED***
             given affiliate_id return recruit organization_id has to be valid
@@ -663,7 +663,7 @@ class RecruitsView(Validator, CacheManager):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     def get_recruits_by_active_status(self, organization_id: str, is_active: bool) -> tuple:
         ***REMOVED***
             get recruit by active status
@@ -688,7 +688,7 @@ class RecruitsView(Validator, CacheManager):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     def get_recruits_by_deleted_status(self, organization_id: str, is_deleted: bool) -> tuple:
         ***REMOVED***
             **get_recruits_by_deleted_status**
@@ -716,7 +716,7 @@ class RecruitsView(Validator, CacheManager):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     def get_recruits_by_affiliate(self, affiliate_data: dict) -> tuple:
         ***REMOVED***
             **get_recruits_by_affiliate**
@@ -749,7 +749,7 @@ class RecruitsView(Validator, CacheManager):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     def get_recruits_by_active_affiliate(self, affiliate_data: dict, is_active: bool) -> tuple:
         ***REMOVED***
             # TODO this function may be irrelevant further refining is needed here
