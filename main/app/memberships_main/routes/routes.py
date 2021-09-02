@@ -13,7 +13,8 @@ __licence__ = "MIT"
 from typing import Optional
 from flask import Blueprint, render_template, get_flashed_messages, make_response, redirect, url_for, flash
 from config.exceptions import status_codes
-from main import app_cache, github_authorize
+from main import github_authorize
+from cache.cache_manager import app_cache
 from security.users_authenticator import logged_user
 from utils.utils import return_ttl, can_cache
 from views.github_auth import GithubAuthView
@@ -24,7 +25,7 @@ memberships_main_bp = Blueprint('memberships_main', __name__)
 # noinspection PyTypeChecker
 @memberships_main_bp.route('/', methods=["GET"])
 @logged_user
-@app_cache.cached(timeout=return_ttl('short'), unless=can_cache())
+@app_cache.cache.cached(timeout=return_ttl('short'), unless=can_cache())
 def memberships_main(current_user: Optional[dict]) -> tuple:
     ***REMOVED***
         **memberships_main**
@@ -44,10 +45,10 @@ def memberships_main(current_user: Optional[dict]) -> tuple:
 # noinspection PyTypeChecker
 @memberships_main_bp.route('/<path:path>', methods=["GET"])
 @logged_user
-@app_cache.cached(timeout=return_ttl('short'), unless=can_cache())
+@app_cache.cache.cached(timeout=return_ttl('short'), unless=can_cache())
 def memberships_main_routes(current_user: Optional[dict], path: str) -> tuple:
     ***REMOVED***
-        @app_cache.memoize( ) caching the results of this function based on function
+        @app_cache.cache.memoize( ) caching the results of this function based on function
         parameters current user and path.
 
     :param current_user: user who has logged in, or None if no User has logged in
@@ -142,10 +143,10 @@ def memberships_main_routes(current_user: Optional[dict], path: str) -> tuple:
 # noinspection PyTypeChecker
 @memberships_main_bp.route('/demos/api/<path:path>', methods=["GET"])
 @logged_user
-@app_cache.cached(timeout=return_ttl('short'), unless=can_cache())
+@app_cache.cache.cached(timeout=return_ttl('short'), unless=can_cache())
 def api_demos(current_user: Optional[dict], path: str) -> tuple:
     ***REMOVED***
-       @app_cache.memoize() this will enable caching based on function arguments in this case current_user, and path
+       @app_cache.cache.memoize() this will enable caching based on function arguments in this case current_user, and path
 
     :param current_user: the user making the request None if no user has logged in
     :param path: path being requested
@@ -199,10 +200,10 @@ def api_demos(current_user: Optional[dict], path: str) -> tuple:
 # noinspection PyTypeChecker
 @memberships_main_bp.route('/examples/sdk/<path:path>', methods=["GET"])
 @logged_user
-@app_cache.cached(timeout=return_ttl('short'), unless=can_cache())
+@app_cache.cache.cached(timeout=return_ttl('short'), unless=can_cache())
 def sdk_examples(current_user: Optional[dict], path: str) -> tuple:
     ***REMOVED***
-        @app_cache.memoize() will cache the results of the function based on current_user and path
+        @app_cache.cache.memoize() will cache the results of the function based on current_user and path
 
     :param current_user: the user making the request None if user has not logged in
     :param path: the path being requested
