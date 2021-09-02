@@ -13,7 +13,7 @@ import typing
 from typing import Optional, List
 from flask import current_app, jsonify
 from google.cloud import ndb
-from main import app_cache
+from cache.cache_manager import app_cache
 from database.affiliates import AffiliatesValidators as ValidAffiliate
 from database.affiliates import RecruitsValidators as ValidRecruit
 from database.affiliates import EarningsValidators as ValidEarnings
@@ -23,7 +23,7 @@ from utils.utils import create_id, return_ttl
 from config.exception_handlers import handle_view_errors
 from config.use_context import use_context
 from _sdk._email import Mailgun
-from views.cache_manager import CacheManager
+# from cache.cache_manager import CacheManager
 
 
 class AffiliatesEmails(Mailgun):
@@ -92,7 +92,7 @@ class Validator(ValidAffiliate, ValidRecruit, ValidEarnings):
 
 
 # noinspection DuplicatedCode
-class AffiliatesView(Validator, CacheManager):
+class AffiliatesView(Validator):
     ***REMOVED***
         **Class AffiliatesView**
             Enables the api to access methods to access data and create and update affiliates
@@ -138,7 +138,7 @@ class AffiliatesView(Validator, CacheManager):
         print('affiliate instance: ', affiliate_instance)
         # scheduling cache deletions
         _kwargs: dict = dict(affiliates_view=self, organization_id=organization_id, affiliate_id=affiliate_id)
-        self._schedule_cache_deletion(func=self._delete_affiliate_cache, kwargs=_kwargs)
+        app_cache._schedule_cache_deletion(func=app_cache._delete_affiliate_cache, kwargs=_kwargs)
 
         return jsonify({'status': True,
                         'message': 'successfully registered an affiliate',

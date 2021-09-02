@@ -8,19 +8,15 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 __licence__ = "MIT"
 
-
-from flask import Flask
-from flask_caching import Cache
-from _cron.scheduler import task_scheduler
-from cron import cron_scheduler
-from config import config_instance
 from authlib.integrations.flask_client import OAuth
+from flask import Flask
+
+from _cron.scheduler import task_scheduler
+from cache.cache_manager import app_cache
+from config import config_instance
+from cron import cron_scheduler
 # TODO: consider upgrading the cache service from version 2 of this api
-from utils import clear_cache, is_development
-
-app_cache: Cache = Cache(config=config_instance.cache_dict())
-
-default_timeout: int = 60 * 60 * 6
+from utils import is_development
 
 # github authenticate - enables developers to easily sign-up to our api
 oauth = OAuth()
@@ -35,6 +31,7 @@ github_authorize = oauth.register(
     api_base_url='https://api.github.com/',
     client_kwargs={'scope': 'user:email'})
 
+
 # TODO divide the public api offering and client api and also admin api to be offered as different micro-services
 
 
@@ -43,8 +40,7 @@ def create_app(config_class=config_instance):
     app = Flask(__name__, static_folder="app/resources/static", template_folder="app/resources/templates")
     app.config.from_object(config_class)
 
-    app_cache.init_app(app=app, config=config_class.cache_dict())
-    oauth.init_app(app=app, cache=app_cache)
+    oauth.init_app(app=app, cache=app_cache.cache)
     # user facing or public facing api's
     from _api.public_api.affiliates.routes import affiliates_bp
     from _api.public_api.users.routes import users_bp
@@ -143,11 +139,6 @@ def create_app(config_class=config_instance):
 
     app.register_blueprint(microservices_ipn_bp)
 
-    # Clear Cache
-    if clear_cache(app=app, cache=app_cache):
-        print("Cache Cleared and Starting")
-
-    # Schedule Start
     if is_development():
         task_scheduler.start()
         cron_scheduler.start()
