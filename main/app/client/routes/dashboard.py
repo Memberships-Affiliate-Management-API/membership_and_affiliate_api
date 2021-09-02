@@ -11,13 +11,11 @@ __licence__ = "MIT"
 
 from typing import List, Optional
 
-from flask import Blueprint, request, render_template, url_for, get_flashed_messages, redirect, flash
+from flask import Blueprint, render_template, url_for, get_flashed_messages, redirect, flash
 
 from config.exceptions import status_codes
-from database.users import UserModel
-from main import app_cache
 from security.users_authenticator import handle_users_auth
-from utils.utils import return_ttl, can_cache, create_id
+from utils.utils import create_id
 
 client_dashboard_bp = Blueprint('client_dashboard', __name__)
 
