@@ -15,7 +15,7 @@ from typing import Optional
 from flask import Blueprint, request, current_app
 from config.exceptions import UnAuthenticatedError, error_codes, if_bad_request_raise
 from security.apps_authenticator import handle_apps_authentication
-from views.apikeys import APIKeysView
+from views import api_keys_view
 
 client_api_keys_bp = Blueprint('api-keys', __name__)
 
@@ -36,8 +36,7 @@ def return_api_key(key: str, organization_id) -> tuple:
     secret_key: Optional[str] = json_data.get('SECRET_KEY')
     # TODO revice use hmac compare
     if isinstance(secret_key, str) and secret_key == current_app.config.get('SECRET_KEY'):
-        api_view_instance: APIKeysView = APIKeysView()
-        return api_view_instance.get_api_key(api_key=key, organization_id=organization_id)
+        return api_keys_view.get_api_key(api_key=key, organization_id=organization_id)
 
     message: str = "User not Authorized: you are not authorized to call this API"
     raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
@@ -57,8 +56,7 @@ def create_client_api_key() -> tuple:
     organization_id: Optional[str] = json_data.get('organization_id')
     secret_key: Optional[str] = json_data.get('SECRET_KEY')
     if isinstance(secret_key, str) and secret_key == current_app.config.get('SECRET_KEY'):
-        api_view_instance: APIKeysView = APIKeysView()
-        return api_view_instance.create_keys(domain=domain, uid=uid, organization_id=organization_id)
+        return api_keys_view.create_keys(domain=domain, uid=uid, organization_id=organization_id)
 
     message: str = "User not Authorized: you are not authorized to call this API"
     raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
@@ -76,8 +74,7 @@ def deactivate_key() -> tuple:
     api_key: Optional[str] = json_data.get('api-key')
     secret_key: Optional[str] = json_data.get('SECRET_KEY')
     if isinstance(secret_key, str) and secret_key == current_app.config.get('SECRET_KEY'):
-        api_view_instance: APIKeysView = APIKeysView()
-        return api_view_instance.deactivate_key(key=api_key)
+        return api_keys_view.deactivate_key(key=api_key)
 
     message: str = "User not Authorized: you are not authorized to call this API"
     raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
@@ -96,8 +93,7 @@ def activate_key() -> tuple:
     organization_id: Optional[str] = json_data.get('organization_id')
     secret_key: Optional[str] = json_data.get('SECRET_KEY')
     if isinstance(secret_key, str) and secret_key == current_app.config.get('SECRET_KEY'):
-        api_view_instance: APIKeysView = APIKeysView()
-        return api_view_instance.activate_key(key=api_key, organization_id=organization_id)
+        return api_keys_view.activate_key(key=api_key, organization_id=organization_id)
 
     message: str = "User not Authorized: you are not authorized to call this API"
     raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
