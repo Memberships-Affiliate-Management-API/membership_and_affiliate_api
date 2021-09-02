@@ -7,7 +7,7 @@ from config import config_instance
 from config.currencies import currency_util
 from config.exceptions import DataServiceError, status_codes, UnAuthenticatedError, InputError
 from database.mixins import AmountMixin
-from views.memberships import MembershipsView
+from views import memberships_view
 from database.memberships import Memberships, MembershipPlans
 from utils import create_id, today, datetime_now
 from tests import test_app
@@ -102,7 +102,6 @@ def test_create_membership(mocker) -> None:
     mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
-        membership_view_instance: MembershipsView = MembershipsView()
         uid: str = membership_mock_data['uid']
         organization_id: str = membership_mock_data['organization_id']
         plan_id: str = membership_mock_data['plan_id']
@@ -112,8 +111,8 @@ def test_create_membership(mocker) -> None:
         mocker.patch('database.memberships.PlanValidators.plan_exist', return_value=False)
         mocker.patch('database.memberships.MembershipValidators.start_date_valid', return_value=True)
 
-        response, status = membership_view_instance.add_membership(organization_id=organization_id, uid=uid,
-                                                                   plan_id=plan_id, plan_start_date=plan_start_date)
+        response, status = memberships_view.add_membership(organization_id=organization_id, uid=uid,
+                                                           plan_id=plan_id, plan_start_date=plan_start_date)
         response_data: dict = response.get_json()
         assert response_data.get('message') is not None, 'Unable to read response message'
         assert status == status_codes.successfully_updated_code, response_data['message']
@@ -137,7 +136,6 @@ def test_memberships_create_memberships_data_service_error(mocker) -> None:
     mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
-        membership_view_instance: MembershipsView = MembershipsView()
         uid: str = membership_mock_data['uid']
         organization_id: str = membership_mock_data['organization_id']
         plan_id: str = membership_mock_data['plan_id']
@@ -148,8 +146,8 @@ def test_memberships_create_memberships_data_service_error(mocker) -> None:
         mocker.patch('database.memberships.MembershipValidators.start_date_valid', return_value=None)
 
         with raises(DataServiceError):
-            membership_view_instance.add_membership(organization_id=organization_id, uid=uid, plan_id=plan_id,
-                                                    plan_start_date=plan_start_date)
+            memberships_view.add_membership(organization_id=organization_id, uid=uid, plan_id=plan_id,
+                                            plan_start_date=plan_start_date)
 
     mocker.stopall()
 
@@ -172,35 +170,34 @@ def test_create_memberships_input_errors(mocker) -> None:
     mocker.patch('database.memberships.MembershipValidators.start_date_valid', return_value=True)
 
     with test_app().app_context():
-        membership_view_instance: MembershipsView = MembershipsView()
         # Note: testing for invalid uid
         uid: Optional[str] = random.choice([None, "", " "])
         organization_id: str = membership_mock_data['organization_id']
         plan_id: str = membership_mock_data['plan_id']
         plan_start_date: date = membership_mock_data['plan_start_date']
         with raises(InputError):
-            membership_view_instance.add_membership(organization_id=organization_id, uid=uid,
-                                                    plan_id=plan_id, plan_start_date=plan_start_date)
+            memberships_view.add_membership(organization_id=organization_id, uid=uid,
+                                            plan_id=plan_id, plan_start_date=plan_start_date)
         # Note: testing for invalid organization_id
         uid: str = create_id()
         organization_id: Optional[str] = random.choice([None, "", " "])
         with raises(InputError):
-            membership_view_instance.add_membership(organization_id=organization_id, uid=uid,
-                                                    plan_id=plan_id, plan_start_date=plan_start_date)
+            memberships_view.add_membership(organization_id=organization_id, uid=uid,
+                                            plan_id=plan_id, plan_start_date=plan_start_date)
         # Note: testing for invalid plan_start_date
         organization_id: str = create_id()
         plan_start_date: Optional[date] = random.choice([None, "", " "])
         with raises(InputError):
-            membership_view_instance.add_membership(organization_id=organization_id, uid=uid,
-                                                    plan_id=plan_id, plan_start_date=plan_start_date)
+            memberships_view.add_membership(organization_id=organization_id, uid=uid,
+                                            plan_id=plan_id, plan_start_date=plan_start_date)
 
         # NOTE : testing for invalid plan id
         plan_start_date: date = today()
         plan_id: Optional[str] = random.choice([None, "", " "])
         with raises(InputError):
             # noinspection PyTypeChecker
-            membership_view_instance.add_membership(organization_id=organization_id, uid=uid,
-                                                    plan_id=plan_id, plan_start_date=plan_start_date)
+            memberships_view.add_membership(organization_id=organization_id, uid=uid,
+                                            plan_id=plan_id, plan_start_date=plan_start_date)
 
     mocker.stopall()
 
@@ -219,7 +216,6 @@ def test_update_membership(mocker) -> None:
     mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
-        membership_view_instance: MembershipsView = MembershipsView()
         uid: str = membership_mock_data['uid']
         organization_id: str = config_instance.ORGANIZATION_ID
         plan_id: str = membership_mock_data['plan_id']
@@ -229,8 +225,8 @@ def test_update_membership(mocker) -> None:
         mocker.patch('database.memberships.PlanValidators.plan_exist', return_value=False)
         mocker.patch('database.memberships.MembershipValidators.start_date_valid', return_value=True)
 
-        response, status = membership_view_instance.update_membership(organization_id=organization_id, uid=uid,
-                                                                      plan_id=plan_id, plan_start_date=plan_start_date)
+        response, status = memberships_view.update_membership(organization_id=organization_id, uid=uid,
+                                                              plan_id=plan_id, plan_start_date=plan_start_date)
 
         assert status == status_codes.successfully_updated_code, "Unable to update membership"
         response_data: dict = response.get_json()
@@ -260,27 +256,26 @@ def test_update_membership_input_errors(mocker) -> None:
     mocker.patch('database.memberships.MembershipValidators.start_date_valid', return_value=True)
 
     with test_app().app_context():
-        membership_view_instance: MembershipsView = MembershipsView()
         uid: Optional[str] = random.choice([None, "", " "])
         organization_id: str = config_instance.ORGANIZATION_ID
         plan_id: str = membership_mock_data['plan_id']
         plan_start_date: date = membership_mock_data['plan_start_date']
 
         with raises(InputError):
-            membership_view_instance.update_membership(organization_id=organization_id, uid=uid, plan_id=plan_id,
-                                                       plan_start_date=plan_start_date)
+            memberships_view.update_membership(organization_id=organization_id, uid=uid, plan_id=plan_id,
+                                               plan_start_date=plan_start_date)
 
         uid: str = create_id()
         organization_id: Optional[str] = random.choice([None, "", " "])
         with raises(InputError):
-            membership_view_instance.update_membership(organization_id=organization_id, uid=uid, plan_id=plan_id,
-                                                       plan_start_date=plan_start_date)
+            memberships_view.update_membership(organization_id=organization_id, uid=uid, plan_id=plan_id,
+                                               plan_start_date=plan_start_date)
 
         organization_id: str = config_instance.ORGANIZATION_ID
         plan_id: Optional[str] = random.choice([None, "", " "])
         with raises(InputError):
-            membership_view_instance.update_membership(organization_id=organization_id, uid=uid, plan_id=plan_id,
-                                                       plan_start_date=plan_start_date)
+            memberships_view.update_membership(organization_id=organization_id, uid=uid, plan_id=plan_id,
+                                               plan_start_date=plan_start_date)
 
     mocker.stopall()
 
@@ -298,12 +293,11 @@ def test_set_membership_status(mocker) -> None:
     mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
-        membership_view_instance: MembershipsView = MembershipsView()
         uid: str = membership_mock_data['uid']
         organization_id: str = config_instance.ORGANIZATION_ID
         status: str = membership_mock_data['payment_status']
-        response, status = membership_view_instance.set_membership_payment_status(organization_id=organization_id,
-                                                                                  uid=uid, status=status)
+        response, status = memberships_view.set_membership_payment_status(organization_id=organization_id,
+                                                                          uid=uid, status=status)
         response_data: dict = response.get_json()
         assert status == status_codes.successfully_updated_code, response_data['message']
         assert response_data.get('payload') is not None, response_data['message']
@@ -324,25 +318,24 @@ def test_set_membership_status_errors(mocker) -> None:
     mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
-        membership_view_instance: MembershipsView = MembershipsView()
         uid: Optional[str] = random.choice([None, "", " "])
         organization_id: str = config_instance.ORGANIZATION_ID
         status: str = membership_mock_data['payment_status']
         with raises(InputError):
-            membership_view_instance.set_membership_payment_status(organization_id=organization_id,
-                                                                   uid=uid, status=status)
+            memberships_view.set_membership_payment_status(organization_id=organization_id,
+                                                           uid=uid, status=status)
 
         uid: str = create_id()
         organization_id: Optional[str] = random.choice([None, " ", ""])
         with raises(InputError):
-            membership_view_instance.set_membership_payment_status(organization_id=organization_id,
-                                                                   uid=uid, status=status)
+            memberships_view.set_membership_payment_status(organization_id=organization_id,
+                                                           uid=uid, status=status)
 
         status: Optional[str] = random.choice([None, "", " "])
         organization_id: str = config_instance.ORGANIZATION_ID
         with raises(InputError):
-            membership_view_instance.set_membership_payment_status(organization_id=organization_id,
-                                                                   uid=uid, status=status)
+            memberships_view.set_membership_payment_status(organization_id=organization_id,
+                                                           uid=uid, status=status)
 
     mocker.stopall()
 
@@ -362,14 +355,13 @@ def test_change_membership(mocker) -> None:
     mocker.patch('database.memberships.Memberships.query', return_value=membership_query_mock_instance)
 
     with test_app().app_context():
-        membership_view_instance: MembershipsView = MembershipsView()
         uid: str = membership_mock_data['uid']
         organization_id: str = config_instance.ORGANIZATION_ID
         plan_id: str = membership_mock_data['plan_id']
         dest_plan_id: str = create_id()
         mocker.patch('views.memberships.MembershipsView.plan_exist', return_value=True)
-        response, status = membership_view_instance.change_membership(organization_id=organization_id, uid=uid,
-                                                                      origin_plan_id=plan_id, dest_plan_id=dest_plan_id)
+        response, status = memberships_view.change_membership(organization_id=organization_id, uid=uid,
+                                                              origin_plan_id=plan_id, dest_plan_id=dest_plan_id)
         assert status == status_codes.successfully_updated_code, "Unable to change membership"
 
     mocker.stopall()
@@ -387,32 +379,31 @@ def test_change_memberships_input_errors(mocker):
     mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
-        membership_view_instance: MembershipsView = MembershipsView()
         uid: Optional[str] = random.choice([None, "", " "])
         organization_id: str = config_instance.ORGANIZATION_ID
         plan_id: str = membership_mock_data['plan_id']
         dest_plan_id: str = create_id()
         with raises(InputError):
-            membership_view_instance.change_membership(organization_id=organization_id, uid=uid,
-                                                       origin_plan_id=plan_id, dest_plan_id=dest_plan_id)
+            memberships_view.change_membership(organization_id=organization_id, uid=uid,
+                                               origin_plan_id=plan_id, dest_plan_id=dest_plan_id)
 
         uid: str = create_id()
         organization_id: Optional[str] = random.choice([None, "", " "])
         with raises(InputError):
-            membership_view_instance.change_membership(organization_id=organization_id, uid=uid,
-                                                       origin_plan_id=plan_id, dest_plan_id=dest_plan_id)
+            memberships_view.change_membership(organization_id=organization_id, uid=uid,
+                                               origin_plan_id=plan_id, dest_plan_id=dest_plan_id)
 
         organization_id: str = create_id()
         plan_id: Optional[str] = random.choice([None, "", " "])
         with raises(InputError):
-            membership_view_instance.change_membership(organization_id=organization_id, uid=uid,
-                                                       origin_plan_id=plan_id, dest_plan_id=dest_plan_id)
+            memberships_view.change_membership(organization_id=organization_id, uid=uid,
+                                               origin_plan_id=plan_id, dest_plan_id=dest_plan_id)
 
         plan_id: str = create_id()
         dest_plan_id: Optional[str] = random.choice([None, "", " "])
         with raises(InputError):
-            membership_view_instance.change_membership(organization_id=organization_id, uid=uid,
-                                                       origin_plan_id=plan_id, dest_plan_id=dest_plan_id)
+            memberships_view.change_membership(organization_id=organization_id, uid=uid,
+                                               origin_plan_id=plan_id, dest_plan_id=dest_plan_id)
 
         mocker.stopall()
 
@@ -430,12 +421,11 @@ def test_send_welcome_email(mocker) -> None:
     mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
-        membership_view_instance: MembershipsView = MembershipsView()
         uid: str = membership_mock_data['uid']
         organization_id: str = config_instance.ORGANIZATION_ID
         plan_id: str = membership_mock_data['plan_id']
-        response, status = membership_view_instance.send_welcome_email(organization_id=organization_id, uid=uid,
-                                                                       plan_id=plan_id)
+        response, status = memberships_view.send_welcome_email(organization_id=organization_id, uid=uid,
+                                                               plan_id=plan_id)
         response_data: dict = response.get_json()
         assert isinstance(response_data, dict), 'bad payload format'
         assert status == status_codes.status_ok_code, "unable to send welcome email"
@@ -455,11 +445,10 @@ def test_plan_members_payment_status(mocker) -> None:
     mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
-        membership_view_instance: MembershipsView = MembershipsView()
         organization_id: str = config_instance.ORGANIZATION_ID
         plan_id: str = membership_mock_data['plan_id']
         status: str = membership_mock_data['payment_status']
-        response, status = membership_view_instance.return_plan_members_by_payment_status(
+        response, status = memberships_view.return_plan_members_by_payment_status(
             organization_id=organization_id, plan_id=plan_id, status=status)
 
         response_data: dict = response.get_json()
@@ -483,10 +472,9 @@ def test_return_plan_members(mocker) -> None:
     mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
-        membership_view_instance: MembershipsView = MembershipsView()
         plan_id: str = membership_mock_data['plan_id']
         organization_id: str = config_instance.ORGANIZATION_ID
-        response, status = membership_view_instance.return_plan_members(organization_id=organization_id, plan_id=plan_id)
+        response, status = memberships_view.return_plan_members(organization_id=organization_id, plan_id=plan_id)
         response_data: dict = response.get_json()
 
         assert isinstance(response_data, dict), 'badly formatted data'
@@ -508,10 +496,9 @@ def test_is_member_off(mocker) -> None:
     mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
-        membership_view_instance: MembershipsView = MembershipsView()
         uid: str = membership_mock_data['uid']
         organization_id: str = config_instance.ORGANIZATION_ID
-        response, status = membership_view_instance.is_member_off(organization_id=organization_id, uid=uid)
+        response, status = memberships_view.is_member_off(organization_id=organization_id, uid=uid)
 
         response_data: dict = response.get_json()
         assert isinstance(response_data, dict), 'badly formatted data'
@@ -534,10 +521,9 @@ def test_payment_amount(mocker) -> None:
     mocker.patch('views.memberships.MembershipPlansView._get_plan', return_value=MembershipPlansQueryMock().get())
 
     with test_app().app_context():
-        membership_view_instance: MembershipsView = MembershipsView()
         uid: str = membership_mock_data['uid']
         organization_id: str = config_instance.ORGANIZATION_ID
-        response, status = membership_view_instance.payment_amount(organization_id=organization_id, uid=uid)
+        response, status = memberships_view.payment_amount(organization_id=organization_id, uid=uid)
         response_data: dict = response.get_json()
         assert status == status_codes.status_ok_code, response_data['message']
     mocker.stopall()
