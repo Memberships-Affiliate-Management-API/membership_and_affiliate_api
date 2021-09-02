@@ -15,7 +15,7 @@ import typing
 from flask import Blueprint, request
 from config.exceptions import if_bad_request_raise
 from security.api_authenticator import handle_api_auth
-from views.affiliates import AffiliatesView, RecruitsView
+from views import affiliates_view, recruits_view
 
 affiliates_bp = Blueprint('affiliates', __name__)
 
@@ -66,41 +66,41 @@ def affiliate(path: str) -> tuple:
     ***REMOVED***
     # Raises Bad Request error if request is not in json format
     if_bad_request_raise(request)
-    affiliate_view_instance: AffiliatesView = AffiliatesView()
+
     affiliate_data: dict = request.get_json()
 
     # TODO - include organization_id for this routes
 
     if path == "get":
         # Note response may be cached by the view function
-        return affiliate_view_instance.get_affiliate(affiliate_data=affiliate_data)
+        return affiliates_view.get_affiliate(affiliate_data=affiliate_data)
     elif path == "get-all":
         organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
-        return affiliate_view_instance.get_all_affiliates(organization_id=organization_id)
+        return affiliates_view.get_all_affiliates(organization_id=organization_id)
     elif path == "get-active":
         organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
-        return affiliate_view_instance.get_active_affiliates(organization_id=organization_id)
+        return affiliates_view.get_active_affiliates(organization_id=organization_id)
     elif path == "get-not-active":
         organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
-        return affiliate_view_instance.get_in_active_affiliates(organization_id=organization_id)
+        return affiliates_view.get_in_active_affiliates(organization_id=organization_id)
     elif path == "get-deleted":
         organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
-        return affiliate_view_instance.get_deleted_affiliates(organization_id=organization_id)
+        return affiliates_view.get_deleted_affiliates(organization_id=organization_id)
     elif path == "get-not-deleted":
         organization_id: typing.Union[str, None] = affiliate_data.get('organization_id')
-        return affiliate_view_instance.get_not_deleted_affiliates(organization_id=organization_id)
+        return affiliates_view.get_not_deleted_affiliates(organization_id=organization_id)
     elif path == "register":
-        return affiliate_view_instance.register_affiliate(affiliate_data=affiliate_data)
+        return affiliates_view.register_affiliate(affiliate_data=affiliate_data)
     elif path == "inc-recruits":
-        return affiliate_view_instance.total_recruits(affiliate_data=affiliate_data, add=1)
+        return affiliates_view.total_recruits(affiliate_data=affiliate_data, add=1)
     elif path == 'dec-recruits':
-        return affiliate_view_instance.total_recruits(affiliate_data=affiliate_data, add=-1)
+        return affiliates_view.total_recruits(affiliate_data=affiliate_data, add=-1)
     elif path == 'delete':
-        return affiliate_view_instance.delete_affiliate(affiliate_data=affiliate_data)
+        return affiliates_view.delete_affiliate(affiliate_data=affiliate_data)
     elif path == 'mark-active':
-        return affiliate_view_instance.mark_active(affiliate_data=affiliate_data, is_active=True)
+        return affiliates_view.mark_active(affiliate_data=affiliate_data, is_active=True)
     elif path == 'mark-not-active':
-        return affiliate_view_instance.mark_active(affiliate_data=affiliate_data, is_active=False)
+        return affiliates_view.mark_active(affiliate_data=affiliate_data, is_active=False)
 
 
 @affiliates_bp.route('/api/v1/public/recruits/<path:path>', methods=['POST'])
@@ -136,40 +136,39 @@ def recruits(path: str) -> tuple:
     # Raises Bad Request error if request is not in json format
     if_bad_request_raise(request)
 
-    recruits_view_instance: RecruitsView = RecruitsView()
     recruit_data: dict = request.get_json()
     if path == "get":
         # retrieve a single recruit, function expects organization_id and
         # affiliate_id on recruit_data, user may supply the data as json body
-        return recruits_view_instance.get_recruit(recruit_data=recruit_data)
+        return recruits_view.get_recruit(recruit_data=recruit_data)
 
     elif path == "register":
         # Note: used to register a single recruit, data as json must contain
         # referrer_uid and organization_id, this allows multiple ways by which
         #  recruiters may recruit their affiliates
-        return recruits_view_instance.add_recruit(recruit_data=recruit_data)
+        return recruits_view.add_recruit(recruit_data=recruit_data)
 
     elif path == "delete":
         # Soft Delete a recruit by affiliate_id
-        return recruits_view_instance.delete_recruit(recruit_data=recruit_data)
+        return recruits_view.delete_recruit(recruit_data=recruit_data)
     elif path == "activate":
-        return recruits_view_instance.mark_active(recruit_data=recruit_data, is_active=True)
+        return recruits_view.mark_active(recruit_data=recruit_data, is_active=True)
     elif path == "de-activate":
-        return recruits_view_instance.mark_active(recruit_data=recruit_data, is_active=False)
+        return recruits_view.mark_active(recruit_data=recruit_data, is_active=False)
     elif path == "get-active":
-        return recruits_view_instance.get_recruits_by_active_status(recruit_data=recruit_data, is_active=True)
+        return recruits_view.get_recruits_by_active_status(recruit_data=recruit_data, is_active=True)
     elif path == "get-in-active":
-        return recruits_view_instance.get_recruits_by_active_status(recruit_data=recruit_data, is_active=False)
+        return recruits_view.get_recruits_by_active_status(recruit_data=recruit_data, is_active=False)
     elif path == "get-deleted":
-        return recruits_view_instance.get_recruits_by_deleted_status(recruit_data=recruit_data, is_deleted=True)
+        return recruits_view.get_recruits_by_deleted_status(recruit_data=recruit_data, is_deleted=True)
     elif path == "get-not-deleted":
-        return recruits_view_instance.get_recruits_by_deleted_status(recruit_data=recruit_data, is_deleted=False)
+        return recruits_view.get_recruits_by_deleted_status(recruit_data=recruit_data, is_deleted=False)
     elif path == "get-by-affiliate":
-        return recruits_view_instance.get_recruits_by_affiliate(affiliate_data=recruit_data)
+        return recruits_view.get_recruits_by_affiliate(affiliate_data=recruit_data)
     elif path == "get-by-active-affiliate":
-        return recruits_view_instance.get_recruits_by_active_affiliate(affiliate_data=recruit_data, is_active=True)
+        return recruits_view.get_recruits_by_active_affiliate(affiliate_data=recruit_data, is_active=True)
     elif path == "get-by-not-active-affiliate":
-        return recruits_view_instance.get_recruits_by_active_affiliate(affiliate_data=recruit_data, is_active=False)
+        return recruits_view.get_recruits_by_active_affiliate(affiliate_data=recruit_data, is_active=False)
     else:
         pass
 
