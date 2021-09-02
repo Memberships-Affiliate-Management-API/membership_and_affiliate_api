@@ -181,8 +181,11 @@ class AffiliatesView(Validator):
                 raise DataServiceError(status=500, description=message)
 
             # deleting affiliate Caches related to the updated record
-            self._delete_affiliate_cache(affiliates_view=AffiliatesView, organization_id=organization_id,
-                                         affiliate_id=affiliate_id)
+            _kwargs: dict = dict(affiliates_view=AffiliatesView, organization_id=organization_id,
+                                 affiliate_id=affiliate_id)
+
+            app_cache._schedule_cache_deletion(func=app_cache._delete_affiliate_cache, kwargs=_kwargs)
+
             return jsonify({'status': True,
                             'message': 'successfully incremented total recruits',
                             'payload': affiliate_instance.to_dict()}), status_codes.successfully_updated_code
@@ -228,7 +231,7 @@ class AffiliatesView(Validator):
             # scheduling affiliate cache deletions
             _kwargs: dict = dict(affiliates_view=AffiliatesView, organization_id=organization_id,
                                  affiliate_id=affiliate_id)
-            self._schedule_cache_deletion(func=self._delete_affiliate_cache, kwargs=_kwargs)
+            app_cache._schedule_cache_deletion(func=app_cache._delete_affiliate_cache, kwargs=_kwargs)
 
             return jsonify({'status': True,
                             'message': 'successfully deleted the affiliate',
@@ -279,7 +282,7 @@ class AffiliatesView(Validator):
             # scheduling affiliate cache deletion
             _kwargs: dict = dict(affiliates_view=AffiliatesView, organization_id=organization_id,
                                  affiliate_id=affiliate_id)
-            self._schedule_cache_deletion(func=self._delete_affiliate_cache, kwargs=_kwargs)
+            app_cache._schedule_cache_deletion(func=app_cache._delete_affiliate_cache, kwargs=_kwargs)
 
             return jsonify({'status': True, 'message': 'successfully marked affiliate as inactive',
                             'payload': affiliate_instance.to_dict()}), status_codes.successfully_updated_code
