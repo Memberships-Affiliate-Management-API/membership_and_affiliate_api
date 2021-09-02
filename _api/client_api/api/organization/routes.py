@@ -7,7 +7,7 @@ from typing import Optional
 from flask import request, Blueprint, current_app
 from config.exceptions import UnAuthenticatedError, error_codes, if_bad_request_raise
 from security.apps_authenticator import handle_apps_authentication
-from views.organization import OrganizationView
+from views import organization_view
 
 client_organizations_api_bp = Blueprint('client_organizations_api', __name__)
 
@@ -27,7 +27,6 @@ def client_organization_main(path: str) -> tuple:
     :return:
     ***REMOVED***
     if_bad_request_raise(request)
-    org_view_instance: OrganizationView = OrganizationView()
     # NOTE: client admin request to create organization
     if path == "create":
         json_data: dict = request.get_json()
@@ -41,7 +40,7 @@ def client_organization_main(path: str) -> tuple:
         login_callback_url: Optional[str] = json_data.get('login_callback_url')
         recovery_callback_url: Optional[str] = json_data.get('recovery_callback_url')
         if isinstance(secret_key, str) and secret_key == current_app.config.get('SECRET_KEY'):
-            return org_view_instance.create_organization(uid=uid, organization_name=organization_name,
+            return organization_view.create_organization(uid=uid, organization_name=organization_name,
                                                          description=description, currency=currency,
                                                          paypal_address=paypal_address, home_url=home_url,
                                                          login_callback_url=login_callback_url,
@@ -64,7 +63,7 @@ def client_organization_main(path: str) -> tuple:
         # currency: Optional[str] = json_data.get('currency')
         # paypal_address: Optional[str] = json_data.get('paypal_address')
         if isinstance(secret_key, str) and secret_key == current_app.config.get('SECRET_KEY'):
-            return org_view_instance.update_organization(uid=uid, organization_id=organization_id,
+            return organization_view.update_organization(uid=uid, organization_id=organization_id,
                                                          organization_name=organization_name, description=description,
                                                          home_url=home_url, login_callback_url=login_callback_url,
                                                          recovery_callback_url=recovery_callback_url)
@@ -78,7 +77,7 @@ def client_organization_main(path: str) -> tuple:
         organization_id: Optional[str] = json_data.get('organization_id')
         uid: Optional[str] = json_data.get('uid')
         if isinstance(secret_key, str) and secret_key == current_app.config.get('SECRET_KEY'):
-            return org_view_instance.get_organization(organization_id=organization_id, uid=uid)
+            return organization_view.get_organization(organization_id=organization_id, uid=uid)
 
         message: str = 'User Not Authorized: cannot fetch organization'
         raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
