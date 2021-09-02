@@ -484,7 +484,7 @@ class AffiliatesView(Validator):
 
 
 # noinspection DuplicatedCode
-class RecruitsView(Validator, CacheManager):
+class RecruitsView(Validator):
     ***REMOVED***
         View Manager for Recruits
         Used by affiliates to register newly recruited members
@@ -531,7 +531,7 @@ class RecruitsView(Validator, CacheManager):
         _kwargs: dict = dict(recruits_view=RecruitsView, organization_id=organization_id,
                              is_active=recruit_instance.is_active, is_deleted=recruit_instance.is_deleted,
                              affiliate_data=None, recruit_data=recruit_data)
-        self._schedule_cache_deletion(func=self._delete_recruits_cache, kwargs=_kwargs)
+        app_cache._schedule_cache_deletion(func=app_cache._delete_recruits_cache, kwargs=_kwargs)
 
         return jsonify({'status': True, 'message': 'Successfully created new recruit',
                         'payload': recruit_instance.to_dict()}), status_codes.successfully_updated_code
@@ -577,7 +577,7 @@ class RecruitsView(Validator, CacheManager):
                                  is_active=recruit_instance.is_active, is_deleted=recruit_instance.is_deleted,
                                  affiliate_data=None, recruit_data=recruit_data)
 
-            self._schedule_cache_deletion(func=self._delete_recruits_cache, kwargs=_kwargs)
+            app_cache._schedule_cache_deletion(func=app_cache._delete_recruits_cache, kwargs=_kwargs)
 
             return jsonify({'status': True, 'message': 'Successfully deleted recruit',
                             'payload': recruit_instance.to_dict()}), status_codes.successfully_updated_code
@@ -622,7 +622,7 @@ class RecruitsView(Validator, CacheManager):
                                  is_active=is_active, is_deleted=recruit_instance.is_deleted,
                                  affiliate_data=None, recruit_data=recruit_data)
 
-            self._schedule_cache_deletion(func=self._delete_recruits_cache, kwargs=_kwargs)
+            app_cache._schedule_cache_deletion(func=app_cache._delete_recruits_cache, kwargs=_kwargs)
 
             return jsonify({'status': True, 'message': 'Successfully deleted recruit',
                             'payload': recruit_instance.to_dict()}), status_codes.successfully_updated_code
