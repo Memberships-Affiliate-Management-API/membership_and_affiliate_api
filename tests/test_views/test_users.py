@@ -63,7 +63,15 @@ class UsersQueryMock:
         return self.user_instance
 
     def user_mock_data(self) -> dict:
-        return self.user_instance.to_dict()
+        ***REMOVED***
+        **user_mock_data**
+
+        :return:
+        ***REMOVED***
+        user_data: dict = self.user_instance.to_dict()
+        # NOTE: user_instance.to_dict() returns user dict without password field for security reasons
+        user_data.update(password="Complicated Password 12345%$#")
+        return user_data
 
 
 user_mock_data: dict = UsersQueryMock().user_mock_data()
