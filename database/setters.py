@@ -101,7 +101,7 @@ class Util:
         :param password: -> text format of the password to be checked
         :return: bool -> True if password is complex enough
         ***REMOVED***
-        regex_pattern = r'[A-Za-z0-9@#$%^&+=]{8,}'
+        regex_pattern = r'[A-Za-z0-9@#$%^& +=]{8,}'
         pattern = re.compile(regex_pattern)
         return bool(re.fullmatch(pattern, password))
 
