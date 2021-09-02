@@ -751,7 +751,7 @@ class OrganizationView(OrgValidators, OrganizationEmails):
 
             # NOTE: scheduling cache deletions
             _kwargs: dict = dict(org_view=OrganizationView, organization_id=organization_id)
-            self._schedule_cache_deletion(func=self._delete_organization_cache, kwargs=_kwargs)
+            app_cache._schedule_cache_deletion(func=app_cache._delete_organization_cache, kwargs=_kwargs)
 
             message: str = "Successfully updated total_membership_payments"
             return jsonify({'status': True,
