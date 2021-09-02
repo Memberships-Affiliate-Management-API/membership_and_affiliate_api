@@ -18,9 +18,8 @@ from config.exceptions import DataServiceError, status_codes, InputError, error_
 from config.use_context import use_context
 from database.organization import OrgValidators, AuthUserValidators
 from database.apikeys import APIKeys
-from main import app_cache
 from utils.utils import create_id, return_ttl
-from cache.cache_manager import CacheManager
+from cache.cache_manager import app_cache
 
 
 class APIKeysValidators(OrgValidators, AuthUserValidators):
@@ -29,7 +28,7 @@ class APIKeysValidators(OrgValidators, AuthUserValidators):
         self._max_retries = current_app.config.get('DATASTORE_RETRIES')
         self._max_timeout = current_app.config.get('DATASTORE_TIMEOUT')
 
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     def organization_exist(self, organization_id: Optional[str]) -> bool:
         ***REMOVED***
             checks if an organization is in existence
@@ -45,7 +44,7 @@ class APIKeysValidators(OrgValidators, AuthUserValidators):
             return does_organization_exist
         raise DataServiceError(status=error_codes.data_service_error_code, description="Database Error: Unable to verify organization")
 
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     def user_can_create_key(self, uid: Optional[str], organization_id: Optional[str]) -> bool:
         ***REMOVED***
             checks if user can create key
@@ -69,7 +68,7 @@ class APIKeysValidators(OrgValidators, AuthUserValidators):
         raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
 
-class APIKeysView(APIKeysValidators, CacheManager):
+class APIKeysView(APIKeysValidators):
     ***REMOVED***
         a view class for APIKeys
     ***REMOVED***
@@ -122,7 +121,7 @@ class APIKeysView(APIKeysValidators, CacheManager):
 
             # Scheduling deletion of Memoized items which will need this item as part of the results
             _kwargs: dict = dict(api_keys_view=APIKeysView, api_key=key, organization_id=organization_id)
-            self._schedule_cache_deletion(func=self._delete_api_keys_cache, kwargs=_kwargs)
+            app_cache._schedule_cache_deletion(func=app_cache._delete_api_keys_cache, kwargs=_kwargs)
 
             message: str = "successfully created api_key secret_token combo"
             return jsonify({'status': True, 'payload': api_key_instance.to_dict(),
@@ -155,7 +154,7 @@ class APIKeysView(APIKeysValidators, CacheManager):
             organization_id: str = api_key_instance.organization_id
             # Scheduling deletion of Memoized items which will need this item as part of the results
             _kwargs: dict = dict(api_keys_view=APIKeysView, api_key=key, organization_id=organization_id)
-            self._schedule_cache_deletion(func=self._delete_api_keys_cache, kwargs=_kwargs)
+            app_cache._schedule_cache_deletion(func=app_cache._delete_api_keys_cache, kwargs=_kwargs)
 
             message: str = "successfully deactivated api_key"
             return jsonify({'status': True, 'payload': api_key_instance.to_dict(),
@@ -191,7 +190,7 @@ class APIKeysView(APIKeysValidators, CacheManager):
             organization_id: str = api_key_instance.organization_id
             # Scheduling deletion of Memoized items which will need this item as part of the results
             _kwargs: dict = dict(api_keys_view=APIKeysView, api_key=key, organization_id=organization_id)
-            self._schedule_cache_deletion(func=self._delete_api_keys_cache, kwargs=_kwargs)
+            app_cache._schedule_cache_deletion(func=app_cache._delete_api_keys_cache, kwargs=_kwargs)
 
             message: str = "successfully activated api_key"
             return jsonify({'status': True, 'payload': api_key_instance.to_dict(),
@@ -202,7 +201,7 @@ class APIKeysView(APIKeysValidators, CacheManager):
     # noinspection DuplicatedCode
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     def return_all_organization_keys(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             return a list of api-keys belonging to a specific organization
@@ -226,7 +225,7 @@ class APIKeysView(APIKeysValidators, CacheManager):
     # noinspection DuplicatedCode
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     def return_active_organization_keys(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             **return_active_organization_keys**
@@ -252,7 +251,7 @@ class APIKeysView(APIKeysValidators, CacheManager):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     def get_api_key(self, api_key: Optional[str], organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             fetch a specific api key
