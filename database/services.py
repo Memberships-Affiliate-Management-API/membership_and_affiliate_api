@@ -26,7 +26,7 @@ from config.exceptions import DataServiceError, InputError, error_codes
 from database.setters import property_
 from database.organization import OrgValidators, AuthUserValidators
 from database.users import UserValidators
-from main import app_cache
+from cache.cache_manager import app_cache
 from utils.utils import return_ttl
 from database.basemodel import BaseModel
 
@@ -56,7 +56,7 @@ class ServiceValidator(OrgValidators, AuthUserValidators, UserValidators):
 
         return isinstance(service_instance, Services)
 
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     def can_create_service(self, uid: typing.Union[str, None],
                            organization_id: typing.Union[str, None]) -> Optional[bool]:
         ***REMOVED***
