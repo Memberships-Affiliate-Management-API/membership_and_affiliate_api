@@ -13,18 +13,18 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 __licence__ = "MIT"
 
+import functools
 import hmac
 from typing import Optional
+
 import requests
 from flask import request
+
 from config import config_instance
 from config.exceptions import UnAuthenticatedError, error_codes
-import functools
 from config.use_context import use_context
-from main import app_cache
-from database.app_authenticator import MicroAuthDetails
 from security.users_authenticator import decode_auth_token
-from utils import is_development, return_ttl
+from utils import is_development
 
 
 def verify_app_id(app_id: str, domain: str) -> bool:
