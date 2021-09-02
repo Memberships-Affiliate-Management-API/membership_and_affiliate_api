@@ -391,7 +391,7 @@ class UserView(Validators, UserEmails):
             raise InputError(status=error_codes.input_error_code, description=message)
 
         if not isinstance(password, str) or not bool(password.strip()):
-            message: str = 'password is required'
+            message: str = 'password is required boss'
             raise InputError(status=error_codes.input_error_code, description=message)
 
         user_instance: UserModel = UserModel(organization_id=organization_id, uid=uid, names=names,
