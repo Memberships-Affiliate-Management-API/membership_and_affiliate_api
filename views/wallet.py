@@ -20,8 +20,7 @@ from utils import return_ttl
 from config.exceptions import DataServiceError, UnAuthenticatedError, status_codes, error_codes, InputError
 from config.exception_handlers import handle_view_errors
 from config.use_context import use_context
-from main import app_cache
-from cache.cache_manager import CacheManager
+from cache.cache_manager import app_cache
 
 
 class WalletEmails(Mailgun):
@@ -210,7 +209,7 @@ class Validator(WalletValidator):
                 message: str = "{} is required".format(arg.__class__.__name__)
                 raise InputError(status=error_codes.input_error_code, description=message)
 
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     def can_add_wallet(self, organization_id: Optional[str], uid: Optional[str] = None) -> bool:
         ***REMOVED***
             **can_add_wallet**
@@ -231,7 +230,7 @@ class Validator(WalletValidator):
         message: str = 'database Error: Unable to verify wallet data'
         raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     async def can_add_wallet_async(self, organization_id: Optional[str], uid: Optional[str] = None) -> bool:
         ***REMOVED***
             **can_add_wallet_async**
@@ -253,7 +252,7 @@ class Validator(WalletValidator):
         message: str = 'database Error: Unable to verify wallet data'
         raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     def can_update_wallet(self, organization_id: Optional[str], uid: Optional[str] = None) -> bool:
         ***REMOVED***
             **can_add_wallet**
@@ -270,7 +269,7 @@ class Validator(WalletValidator):
         message: str = 'database error: Unable to verify wallet data'
         raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     async def can_update_wallet_async(self, organization_id: Optional[str], uid: Optional[str] = None) -> bool:
         ***REMOVED***
             **can_update_wallet_async**
@@ -288,7 +287,7 @@ class Validator(WalletValidator):
         message: str = "database error: Unable to verify wallet data"
         raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     def can_reset_wallet(self, organization_id: Optional[str], uid: Optional[str]) -> bool:
         ***REMOVED***
             **can_reset_wallet**
@@ -306,7 +305,7 @@ class Validator(WalletValidator):
         message: str = 'database Error: Unable to verify wallet data'
         raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     async def can_reset_wallet_async(self, organization_id: Optional[str],
                                      uid: Optional[str]) -> bool:
         ***REMOVED***
@@ -327,7 +326,7 @@ class Validator(WalletValidator):
 
 
 # noinspection DuplicatedCode
-class WalletView(Validator, WalletEmails, CacheManager):
+class WalletView(Validator, WalletEmails):
     ***REMOVED***
         **Class WalletView**
             view functions for the wallet
@@ -379,7 +378,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
         _kwargs: dict = dict(wallet_view=WalletView, organization_id=organization_id, uid=uid)
-        self._schedule_cache_deletion(func=self._delete_wallet_cache, kwargs=_kwargs)
+        app_cache._schedule_cache_deletion(func=app_cache._delete_wallet_cache, kwargs=_kwargs)
 
         # Sending an email notification to the user informing them that the wallet has been created successfully
         kwargs: dict = dict(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
@@ -421,7 +420,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
                                    description="An Error occurred creating Wallet")
 
         _kwargs: dict = dict(wallet_view=WalletView, organization_id=organization_id, uid=uid)
-        self._schedule_cache_deletion(func=self._delete_wallet_cache, kwargs=_kwargs)
+        app_cache._schedule_cache_deletion(func=app_cache._delete_wallet_cache, kwargs=_kwargs)
 
         # Sending an email notification to the user informing them that the wallet has been created successfully
         kwargs: dict = dict(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
@@ -432,7 +431,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     def get_wallet(self, organization_id: Optional[str], uid: Optional[str]) -> tuple:
         ***REMOVED***
             **get_wallet**
@@ -457,7 +456,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     async def get_wallet_async(self, organization_id: Optional[str],  uid: Optional[str]) -> tuple:
         ***REMOVED***
             **get_wallet_async**
@@ -527,7 +526,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
         _kwargs: dict = dict(wallet_view=WalletView, organization_id=organization_id, uid=uid)
-        self._schedule_cache_deletion(func=self._delete_wallet_cache, kwargs=_kwargs)
+        app_cache._schedule_cache_deletion(func=app_cache._delete_wallet_cache, kwargs=_kwargs)
 
         kwargs: dict = dict(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
         self._base_email_scheduler(func=self.wallet_details_changed, kwargs=kwargs)
@@ -585,7 +584,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
         _kwargs: dict = dict(wallet_view=WalletView, organization_id=organization_id, uid=uid)
-        self._schedule_cache_deletion(func=self._delete_wallet_cache, kwargs=_kwargs)
+        app_cache._schedule_cache_deletion(func=app_cache._delete_wallet_cache, kwargs=_kwargs)
 
         kwargs: dict = dict(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
         self._base_email_scheduler(func=self.wallet_details_changed, kwargs=kwargs)
@@ -628,7 +627,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
 
         # Note scheduling cache deletion function
         _kwargs: dict = dict(wallet_view=WalletView, organization_id=organization_id, uid=uid)
-        self._schedule_cache_deletion(func=self._delete_wallet_cache, kwargs=_kwargs)
+        app_cache._schedule_cache_deletion(func=app_cache._delete_wallet_cache, kwargs=_kwargs)
 
         # Note scheduling an email to send wallet details changed notifications
         kwargs: dict = dict(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
@@ -673,7 +672,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
 
         # Note Scheduling task to delete caches
         _kwargs: dict = dict(wallet_view=WalletView, organization_id=organization_id, uid=uid)
-        self._schedule_cache_deletion(func=self._delete_wallet_cache, kwargs=_kwargs)
+        app_cache._schedule_cache_deletion(func=app_cache._delete_wallet_cache, kwargs=_kwargs)
 
         # Note scheduling task to send Emails
         kwargs: dict = dict(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
@@ -684,7 +683,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     def return_all_wallets(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             **return_all_wallets**
@@ -708,7 +707,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     async def return_all_wallets_async(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             **return_all_wallets_async**
@@ -843,7 +842,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
 
             # Scheduling cache deletions
             _kwargs: dict = dict(wallet_view=WalletView, organization_id=organization_id, uid=uid)
-            self._schedule_cache_deletion(func=self._delete_wallet_cache, kwargs=_kwargs)
+            app_cache._schedule_cache_deletion(func=app_cache._delete_wallet_cache, kwargs=_kwargs)
 
             # Scheduling emails
             kwargs: dict = dict(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
@@ -897,7 +896,7 @@ class WalletView(Validator, WalletEmails, CacheManager):
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
             _kwargs: dict = dict(wallet_view=WalletView, organization_id=organization_id, uid=uid)
-            self._schedule_cache_deletion(func=self._delete_wallet_cache, kwargs=_kwargs)
+            app_cache._schedule_cache_deletion(func=app_cache._delete_wallet_cache, kwargs=_kwargs)
 
             message: str = "Successfully created transaction"
             return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
@@ -930,6 +929,6 @@ class WalletView(Validator, WalletEmails, CacheManager):
         # TODO - complete this method
 
         _kwargs: dict = dict(wallet_view=WalletView, organization_id=organization_id, uid=uid)
-        self._schedule_cache_deletion(func=self._delete_wallet_cache, kwargs=_kwargs)
+        app_cache._schedule_cache_deletion(func=app_cache._delete_wallet_cache, kwargs=_kwargs)
 
         return "OK", status_codes.status_ok_code
