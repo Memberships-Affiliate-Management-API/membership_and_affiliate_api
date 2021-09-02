@@ -22,9 +22,9 @@ from config.use_context import use_context
 from database.mixins import AmountMixin
 from database.organization import Organization, OrgValidators
 # TODO finish up organization  view
-from main import app_cache
+
 from utils.utils import create_id, return_ttl
-from cache.cache_manager import CacheManager
+from cache.cache_manager import app_cache
 
 
 class OrganizationEmails(Mailgun):
@@ -243,7 +243,7 @@ class OrganizationEmails(Mailgun):
         raise RequestError(status=error_codes.bad_request_error_code, description=message)
 
 
-class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
+class OrganizationView(OrgValidators, OrganizationEmails):
     ***REMOVED***
         **Class OrganizationView**
             Utilities to validate UserInput Data and also validate access rights of those using the API, While
@@ -375,7 +375,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
 
             # NOTE: scheduling cache deletions
             _kwargs: dict = dict(org_view=OrganizationView, organization_id=organization_id)
-            self._schedule_cache_deletion(func=self._delete_organization_cache, kwargs=_kwargs)
+            app_cache._schedule_cache_deletion(func=app_cache._delete_organization_cache, kwargs=_kwargs)
 
             _schedule_kwargs: dict = dict(organization_id=organization_id, uid=uid)
             self._base_email_scheduler(func=self.send_organization_wallet_created_email, kwargs=_schedule_kwargs)
@@ -432,7 +432,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
 
                 # NOTE: scheduling cache deletions
                 _kwargs: dict = dict(org_view=OrganizationView, organization_id=organization_id)
-                self._schedule_cache_deletion(func=self._delete_organization_cache, kwargs=_kwargs)
+                app_cache._schedule_cache_deletion(func=app_cache._delete_organization_cache, kwargs=_kwargs)
 
                 _schedule_kwargs: dict = dict(organization_id=organization_id, uid=uid)
                 self._base_email_scheduler(func=self.send_organization_updated_email, kwargs=_schedule_kwargs)
@@ -449,7 +449,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     def get_organization(self, organization_id: Optional[str], uid: Optional[str]) -> tuple:
         ***REMOVED***
             **get_organization**
@@ -486,7 +486,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     def _return_all_organizations(self) -> tuple:
         ***REMOVED***
             **_return_all_organizations**
@@ -506,7 +506,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
 
     @use_context
     @handle_view_errors
-    @app_cache.memoize(timeout=return_ttl('short'))
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     def _get_organizations(self, organization_id: Optional[str]) -> tuple:
         ***REMOVED***
             **_return_all_organizations**
@@ -565,7 +565,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
             # NOTE: scheduling cache deletions
             _kwargs: dict = dict(org_view=OrganizationView, organization_id=organization_id)
-            self._schedule_cache_deletion(func=self._delete_organization_cache, kwargs=_kwargs)
+            app_cache._schedule_cache_deletion(func=app_cache._delete_organization_cache, kwargs=_kwargs)
 
             message: str = "Successfully updated affiliate count"
             return jsonify({'status': False,
@@ -620,7 +620,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
 
             # NOTE: scheduling cache deletions
             _kwargs: dict = dict(org_view=OrganizationView, organization_id=organization_id)
-            self._schedule_cache_deletion(func=self._delete_organization_cache, kwargs=_kwargs)
+            app_cache._schedule_cache_deletion(func=app_cache._delete_organization_cache, kwargs=_kwargs)
 
             message: str = "Successfully updated total paid amount on Organization"
             return jsonify({'status': True,
@@ -662,7 +662,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
 
             # NOTE: scheduling cache deletions
             _kwargs: dict = dict(org_view=OrganizationView, organization_id=organization_id)
-            self._schedule_cache_deletion(func=self._delete_organization_cache, kwargs=_kwargs)
+            app_cache._schedule_cache_deletion(func=app_cache._delete_organization_cache, kwargs=_kwargs)
 
             message: str = "Successfully updated total members on organization"
             return jsonify({'status': True,
@@ -707,7 +707,7 @@ class OrganizationView(OrgValidators, OrganizationEmails, CacheManager):
 
             # NOTE: scheduling cache deletions
             _kwargs: dict = dict(org_view=OrganizationView, organization_id=organization_id)
-            self._schedule_cache_deletion(func=self._delete_organization_cache, kwargs=_kwargs)
+            app_cache._schedule_cache_deletion(func=app_cache._delete_organization_cache, kwargs=_kwargs)
 
             message: str = "Successfully updated projected_membership_payments"
             return jsonify({'status': True,
