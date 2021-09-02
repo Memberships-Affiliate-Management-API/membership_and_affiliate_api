@@ -10,14 +10,13 @@ __licence__ = "MIT"
 
 
 import hmac
+from typing import Union, Optional
 
 from flask import Blueprint, request, current_app
 
 from config.exceptions import UnAuthenticatedError, error_codes
 from security.apps_authenticator import handle_apps_authentication
-from views.memberships import MembershipPlansView, MembershipsView
-from security.users_authenticator import logged_user, is_app_admin, handle_users_auth
-from typing import Union, Optional
+from views import membership_plans_view
 
 membership_plans_admin_api_bp = Blueprint('memberships_admin_api', __name__)
 
@@ -41,5 +40,5 @@ def memberships_admin_api(path: str) -> tuple:
     if path == "get":
         organization_id: Union[str, None] = json_data.get('organization_id')
         uid: Union[str, None] = json_data.get('uid')
-        membership_plan_view_instance: MembershipPlansView = MembershipPlansView()
-        return membership_plan_view_instance.return_plan_by_uid(organization_id=organization_id, uid=uid)
+
+        return membership_plans_view.return_plan_by_uid(organization_id=organization_id, uid=uid)
