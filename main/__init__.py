@@ -40,7 +40,7 @@ def create_app(config_class=config_instance):
     app = Flask(__name__, static_folder="app/resources/static", template_folder="app/resources/templates")
     app.config.from_object(config_class)
 
-    app_cache.cache.init_app(app=app, config=config_class.cache_dict())
+    app_cache.init_app(app=app)
     oauth.init_app(app=app, cache=app_cache.cache)
     # user facing or public facing api's
     from _api.public_api.affiliates.routes import affiliates_bp

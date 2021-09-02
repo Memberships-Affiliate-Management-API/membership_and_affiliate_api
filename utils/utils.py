@@ -16,7 +16,6 @@ import time
 import typing
 from datetime import date
 from datetime import time as time_class
-from flask_caching import Cache
 from config import config_instance
 
 # NOTE set of characters to use when generating Unique ID
@@ -246,20 +245,6 @@ def can_cache() -> bool:
 
     ***REMOVED***
     return is_development() or config_instance.DEBUG
-
-
-def clear_cache(app, cache: Cache) -> bool:
-    ***REMOVED***
-    **clear_cache**
-        totally clears application cache upon restart
-
-    :param app -> present application
-    :param cache -> cache instance to clear
-    ***REMOVED***
-
-    with app.app_context():
-        cache.clear()
-        return True
 
 
 # NOTE: Task counter generator

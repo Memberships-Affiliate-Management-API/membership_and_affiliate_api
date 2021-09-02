@@ -29,6 +29,9 @@ class CacheManager:
     def __init__(self) -> None:
         self._app_cache: Cache = Cache(config=config_instance.cache_dict())
 
+    def init_app(self, app):
+        self.cache.init_app(app=app, config=config_instance.cache_dict())
+
     @property
     def cache(self) -> Cache:
         return self._app_cache
@@ -36,6 +39,14 @@ class CacheManager:
     @cache.setter
     def cache(self, value: Cache) -> None:
         self._app_cache = value
+
+    def clear_cache(self) -> None:
+        ***REMOVED***
+        **clear_cache**
+            totally clears application cache upon restart
+
+        ***REMOVED***
+        self.cache.clear()
 
     @staticmethod
     def _delete_user_cache(self, user_view, organization_id, uid, cell, email) -> bool:
