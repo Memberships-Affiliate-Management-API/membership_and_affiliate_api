@@ -13,13 +13,14 @@ __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
-
 from flask import Blueprint, request, jsonify
 
 from config.exceptions import if_bad_request_raise
 from security.api_authenticator import handle_api_auth
-from views.wallet import WalletView
+from views import wallet_view
+
 wallet_bp = Blueprint("wallet", __name__)
+
 
 # NOTE: there is no reason to cache API routes as the cache is on the view level
 
@@ -33,15 +34,13 @@ def wallet() -> tuple:
     ***REMOVED***
     # Raises Bad Request error if request is not in json format
     if_bad_request_raise(request)
-
-    wallet_instance: WalletView = WalletView()
     json_data: dict = request.get_json()
 
     if request.method == "GET":
         organization_id: str = json_data.get('organization_id')
         uid: str = json_data.get('uid')
 
-        return wallet_instance.get_wallet(organization_id=organization_id, uid=uid)
+        return wallet_view.get_wallet(organization_id=organization_id, uid=uid)
 
     elif request.method == "POST":
 
@@ -50,15 +49,15 @@ def wallet() -> tuple:
         currency: str = json_data.get('currency')
         paypal_address: str = json_data.get('paypal_address')
 
-        return wallet_instance.create_wallet(organization_id=organization_id,
-                                             uid=uid,
-                                             currency=currency,
-                                             paypal_address=paypal_address)
+        return wallet_view.create_wallet(organization_id=organization_id,
+                                         uid=uid,
+                                         currency=currency,
+                                         paypal_address=paypal_address)
     elif request.method == "PUT":
-        return wallet_instance.update_wallet(wallet_data=json_data)
+        return wallet_view.update_wallet(wallet_data=json_data)
 
     elif request.method == "DELETE":
-        return wallet_instance.reset_wallet(wallet_data=json_data)
+        return wallet_view.reset_wallet(wallet_data=json_data)
     else:
         return jsonify({'status': False, 'message': 'Unable to process this request please check your parameters'}), 500
 
@@ -72,7 +71,6 @@ def org_wallet() -> tuple:
     :return: response as tuple
     ***REMOVED***
     if_bad_request_raise(request)
-    wallet_instance: WalletView = WalletView()
     json_data: dict = request.get_json()
 
     if request.method == "GET":
@@ -80,7 +78,7 @@ def org_wallet() -> tuple:
         organization_id: str = json_data.get('organization_id')
         uid: str = json_data.get('uid')
 
-        return wallet_instance.get_wallet(organization_id=organization_id, uid=uid)
+        return wallet_view.get_wallet(organization_id=organization_id, uid=uid)
 
     elif request.method == "POST":
         # Creating organizational Wallet
@@ -89,14 +87,14 @@ def org_wallet() -> tuple:
         currency: str = json_data.get('currency')
         paypal_address: str = json_data.get('paypal_address')
 
-        return wallet_instance.create_wallet(organization_id=organization_id,
-                                             uid=uid,
-                                             currency=currency,
-                                             paypal_address=paypal_address,
-                                             is_org_wallet=True)
+        return wallet_view.create_wallet(organization_id=organization_id,
+                                         uid=uid,
+                                         currency=currency,
+                                         paypal_address=paypal_address,
+                                         is_org_wallet=True)
     elif request.method == "PUT":
         # NOTE: Updating organization Wallet
-        return wallet_instance.update_wallet(wallet_data=json_data)
+        return wallet_view.update_wallet(wallet_data=json_data)
 
 
 @wallet_bp.route('/api/v1/public/wallet/organization/<path:path>', methods=["GET"])
