@@ -14,7 +14,7 @@ from typing import Optional, List
 from _cron.scheduler import schedule_func
 import aiohttp
 from config.exceptions import EnvironNotSet
-from main import app_cache
+from cache.cache_manager import app_cache
 from utils import timestamp, create_id, return_ttl
 
 
@@ -91,7 +91,7 @@ class APIRequests:
         # returning the _request_id so it can be used to retrieve the results at a later stage
         return _request_id
 
-    @app_cache.memoize(timeout=return_ttl('short'), cache_none=False)
+    @app_cache.cache.memoize(timeout=return_ttl('short'), cache_none=False)
     def get_response(self, request_id: str) -> Optional[dict]:
         ***REMOVED***
         **get_response**
