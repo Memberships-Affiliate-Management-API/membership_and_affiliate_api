@@ -63,10 +63,12 @@ def memberships_admin(path: str) -> tuple:
         raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
 
     if path == "get-all":
+        # get all subscriptions for a specific organization
         organization_id: Union[str, None] = json_data.get('organization_id')
         uid: Union[str, None] = json_data.get('uid')
 
         return memberships_view.return_members(organization_id=organization_id)
+
     elif path == "get-subscription":
         organization_id: Union[str, None] = json_data.get('organization_id')
         uid: Union[str, None] = json_data.get('uid')

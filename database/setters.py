@@ -12,8 +12,7 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 __licence__ = "MIT"
 
-import typing
-from typing import List
+from typing import List, Optional, Union
 from flask import escape
 from datetime import datetime, date
 from google.cloud import ndb
@@ -64,6 +63,10 @@ class Util:
     @staticmethod
     def return_transaction_types() -> List[str]:
         return ['withdrawal', 'deposit', 'refund']
+
+    @staticmethod
+    def _tickets_user_types() -> List[str]:
+        return ['support', 'client']
 
     @staticmethod
     def return_property_name(prop: ndb.Property) -> str:
@@ -169,7 +172,7 @@ class Util:
 
     # checks if percentage is valid
     @staticmethod
-    def percent_valid(percent: typing.Union[int, float]) -> bool:
+    def percent_valid(percent: Union[int, float]) -> bool:
         return 0 < percent > 100
 
 
@@ -186,7 +189,7 @@ class PropertySetters(Events, Util):
         super(PropertySetters, self).__init__()
 
     @staticmethod
-    def set_id(prop: ndb.StringProperty, value: typing.Union[str, None]) -> str:
+    def set_id(prop: ndb.StringProperty, value: Optional[str]) -> str:
         ***REMOVED***
             **set_id**
                 sets a unique id used to differentiate between different records in database
@@ -210,7 +213,7 @@ class PropertySetters(Events, Util):
         return value.strip()
 
     @staticmethod
-    def set_coupon_code(prop: ndb.StringProperty, value: typing.Union[str, None]) -> str:
+    def set_coupon_code(prop: ndb.StringProperty, value: Optional[str]) -> str:
         ***REMOVED***
             **set_coupon_code**
                 validates and sets coupon code for membership payments
@@ -231,7 +234,7 @@ class PropertySetters(Events, Util):
 
     # noinspection DuplicatedCode
     @staticmethod
-    def set_paypal(prop: ndb.StringProperty, value: typing.Union[str, None]) -> str:
+    def set_paypal(prop: ndb.StringProperty, value: Optional[str]) -> str:
         ***REMOVED***
             **set_paypal**
                 validate the paypal email if its really an email return the email
@@ -254,7 +257,7 @@ class PropertySetters(Events, Util):
         raise ValueError("{} is not a valid email address".format(value))
 
     @staticmethod
-    def set_transaction_types(prop: ndb.StringProperty, value: typing.Union[str, None]) -> str:
+    def set_transaction_types(prop: ndb.StringProperty, value: Optional[str]) -> str:
         ***REMOVED***
             **set_transaction_types**
                 validated and set transaction_types
@@ -290,7 +293,7 @@ class PropertySetters(Events, Util):
         return value
 
     @staticmethod
-    def set_bool(prop: ndb.BooleanProperty, value: typing.Union[bool, None]) -> bool:
+    def set_bool(prop: ndb.BooleanProperty, value: Optional[bool]) -> bool:
         ***REMOVED***
             **set_bool**
                 checks if value is boolean if not raises a TypeError, then returns the value if valid
@@ -305,7 +308,7 @@ class PropertySetters(Events, Util):
         return value
 
     @staticmethod
-    def set_status(prop: ndb.StringProperty, value: typing.Union[str, None]) -> str:
+    def set_status(prop: ndb.StringProperty, value: Optional[str]) -> str:
         ***REMOVED***
             **set payment status**
                 only two valid statuses paid and unpaid check if input is valid and set
@@ -334,7 +337,7 @@ class PropertySetters(Events, Util):
         return temp
 
     @staticmethod
-    def set_string(prop: ndb.StringProperty, value: typing.Union[str, None]) -> str:
+    def set_string(prop: ndb.StringProperty, value: Optional[str]) -> str:
         ***REMOVED***
             **Generic String Setter**
                 checks only that a string is a string
@@ -344,19 +347,36 @@ class PropertySetters(Events, Util):
         :return:
         ***REMOVED***
         property_name: str = property_.return_property_name(prop=prop)
-        if value is None or value == "None" or not bool(value):
+        if value is None or value == "None" or not bool(value.strip()):
             raise TypeError(f"{property_name} , cannot be Null")
 
         if not (isinstance(value, str)):
-            raise TypeError(f"{property_name} , and can only be a string")
-
-        if not bool(value.strip()):
-            raise ValueError(f"{property_name} , and cannot be Null")
+            raise TypeError(f"{property_name} , can only be a string")
 
         return escape(value.strip().lower())
 
     @staticmethod
-    def set_schedule_term(prop: ndb.StringProperty, value: typing.Union[str, None]) -> str:
+    def set_user_type(prop: ndb.StringProperty, value: Optional[str]) -> str:
+        ***REMOVED***
+
+        :param prop:
+        :param value:
+        :return:
+        ***REMOVED***
+        property_name: str = property_.return_property_name(prop=prop)
+        if value is None or value == "None" or not bool(value.strip()):
+            raise TypeError(f"{property_name} , cannot be Null")
+
+        if not (isinstance(value, str)):
+            raise TypeError(f"{property_name} , can only be a string")
+
+        if value.strip().lower() not in property_._tickets_user_types():
+            raise ValueError(f"{value}, not a valid {property_name}")
+
+        return value.strip().lower()
+
+    @staticmethod
+    def set_schedule_term(prop: ndb.StringProperty, value: Optional[str]) -> str:
         ***REMOVED***
         **set_schedule_term**
             set scheduled term - raises an error if scheduled term is not a string or not one of
@@ -378,13 +398,13 @@ class PropertySetters(Events, Util):
 
         temp = value.strip().lower()
         # TODO - Rewrite this or create a translator for paypal plans payment schedule
-        schedule_terms: typing.List[str] = get_plan_scheduled_terms()
+        schedule_terms: List[str] = get_plan_scheduled_terms()
         if temp not in schedule_terms:
             raise ValueError(f"scheduled term, can only be one of the following values : {schedule_terms}")
         return temp
 
     @staticmethod
-    def set_schedule_day(prop: ndb.IntegerProperty, value: typing.Union[int, None]) -> int:
+    def set_schedule_day(prop: ndb.IntegerProperty, value: Optional[int]) -> int:
         ***REMOVED***
         **set_schedule_day**
             set scheduled day for this plan depending on this plans scheduled term the transaction will
@@ -402,7 +422,7 @@ class PropertySetters(Events, Util):
         return value
 
     @staticmethod
-    def set_number(prop: ndb.IntegerProperty, value: typing.Union[int, None]) -> int:
+    def set_number(prop: ndb.IntegerProperty, value: Optional[int]) -> int:
         ***REMOVED***
         **set_number**
             set an integer number into a database property
@@ -438,7 +458,7 @@ class PropertySetters(Events, Util):
         return value
 
     @staticmethod
-    def set_payment_method(prop: ndb.StringProperty, value: typing.Union[str, None]) -> str:
+    def set_payment_method(prop: ndb.StringProperty, value: Optional[str]) -> str:
         ***REMOVED***
             **set_payment_method**
                 checks to see if payment method is valid if yes then return payment methods
@@ -463,7 +483,7 @@ class PropertySetters(Events, Util):
         return value.lower().strip()
 
     @staticmethod
-    def set_percent(prop: ndb.IntegerProperty, value: typing.Union[int, None]) -> int:
+    def set_percent(prop: ndb.IntegerProperty, value: Union[int, float]) -> int:
         ***REMOVED***
             **set_percent**
                 set_percent will check if the percentage value is an integer and then return the percentage value
@@ -486,7 +506,7 @@ class PropertySetters(Events, Util):
         return value
 
     @staticmethod
-    def set_currency(prop: ndb.StringProperty, value: typing.Union[str, None]) -> str:
+    def set_currency(prop: ndb.StringProperty, value: Optional[str]) -> str:
         ***REMOVED***
             **set_currency**
                 checks if currency symbol is one of valid currency symbol if yes returns the symbol
@@ -509,7 +529,7 @@ class PropertySetters(Events, Util):
 
     # noinspection PyUnusedLocal,DuplicatedCode
     @staticmethod
-    def set_email(prop: ndb.StringProperty, value: typing.Union[str, None]) -> str:
+    def set_email(prop: ndb.StringProperty, value: Optional[str]) -> str:
         ***REMOVED***
             **set_email**
                 used for the following
@@ -533,7 +553,7 @@ class PropertySetters(Events, Util):
         raise ValueError(f" {value} is not a valid email address")
 
     @staticmethod
-    def set_cell(prop: ndb.StringProperty, value: typing.Union[str, None]) -> str:
+    def set_cell(prop: ndb.StringProperty, value: Optional[str]) -> str:
         ***REMOVED***
             **set_cell**
                 check if value is string , regex check the cell number
@@ -556,7 +576,7 @@ class PropertySetters(Events, Util):
 
     # noinspection PyUnusedLocal
     @staticmethod
-    def set_password(prop: ndb.StringProperty, value: typing.Union[str, None]) -> str:
+    def set_password(prop: ndb.StringProperty, value: Optional[str]) -> str:
         ***REMOVED***
             **set_password**
                 validate the correctness of the password and its complexity if  accurate
@@ -582,7 +602,7 @@ class PropertySetters(Events, Util):
         raise ValueError(message)
 
     @staticmethod
-    def set_value_amount(prop: ndb.IntegerProperty, value: typing.Union[int, None]) -> int:
+    def set_value_amount(prop: ndb.IntegerProperty, value: Optional[int]) -> int:
         ***REMOVED***
             DOCS:
                 1. amount in integer used to validate amounts in cash on AmountMixin
@@ -605,7 +625,7 @@ class PropertySetters(Events, Util):
         return value
 
     @staticmethod
-    def set_domain(prop: ndb.StringProperty, value: typing.Union[str, None]) -> str:
+    def set_domain(prop: ndb.StringProperty, value: Optional[str]) -> str:
         ***REMOVED***
             Docs:
                 check the domain name regex if it passes resolve
