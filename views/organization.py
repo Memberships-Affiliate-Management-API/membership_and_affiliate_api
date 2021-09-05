@@ -9,8 +9,7 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
 import json
-import typing
-from typing import Optional
+from typing import Optional, List
 import requests
 from flask import current_app, jsonify
 from google.cloud import ndb
@@ -495,7 +494,7 @@ class OrganizationView(OrgValidators, OrganizationEmails):
 
             :return: a list containing all organization details
         ***REMOVED***
-        organizations_list: typing.List[dict] = [org.to_dict() for org in Organization.query().fetch()]
+        organizations_list: List[dict] = [org.to_dict() for org in Organization.query().fetch()]
         if len(organizations_list):
             message: str = 'successfully retrieved organizations'
             return jsonify({'status': True,
