@@ -9,14 +9,13 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
 
-import typing
 from typing import Optional, List
 from flask import jsonify, current_app
 from google.cloud import ndb
 from _sdk._email import Mailgun
 from database.mixins import AmountMixin
 from database.wallet import WalletModel, WalletValidator
-from utils import return_ttl
+from utils import return_ttl, create_id
 from config.exceptions import DataServiceError, UnAuthenticatedError, status_codes, error_codes, InputError
 from config.exception_handlers import handle_view_errors
 from config.use_context import use_context
@@ -174,6 +173,16 @@ class Validator(WalletValidator):
         super(Validator, self).__init__()
         self._max_retries: int = current_app.config.get('DATASTORE_RETRIES')
         self._max_timeout: int = current_app.config.get('DATASTORE_TIMEOUT')
+
+    def _create_unique_wallet_id(self) -> str:
+        ***REMOVED***
+
+        :return:
+        ***REMOVED***
+        _id = create_id()
+        wallet_instance: WalletModel = WalletModel.query(WalletModel.wallet_id == _id).get()
+        # NOTE: if wallet_id is unique return it or Repeat otherwise
+        return self._create_unique_wallet_id() if isinstance(wallet_instance, WalletModel) and bool(wallet_instance) else _id
 
     @staticmethod
     def raise_input_error_if_not_available(organization_id: str, uid: str) -> None:
@@ -368,7 +377,9 @@ class WalletView(Validator, WalletEmails):
         # creating new Wallet for a new user
         amount_instance: AmountMixin = AmountMixin(amount_cents=0, currency=currency)
 
-        wallet_instance: WalletModel = WalletModel(organization_id=organization_id, uid=uid,
+        wallet_id: str = self._create_unique_wallet_id()
+
+        wallet_instance: WalletModel = WalletModel(organization_id=organization_id, uid=uid, wallet_id=wallet_id,
                                                    is_org_wallet=is_org_wallet, available_funds=amount_instance,
                                                    paypal_address=paypal_address)
 
@@ -491,8 +502,8 @@ class WalletView(Validator, WalletEmails):
         # NOTE checking if organization_id or uid is present
         self.raise_input_error_if_not_available(organization_id=organization_id, uid=uid)
 
-        # TODO - consider using Sentinel as an indicator of something went wrong
-        available_funds: typing.Union[int, None] = int(wallet_data.get("available_funds", 0))
+        # NOTE: integer conversion errors will be caught by handle_view_errors as ValueError
+        available_funds: int = int(wallet_data.get("available_funds", 0))
 
         if not isinstance(available_funds, int):
             message: str = "available_funds is required"

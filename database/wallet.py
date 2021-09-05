@@ -86,15 +86,17 @@ class WalletModel(BaseModel):
             1. organization_id : id of the organization for this wallet
             2. is_org_wallet : True if wallet belongs to an organization
             3. uid : id of the user who owns this wallet if is_org_wallet is false
-            4. available_funds : Amount indicating available_funds in the wallet
-            5. time_created: The time the wallet has been created
-            6. last_transaction_time: the last time a transaction has been made in this wallet
-            7. paypal_address : the paypal address attached to this wallet
-            8. is_verified: Indicates if paypal_address has been verified
+            4. wallet_id: unique wallet identifier
+            5. available_funds : Amount indicating available_funds in the wallet
+            6. time_created: The time the wallet has been created
+            7. last_transaction_time: the last time a transaction has been made in this wallet
+            8. paypal_address : the paypal address attached to this wallet
+            9. is_verified: Indicates if paypal_address has been verified
     ***REMOVED***
     organization_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
-    is_org_wallet: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
     uid: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
+    wallet_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
+    is_org_wallet: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
     available_funds: AmountMixin = ndb.StructuredProperty(AmountMixin, required=True)
     monthly_withdrawal_allowance: AmountMixin = ndb.StructuredProperty(AmountMixin)
     time_created: datetime = ndb.DateTimeProperty(auto_now_add=True)
