@@ -549,7 +549,7 @@ class TicketView(Validators, TicketsMessaging):
     def get_all_tickets(self) -> tuple:
         tickets_list: List[dict] = [ticket.to_dict() for ticket in Ticket.query().fetch()]
 
-        if len(tickets_list):
+        if isinstance(tickets_list, list) and tickets_list:
             return jsonify({'status': True, 'payload': tickets_list,
                             'message': 'successfully returned tickets'}), status_codes.status_ok_code
 
@@ -561,7 +561,7 @@ class TicketView(Validators, TicketsMessaging):
     async def get_all_tickets_async(self) -> tuple:
         tickets_list: List[dict] = [ticket.to_dict() for ticket in Ticket.query().fetch_async().get_result()]
 
-        if len(tickets_list):
+        if isinstance(tickets_list, list) and tickets_list:
             return jsonify({'status': True, 'payload': tickets_list,
                             'message': 'successfully returned tickets'}), status_codes.status_ok_code
 
@@ -574,7 +574,7 @@ class TicketView(Validators, TicketsMessaging):
         tickets_list: List[dict] = [ticket.to_dict() for ticket in Ticket.query(
             Ticket.is_resolved == False).fetch()]
 
-        if len(tickets_list):
+        if isinstance(tickets_list, list) and tickets_list:
             return jsonify({'status': True, 'payload': tickets_list,
                             'message': 'successfully returned tickets'}), status_codes.status_ok_code
 
@@ -587,7 +587,7 @@ class TicketView(Validators, TicketsMessaging):
         tickets_list: List[dict] = [ticket.to_dict() for ticket in Ticket.query(
             Ticket.is_resolved == False).fetch_async().get_result()]
 
-        if len(tickets_list):
+        if isinstance(tickets_list, list) and tickets_list:
             return jsonify({'status': True, 'payload': tickets_list,
                             'message': 'successfully returned tickets'}), status_codes.status_ok_code
 
@@ -600,7 +600,7 @@ class TicketView(Validators, TicketsMessaging):
         tickets_list: List[dict] = [ticket.to_dict() for ticket in Ticket.query(
             Ticket.is_resolved == True).fetch()]
 
-        if len(tickets_list):
+        if isinstance(tickets_list, list) and tickets_list:
             return jsonify({'status': True, 'payload': tickets_list,
                             'message': 'successfully returned tickets'}), status_codes.status_ok_code
 
@@ -613,7 +613,7 @@ class TicketView(Validators, TicketsMessaging):
         tickets_list: List[dict] = [ticket.to_dict() for ticket in Ticket.query(
             Ticket.is_resolved == True).fetch_async().get_result()]
 
-        if len(tickets_list):
+        if isinstance(tickets_list, list) and tickets_list:
             return jsonify({'status': True, 'payload': tickets_list,
                             'message': 'successfully returned tickets'}), status_codes.status_ok_code
 
