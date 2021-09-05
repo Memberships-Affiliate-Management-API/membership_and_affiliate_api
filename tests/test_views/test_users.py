@@ -12,9 +12,11 @@ from config import config_instance
 from config.exceptions import status_codes, UnAuthenticatedError, InputError
 from database.users import UserModel
 from tests import test_app
-from utils.utils import create_id, timestamp, today, _char_set
+from utils import create_id, timestamp, today, _char_set
 
-user_instance: UserModel = UserModel()
+with test_app().app_context():
+    user_instance: UserModel = UserModel()
+    from views import user_view
 
 
 class UsersQueryMock:
@@ -116,7 +118,6 @@ def test_create_user(mocker):
     mocker.patch('database.users.UserModel.query', return_value=UsersQueryMock())
 
     with test_app().app_context():
-        from views import user_view
         mocker.patch('views.users.UserView.is_organization_exist', return_value=True)
         mocker.patch('views.users.UserView.is_email_available', return_value=True)
         mocker.patch('views.users.UserView.is_cell_available', return_value=True)
@@ -144,7 +145,6 @@ def test_create_user_un_auth(mocker):
     mocker.patch('database.users.UserModel.query', return_value=UsersQueryMock())
 
     with test_app().app_context():
-        from views import user_view
         mocker.patch('views.users.UserView.is_organization_exist', return_value=False)
         mocker.patch('views.users.UserView.is_email_available', return_value=False)
         mocker.patch('views.users.UserView.is_cell_available', return_value=True)
@@ -170,7 +170,6 @@ def test_create_user_input_errors(mocker):
     mocker.patch('database.users.UserModel.query', return_value=UsersQueryMock())
 
     with test_app().app_context():
-        from views import user_view
         mocker.patch('views.users.UserView.is_organization_exist', return_value=True)
         mocker.patch('views.users.UserView.is_email_available', return_value=True)
         mocker.patch('views.users.UserView.is_cell_available', return_value=True)

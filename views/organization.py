@@ -336,7 +336,6 @@ class OrganizationView(Validators):
         self._max_retries: int = current_app.config.get('DATASTORE_RETRIES')
         self._max_timeout: int = current_app.config.get('DATASTORE_TIMEOUT')
 
-
     @use_context
     @handle_view_errors
     def create_organization(self, uid: Optional[str], organization_name: Optional[str], description: Optional[str],
