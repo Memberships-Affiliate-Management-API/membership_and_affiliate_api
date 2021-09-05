@@ -994,7 +994,7 @@ class UserView(Validators, UserEmails):
         users_list: List[dict] = [user.to_dict() for user in UserModel.query(
             UserModel.organization_id == organization_id, UserModel.is_active == True).fetch()]
 
-        if len(users_list) > 0:
+        if isinstance(users_list, list) and users_list:
             return jsonify({'status': True, 'payload': users_list,
                             'message': 'successfully retrieved active users'}), status_codes.status_ok_code
         message: str = "Unable to find users"
@@ -1017,7 +1017,7 @@ class UserView(Validators, UserEmails):
         users_list: List[dict] = [user.to_dict() for user in UserModel.query(
             UserModel.organization_id == organization_id, UserModel.is_active == True).fetch_async().get_result()]
 
-        if len(users_list) > 0:
+        if isinstance(users_list, list) and users_list:
             return jsonify({'status': True,
                             'payload': users_list,
                             'message': 'successfully retrieved active users'}), status_codes.status_ok_code
@@ -1041,7 +1041,7 @@ class UserView(Validators, UserEmails):
         users_list: List[dict] = [user.to_dict() for user in UserModel.query(
             UserModel.organization_id == organization_id, UserModel.is_active == False).fetch()]
 
-        if len(users_list) > 0:
+        if isinstance(users_list, list) and users_list:
             message: str = 'successfully retrieved active users'
             return jsonify({'status': True, 'payload': users_list,
                             'message': message}), status_codes.status_ok_code
@@ -1065,7 +1065,7 @@ class UserView(Validators, UserEmails):
         users_list: List[dict] = [user.to_dict() for user in UserModel.query(
             UserModel.organization_id == organization_id, UserModel.is_active == False).fetch_async().get_result()]
 
-        if len(users_list):
+        if isinstance(users_list, list) and users_list:
             return jsonify({'status': True,
                             'payload': users_list,
                             'message': 'successfully retrieved active users'}), status_codes.status_ok_code
@@ -1089,7 +1089,7 @@ class UserView(Validators, UserEmails):
         users_list: List[dict] = [user.to_dict() for user in UserModel.query(
             UserModel.organization_id == organization_id).fetch()]
 
-        if len(users_list):
+        if isinstance(users_list, list) and users_list:
             message: str = 'successfully retrieved active users'
             return jsonify({'status': True,
                             'payload': users_list, 'message': message}), status_codes.status_ok_code
@@ -1113,7 +1113,7 @@ class UserView(Validators, UserEmails):
         users_list: List[dict] = [user.to_dict() for user in UserModel.query(
             UserModel.organization_id == organization_id).fetch_async().get_result()]
 
-        if len(users_list):
+        if isinstance(users_list, list) and users_list:
             message: str = 'successfully retrieved active users'
             return jsonify({'status': True,
                             'payload': users_list, 'message': message}), status_codes.status_ok_code
@@ -1160,19 +1160,20 @@ class UserView(Validators, UserEmails):
             message: str = "Unable to find user with that cell number"
             return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
-        if isinstance(email, str) and bool(email.strip()):
-            user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
-                                                       UserModel.email == email).get()
-            if isinstance(user_instance, UserModel):
-                message: str = 'successfully retrieved user by email'
-                return jsonify({'status': True,
-                                'payload': user_instance.to_dict(),
-                                'message': message}), status_codes.status_ok_code
+        if not isinstance(email, str) or not bool(email.strip()):
+            message: str = 'to retrieve a user either submit an email, cell or user id'
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
+                                                   UserModel.email == email).get()
+        if not isinstance(user_instance, UserModel) or not bool(user_instance):
             message: str = "Unable to find user with that email address"
             return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
-        message: str = 'to retrieve a user either submit an email, cell or user id'
-        raise InputError(status=error_codes.input_error_code, description=message)
+        message: str = 'successfully retrieved user by email'
+        return jsonify({'status': True,
+                        'payload': user_instance.to_dict(),
+                        'message': message}), status_codes.status_ok_code
 
     @use_context
     @handle_view_errors
