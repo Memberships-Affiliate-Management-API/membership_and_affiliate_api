@@ -79,7 +79,7 @@ class Organization(BaseModel):
     # TODO - fully intergrate total users and total members
     owner_uid: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
     organization_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
-    wallet_id: str = ndb.StringProperty(default=None, validator=property_.set_string, indexed=True, required=True)
+    wallet_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
     organization_name: str = ndb.StringProperty(validator=property_.set_string, required=True)
     description: str = ndb.StringProperty(validator=property_.set_string, required=True)
     total_affiliates: int = ndb.IntegerProperty(default=0, validator=property_.set_number)
@@ -215,7 +215,7 @@ class AuthorizedUsers(BaseModel):
 
 class OrgAccounts(BaseModel):
     ***REMOVED***
-        # TODO - ensure this is not invalidated as wallet can store organization wallets
+        # TODO - Deprecate this not useful Wallets will store org wallets
 
         include details of the main organization payments accounts here
         # NOTE: OrgAccounts PayPal Email will be used for making payments out

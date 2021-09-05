@@ -304,16 +304,15 @@ class OrganizationView(OrgValidators, OrganizationEmails):
             with organization_id and uid on json body
 
         ***REMOVED***
-        _endpoint: str = 'api/v1/wallet/organization'
+        _endpoint: str = '_api/v1/internal/wallet/organization'
         base_url: str = current_app.config.get('BASE_URL')
         request_url: str = f'{base_url}{_endpoint}'
 
-        json_body = json.dumps(dict(organization_id=organization_id, uid=uid, currency=currency,
-                                    paypal_address=paypal_address))
+        json_body = dict(organization_id=organization_id, uid=uid, currency=currency, paypal_address=paypal_address)
 
         response, _ = requests.post(url=request_url, json=json_body)
         # NOTE no need to check status if the method continues execution wallet is created
-        return response.to_dict().get('payload')('wallet_id')
+        return response.json().get('payload')('wallet_id')
 
     @use_context
     @handle_view_errors
@@ -416,15 +415,17 @@ class OrganizationView(OrgValidators, OrganizationEmails):
         # NOTE: returns true if user has sufficient rights to update organization.
         if self.can_update_organization(uid=uid, organization_id=organization_id):
 
-            org_instance: Optional[Organization] = Organization.query(Organization.organization_id == organization_id).get()
-            if bool(org_instance):
-                org_instance.organization_name = organization_name
-                org_instance.description = description
-                org_instance.home_url = home_url
-                org_instance.login_callback_url = login_callback_url
-                org_instance.recovery_callback_url = recovery_callback_url
+            organization_instance: Optional[Organization] = Organization.query(
+                Organization.organization_id == organization_id).get()
 
-                key: Optional[ndb.Key] = org_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+            if isinstance(organization_instance, Organization) and bool(organization_instance):
+                organization_instance.organization_name = organization_name
+                organization_instance.description = description
+                organization_instance.home_url = home_url
+                organization_instance.login_callback_url = login_callback_url
+                organization_instance.recovery_callback_url = recovery_callback_url
+
+                key: Optional[ndb.Key] = organization_instance.put(retries=self._max_retries, timeout=self._max_timeout)
                 if not bool(key):
                     message: str = "An Unspecified Error has occurred"
                     raise DataServiceError(status=error_codes.data_service_error_code, description=message)
@@ -437,7 +438,7 @@ class OrganizationView(OrgValidators, OrganizationEmails):
                 self._base_email_scheduler(func=self.send_organization_updated_email, kwargs=_schedule_kwargs)
 
                 message: str = "Successfully updated organization"
-                return jsonify({'status': True, 'payload': org_instance.to_dict(),
+                return jsonify({'status': True, 'payload': organization_instance.to_dict(),
                                 'message': message}), status_codes.successfully_updated_code
 
             message: str = "Organization not found: Unable to update Organization"
@@ -474,7 +475,7 @@ class OrganizationView(OrgValidators, OrganizationEmails):
         organization_instance: Optional[Organization] = Organization.query(
             Organization.organization_id == organization_id, Organization.uid == uid).get()
 
-        if bool(organization_instance):
+        if isinstance(organization_instance, Organization) and bool(organization_instance):
             message: str = 'successfully fetched organization'
             return jsonify({'status': True,
                             'payload': organization_instance.to_dict(),
@@ -519,7 +520,7 @@ class OrganizationView(OrgValidators, OrganizationEmails):
         organization_instance: Optional[Organization] = Organization.query(
             Organization.organization_id == organization_id).get()
 
-        if bool(organization_instance):
+        if isinstance(organization_instance, Organization) and bool(organization_instance):
             message: str = 'successfully retrieved organizations'
             return jsonify({'status': True,
                             'payload': organization_instance.to_dict(),
@@ -551,7 +552,7 @@ class OrganizationView(OrgValidators, OrganizationEmails):
         organization_instance: Optional[Organization] = Organization.query(
             Organization.organization_id == organization_id).get()
 
-        if bool(organization_instance):
+        if isinstance(organization_instance, Organization) and bool(organization_instance):
             if isinstance(subtract, int):
                 organization_instance.total_affiliates -= subtract
             elif isinstance(add, int):
@@ -601,7 +602,7 @@ class OrganizationView(OrgValidators, OrganizationEmails):
 
         organization_instance: Optional[Organization] = Organization.query(Organization.organization_id == organization_id).get()
 
-        if bool(organization_instance):
+        if isinstance(organization_instance, Organization) and bool(organization_instance):
             calculated: bool = False
             if isinstance(add_amount, AmountMixin):
                 organization_instance.total_paid.__add__(add_amount)
@@ -652,7 +653,7 @@ class OrganizationView(OrgValidators, OrganizationEmails):
         organization_instance: Optional[Organization] = Organization.query(
             Organization.organization_id == organization_id).get()
 
-        if bool(organization_instance):
+        if isinstance(organization_instance, Organization) and bool(organization_instance):
             if subtract:
                 organization_instance.total_members -= subtract
             elif add:
@@ -697,7 +698,7 @@ class OrganizationView(OrgValidators, OrganizationEmails):
         organization_instance: Optional[Organization] = Organization.query(
             Organization.organization_id == organization_id).get()
 
-        if bool(organization_instance):
+        if isinstance(organization_instance, Organization) and bool(organization_instance):
             if isinstance(add_payment, AmountMixin):
                 organization_instance.projected_membership_payments.__add__(add_payment)
             elif isinstance(subtract_payment, AmountMixin):
@@ -740,7 +741,7 @@ class OrganizationView(OrgValidators, OrganizationEmails):
         organization_instance: Optional[Organization] = Organization.query(
             Organization.organization_id == organization_id).get()
 
-        if bool(organization_instance):
+        if isinstance(organization_instance, Organization) and bool(organization_instance):
             if isinstance(subtract_total_membership_payment, AmountMixin):
                 organization_instance.total_membership_payments.__sub__(subtract_total_membership_payment)
             elif isinstance(add_total_membership_amount, AmountMixin):
