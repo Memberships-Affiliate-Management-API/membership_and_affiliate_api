@@ -21,7 +21,7 @@ with test_app().app_context():
 
 class UsersQueryMock:
     user_instance: UserModel = UserModel()
-    results_range: int = randint(0, 100)
+    results_range: int = randint(10, 1000)
 
     def __init__(self) -> None:
         self.user_instance.uid = create_id()
