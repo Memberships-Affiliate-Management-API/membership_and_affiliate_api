@@ -10,6 +10,8 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
 import functools
+from typing import Callable, Optional
+
 from google.api_core.exceptions import Aborted, RetryError
 from google.cloud.ndb.exceptions import BadRequestError, BadQueryError
 from config.exceptions import InputError, RequestError, DataServiceError, status_codes, error_codes
@@ -67,12 +69,12 @@ def handle_view_errors(func):
     return wrapper
 
 
-def handle_store_errors(func):
+def handle_store_errors(func: Callable) -> Callable:
     ***REMOVED***
         handle errors related to GCP datastore
     ***REMOVED***
     @functools.wraps(func)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args, **kwargs) -> Optional[Callable]:
         debug: bool = current_app.config.get('DEBUG')
         try:
             return func(*args, **kwargs)
@@ -96,6 +98,14 @@ def handle_store_errors(func):
             if debug:
                 print(str(e))
             return None
+
+    return wrapper
+
+
+def handle_requests_errors(func: Callable) -> Callable:
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs) -> Callable:
+        return func(*args, **kwargs)
 
     return wrapper
 

@@ -14,7 +14,7 @@ import requests
 from flask import current_app, jsonify
 from google.cloud import ndb
 from _sdk._email import Mailgun
-from config.exception_handlers import handle_view_errors, handle_store_errors
+from config.exception_handlers import handle_view_errors, handle_store_errors, handle_requests_errors
 from config.exceptions import (InputError, DataServiceError, error_codes, status_codes, UnAuthenticatedError,
                                RequestError)
 from config.use_context import use_context
@@ -242,20 +242,27 @@ class OrganizationEmails(Mailgun):
         raise RequestError(status=error_codes.bad_request_error_code, description=message)
 
 
-class OrganizationView(OrgValidators, OrganizationEmails):
+class Validators(OrgValidators, OrganizationEmails):
     ***REMOVED***
-        **Class OrganizationView**
-            Utilities to validate UserInput Data and also validate access rights of those using the API, While
-            accessing and manipulating information related to Client Organization.
+    **Class Validators**
+    validation methods & Utils  for organizations
     ***REMOVED***
+    # TODO Finish this methods up
     def __init__(self) -> None:
-        super(OrganizationView, self).__init__()
-        self._max_retries: int = current_app.config.get('DATASTORE_RETRIES')
-        self._max_timeout: int = current_app.config.get('DATASTORE_TIMEOUT')
+        super(Validators, self).__init__()
 
-    def can_create_organization(self, uid: Optional[str], organization_name: Optional[str]) -> bool:
+    def _can_view_organization(self, organization_id: str, uid: str) -> bool:
         ***REMOVED***
-            **can_create_organization**
+
+        :param organization_id:
+        :param uid:
+        :return:
+        ***REMOVED***
+        pass
+
+    def _can_create_organization(self, uid: Optional[str], organization_name: Optional[str]) -> bool:
+        ***REMOVED***
+            **_can_create_organization**
                 check if user has registered, and is a paying user... or created an account.
                 Note: also Insures that the user does not have an organization already.
 
@@ -266,16 +273,16 @@ class OrganizationView(OrgValidators, OrganizationEmails):
         # TODO - complete can create organization account
         pass
 
-    def can_update_organization(self, uid: Optional[str], organization_id: Optional[str]) -> bool:
+    def _can_update_organization(self, uid: Optional[str], organization_id: Optional[str]) -> bool:
         ***REMOVED***
-            **can_update_organization**
+            **_can_update_organization**
                 check if user has administrator rights on organization and if organization exist
 
             :param uid: the user performing this action
             :param organization_id: the organization_id of the organization to be updated
             :return: returns a response , status code tuple
         ***REMOVED***
-        # TODO - complete can_update_organization organization account
+        # TODO - complete _can_update_organization organization account
         pass
 
     @handle_store_errors
@@ -294,6 +301,7 @@ class OrganizationView(OrgValidators, OrganizationEmails):
         return organization_id if _not_organization else self._create_org_id()
 
     @staticmethod
+    @handle_requests_errors
     def _create_org_wallet(organization_id: Optional[str], uid: Optional[str], currency: Optional[str],
                            paypal_address: Optional[str]) -> str:
         ***REMOVED***
@@ -315,6 +323,19 @@ class OrganizationView(OrgValidators, OrganizationEmails):
         # NOTE no need to check status if the method continues execution wallet is created
         payload: dict = response.json().get('payload')
         return payload.get('wallet_id')
+
+
+class OrganizationView(Validators):
+    ***REMOVED***
+        **Class OrganizationView**
+            Utilities to validate UserInput Data and also validate access rights of those using the API, While
+            accessing and manipulating information related to Client Organization.
+    ***REMOVED***
+    def __init__(self) -> None:
+        super(OrganizationView, self).__init__()
+        self._max_retries: int = current_app.config.get('DATASTORE_RETRIES')
+        self._max_timeout: int = current_app.config.get('DATASTORE_TIMEOUT')
+
 
     @use_context
     @handle_view_errors
@@ -346,14 +367,14 @@ class OrganizationView(OrgValidators, OrganizationEmails):
 
         # if wallet_id is None
         if not bool(wallet_id):
-            message: str = "unable to create a valid wallet_id - please try again later"
-            raise InputError(status=error_codes.input_error_code, description=message)
+            message: str = "Unable to create a organization wallet - please try again later"
+            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
         if not isinstance(description, str) or not bool(description.strip()):
             message: str = "description is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        if self.can_create_organization(uid, organization_name) is True:
+        if self._can_create_organization(uid, organization_name) is True:
             organization_instance: Organization = Organization(owner_uid=uid,
                                                                organization_id=organization_id,
                                                                wallet_id=wallet_id,
@@ -369,7 +390,7 @@ class OrganizationView(OrgValidators, OrganizationEmails):
 
             key: Optional[ndb.Key] = organization_instance.put(retries=self._max_retries, timeout=self._max_timeout)
             if not bool(key):
-                message: str = "An Unspecified Error has occurred creating database"
+                message: str = "Database Error: could not create or update organization - please inform Admin"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
             # NOTE: scheduling cache deletions
@@ -414,7 +435,7 @@ class OrganizationView(OrgValidators, OrganizationEmails):
             raise InputError(status=error_codes.input_error_code, description=message)
 
         # NOTE: returns true if user has sufficient rights to update organization.
-        if self.can_update_organization(uid=uid, organization_id=organization_id):
+        if self._can_update_organization(uid=uid, organization_id=organization_id):
 
             organization_instance: Optional[Organization] = Organization.query(
                 Organization.organization_id == organization_id).get()
@@ -428,7 +449,7 @@ class OrganizationView(OrgValidators, OrganizationEmails):
 
                 key: Optional[ndb.Key] = organization_instance.put(retries=self._max_retries, timeout=self._max_timeout)
                 if not bool(key):
-                    message: str = "An Unspecified Error has occurred"
+                    message: str = "Database Error: could not create or update organization - please inform Admin"
                     raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
                 # NOTE: scheduling cache deletions
@@ -462,8 +483,6 @@ class OrganizationView(OrgValidators, OrganizationEmails):
         ***REMOVED***
         # NOTE: may not need to check if user can access organization details if the function is being called on behalf
         # of the system
-        # TODO find out how i can authenticate this call for instance i need to ensure that the user is
-        #  authorized to view organization details, using uid
 
         if not isinstance(uid, str) or not bool(uid.strip()):
             message: str = "uid is required"
@@ -472,6 +491,10 @@ class OrganizationView(OrgValidators, OrganizationEmails):
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
+
+        if not self._can_view_organization(organization_id=organization_id, uid=uid):
+            message: str = "Authentication Error: you are not authorized to view or edit this organization"
+            raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
         organization_instance: Optional[Organization] = Organization.query(
             Organization.organization_id == organization_id, Organization.uid == uid).get()
