@@ -65,7 +65,7 @@ def wallet() -> tuple:
 @wallet_bp.route('/api/v1/public/wallet/organization', methods=["GET", "POST", "DELETE", "PUT"])
 @handle_api_auth
 def org_wallet() -> tuple:
-    # TODO Finalize of the authentication method to use here
+    # NOTE: deprecated remove this endpoint
     ***REMOVED***
         API Endpoint for organizational Accounts and Administrative Purposes
     :return: response as tuple
