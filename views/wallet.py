@@ -8,7 +8,6 @@ __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
-
 from typing import Optional, List
 from flask import jsonify, current_app
 from google.cloud import ndb
@@ -27,6 +26,7 @@ class WalletEmails(Mailgun):
         **Class WalletEmails**
             Class used to send Wallet related Emails and Notifications
     ***REMOVED***
+
     def __init__(self) -> None:
         super(WalletEmails, self).__init__()
 
@@ -182,7 +182,8 @@ class Validator(WalletValidator):
         _id = create_id()
         wallet_instance: WalletModel = WalletModel.query(WalletModel.wallet_id == _id).get()
         # NOTE: if wallet_id is unique return it or Repeat otherwise
-        return self._create_unique_wallet_id() if isinstance(wallet_instance, WalletModel) and bool(wallet_instance) else _id
+        return self._create_unique_wallet_id() if isinstance(wallet_instance, WalletModel) and bool(
+            wallet_instance) else _id
 
     @staticmethod
     def raise_input_error_if_not_available(organization_id: str, uid: str) -> None:
@@ -425,7 +426,8 @@ class WalletView(Validator, WalletEmails):
                                                    available_funds=amount_instance,
                                                    paypal_address=paypal_address)
 
-        key: Optional[ndb.Key] = wallet_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
+        key: Optional[ndb.Key] = wallet_instance.put_async(retries=self._max_retries,
+                                                           timeout=self._max_timeout).get_result()
         if not bool(key):
             raise DataServiceError(status=error_codes.data_service_error_code,
                                    description="An Error occurred creating Wallet")
@@ -468,7 +470,7 @@ class WalletView(Validator, WalletEmails):
     @use_context
     @handle_view_errors
     @app_cache.cache.memoize(timeout=return_ttl('short'))
-    async def get_wallet_async(self, organization_id: Optional[str],  uid: Optional[str]) -> tuple:
+    async def get_wallet_async(self, organization_id: Optional[str], uid: Optional[str]) -> tuple:
         ***REMOVED***
             **get_wallet_async**
                 get_wallet_async an asynchronous version of get_wallet
@@ -866,7 +868,6 @@ class WalletView(Validator, WalletEmails):
         return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
                         'message': message}), status_codes.successfully_updated_code
 
-
     @use_context
     @handle_view_errors
     async def wallet_transact_async(self, organization_id: Optional[str], uid: str,
@@ -914,7 +915,6 @@ class WalletView(Validator, WalletEmails):
         message: str = "Successfully created transaction"
         return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
                         'message': message}), status_codes.successfully_updated_code
-
 
     # noinspection PyUnusedLocal
     @use_context
