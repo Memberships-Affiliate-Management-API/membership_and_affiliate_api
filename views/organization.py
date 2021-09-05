@@ -290,7 +290,8 @@ class OrganizationView(OrgValidators, OrganizationEmails):
         organization_id: str = create_id()
         org_instance: Optional[Organization] = Organization.query(Organization.organization_id == organization_id).get()
         # NOTE: Calling the function again to create a new key if present key is being used or return un-used key
-        return organization_id if not bool(org_instance) else self._create_org_id()
+        _not_organization: bool = not isinstance(org_instance, Organization) or not bool(org_instance)
+        return organization_id if _not_organization else self._create_org_id()
 
     @staticmethod
     def _create_org_wallet(organization_id: Optional[str], uid: Optional[str], currency: Optional[str],
@@ -312,7 +313,8 @@ class OrganizationView(OrgValidators, OrganizationEmails):
 
         response, _ = requests.post(url=request_url, json=json_body)
         # NOTE no need to check status if the method continues execution wallet is created
-        return response.json().get('payload')('wallet_id')
+        payload: dict = response.json().get('payload')
+        return payload.get('wallet_id')
 
     @use_context
     @handle_view_errors
@@ -339,7 +341,6 @@ class OrganizationView(OrgValidators, OrganizationEmails):
             message: str = "unable to create a valid organization_id - please try again later"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        # TODO- this function needs to be completed
         wallet_id: Optional[str] = self._create_org_wallet(organization_id=organization_id, uid=uid, currency=currency,
                                                            paypal_address=paypal_address)
 
