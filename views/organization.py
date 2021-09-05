@@ -433,39 +433,38 @@ class OrganizationView(Validators):
             raise InputError(status=error_codes.input_error_code, description=message)
 
         # NOTE: returns true if user has sufficient rights to update organization.
-        if self._can_update_organization(uid=uid, organization_id=organization_id):
+        if not self._can_update_organization(uid=uid, organization_id=organization_id):
+            message: str = "You are not allowed to edit that organization please contact administrator"
+            raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
 
-            organization_instance: Optional[Organization] = Organization.query(
-                Organization.organization_id == organization_id).get()
+        organization_instance: Optional[Organization] = Organization.query(
+            Organization.organization_id == organization_id).get()
 
-            if isinstance(organization_instance, Organization) and bool(organization_instance):
-                organization_instance.organization_name = organization_name
-                organization_instance.description = description
-                organization_instance.home_url = home_url
-                organization_instance.login_callback_url = login_callback_url
-                organization_instance.recovery_callback_url = recovery_callback_url
-
-                key: Optional[ndb.Key] = organization_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-                if not bool(key):
-                    message: str = "Database Error: could not create or update organization - please inform Admin"
-                    raise DataServiceError(status=error_codes.data_service_error_code, description=message)
-
-                # NOTE: scheduling cache deletions
-                _kwargs: dict = dict(org_view=OrganizationView, organization_id=organization_id)
-                app_cache._schedule_cache_deletion(func=app_cache._delete_organization_cache, kwargs=_kwargs)
-
-                _schedule_kwargs: dict = dict(organization_id=organization_id, uid=uid)
-                self._base_email_scheduler(func=self.send_organization_updated_email, kwargs=_schedule_kwargs)
-
-                message: str = "Successfully updated organization"
-                return jsonify({'status': True, 'payload': organization_instance.to_dict(),
-                                'message': message}), status_codes.successfully_updated_code
-
+        if not isinstance(organization_instance, Organization) and bool(organization_instance):
             message: str = "Organization not found: Unable to update Organization"
             return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
-        message: str = "You are not allowed to edit that organization please contact administrator"
-        raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
+        organization_instance.organization_name = organization_name
+        organization_instance.description = description
+        organization_instance.home_url = home_url
+        organization_instance.login_callback_url = login_callback_url
+        organization_instance.recovery_callback_url = recovery_callback_url
+
+        key: Optional[ndb.Key] = organization_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+        if not bool(key):
+            message: str = "Database Error: could not create or update organization - please inform Admin"
+            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
+        # NOTE: scheduling cache deletions
+        _kwargs: dict = dict(org_view=OrganizationView, organization_id=organization_id)
+        app_cache._schedule_cache_deletion(func=app_cache._delete_organization_cache, kwargs=_kwargs)
+
+        _schedule_kwargs: dict = dict(organization_id=organization_id, uid=uid)
+        self._base_email_scheduler(func=self.send_organization_updated_email, kwargs=_schedule_kwargs)
+
+        message: str = "Successfully updated organization"
+        return jsonify({'status': True, 'payload': organization_instance.to_dict(),
+                        'message': message}), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
@@ -497,14 +496,15 @@ class OrganizationView(Validators):
         organization_instance: Optional[Organization] = Organization.query(
             Organization.organization_id == organization_id, Organization.uid == uid).get()
 
-        if isinstance(organization_instance, Organization) and bool(organization_instance):
-            message: str = 'successfully fetched organization'
-            return jsonify({'status': True,
-                            'payload': organization_instance.to_dict(),
-                            'message': message}), status_codes.status_ok_code
+        if not isinstance(organization_instance, Organization) or not bool(organization_instance):
+            message: str = "Unable to retrieve organization"
+            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
-        message: str = "Unable to retrieve organization"
-        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+        message: str = 'successfully fetched organization'
+        return jsonify({'status': True,
+                        'payload': organization_instance.to_dict(),
+                        'message': message}), status_codes.status_ok_code
+
 
     @use_context
     @handle_view_errors
@@ -518,7 +518,7 @@ class OrganizationView(Validators):
             :return: a list containing all organization details
         ***REMOVED***
         organizations_list: List[dict] = [org.to_dict() for org in Organization.query().fetch()]
-        if organizations_list:
+        if isinstance(organizations_list, list) and organizations_list:
             message: str = 'successfully retrieved organizations'
             return jsonify({'status': True,
                             'payload': organizations_list, 'message': message}), status_codes.status_ok_code
@@ -574,30 +574,30 @@ class OrganizationView(Validators):
         organization_instance: Optional[Organization] = Organization.query(
             Organization.organization_id == organization_id).get()
 
-        if isinstance(organization_instance, Organization) and bool(organization_instance):
-            if isinstance(subtract, int):
-                organization_instance.total_affiliates -= subtract
-            elif isinstance(add, int):
-                organization_instance.total_affiliates += add
-            else:
-                message: str = "Please either enter the amount to subtract or add"
-                raise InputError(status=error_codes.input_error_code, description=message)
+        if not isinstance(organization_instance, Organization) or not bool(organization_instance):
+            message: str = "data not found : cannot update affiliate count"
+            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
-            key: Optional[ndb.Key] = organization_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-            if not bool(key):
-                message: str = "An Unspecified error occurred while adding to or subtract from affiliate count"
-                raise DataServiceError(status=error_codes.data_service_error_code, description=message)
-            # NOTE: scheduling cache deletions
-            _kwargs: dict = dict(org_view=OrganizationView, organization_id=organization_id)
-            app_cache._schedule_cache_deletion(func=app_cache._delete_organization_cache, kwargs=_kwargs)
+        if isinstance(subtract, int):
+            organization_instance.total_affiliates -= subtract
+        elif isinstance(add, int):
+            organization_instance.total_affiliates += add
+        else:
+            message: str = "Please either enter the amount to subtract or add"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
-            message: str = "Successfully updated affiliate count"
-            return jsonify({'status': False,
-                            'payload': organization_instance.to_dict(),
-                            'message': message}), status_codes.successfully_updated_code
+        key: Optional[ndb.Key] = organization_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+        if not bool(key):
+            message: str = "An Unspecified error occurred while adding to or subtract from affiliate count"
+            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+        # NOTE: scheduling cache deletions
+        _kwargs: dict = dict(org_view=OrganizationView, organization_id=organization_id)
+        app_cache._schedule_cache_deletion(func=app_cache._delete_organization_cache, kwargs=_kwargs)
 
-        message: str = "data not found : cannot update affiliate count"
-        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+        message: str = "Successfully updated affiliate count"
+        return jsonify({'status': False,
+                        'payload': organization_instance.to_dict(),
+                        'message': message}), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
@@ -675,26 +675,26 @@ class OrganizationView(Validators):
         organization_instance: Optional[Organization] = Organization.query(
             Organization.organization_id == organization_id).get()
 
-        if isinstance(organization_instance, Organization) and bool(organization_instance):
-            if subtract:
-                organization_instance.total_members -= subtract
-            elif add:
-                organization_instance.total_members += add
-            else:
-                raise InputError(status=error_codes.input_error_code,
-                                 description="Please Enter either the amount to add or subtract")
+        if not isinstance(organization_instance, Organization) or not bool(organization_instance):
+            message: str = "Unable to update organization"
+            return jsonify({'status': True, 'message': message}), status_codes.data_not_found_code
 
-            # NOTE: scheduling cache deletions
-            _kwargs: dict = dict(org_view=OrganizationView, organization_id=organization_id)
-            app_cache._schedule_cache_deletion(func=app_cache._delete_organization_cache, kwargs=_kwargs)
+        if subtract:
+            organization_instance.total_members -= subtract
+        elif add:
+            organization_instance.total_members += add
+        else:
+            raise InputError(status=error_codes.input_error_code,
+                             description="Please Enter either the amount to add or subtract")
 
-            message: str = "Successfully updated total members on organization"
-            return jsonify({'status': True,
-                            'payload': organization_instance.to_dict(),
-                            'message': message}), status_codes.successfully_updated_code
+        # NOTE: scheduling cache deletions
+        _kwargs: dict = dict(org_view=OrganizationView, organization_id=organization_id)
+        app_cache._schedule_cache_deletion(func=app_cache._delete_organization_cache, kwargs=_kwargs)
 
-        message: str = "Unable to update organization"
-        return jsonify({'status': True, 'message': message}), status_codes.data_not_found_code
+        message: str = "Successfully updated total members on organization"
+        return jsonify({'status': True,
+                        'payload': organization_instance.to_dict(),
+                        'message': message}), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
@@ -720,26 +720,26 @@ class OrganizationView(Validators):
         organization_instance: Optional[Organization] = Organization.query(
             Organization.organization_id == organization_id).get()
 
-        if isinstance(organization_instance, Organization) and bool(organization_instance):
-            if isinstance(add_payment, AmountMixin):
-                organization_instance.projected_membership_payments.__add__(add_payment)
-            elif isinstance(subtract_payment, AmountMixin):
-                organization_instance.projected_membership_payments.__sub__(subtract_payment)
-            else:
-                message: str = "Please enter either the amount to add or subtract"
-                raise InputError(status=error_codes.input_error_code, description=message)
+        if not isinstance(organization_instance, Organization) or not bool(organization_instance):
+            message: str = 'Unable to update projected_membership_payments'
+            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
-            # NOTE: scheduling cache deletions
-            _kwargs: dict = dict(org_view=OrganizationView, organization_id=organization_id)
-            app_cache._schedule_cache_deletion(func=app_cache._delete_organization_cache, kwargs=_kwargs)
+        if isinstance(add_payment, AmountMixin):
+            organization_instance.projected_membership_payments.__add__(add_payment)
+        elif isinstance(subtract_payment, AmountMixin):
+            organization_instance.projected_membership_payments.__sub__(subtract_payment)
+        else:
+            message: str = "Please enter either the amount to add or subtract"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
-            message: str = "Successfully updated projected_membership_payments"
-            return jsonify({'status': True,
-                            'payload': organization_instance.to_dict(),
-                            'message': message}), status_codes.successfully_updated_code
+        # NOTE: scheduling cache deletions
+        _kwargs: dict = dict(org_view=OrganizationView, organization_id=organization_id)
+        app_cache._schedule_cache_deletion(func=app_cache._delete_organization_cache, kwargs=_kwargs)
 
-        message: str = 'Unable to update projected_membership_payments'
-        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+        message: str = "Successfully updated projected_membership_payments"
+        return jsonify({'status': True,
+                        'payload': organization_instance.to_dict(),
+                        'message': message}), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
@@ -763,24 +763,24 @@ class OrganizationView(Validators):
         organization_instance: Optional[Organization] = Organization.query(
             Organization.organization_id == organization_id).get()
 
-        if isinstance(organization_instance, Organization) and bool(organization_instance):
-            if isinstance(subtract_total_membership_payment, AmountMixin):
-                organization_instance.total_membership_payments.__sub__(subtract_total_membership_payment)
-            elif isinstance(add_total_membership_amount, AmountMixin):
-                organization_instance.total_membership_payments.__add__(add_total_membership_amount)
-            else:
-                message: str = "Input Error: Please enter either the amount to add or subtract"
-                raise InputError(status=error_codes.input_error_code,
-                                 description=message)
+        if not isinstance(organization_instance, Organization) or not bool(organization_instance):
+            message: str = "Organization Not Found: Unable to update total membership payments"
+            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
-            # NOTE: scheduling cache deletions
-            _kwargs: dict = dict(org_view=OrganizationView, organization_id=organization_id)
-            app_cache._schedule_cache_deletion(func=app_cache._delete_organization_cache, kwargs=_kwargs)
+        if isinstance(subtract_total_membership_payment, AmountMixin):
+            organization_instance.total_membership_payments.__sub__(subtract_total_membership_payment)
+        elif isinstance(add_total_membership_amount, AmountMixin):
+            organization_instance.total_membership_payments.__add__(add_total_membership_amount)
+        else:
+            message: str = "Input Error: Please enter either the amount to add or subtract"
+            raise InputError(status=error_codes.input_error_code,
+                             description=message)
 
-            message: str = "Successfully updated total_membership_payments"
-            return jsonify({'status': True,
-                            'payload': organization_instance.to_dict(),
-                            'message': message}), status_codes.successfully_updated_code
+        # NOTE: scheduling cache deletions
+        _kwargs: dict = dict(org_view=OrganizationView, organization_id=organization_id)
+        app_cache._schedule_cache_deletion(func=app_cache._delete_organization_cache, kwargs=_kwargs)
 
-        message: str = "Organization Not Found: Unable to update total membership payments"
-        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+        message: str = "Successfully updated total_membership_payments"
+        return jsonify({'status': True,
+                        'payload': organization_instance.to_dict(),
+                        'message': message}), status_codes.successfully_updated_code
