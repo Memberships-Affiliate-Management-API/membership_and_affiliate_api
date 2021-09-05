@@ -8,7 +8,6 @@ __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
-import json
 from typing import Optional, List
 import requests
 from flask import current_app, jsonify
@@ -519,7 +518,7 @@ class OrganizationView(Validators):
             :return: a list containing all organization details
         ***REMOVED***
         organizations_list: List[dict] = [org.to_dict() for org in Organization.query().fetch()]
-        if len(organizations_list):
+        if organizations_list:
             message: str = 'successfully retrieved organizations'
             return jsonify({'status': True,
                             'payload': organizations_list, 'message': message}), status_codes.status_ok_code
