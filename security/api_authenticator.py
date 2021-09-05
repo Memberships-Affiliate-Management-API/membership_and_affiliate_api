@@ -12,7 +12,7 @@ from typing import Optional
 import requests
 from flask import request
 from config import config_instance
-from config.exceptions import UnAuthenticatedError, error_codes
+from config.exceptions import UnAuthenticatedError, error_codes, RemoteDataError
 import functools
 from cache.cache_manager import app_cache
 
@@ -28,21 +28,33 @@ def is_request_valid(api_key: str, secret: str, domain: str) -> bool:
     :param domain: str -> domain registered for the api_key and secret_token
     :return: bool -> True if api_key is valid
     ***REMOVED***
-    # TODO Use api call to api keys
+
     organization_id: str = config_instance.ORGANIZATION_ID
     _endpoint = f'_api/admin/api-keys/{api_key}/org/{organization_id}'
     _url: str = f'{config_instance.BASE_URL}{_endpoint}'
 
-    response = requests.post(url=_url, json=dict(SECRET_KEY=config_instance.SECRET_KEY))
+    try:
+        response = requests.post(url=_url, json=dict(SECRET_KEY=config_instance.SECRET_KEY))
+    except requests.ConnectionError:
+        message: str = 'Remote Error: Failed to verify app id- Could not communicate to app server'
+        raise RemoteDataError(description=message, url=_url)
+    except requests.Timeout:
+        message: str = 'Remote Error: Failed to verify app id- Could not communicate to app server'
+        raise RemoteDataError(description=message, url=_url)
+
     response_dict: dict = response.json()
 
-    if response_dict['status']:
-        api_instance: dict = response_dict['payload']
-        if isinstance(api_instance, dict):
-            domain: str = domain.lower().strip()
-            if (api_instance['secret_token'] == secret) and (api_instance['domain'] == domain):
-                return api_instance['is_active']
-    return False
+    if not response_dict.get('status'):
+        return False
+
+    api_instance: dict = response_dict.get('payload')
+    if not isinstance(api_instance, dict):
+        return False
+
+    domain: str = domain.lower().strip()
+    _request_valid: bool = (api_instance['secret_token'] == secret) and (api_instance['domain'] == domain)
+
+    return api_instance['is_active'] if _request_valid else False
 
 
 def handle_api_auth(func):
