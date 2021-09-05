@@ -12,7 +12,7 @@ from config import config_instance
 from config.exceptions import status_codes, UnAuthenticatedError, InputError
 
 from database.organization import Organization
-from tests import test_app
+from tests import test_app, is_internet_on, random_int_positive, get_test_domain
 from utils import create_id, timestamp, today, _char_set
 
 with test_app().app_context():
@@ -29,12 +29,12 @@ class OrganizationQueryMock:
         self.organization_instance.description = "main organization for Memberships & Affiliates API"
         self.organization_instance.wallet_id = create_id()
         self.organization_instance.owner_uid = create_id()
-        self.organization_instance.total_affiliates = randint(10, 1000)
-        self.organization_instance.total_members = randint(10, 1000)
-        self.organization_instance.total_users = self.organization_instance.total_members + randint(10, 1000)
-        self.organization_instance.home_url = 'https://memberships-affiliates-api.heroku.com'
-        self.organization_instance.login_callback_url = 'https://memberships-affiliates-api.heroku.com/login'
-        self.organization_instance.recovery_callback_url = 'https://memberships-affiliates-api.heroku.com/recovery'
+        self.organization_instance.total_affiliates = random_int_positive()
+        self.organization_instance.total_members = random_int_positive()
+        self.organization_instance.total_users = random_int_positive()
+        self.organization_instance.home_url = get_test_domain()
+        self.organization_instance.login_callback_url = f'{get_test_domain()}login'
+        self.organization_instance.recovery_callback_url = f'{get_test_domain()}recovery'
 
     @staticmethod
     def rand_organization() -> Organization:
@@ -49,9 +49,9 @@ class OrganizationQueryMock:
             description="main organization for Memberships & Affiliates API",
             wallet_id=create_id(),
             owner_uid=create_id(),
-            total_affiliates=randint(10, 1000),
-            total_members=randint(10, 1000),
-            total_users=randint(10, 1000),
+            total_affiliates=random_int_positive(),
+            total_members=random_int_positive(),
+            total_users=random_int_positive(),
             home_url='https://memberships-affiliates-api.heroku.com',
             login_callback_url='https://memberships-affiliates-api.heroku.com/login',
             recovery_callback_url='https://memberships-affiliates-api.heroku.com/recovery'
@@ -80,6 +80,7 @@ def nullish_value() -> Optional[str]:
     return choice([None, " ", ""])
 
 
+# noinspection PyShadowingNames
 def test_create_organization(mocker) -> None:
     ***REMOVED***
     **test_create_organization**
@@ -101,6 +102,7 @@ def test_create_organization(mocker) -> None:
     with test_app().app_context():
         mocker.patch('database.organization.Organization.put', return_value=ndb.KeyProperty('Organization'))
         mocker.patch('database.organization.Organization.query', return_value=OrganizationQueryMock())
+
         uid: str = organization_mock_data.get('uid')
         organization_name: str = organization_mock_data.get('organization_name')
         description: str = organization_mock_data.get('description')
@@ -115,6 +117,9 @@ def test_create_organization(mocker) -> None:
                                                                  paypal_address=paypal_address, home_url=home_url,
                                                                  login_callback_url=login_callback_url,
                                                                  recovery_callback_url=recovery_callback_url)
+
         assert status == status_codes.successfully_updated_code, 'bad status code'
+        response_data: dict = response.get_json()
+        assert response_data['status'] is True, response_data['message']
 
-
+    mocker.stopall()
