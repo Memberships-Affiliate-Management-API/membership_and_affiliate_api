@@ -502,10 +502,16 @@ class TicketView(Validators, TicketsMessaging):
 
             ticket_instance.response_sent = True
             key: Optional[ndb.Key] = ticket_instance.put()
-            # TODO Send response here
+
             if not bool(key):
                 message: str = "Database Error: While creating ticket - Ticket not saved"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
+            # Note: scheduled sending ticket response by email
+            _kwargs: dict = dict(ticket_id=ticket_id, subject=subject, message=message)
+            _job_name: str = self._create_job_name(header_name='send_ticket_response_email_')
+            self._base_email_scheduler(func=self._send_ticket_response, kwargs=_kwargs, job_name=_job_name)
+
             return jsonify({'status': True, 'payload': ticket_instance.to_dict(),
                             'message': 'successfully updated ticket'}), status_codes.successfully_updated_code
 
@@ -524,10 +530,15 @@ class TicketView(Validators, TicketsMessaging):
 
             ticket_instance.response_sent = True
             key: Optional[ndb.Key] = ticket_instance.put_async().get_result()
-            # TODO Send response here
+
             if not bool(key):
                 message: str = "Database Error: While creating ticket - Ticket not saved"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
+            # Note: scheduled sending ticket response by email
+            _kwargs: dict = dict(ticket_id=ticket_id, subject=subject, message=message)
+            _job_name: str = self._create_job_name(header_name='send_ticket_response_email_')
+            self._base_email_scheduler(func=self._send_ticket_response, kwargs=_kwargs, job_name=_job_name)
 
             return jsonify({'status': True, 'payload': ticket_instance.to_dict(),
                             'message': 'successfully updated ticket'}), status_codes.successfully_updated_code
