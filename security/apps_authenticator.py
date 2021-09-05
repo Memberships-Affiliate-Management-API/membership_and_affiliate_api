@@ -15,7 +15,7 @@ __licence__ = "MIT"
 
 import functools
 import hmac
-from typing import Optional
+from typing import Optional, Callable
 
 import requests
 from flask import request
@@ -85,9 +85,9 @@ def is_app_authenticated(domain: Optional[str], secret_key: Optional[str],
     return compare_secret_key and compare_domain and verify_app_id(app_id=_app_id, domain=_domain)
 
 
-def handle_apps_authentication(func):
+def handle_apps_authentication(func: Callable) -> Callable:
     @functools.wraps(func)
-    def auth_wrapper(*args, **kwargs):
+    def auth_wrapper(*args, **kwargs) -> Callable:
         json_data: dict = request.get_json()
         domain: Optional[str] = json_data.get('domain')
         secret_key: Optional[str] = json_data.get('SECRET_KEY')
@@ -106,5 +106,27 @@ def handle_apps_authentication(func):
     return auth_wrapper
 
 
+def handle_internal_auth(func: Callable) -> Callable:
+    ***REMOVED***
+    **handle_internal_auth**
+        handles authentication of internal api calls
+
+    :param func:
+    :return:
+    ***REMOVED***
+
+    @functools.wraps(func)
+    def auth_wrapper(*args, **kwargs) -> Callable:
+        # TODO - finish up internal authentication
+        return func(*args, **kwargs)
+
+    return auth_wrapper
+
+
 def is_domain_authorised(domain) -> bool:
+    ***REMOVED***
+
+    :param domain:
+    :return:
+    ***REMOVED***
     pass
