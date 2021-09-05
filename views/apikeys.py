@@ -215,7 +215,7 @@ class APIKeysView(APIKeysValidators):
         api_keys_list: typing.List[APIKeys] = APIKeys.query(APIKeys.organization_id == organization_id).fetch()
         payload: typing.List[dict] = [_key.to_dict() for _key in api_keys_list]
 
-        if len(payload):
+        if payload:
             message: str = 'organization api keys returned successfully'
             return jsonify({'status': True, 'payload': payload, 'message': message}), status_codes.status_ok_code
 
@@ -242,7 +242,7 @@ class APIKeysView(APIKeysValidators):
                                                             APIKeys.is_active == True).fetch()
         payload: typing.List[dict] = [_key.to_dict() for _key in api_keys_list]
 
-        if len(payload):
+        if payload:
             message: str = 'organization api keys returned successfully'
             return jsonify({'status': True, 'payload': payload, 'message': message}), status_codes.status_ok_code
 
