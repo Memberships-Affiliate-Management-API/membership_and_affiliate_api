@@ -44,7 +44,7 @@ def return_error(e) -> tuple:
 
     if config_instance.DEBUG:
         print(f"Description: {e.description} Error_Code: {e.code}")
-    return jsonify({'status': False, 'message': e.description}), e.code
+    return jsonify(dict(status=False, message=e.description)), e.code
 
 
 @default_handlers_bp.app_errorhandler(BadRequest)
@@ -222,4 +222,3 @@ def handle_auth_error(e:  OAuthError) -> tuple:
     # Note OAuthError is not compatible with my custom errors
     message: str = e.description
     return return_error(e=UnAuthenticatedError(status=error_codes.input_error_code, description=message))
-

@@ -503,6 +503,7 @@ class OrganizationView(OrgValidators, OrganizationEmails):
 
         message: str = 'Data Not found: there are presently no organizations defined'
         print(f'Error Message :{message}')
+
         return jsonify(dict(status=True, message=message)), status_codes.data_not_found_code
 
     @use_context
