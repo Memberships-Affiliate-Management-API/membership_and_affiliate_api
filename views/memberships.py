@@ -2265,7 +2265,7 @@ class CouponsView(Validators):
             message: str = "expiration_time is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        if self.can_update_coupon(code=code, expiration_time=expiration_time, discount=discount):
+        if not self.can_update_coupon(code=code, expiration_time=expiration_time, discount=discount):
             message: str = "You are not authorized to update coupon codes"
             raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
 
