@@ -75,7 +75,6 @@ def micro_services_auth() -> tuple:
 
     _payload: dict = dict(app_id=app_id, domain=domain, secret_key=secret_key, auth_token=_auth_token)
     _message: str = 'application successfully authenticated'
-    _result: dict = dict(result=True, payload=_payload, message=_message)
 
-    return jsonify(_result), status_codes.successfully_updated_code
+    return jsonify(dict(result=True, payload=_payload, message=_message)), status_codes.successfully_updated_code
 
