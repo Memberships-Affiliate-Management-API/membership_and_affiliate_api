@@ -21,9 +21,10 @@ from typing import Optional, List
 from flask import jsonify, current_app
 # noinspection PyProtectedMember
 from google.cloud import ndb
+
 from _sdk._paypal.paypal import PayPalRecurring
 from config.exception_handlers import handle_view_errors
-from config.exceptions import InputError, error_codes, status_codes, DataServiceError
+from config.exceptions import InputError, error_codes, status_codes, DataServiceError, UnAuthenticatedError
 from config.use_context import use_context
 from database.services import ServiceValidator, Services
 
@@ -119,6 +120,7 @@ class ServicesView(ServiceValidator):
         message: str = '''You are not authorized to create services in this organization'''
         return jsonify({'status': False, 'message': message}), error_codes.access_forbidden_error_code
 
+    # noinspection DuplicatedCode
     @use_context
     @handle_view_errors
     def update_service(self, service_id: Optional[str], organization_id: Optional[str], uid: Optional[str],
@@ -140,36 +142,35 @@ class ServicesView(ServiceValidator):
         ***REMOVED***
         self.check_parameters(name=name, category=category, description=description)
 
-        if self.can_update_service(uid=uid, organization_id=organization_id, service_id=service_id):
+        if not self.can_update_service(uid=uid, organization_id=organization_id, service_id=service_id):
+            message: str = "User Not Authorized: cannot update service"
+            raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
 
-            # TODO - first update service in paypal services
+        # TODO - first update service in paypal services
+        service_instance: Optional[Services] = Services.query(Services.service_id == service_id).get()
 
-            service_instance: Optional[Services] = Services.query(Services.service_id == service_id).get()
-
-            if bool(service_instance):
-                service_instance.name = name
-                service_instance.description = description
-                service_instance.category = category
-                service_instance.image_url = image_url
-                service_instance.home_url = home_url
-                key: Optional[ndb.Key] = service_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-                if not isinstance(key, ndb.Key):
-                    message: str = "Database Error: Unable to update service details"
-                    raise DataServiceError(status=error_codes.data_service_error_code, description=message)
-
-                _kwargs: dict = dict(services_view=ServicesView, organization_id=organization_id, service_id=service_id)
-                app_cache._schedule_cache_deletion(func=app_cache._delete_services_cache, kwargs=_kwargs)
-
-                message: str = "Successfully updated service or product"
-                return jsonify({'status': True, 'payload': service_instance.to_dict(),
-                                'message': message}), status_codes.status_ok_code
-
+        if not isinstance(service_instance, Services) or not bool(service_instance):
             message: str = "Data not Found: unable to update service as service was not found"
             return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
-        message: str = "User Not Authorized: cannot update service"
-        return jsonify({'status': False, 'message': message}), error_codes.access_forbidden_error_code
+        service_instance.name = name
+        service_instance.description = description
+        service_instance.category = category
+        service_instance.image_url = image_url
+        service_instance.home_url = home_url
+        key: Optional[ndb.Key] = service_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+        if not isinstance(key, ndb.Key):
+            message: str = "Database Error: Unable to update service details"
+            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
+        _kwargs: dict = dict(services_view=ServicesView, organization_id=organization_id, service_id=service_id)
+        app_cache._schedule_cache_deletion(func=app_cache._delete_services_cache, kwargs=_kwargs)
+
+        message: str = "Successfully updated service or product"
+        return jsonify({'status': True, 'payload': service_instance.to_dict(),
+                        'message': message}), status_codes.status_ok_code
+
+    # noinspection DuplicatedCode
     @use_context
     @handle_view_errors
     def service_activation(self, service_id: Optional[str], organization_id: Optional[str], uid: Optional[str],
@@ -188,28 +189,28 @@ class ServicesView(ServiceValidator):
             message: str = "is_active: can only be a boolean"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        if self.can_update_service(service_id=service_id, organization_id=organization_id, uid=uid):
-            service_instance: Optional[Services] = Services.query(Services.service_id == service_id).get()
+        if not self.can_update_service(service_id=service_id, organization_id=organization_id, uid=uid):
+            message: str = "User Not Authorized: cannot update service"
+            raise UnAuthenticatedError(status=error_codes.input_error_code, description=message)
 
-            if bool(service_instance):
-                service_instance.is_service_active = is_active
-                key: Optional[ndb.Key] = service_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-                if not isinstance(key, ndb.Key):
-                    message: str = "Database Error: unable to activate service"
-                    raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+        service_instance: Optional[Services] = Services.query(Services.service_id == service_id).get()
 
-                _kwargs: dict = dict(services_view=ServicesView, organization_id=organization_id, service_id=service_id)
-                app_cache._schedule_cache_deletion(func=app_cache._delete_services_cache, kwargs=_kwargs)
-
-                message: str = "successfully activated service"
-                return jsonify({'status': True, 'payload': service_instance.to_dict(),
-                                'message': message}), status_codes.status_ok_code
-
+        if not isinstance(service_instance, Services) or not bool(service_instance):
             message: str = "Data not Found: unable to update service as service was not found"
             return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
-        message: str = "User Not Authorized: cannot update service"
-        return jsonify({'status': False, 'message': message}), error_codes.access_forbidden_error_code
+        service_instance.is_service_active = is_active
+        key: Optional[ndb.Key] = service_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+        if not isinstance(key, ndb.Key):
+            message: str = "Database Error: unable to activate service"
+            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
+        _kwargs: dict = dict(services_view=ServicesView, organization_id=organization_id, service_id=service_id)
+        app_cache._schedule_cache_deletion(func=app_cache._delete_services_cache, kwargs=_kwargs)
+
+        message: str = "successfully activated service"
+        return jsonify({'status': True, 'payload': service_instance.to_dict(),
+                        'message': message}), status_codes.status_ok_code
 
     @use_context
     @handle_view_errors
@@ -232,12 +233,14 @@ class ServicesView(ServiceValidator):
 
         service_instance: Services = Services.query(Services.organization_id == organization_id,
                                                     Services.service_id == service_id).get()
-        if bool(service_instance):
-            message: str = "successfully retrieved service"
-            return jsonify({'status': True, 'payload': service_instance.to_dict(),
-                            'message': message}), status_codes.status_ok_code
-        message: str = "Data Error: Service not found"
-        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+
+        if not isinstance(service_instance, Services) or not bool(service_instance):
+            message: str = "Data Error: Service not found"
+            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+
+        message: str = "successfully retrieved service"
+        return jsonify({'status': True, 'payload': service_instance.to_dict(),
+                        'message': message}), status_codes.status_ok_code
 
     @use_context
     @handle_view_errors
@@ -257,7 +260,7 @@ class ServicesView(ServiceValidator):
         payload: List[Services] = [serv.to_dict() for serv in
                                    Services.query(Services.organization_id == organization_id)]
 
-        if isinstance(payload, list) and len(payload):
+        if isinstance(payload, list) and payload:
             message: str = "successfully retrieved services"
             return jsonify({'status': True, 'payload': payload, 'message': message}), status_codes.status_ok_code
 
