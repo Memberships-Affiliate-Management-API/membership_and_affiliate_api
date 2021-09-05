@@ -1197,6 +1197,30 @@ class MembershipsView(Validators, MembershipsEmails):
     @use_context
     @handle_view_errors
     @app_cache.cache.memoize(timeout=return_ttl('short'))
+    def return_members(self, organization_id: Optional[str]) -> tuple:
+        ***REMOVED***
+        **return_members**
+        returns all members or subscribers for a specific organization
+
+        :param organization_id:
+        :return:
+        ***REMOVED***
+
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        members_list: List[Memberships] = Memberships.query(Memberships.organization_id == organization_id).fetch()
+        payload: List[dict] = [member.to_dict() for member in members_list]
+        if len(payload):
+            message: str = "memberships successfully retrieved"
+            return jsonify(dict(status=True, payload=payload, message=message)), status_codes.status_ok_code
+        message: str = " Unable to retrieve members/ subscribers"
+        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
+
+    @use_context
+    @handle_view_errors
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
     def is_member_off(self, organization_id: Optional[str], uid: Optional[str]) -> tuple:
         ***REMOVED***
             **is_member_off**

@@ -501,8 +501,9 @@ class OrganizationView(OrgValidators, OrganizationEmails):
             return jsonify({'status': True,
                             'payload': organizations_list, 'message': message}), status_codes.status_ok_code
 
-        message: str = 'successfully retrieved organizations'
-        return jsonify({'status': True, 'message': message}), status_codes.data_not_found_code
+        message: str = 'Data Not found: there are presently no organizations defined'
+        print(f'Error Message :{message}')
+        return jsonify(dict(status=True, message=message)), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
