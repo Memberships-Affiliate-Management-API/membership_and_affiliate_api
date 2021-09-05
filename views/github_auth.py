@@ -272,8 +272,8 @@ class GithubAuthView(Validators):
             raise InputError(status=error_codes.input_error_code, description=message)
 
         github_users: List[dict] = [user.to_dict() for user in GithubUser.query(
-            GithubUser.organization_id == organization_id)]
-        if isinstance(github_users, list) and len(github_users):
+            GithubUser.organization_id == organization_id).fetch()]
+        if isinstance(github_users, list) and github_users:
             message: str = 'users successfully fetched'
             return jsonify({'status': True, 'payload': github_users,
                             'message': message}), status_codes.status_ok_code
