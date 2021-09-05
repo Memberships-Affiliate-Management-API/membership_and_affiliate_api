@@ -9,8 +9,7 @@ __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
-import typing
-from typing import Optional
+from typing import Optional, List
 from flask import jsonify, current_app
 from google.cloud import ndb
 from werkzeug.security import check_password_hash
@@ -820,7 +819,7 @@ class UserView(Validators, UserEmails):
     @use_context
     @handle_view_errors
     def set_address(self, organization_id: Optional[str], uid: Optional[str],
-                    address_dict: typing.Union[dict, None]) -> tuple:
+                    address_dict: Optional[dict]) -> tuple:
         ***REMOVED***
             given organization_id and uid with address_dict update address
         :param organization_id:
@@ -992,7 +991,7 @@ class UserView(Validators, UserEmails):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        users_list: typing.List[dict] = [user.to_dict() for user in UserModel.query(
+        users_list: List[dict] = [user.to_dict() for user in UserModel.query(
             UserModel.organization_id == organization_id, UserModel.is_active == True).fetch()]
 
         if len(users_list) > 0:
@@ -1015,7 +1014,7 @@ class UserView(Validators, UserEmails):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        users_list: typing.List[dict] = [user.to_dict() for user in UserModel.query(
+        users_list: List[dict] = [user.to_dict() for user in UserModel.query(
             UserModel.organization_id == organization_id, UserModel.is_active == True).fetch_async().get_result()]
 
         if len(users_list) > 0:
@@ -1039,7 +1038,7 @@ class UserView(Validators, UserEmails):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        users_list: typing.List[dict] = [user.to_dict() for user in UserModel.query(
+        users_list: List[dict] = [user.to_dict() for user in UserModel.query(
             UserModel.organization_id == organization_id, UserModel.is_active == False).fetch()]
 
         if len(users_list) > 0:
@@ -1063,7 +1062,7 @@ class UserView(Validators, UserEmails):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        users_list: typing.List[dict] = [user.to_dict() for user in UserModel.query(
+        users_list: List[dict] = [user.to_dict() for user in UserModel.query(
             UserModel.organization_id == organization_id, UserModel.is_active == False).fetch_async().get_result()]
 
         if len(users_list):
@@ -1087,7 +1086,7 @@ class UserView(Validators, UserEmails):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        users_list: typing.List[dict] = [user.to_dict() for user in UserModel.query(
+        users_list: List[dict] = [user.to_dict() for user in UserModel.query(
             UserModel.organization_id == organization_id).fetch()]
 
         if len(users_list):
@@ -1111,7 +1110,7 @@ class UserView(Validators, UserEmails):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        users_list: typing.List[dict] = [user.to_dict() for user in UserModel.query(
+        users_list: List[dict] = [user.to_dict() for user in UserModel.query(
             UserModel.organization_id == organization_id).fetch_async().get_result()]
 
         if len(users_list):
