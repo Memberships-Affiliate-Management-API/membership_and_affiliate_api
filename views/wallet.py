@@ -710,10 +710,11 @@ class WalletView(Validator, WalletEmails):
         wallet_list: List[WalletModel] = WalletModel.query(WalletModel.organization_id == organization_id).fetch()
         payload: List[dict] = [wallet.to_dict() for wallet in wallet_list]
 
-        if len(payload):
+        if payload:
             return jsonify({'status': True,
                             'payload': payload,
                             'message': 'wallets returned'}), status_codes.status_ok_code
+
         return jsonify({'status': False, 'message': 'no wallets found'}), status_codes.data_not_found_code
 
     @use_context
@@ -736,7 +737,7 @@ class WalletView(Validator, WalletEmails):
 
         payload: List[dict] = [wallet.to_dict() for wallet in wallet_list]
 
-        if len(payload):
+        if payload:
             return jsonify({'status': True,
                             'payload': payload,
                             'message': 'wallets returned'}), status_codes.status_ok_code
@@ -768,7 +769,7 @@ class WalletView(Validator, WalletEmails):
         payload: List[dict] = [wallet.to_dict() for wallet in wallet_list if
                                higher_bound < wallet.available_funds.amount_cents > lower_bound]
 
-        if len(payload):
+        if payload:
             return jsonify({'status': True, 'payload': payload,
                             'message': 'wallets returned'}), status_codes.status_ok_code
 
@@ -804,7 +805,7 @@ class WalletView(Validator, WalletEmails):
         payload: List[dict] = [wallet.to_dict() for wallet in wallet_list if
                                higher_bound < wallet.available_funds.amount_cents > lower_bound]
 
-        if len(payload):
+        if payload:
             return jsonify({'status': True, 'payload': payload,
                             'message': 'wallets returned'}), status_codes.status_ok_code
 
@@ -839,32 +840,32 @@ class WalletView(Validator, WalletEmails):
         wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
                                                          WalletModel.uid == uid).get()
 
-        if isinstance(wallet_instance, WalletModel) and wallet_instance.uid == uid:
-            # NOTE: insure that this works or perform this operation in another way
-            if isinstance(sub, int):
-                wallet_instance.available_funds.amount_cents -= sub
-            if isinstance(add, int):
-                wallet_instance.available_funds.amount_cents += sub
-                
-            key = wallet_instance.put()
-            if not bool(key):
-                message: str = "General error updating database"
-                raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+        if not isinstance(wallet_instance, WalletModel) or wallet_instance.uid != uid:
+            message: str = "Unable to find wallet - cannot perform transaction"
+            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
-            # Scheduling cache deletions
-            _kwargs: dict = dict(wallet_view=WalletView, organization_id=organization_id, uid=uid)
-            app_cache._schedule_cache_deletion(func=app_cache._delete_wallet_cache, kwargs=_kwargs)
+        if isinstance(sub, int):
+            wallet_instance.available_funds.amount_cents -= sub
+        if isinstance(add, int):
+            wallet_instance.available_funds.amount_cents += sub
 
-            # Scheduling emails
-            kwargs: dict = dict(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
-            self._base_email_scheduler(func=self.send_balance_changed_notification, kwargs=kwargs)
+        key = wallet_instance.put()
+        if not bool(key):
+            message: str = "General error updating database"
+            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-            message: str = "Successfully created transaction"
-            return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
-                            'message': message}), status_codes.successfully_updated_code
+        # Scheduling cache deletions
+        _kwargs: dict = dict(wallet_view=WalletView, organization_id=organization_id, uid=uid)
+        app_cache._schedule_cache_deletion(func=app_cache._delete_wallet_cache, kwargs=_kwargs)
 
-        message: str = "Unable to find wallet - cannot perform transaction"
-        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+        # Scheduling emails
+        kwargs: dict = dict(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
+        self._base_email_scheduler(func=self.send_balance_changed_notification, kwargs=kwargs)
+
+        message: str = "Successfully created transaction"
+        return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
+                        'message': message}), status_codes.successfully_updated_code
+
 
     @use_context
     @handle_view_errors
@@ -893,28 +894,27 @@ class WalletView(Validator, WalletEmails):
         wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
                                                          WalletModel.uid == uid).get_async().get_result()
 
-        if isinstance(wallet_instance, WalletModel) and wallet_instance.uid == uid:
+        if not isinstance(wallet_instance, WalletModel) or wallet_instance.uid != uid:
+            message: str = "Unable to find wallet - cannot perform transaction"
+            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
-            # NOTE: insure that this works or perform this operation in another way
-            if isinstance(sub, int):
-                wallet_instance.available_funds.amount_cents -= sub
-            if isinstance(add, int):
-                wallet_instance.available_funds.amount_cents += add
+        if isinstance(sub, int):
+            wallet_instance.available_funds.amount_cents -= sub
+        if isinstance(add, int):
+            wallet_instance.available_funds.amount_cents += add
 
-            key = wallet_instance.put_async().get_result()
-            if not bool(key):
-                message: str = "General error updating database"
-                raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+        key = wallet_instance.put_async().get_result()
+        if not bool(key):
+            message: str = "General error updating database"
+            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-            _kwargs: dict = dict(wallet_view=WalletView, organization_id=organization_id, uid=uid)
-            app_cache._schedule_cache_deletion(func=app_cache._delete_wallet_cache, kwargs=_kwargs)
+        _kwargs: dict = dict(wallet_view=WalletView, organization_id=organization_id, uid=uid)
+        app_cache._schedule_cache_deletion(func=app_cache._delete_wallet_cache, kwargs=_kwargs)
 
-            message: str = "Successfully created transaction"
-            return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
-                            'message': message}), status_codes.successfully_updated_code
+        message: str = "Successfully created transaction"
+        return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
+                        'message': message}), status_codes.successfully_updated_code
 
-        message: str = "Unable to find wallet - cannot perform transaction"
-        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     # noinspection PyUnusedLocal
     @use_context
