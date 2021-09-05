@@ -13,7 +13,7 @@ import datetime
 import random
 import string
 import time
-import typing
+from typing import List, Optional, Union
 from datetime import date
 from datetime import time as time_class
 from config import config_instance
@@ -109,9 +109,9 @@ def date_string_to_date(date_str: str) -> date:
     ***REMOVED***
     if isinstance(date_str, str):
         if "/" in date_str:
-            date_list: typing.List[str] = date_str.split("/")
+            date_list: List[str] = date_str.split("/")
         elif "-" in date_str:
-            date_list: typing.List[str] = date_str.split("-")
+            date_list: List[str] = date_str.split("-")
         else:
             raise ValueError('Date format invalid')
         try:
@@ -203,7 +203,7 @@ def date_days_ago(days: int) -> date:
     return (datetime.datetime.now() - datetime.timedelta(days=days)).date()
 
 
-def get_payment_methods() -> typing.List[str]:
+def get_payment_methods() -> List[str]:
     ***REMOVED***
         **get_payment_methods**
             NOTE: returns the present supported payment method
@@ -212,7 +212,7 @@ def get_payment_methods() -> typing.List[str]:
     return ['eft', 'paypal']
 
 
-def get_plan_scheduled_terms() -> typing.List[str]:
+def get_plan_scheduled_terms() -> List[str]:
     ***REMOVED***
         **get_plan_scheduled_terms**
             NOTE: fetches payment plan schedules from config_instance
@@ -223,7 +223,7 @@ def get_plan_scheduled_terms() -> typing.List[str]:
     return config_instance.PAYMENT_PLANS_SCHEDULES
 
 
-def get_scheduled_term_days() -> typing.List[int]:
+def get_scheduled_term_days() -> List[int]:
     ***REMOVED***
         **get_scheduled_term_days**
             NOTE: returns the days the transactions can be made once scheduled term
@@ -258,8 +258,7 @@ def task_counter(timer_limit: int = 1000000) -> any:
     :param timer_limit:
     :return:
     ***REMOVED***
-    for y in range(timer_limit):
-        yield y
+    yield [y for y in range(timer_limit)][0]
 
 
 # Counter Generator
