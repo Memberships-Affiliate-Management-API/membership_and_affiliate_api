@@ -40,7 +40,7 @@ def is_internet_on() -> bool:
     ***REMOVED***
     try:
         _url: str = 'https://google.com/'
-        request = requests.get(url=_url, timeout=5)
+        requests.get(url=_url, timeout=5)
         return True
     except requests.ConnectionError:
         return False
