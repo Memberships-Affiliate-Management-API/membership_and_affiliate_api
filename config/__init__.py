@@ -1,8 +1,8 @@
-***REMOVED***
+"""
     **Flask App Configuration Settings**
     *Python Version 3.8 and above*
     Used to setup environment variables for python flask app
-***REMOVED***
+"""
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
 __twitter__ = "@blueitserver"
@@ -17,10 +17,10 @@ import datetime
 
 
 class Config:
-    ***REMOVED***
+    """
         **APP Configuration Settings**
             configuration variables for setting up the application
-    ***REMOVED***
+    """
     # TODO - Clean up configuration settings
     def __init__(self) -> None:
         # APP URLS
@@ -116,11 +116,11 @@ class Config:
         return self.__str__()
 
     def cache_dict(self) -> dict:
-        ***REMOVED***
+        """
             Consider converting the cache to MEM_CACHE Type or Redis
             preferably host the cache as a docker instance on Cloud Run
         :return: dict
-        ***REMOVED***
+        """
         # TODO learn how to host redis cache on Heroku then change this logic so cache launches redis
         if not self.IS_PRODUCTION or os.environ.get('IS_HEROKU'):
             return {

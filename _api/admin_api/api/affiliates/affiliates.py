@@ -1,7 +1,7 @@
-***REMOVED***
+"""
     **api keys system admin module**
         controls access to api keys for system admin application
-***REMOVED***
+"""
 
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
@@ -26,11 +26,11 @@ admin_affiliates_api_bp = Blueprint("admin_affiliates_api", __name__)
 @admin_affiliates_api_bp.route('/_api/v1/admin/affiliates/<string:path>', methods=["POST"])
 @handle_apps_authentication
 def admin_affiliates(path: str) -> tuple:
-    ***REMOVED***
+    """
 
     :param path:
     :return:
-    ***REMOVED***
+    """
     json_data: dict = request.get_json()
     secret_key: Optional[str] = json_data.get('SECRET_KEY')
 

@@ -1,8 +1,8 @@
-***REMOVED***
+"""
     **Wrappers for common application exceptions**
     Used on views to handle common method errors when accessing ndb databases
 
-***REMOVED***
+"""
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
 __twitter__ = "@blueitserver"
@@ -19,10 +19,10 @@ from flask import current_app
 
 
 def handle_view_errors(func):
-    ***REMOVED***
+    """
         view error handler wrapper
     #     TODO - raise user related errors here
-    ***REMOVED***
+    """
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         debug: bool = current_app.config.get('DEBUG')
@@ -70,9 +70,9 @@ def handle_view_errors(func):
 
 
 def handle_store_errors(func: Callable) -> Callable:
-    ***REMOVED***
+    """
         handle errors related to GCP datastore
-    ***REMOVED***
+    """
     @functools.wraps(func)
     def wrapper(*args, **kwargs) -> Optional[Callable]:
         debug: bool = current_app.config.get('DEBUG')
@@ -111,7 +111,7 @@ def handle_requests_errors(func: Callable) -> Callable:
 
 
 if __name__ == '__main__':
-    ***REMOVED***
+    """
         NOTE: fast testing of functions here 
-    ***REMOVED***
+    """
     pass

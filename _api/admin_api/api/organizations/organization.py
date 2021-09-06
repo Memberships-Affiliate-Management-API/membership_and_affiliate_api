@@ -1,6 +1,6 @@
-***REMOVED***
+"""
     handle users and admin authentication
-***REMOVED***
+"""
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
 __twitter__ = "@blueitserver"
@@ -22,7 +22,7 @@ admin_organization_api_bp = Blueprint("admin_organization_api", __name__)
 @admin_organization_api_bp.route('/_api/v1/admin/organizations/<string:path>', methods=['GET', 'POST'])
 @handle_apps_authentication
 def organization_admin_api(path: str) -> tuple:
-    ***REMOVED***
+    """
         **organization_admin_api**
             organizations admin routes are only related to administration functions of
             organizations
@@ -32,7 +32,7 @@ def organization_admin_api(path: str) -> tuple:
         TODO - complete documentation
     :param path:
     :return:
-    ***REMOVED***
+    """
     json_data: dict = request.get_json()
     secret_key: Optional[str] = json_data.get('SECRET_KEY')
 

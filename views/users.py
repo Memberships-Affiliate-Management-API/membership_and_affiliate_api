@@ -1,8 +1,8 @@
-***REMOVED***
+"""
     ** Module UserView Controller**
     classes used to manage:
         registering new users for both the client and main app
-***REMOVED***
+"""
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
 __twitter__ = "@blueitserver"
@@ -29,19 +29,19 @@ from cache.cache_manager import app_cache
 
 # noinspection DuplicatedCode
 class UserEmails(Mailgun):
-    ***REMOVED***
+    """
         **Class UserEmails**
             used to send emails and notifications to users
-    ***REMOVED***
+    """
 
     def __init__(self) -> None:
-        ***REMOVED***
+        """
            NOTE: initializing mail gun rest api
-        ***REMOVED***
+        """
         super(UserEmails, self).__init__()
 
     def send_welcome_to_admins_email(self, organization_id: str, uid: str) -> None:
-        ***REMOVED***
+        """
             **send_welcome_to_admins_email**
                 send an email to admin welcoming him to the admins club
                 NOTE: class __do_send_mail with the finally composed email
@@ -49,7 +49,7 @@ class UserEmails(Mailgun):
         :param uid:
         :param organization_id:
         :return:
-        ***REMOVED***
+        """
         user_data, organization_data = self.return_organization_user(organization_id=organization_id, uid=uid)
         email_verified: bool = user_data.get('email_verified')
         subject: str = f"{organization_data.get('organization_name')} Welcome to to Admins"
@@ -82,14 +82,14 @@ class UserEmails(Mailgun):
         raise RequestError(status=error_codes.bad_request_error_code, description=message)
 
     def send_goodbye_admin_email(self, organization_id: str, uid: str) -> None:
-        ***REMOVED***
+        """
             **send_goodbye_admin_email**
                 send an email informing the user he or she is no longer admin
 
         :param uid:
         :param organization_id:
         :return:
-        ***REMOVED***
+        """
         user_data, organization_data = self.return_organization_user(organization_id=organization_id, uid=uid)
         email_verified: bool = user_data.get('email_verified')
 
@@ -122,14 +122,14 @@ class UserEmails(Mailgun):
         raise RequestError(status=error_codes.bad_request_error_code, description=message)
 
     def send_welcome_to_support_email(self, organization_id: str, uid: str) -> None:
-        ***REMOVED***
+        """
             **send_welcome_to_support_email**
                 send welcome to support email when users joins the support staff
 
         :param uid:
         :param organization_id:
         :return:
-        ***REMOVED***
+        """
         user_data, organization_data = self.return_organization_user(organization_id=organization_id, uid=uid)
         email_verified: bool = user_data.get('email_verified')
 
@@ -162,14 +162,14 @@ class UserEmails(Mailgun):
         raise RequestError(status=error_codes.bad_request_error_code, description=message)
 
     def send_goodbye_support_email(self, organization_id: str, uid: str) -> None:
-        ***REMOVED***
+        """
             **send_goodbye_support_email**
                 used to send emails when users are no longer part of the support roles
 
         :param uid:
         :param organization_id:
         :return:
-        ***REMOVED***
+        """
         user_data, organization_data = self.return_organization_user(organization_id=organization_id, uid=uid)
         email_verified: bool = user_data.get('email_verified')
 
@@ -202,7 +202,7 @@ class UserEmails(Mailgun):
         raise RequestError(status=error_codes.bad_request_error_code, description=message)
 
     def send_recovery_email(self, organization_id: Optional[str], uid: Optional[str], recovery_code: str) -> None:
-        ***REMOVED***
+        """
             **send_recovery_email**
                 send an email informing the user a recovery action has been activated on their account
 
@@ -210,7 +210,7 @@ class UserEmails(Mailgun):
         :param organization_id:
         :param recovery_code
         :return:
-        ***REMOVED***
+        """
         user_data, organization_data = self.return_organization_user(organization_id=organization_id, uid=uid)
 
         # NOTE during password recovery the link display should fit the look of the user of the api
@@ -258,9 +258,9 @@ class UserEmails(Mailgun):
 
 
 class Validators(UserValidators, OrgValidators):
-    ***REMOVED***
+    """
         User Validators
-    ***REMOVED***
+    """
 
     def __init__(self) -> None:
         super(Validators, self).__init__()
@@ -270,13 +270,13 @@ class Validators(UserValidators, OrgValidators):
     @staticmethod
     def check_required(organization_id: Optional[str], email: Optional[str],
                        cell: Optional[str]) -> None:
-        ***REMOVED***
+        """
             check organization_id email and cell if they are valid
         :param organization_id:
         :param email:
         :param cell:
         :return:
-        ***REMOVED***
+        """
 
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
@@ -292,12 +292,12 @@ class Validators(UserValidators, OrgValidators):
 
     @staticmethod
     def check_org_and_uid(organization_id: Optional[str], uid: Optional[str]) -> None:
-        ***REMOVED***
+        """
             check if organization_id or uid are available if not throw input_error_code and exit
         :param organization_id:
         :param uid:
         :return:
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -308,14 +308,14 @@ class Validators(UserValidators, OrgValidators):
 
     def can_add_user(self, organization_id: Optional[str], email: Optional[str],
                      cell: Optional[str]) -> bool:
-        ***REMOVED***
+        """
             if this returns true the user can be added
 
             :param email: required - check if email is available to be used on this organization
             :param cell: required - check if the cell number related to this user is not already registered for another user
             :param organization_id: required - check if user has logged into this organization
             :return: boolean indicate if the user can be added or not
-        ***REMOVED***
+        """
         is_organization_exist: Optional[bool] = self.is_organization_exist(organization_id=organization_id)
         # is_user_valid: Optional[bool] = self.is_user_valid(organization_id=organization_id, uid=uid)
         is_email_valid: Optional[bool] = self.is_email_available(organization_id=organization_id, email=email)
@@ -333,9 +333,9 @@ class Validators(UserValidators, OrgValidators):
 # TODO create test cases for User View and Documentations
 # noinspection DuplicatedCode
 class UserView(Validators, UserEmails):
-    ***REMOVED***
+    """
         User-View handling business logic for UserModel
-    ***REMOVED***
+    """
 
     def __init__(self) -> None:
         super(UserView, self).__init__()
@@ -357,7 +357,7 @@ class UserView(Validators, UserEmails):
     def add_user(self, organization_id: Optional[str], names: Optional[str],
                  surname: Optional[str], cell: Optional[str], email: Optional[str],
                  password: Optional[str], uid: Optional[str] = None) -> tuple:
-        ***REMOVED***
+        """
             **add_user**
                 Register a new User
                 this is called for registering a new user
@@ -369,7 +369,7 @@ class UserView(Validators, UserEmails):
             :param password:
             :param uid: Optional gets to be used if client is using an external Oauth Service
             :return: returns user record
-        ***REMOVED***
+        """
         # Check if all required values are present if not throw inputError and exit
         self.check_required(organization_id=organization_id, email=email, cell=cell)
 
@@ -415,7 +415,7 @@ class UserView(Validators, UserEmails):
     async def add_user_async(self, organization_id: Optional[str], names: Optional[str], surname: Optional[str],
                              cell: Optional[str], email: Optional[str],
                              password: Optional[str], uid: Optional[str] = None) -> tuple:
-        ***REMOVED***
+        """
         **add_user_async**
             creates a new user asynchronously - all parameters are required
 
@@ -427,7 +427,7 @@ class UserView(Validators, UserEmails):
         :param password:
         :param uid:
         :return:
-        ***REMOVED***
+        """
         # Check if all required values are present if not throw inputError and exit
         # TODO- use async version
         self.check_required(organization_id=organization_id, email=email, cell=cell)
@@ -462,7 +462,7 @@ class UserView(Validators, UserEmails):
                     names: Optional[str], surname: Optional[str],
                     cell: Optional[str], email: Optional[str], is_admin: bool,
                     is_support: bool) -> tuple:
-        ***REMOVED***
+        """
                 update user details all fields are required -
                 if the purpose is to update only one of the fields use one of the specialized methods
             :param organization_id:
@@ -474,7 +474,7 @@ class UserView(Validators, UserEmails):
             :param is_admin:
             :param is_support:
         :return:
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -513,7 +513,7 @@ class UserView(Validators, UserEmails):
                                 names: Optional[str], surname: Optional[str],
                                 cell: Optional[str], email: Optional[str],
                                 is_admin: bool, is_support: bool) -> tuple:
-        ***REMOVED***
+        """
             update user details asynchronously
         :param organization_id:
         :param uid:
@@ -524,7 +524,7 @@ class UserView(Validators, UserEmails):
         :param is_admin:
         :param is_support:
         :return:
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -560,14 +560,14 @@ class UserView(Validators, UserEmails):
     @handle_view_errors
     def update_user_names(self, organization_id: Optional[str], uid: Optional[str],
                           names: Optional[str], surname: Optional[str]) -> tuple:
-        ***REMOVED***
+        """
             given organization_id and uid update names
         :param organization_id: required
         :param uid: required
         :param names: optional
         :param surname: optional
         :return:
-        ***REMOVED***
+        """
         # checks if organization_id and uid are available if not throws input Error
         self.check_org_and_uid(organization_id=organization_id, uid=uid)
 
@@ -606,13 +606,13 @@ class UserView(Validators, UserEmails):
     @handle_view_errors
     def update_cell(self, organization_id: Optional[str], uid: Optional[str],
                     cell: Optional[str]) -> tuple:
-        ***REMOVED***
+        """
                 given organization_id and uid update cell number
             :param organization_id:
             :param uid:
             :param cell:
             :return:
-        ***REMOVED***
+        """
         self.check_org_and_uid(organization_id=organization_id, uid=uid)
         if not isinstance(cell, str) or not bool(cell.strip()):
             message: str = "cell is required"
@@ -645,13 +645,13 @@ class UserView(Validators, UserEmails):
     @handle_view_errors
     def update_email(self, organization_id: Optional[str], uid: Optional[str],
                      email: Optional[str]) -> tuple:
-        ***REMOVED***
+        """
          update user email given organization_id and uid
         :param organization_id:
         :param uid:
         :param email:
         :return:
-        ***REMOVED***
+        """
         self.check_org_and_uid(organization_id=organization_id, uid=uid)
         if not isinstance(email, str) or not bool(email.strip()):
             message: str = "Email is required"
@@ -690,7 +690,7 @@ class UserView(Validators, UserEmails):
     @handle_view_errors
     def update_password(self, organization_id: Optional[str], uid: Optional[str],
                         password: Optional[str], new_password: Optional[str]) -> tuple:
-        ***REMOVED***
+        """
             update password given  organization_id and uid update password
             check if old password matches the present password if that's the case then
             update the password
@@ -699,7 +699,7 @@ class UserView(Validators, UserEmails):
         :param password:
         :param new_password:
         :return:
-        ***REMOVED***
+        """
         self.check_org_and_uid(organization_id=organization_id, uid=uid)
 
         if not isinstance(password, str) or not bool(password.strip()):
@@ -742,13 +742,13 @@ class UserView(Validators, UserEmails):
     @handle_view_errors
     def set_is_admin(self, organization_id: Optional[str], uid: Optional[str],
                      is_admin: Optional[bool] = False) -> tuple:
-        ***REMOVED***
+        """
             given organization_id and uid update is_admin
         :param organization_id:
         :param uid:
         :param is_admin:
         :return:
-        ***REMOVED***
+        """
         self.check_org_and_uid(organization_id=organization_id, uid=uid)
         if not isinstance(is_admin, bool):
             message: str = "is_admin is required and can only be a boolean"
@@ -781,13 +781,13 @@ class UserView(Validators, UserEmails):
     @handle_view_errors
     def set_is_support(self, organization_id: Optional[str], uid: Optional[str],
                        is_support: Optional[bool]) -> tuple:
-        ***REMOVED***
+        """
             given organization_id and uid set support role
         :param organization_id:
         :param uid:
         :param is_support:
         :return:
-        ***REMOVED***
+        """
         self.check_org_and_uid(organization_id=organization_id, uid=uid)
         if not isinstance(is_support, bool):
             message: str = "is_support is required and can only be a boolean"
@@ -820,13 +820,13 @@ class UserView(Validators, UserEmails):
     @handle_view_errors
     def set_address(self, organization_id: Optional[str], uid: Optional[str],
                     address_dict: Optional[dict]) -> tuple:
-        ***REMOVED***
+        """
             given organization_id and uid with address_dict update address
         :param organization_id:
         :param uid:
         :param address_dict:
         :return:
-        ***REMOVED***
+        """
 
         self.check_org_and_uid(organization_id=organization_id, uid=uid)
 
@@ -884,14 +884,14 @@ class UserView(Validators, UserEmails):
     @handle_view_errors
     def delete_user(self, organization_id: Optional[str], uid: Optional[str] = None,
                     email: Optional[str] = None, cell: Optional[str] = None) -> tuple:
-        ***REMOVED***
+        """
             given either, uid, email or cell delete user
             :param organization_id:
             :param uid:
             :param email:
             :param cell:
             :return:
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -934,14 +934,14 @@ class UserView(Validators, UserEmails):
     @handle_view_errors
     async def delete_user_async(self, organization_id: Optional[str], uid: Optional[str] = None,
                                 email: Optional[str] = None, cell: Optional[str] = None) -> tuple:
-        ***REMOVED***
+        """
             given either, uid, email or cell delete user
             :param organization_id:
             :param uid:
             :param email:
             :param cell:
             :return:
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -983,10 +983,10 @@ class UserView(Validators, UserEmails):
     @handle_view_errors
     @app_cache.cache.memoize(timeout=return_ttl('short'))
     def get_active_users(self, organization_id: Optional[str]) -> tuple:
-        ***REMOVED***
+        """
             return a list of all users
         :return:
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -1004,12 +1004,12 @@ class UserView(Validators, UserEmails):
     @handle_view_errors
     @app_cache.cache.memoize(timeout=return_ttl('short'))
     async def get_active_users_async(self, organization_id: Optional[str]) -> tuple:
-        ***REMOVED***
+        """
             get active users list
 
             :param organization_id:
             :return:
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -1029,11 +1029,11 @@ class UserView(Validators, UserEmails):
     @handle_view_errors
     @app_cache.cache.memoize(timeout=return_ttl('short'))
     def get_in_active_users(self, organization_id: Optional[str]) -> tuple:
-        ***REMOVED***
+        """
             get in-active  list
         :param organization_id:
         :return:
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -1053,11 +1053,11 @@ class UserView(Validators, UserEmails):
     @handle_view_errors
     @app_cache.cache.memoize(timeout=return_ttl('short'))
     async def get_in_active_users_async(self, organization_id: Optional[str]) -> tuple:
-        ***REMOVED***
+        """
             return a list of non active users
         :param organization_id:
         :return:
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -1077,11 +1077,11 @@ class UserView(Validators, UserEmails):
     @handle_view_errors
     @app_cache.cache.memoize(timeout=return_ttl('short'))
     def get_all_users(self, organization_id: Optional[str]) -> tuple:
-        ***REMOVED***
+        """
             get a list of all users
         :param organization_id:
         :return:
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -1101,11 +1101,11 @@ class UserView(Validators, UserEmails):
     @handle_view_errors
     @app_cache.cache.memoize(timeout=return_ttl('short'))
     async def get_all_users_async(self, organization_id: Optional[str]) -> tuple:
-        ***REMOVED***
+        """
             get a list of all users
         :param organization_id:
         :return:
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -1126,14 +1126,14 @@ class UserView(Validators, UserEmails):
     @app_cache.cache.memoize(timeout=return_ttl('short'))
     def get_user(self, organization_id: Optional[str], uid: Optional[str] = None, cell: Optional[str] = None,
                  email: Optional[str] = None) -> tuple:
-        ***REMOVED***
+        """
             return a user either by uid, cell or email
             :param organization_id:
             :param uid:
             :param cell:
             :param email:
             :return:
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -1180,14 +1180,14 @@ class UserView(Validators, UserEmails):
     @app_cache.cache.memoize(timeout=return_ttl('short'))
     async def get_user_async(self, organization_id: Optional[str], uid: Optional[str] = None,
                              cell: Optional[str] = None, email: Optional[str] = None) -> tuple:
-        ***REMOVED***
+        """
             return a user either by uid, cell or email
             :param organization_id:
             :param uid:
             :param cell:
             :param email:
             :return:
-        ***REMOVED***
+        """
         if isinstance(uid, str) and bool(uid.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.uid == uid).get_async().get_result()
@@ -1228,13 +1228,13 @@ class UserView(Validators, UserEmails):
     @handle_view_errors
     def check_password(self, organization_id: Optional[str], uid: Optional[str],
                        password: Optional[str]) -> tuple:
-        ***REMOVED***
+        """
             check password
         :param organization_id:
         :param uid:
         :param password:
         :return:
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -1262,13 +1262,13 @@ class UserView(Validators, UserEmails):
     @handle_view_errors
     async def check_password_async(self, organization_id: Optional[str],
                                    uid: Optional[str], password: Optional[str]) -> tuple:
-        ***REMOVED***
+        """
             check password asynchronously
         :param organization_id:
         :param uid:
         :param password:
         :return:
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -1295,12 +1295,12 @@ class UserView(Validators, UserEmails):
     @use_context
     @handle_view_errors
     def deactivate_user(self, organization_id: Optional[str], uid: Optional[str]) -> tuple:
-        ***REMOVED***
+        """
             de-activate user
         :param organization_id:
         :param uid:
         :return:
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -1328,12 +1328,12 @@ class UserView(Validators, UserEmails):
     @handle_view_errors
     async def deactivate_user_async(self, organization_id: Optional[str],
                                     uid: Optional[str]) -> tuple:
-        ***REMOVED***
+        """
             deactivate_user_async given uid and organization_id
         :param organization_id:
         :param uid:
         :return:
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -1360,7 +1360,7 @@ class UserView(Validators, UserEmails):
     @handle_view_errors
     def login(self, organization_id: Optional[str], email: Optional[str],
               password: Optional[str]) -> tuple:
-        ***REMOVED***
+        """
             this login utility may support client app , not necessary for admin and service to service calls
             Options:
             firebase login, JWT Token
@@ -1369,7 +1369,7 @@ class UserView(Validators, UserEmails):
         :param email:
         :param password:
         :return:
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -1409,13 +1409,13 @@ class UserView(Validators, UserEmails):
     @handle_view_errors
     def send_recovery_email(self, organization_id: Optional[str],
                             email: Optional[str]) -> tuple:
-        ***REMOVED***
+        """
             **send_recovery_email**
                 sends a recovery email on behalf of users
         :param organization_id:
         :param email:
         :return:
-        ***REMOVED***
+        """
 
         user_model: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                 UserModel.email == email).get()
@@ -1442,11 +1442,11 @@ class UserView(Validators, UserEmails):
     @use_context
     @handle_view_errors
     def _system_user_exist(self, email: Optional[str] = None, uid: Optional[str] = None) -> tuple:
-        ***REMOVED***
+        """
 
         :param email:
         :return:
-        ***REMOVED***
+        """
         if isinstance(email, str) and bool(email.strip()):
             users_instance: UserModel = UserModel.query(UserModel.email == email).get()
             message: str = "user exist"

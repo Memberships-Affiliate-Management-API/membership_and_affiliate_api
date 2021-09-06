@@ -1,7 +1,7 @@
-***REMOVED***
+"""
     **main api run module for memberships and affiliate api **
 
-***REMOVED***
+"""
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
 __twitter__ = "@blueitserver"
@@ -24,6 +24,6 @@ debug = is_development() and config_instance.DEBUG
 if __name__ == '__main__':
     if is_development():
         # NOTE: this is a development server
-        app.run(debug=debug, use_reloader=True, host='127.0.0.1', port=int(os.environ.get('PORT', 8081)))
+        app.run(debug=debug, use_reloader=True, host='0.0.0.0', port=int(os.environ.get('PORT', 8081)))
     else:
         app.run(debug=debug, use_reloader=False, host='0.0.0.0', port=int(os.environ.get('PORT', 8081)))

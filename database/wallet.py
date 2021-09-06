@@ -1,7 +1,7 @@
-***REMOVED***
+"""
     **Wallet Module**
     *Wallet Classes For Management of Clients / Organizations and Users Wallets"
-***REMOVED***
+"""
 
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
@@ -21,12 +21,12 @@ from database.basemodel import BaseModel
 
 
 class WalletValidator:
-    ***REMOVED***
+    """
         **Class WalletValidator**
             Validates User Inputs when creating updating and making transactions on clients
             and organizational wallets
 
-    ***REMOVED***
+    """
 
     def __init__(self):
         pass
@@ -34,14 +34,14 @@ class WalletValidator:
     @staticmethod
     @handle_store_errors
     def wallet_exist(organization_id: str, uid: str) -> typing.Union[bool, None]:
-        ***REMOVED***
+        """
             **wallet_exist**
                 checks if a specific wallet exists
 
         :param 1. organization_id: the id of the organization the wallet belongs to
         :param 2. uid: the user id of the user the wallet belong to
         :return: boolean True / False representing if wallet exists or not
-        ***REMOVED***
+        """
 
         wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
                                                          WalletModel.uid == uid).get()
@@ -51,13 +51,13 @@ class WalletValidator:
     @staticmethod
     @handle_store_errors
     async def wallet_exist_async(organization_id: str, uid: str) -> typing.Union[bool, None]:
-        ***REMOVED***
+        """
             **wallet_exist_async**
                 asynchronous version of wallet exists
         :param organization_id:
         :param uid:
         :return:
-        ***REMOVED***
+        """
         wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
                                                          WalletModel.uid == uid).get_async().get_result()
 
@@ -69,7 +69,7 @@ class WalletValidator:
 
 
 class WalletModel(BaseModel):
-    ***REMOVED***
+    """
         **WALLET Documentations:**
 
         **Wallet Class**
@@ -92,7 +92,7 @@ class WalletModel(BaseModel):
             7. last_transaction_time: the last time a transaction has been made in this wallet
             8. paypal_address : the paypal address attached to this wallet
             9. is_verified: Indicates if paypal_address has been verified
-    ***REMOVED***
+    """
     organization_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
     uid: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
     wallet_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
@@ -122,7 +122,7 @@ class WalletModel(BaseModel):
 
     @property
     def can_withdraw(self) -> bool:
-        ***REMOVED***
+        """
             **Property**
                 True if withdrawals can be undertaken - this is dependent on amount availability and also
                 if paypal address is present and also verified
@@ -132,7 +132,7 @@ class WalletModel(BaseModel):
 
             :return: bool ->if True: there is enough funds on the wallet in order to create a withdrawal transaction
                     otherwise False
-        ***REMOVED***
+        """
         minimum_withdrawal: int = currency_util.return_minimum_withdrawal_by_currency(
             currency_symbol=self.available_funds.currency)
 
@@ -140,7 +140,7 @@ class WalletModel(BaseModel):
 
     @property
     def drawable_amount(self) -> AmountMixin:
-        ***REMOVED***
+        """
             **Property**
                 Amount that can be withdrawn right now
 
@@ -149,7 +149,7 @@ class WalletModel(BaseModel):
                 2. returns the maximum amount of money that can be withdrawn in one transaction
 
         :return: AmountMixin Representing the Maximum Amount of Money which can be withdrawn
-        ***REMOVED***
+        """
         if not self.can_withdraw:
             # Returns zero as withdrawal limit, as the available funds are below the minimum withdrawal limit
             return AmountMixin(amount=0, currency=self.available_funds.currency)
@@ -163,7 +163,7 @@ class WalletModel(BaseModel):
 
 
 class WalletTransactionsModel(BaseModel):
-    ***REMOVED***
+    """
         **Class WalletTransactionItemModel**
             a model to keep track of each transaction item and amount that belongs to the
             transaction mentioned in  **WalletTransactionsModel**
@@ -177,7 +177,7 @@ class WalletTransactionsModel(BaseModel):
         **NOTE**
             once a transaction has been verified amounts can change hands or transferred from
             actual accounts
-    ***REMOVED***
+    """
     organization_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True)
     uid: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True)
     transaction_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True)

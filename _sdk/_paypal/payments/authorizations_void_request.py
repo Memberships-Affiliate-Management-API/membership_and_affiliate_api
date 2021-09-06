@@ -9,9 +9,9 @@ from urllib.parse import quote  # Python 3+
 
 # noinspection PyDictCreation
 class AuthorizationsVoidRequest:
-    ***REMOVED***
+    """
     Voids, or cancels, an authorized payment, by ID. You cannot void an authorized payment that has been fully captured.
-    ***REMOVED***
+    """
     def __init__(self, authorization_id):
         self.verb = "POST"
         self.path = "/v2/payments/authorizations/{authorization_id}/void?".replace("{authorization_id}", quote(str(authorization_id)))

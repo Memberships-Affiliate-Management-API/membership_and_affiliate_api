@@ -1,7 +1,7 @@
-***REMOVED***
+"""
 **memberships main or documentations application api endpoint**
 
-***REMOVED***
+"""
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
 __twitter__ = "@blueitserver"
@@ -24,13 +24,13 @@ main_api_bp = Blueprint('main_api', __name__)
 @main_api_bp.route('/api/v1/main/auth/<path:path>', methods=['POST'])
 @logged_user
 def auth(current_user: Optional[dict], path: str) -> tuple:
-    ***REMOVED***
+    """
         **auth**
             for authentication based on password and email
             authentication api, handles login, password recovery, and user subscriptions,
             for membership & affiliates Management API, main app
     :return:
-    ***REMOVED***
+    """
     main_app_view: MainAPPAPIView = MainAPPAPIView()
 
     if path == 'login':
@@ -83,12 +83,12 @@ def auth(current_user: Optional[dict], path: str) -> tuple:
 @main_api_bp.route('/api/v1/main/contact', methods=['POST', 'GET', 'PUT', 'DELETE'])
 @logged_user
 def contact(current_user: Optional[dict]) -> tuple:
-    ***REMOVED***
+    """
         **contact**
             main contact api- handles everything related to
             contacts for both clients and admins
         :return: tuple: -> response, status_code
-    ***REMOVED***
+    """
     json_data: dict = request.get_json()
     if current_user and bool(current_user.get('uid')):
         # NOTE: if user is logged in add the user id in the message

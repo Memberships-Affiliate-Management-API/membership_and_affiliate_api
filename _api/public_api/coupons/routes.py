@@ -1,6 +1,6 @@
-***REMOVED***
+"""
 
-***REMOVED***
+"""
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
 __twitter__ = "@blueitserver"
@@ -19,7 +19,7 @@ coupons_bp = Blueprint('coupons', __name__)
 @coupons_bp.route('/api/v1/public/coupons/<path:path>', methods=['POST'])
 @handle_api_auth
 def coupons(path: str) -> tuple:
-    ***REMOVED***
+    """
         **coupons endpoint**
             Allows developers to integrate coupon codes functionality into
             the payment plans for services on their website.
@@ -48,7 +48,7 @@ def coupons(path: str) -> tuple:
             path == "get-expired":
                 given organization_id return expired coupon codes
 
-    ***REMOVED***
+    """
     # TODO - include organization_id for this routes, and refactor the view functions
     # Raises Bad Request error if request is not in json format
     if_bad_request_raise(request)

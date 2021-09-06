@@ -34,11 +34,11 @@ class MembershipsQueryMock:
 
     @staticmethod
     def rand_membership() -> Memberships:
-        ***REMOVED***
+        """
         **rand_membership**
             create a random membership for testing purposes
         :return: Membership Instance
-        ***REMOVED***
+        """
         return Memberships(organization_id=config_instance.ORGANIZATION_ID, uid=create_id(), plan_id=create_id(),
                            payment_status=random.choice(['paid', 'unpaid']), date_created=datetime_now(),
                            plan_start_date=today(), payment_method='paypal',
@@ -93,12 +93,12 @@ membership_mock_data: dict = {
 
 # noinspection PyShadowingNames
 def test_create_membership(mocker) -> None:
-    ***REMOVED***
+    """
     **test_create_membership**
         test if memberships can be created properly without errors
     :param mocker:
     :return: None
-    ***REMOVED***
+    """
     # Note: Patching put and Query Model requests so they do not perform the operations on the database
     mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
     mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
@@ -126,14 +126,14 @@ def test_create_membership(mocker) -> None:
 
 # noinspection PyShadowingNames
 def test_memberships_create_memberships_data_service_error(mocker) -> None:
-    ***REMOVED***
+    """
     **test_memberships_create_memberships_un_auth**
         tests if errors will be thrown in-case the application cannot determine the legitimacy of the user request
         or if user isn't suppose to perform the action as needed
 
     :param mocker:
     :return: None
-    ***REMOVED***
+    """
     # Note: Patching put and Query Model requests so they do not perform the operations on the database
     mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
     mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
@@ -159,13 +159,13 @@ def test_memberships_create_memberships_data_service_error(mocker) -> None:
 
 # noinspection PyShadowingNames
 def test_create_memberships_input_errors(mocker) -> None:
-    ***REMOVED***
+    """
     **test_create_memberships_input_errors**
         test create memberships in-case of faulty data
 
     :param mocker:
     :return: None
-    ***REMOVED***
+    """
     # Note: Patching put and Query Model requests so they do not perform the operations on the database
     mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
     mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
@@ -211,13 +211,13 @@ def test_create_memberships_input_errors(mocker) -> None:
 
 # noinspection PyShadowingNames
 def test_update_membership(mocker) -> None:
-    ***REMOVED***
+    """
     **test_update_membership**
         testing updated membership view function
 
     :param mocker: mocker module used to patch functions for testing purposes
     :return: None
-    ***REMOVED***
+    """
     # Note: Patching put and Query Model requests so they do not perform the operations on the database
     mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
     mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
@@ -249,13 +249,13 @@ def test_update_membership(mocker) -> None:
 
 # noinspection PyShadowingNames
 def test_update_membership_input_errors(mocker) -> None:
-    ***REMOVED***
+    """
         **test_update_membership_input_errors**
             tries to run update membership with faulty data,  if an error is not raised
             the test fails
     :param mocker:
     :return: None
-    ***REMOVED***
+    """
     # Note: Patching put and Query Model requests so they do not perform the operations on the database
     mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
     mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
@@ -293,13 +293,13 @@ def test_update_membership_input_errors(mocker) -> None:
 
 # noinspection PyShadowingNames
 def test_set_membership_status(mocker) -> None:
-    ***REMOVED***
+    """
     **test_set_membership_status**
         testing the ability to set membership payment status
 
     :param mocker:
     :return: None
-    ***REMOVED***
+    """
     mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
     mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
@@ -320,13 +320,13 @@ def test_set_membership_status(mocker) -> None:
 
 # noinspection PyShadowingNames
 def test_set_membership_status_errors(mocker) -> None:
-    ***REMOVED***
+    """
     **test_set_membership_status_errors**
         test set_membership_payment_status with faulty data
 
     :param mocker:
     :return: None
-    ***REMOVED***
+    """
     mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
     mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
@@ -357,13 +357,13 @@ def test_set_membership_status_errors(mocker) -> None:
 
 # noinspection PyShadowingNames
 def test_change_membership(mocker) -> None:
-    ***REMOVED***
+    """
     **test_change_membership**
         testing the ability to change_membership
 
     :param mocker:
     :return: None
-    ***REMOVED***
+    """
     mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
     membership_query_mock_instance = MembershipsQueryMock()
     membership_query_mock_instance.membership_instance.plan_id = membership_mock_data['plan_id']
@@ -386,12 +386,12 @@ def test_change_membership(mocker) -> None:
 
 # noinspection PyShadowingNames
 def test_change_memberships_input_errors(mocker):
-    ***REMOVED***
+    """
     **test_change_memberships_input_errors**
 
     :param mocker:
     :return:
-    ***REMOVED***
+    """
     mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
     mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
@@ -429,13 +429,13 @@ def test_change_memberships_input_errors(mocker):
 
 # noinspection PyShadowingNames
 def test_send_welcome_email(mocker) -> None:
-    ***REMOVED***
+    """
     **test_send_welcome_email**
         tests the ability to schedule a welcome email for members
 
     :param mocker:
     :return: None
-    ***REMOVED***
+    """
     mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
     mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
@@ -456,12 +456,12 @@ def test_send_welcome_email(mocker) -> None:
 
 # noinspection PyShadowingNames
 def test_plan_members_payment_status(mocker) -> None:
-    ***REMOVED***
+    """
     **test_plan_members_payment_status**
         test the ability to return members with a certain payment status
     :param mocker:
     :return: None
-    ***REMOVED***
+    """
     mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
     mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
@@ -485,12 +485,12 @@ def test_plan_members_payment_status(mocker) -> None:
 
 # noinspection PyShadowingNames
 def test_return_plan_members(mocker) -> None:
-    ***REMOVED***
+    """
     **test_return_plan_members**
         testing the ability to return plan members
     :param mocker:
     :return: None
-    ***REMOVED***
+    """
     mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
     mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
@@ -511,12 +511,12 @@ def test_return_plan_members(mocker) -> None:
 
 # noinspection PyShadowingNames
 def test_is_member_off(mocker) -> None:
-    ***REMOVED***
+    """
     **test_is_member_off**
         checks membership plan of a certain member
     :param mocker:
     :return: None
-    ***REMOVED***
+    """
     mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
     mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
@@ -536,13 +536,13 @@ def test_is_member_off(mocker) -> None:
 
 # noinspection PyShadowingNames
 def test_payment_amount(mocker) -> None:
-    ***REMOVED***
+    """
     **test_payment_amount**
         test the ability to return payment amount for a user
 
     :param mocker:
     :return: None
-    ***REMOVED***
+    """
     mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
     mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
     mocker.patch('views.MembershipPlansView._get_plan', return_value=MembershipPlansQueryMock().get())

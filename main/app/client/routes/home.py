@@ -1,7 +1,7 @@
-***REMOVED***
+"""
     **Client Home Route**
         entry page to client dashboard
-***REMOVED***
+"""
 
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
@@ -26,12 +26,12 @@ client_home_bp = Blueprint('client_home', __name__)
 @logged_user
 @app_cache.cache.cached(timeout=return_ttl('short'))
 def client_home(current_user: Optional[dict]) -> tuple:
-    ***REMOVED***
+    """
         **client_home**
             entry page to client dashboard
     :param current_user:
     :return:
-    ***REMOVED***
+    """
     get_flashed_messages()
     if isinstance(current_user, dict) and bool(current_user.get('uid')):
         return render_template('client/home.html', current_user=current_user), status_codes.status_ok_code

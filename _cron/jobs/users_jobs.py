@@ -1,8 +1,8 @@
-***REMOVED***
+"""
     **user_jobs module**
         module used to run cron jobs related to user accounts
 
-***REMOVED***
+"""
 import asyncio
 from typing import List, Coroutine, Optional
 from _sdk._email import Mailgun
@@ -11,11 +11,11 @@ from utils import today, date_days_ago
 
 
 class UserJobs(Mailgun):
-    ***REMOVED***
+    """
     **Class UserJobs**
         cron jobs for users
 
-    ***REMOVED***
+    """
 
     def __init__(self):
         super(UserJobs, self).__init__()
@@ -24,13 +24,13 @@ class UserJobs(Mailgun):
         asyncio.run(self.send_login_reminders())
 
     async def do_send_login_reminder(self, user_instance: UserModel):
-        ***REMOVED***
+        """
             **do_send_login_reminder**
                 send actual login reminder to user
 
         :param user_instance:
         :return:
-        ***REMOVED***
+        """
         uid: str = user_instance.uid
         organization_id: str = user_instance.organization_id
         org_data: Optional[dict] = await self._get_organization_data_async(organization_id=organization_id, uid=uid)
@@ -58,11 +58,11 @@ class UserJobs(Mailgun):
         self._do_schedule_mail(to_email=user_instance.email, subject=subject, text=text, html=html)
 
     async def send_login_reminders(self) -> None:
-        ***REMOVED***
+        """
         **send_login_reminders**
             sends login reminders to users and developers
         :return: None
-        ***REMOVED***
+        """
         seven_days_ago = date_days_ago(days=7)
         users_list: List[UserModel] = [user for user in UserModel.query(UserModel.email_verified == True).fetch_async()
                                        if user.last_login_date < seven_days_ago]

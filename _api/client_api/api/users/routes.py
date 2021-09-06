@@ -11,12 +11,12 @@ client_users_api_bp = Blueprint("client_users_api", __name__)
 @client_users_api_bp.route('/_api/v1/client/users/<string:path>', methods=["POST"])
 @handle_apps_authentication
 def client_users(path: str) -> tuple:
-    ***REMOVED***
+    """
         **client_users**
             this api endpoints are used by clients or developers in order to login into the main membership application
         :param path:
         :return:
-    ***REMOVED***
+    """
     if_bad_request_raise(request)
     user_data: dict = request.get_json()
     secret_key: Optional[str] = user_data.get("SECRET_KEY")

@@ -1,7 +1,7 @@
-***REMOVED***
+"""
 ***Memberships Management API***
 
-***REMOVED***
+"""
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
 __twitter__ = "@blueitserver"
@@ -31,9 +31,9 @@ def get_members(path: str) -> tuple:
 @memberships_bp.route("/api/v1/public/member", methods=['POST', 'PUT'])
 @handle_api_auth
 def create_member() -> tuple:
-    ***REMOVED***
+    """
         create or update member
-    ***REMOVED***
+    """
     # Raises Bad Request error if request is not in json format
     if_bad_request_raise(request)
 
@@ -51,9 +51,9 @@ def create_member() -> tuple:
 @memberships_bp.route("/api/v1/public/member/status/<string:path>", methods=['GET', 'PUT'])
 @handle_api_auth
 def get_update_status(path: str) -> tuple:
-    ***REMOVED***
+    """
         plan_id for the status to get or update
-    ***REMOVED***
+    """
     # Raises Bad Request error if request is not in json format
     if_bad_request_raise(request)
 
@@ -68,9 +68,9 @@ def get_update_status(path: str) -> tuple:
 
         return memberships_view.set_membership_payment_status(organization_id=organization_id, uid=uid, status=status)
     elif request.method == "GET":
-        ***REMOVED***
+        """
             return membership record    
-        ***REMOVED***
+        """
         uid, organization_id = path.split("@")
         return memberships_view.is_member_off(organization_id=organization_id, uid=uid)
 
@@ -189,9 +189,9 @@ def update_membership_plan() -> tuple:
 @memberships_bp.route('/api/v1/public/is-member-off/<string:path>', methods=["GET"])
 @handle_api_auth
 def is_member_off(path: str) -> tuple:
-    ***REMOVED***
+    """
         for a specific user returns membership
-    ***REMOVED***
+    """
     uid, organization_id = path.split("@")
 
     return memberships_view.is_member_off(organization_id=organization_id, uid=uid)
@@ -201,9 +201,9 @@ def is_member_off(path: str) -> tuple:
 @memberships_bp.route('/api/v1/public/memberships-payment-amount/<string:path>', methods=["GET"])
 @handle_api_auth
 def payment_amount(path: str) -> tuple:
-    ***REMOVED***
+    """
         for a specific member return payment amounts
-    ***REMOVED***
+    """
     uid, organization_id = path.split("@")
     return memberships_view.payment_amount(organization_id=organization_id, uid=uid)
 

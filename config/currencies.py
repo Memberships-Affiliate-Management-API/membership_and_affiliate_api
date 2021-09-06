@@ -1,8 +1,8 @@
-***REMOVED***
+"""
     **Constants Representing World Wide Currency Symbols and Names**
 
     this module describes a list of Currency Symbols and Their Names
-***REMOVED***
+"""
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
 __twitter__ = "@blueitserver"
@@ -16,9 +16,9 @@ from utils.utils import return_ttl
 
 
 class CurrencyUtils:
-    ***REMOVED***
+    """
         Utilities to manage Currencies and convert between them
-    ***REMOVED***
+    """
     from database.mixins import AmountMixin
 
     def __init__(self):
@@ -65,37 +65,37 @@ class CurrencyUtils:
             ["VEF", "Venezuela Bolivar"], ["VND", "Viet Nam Dong"], ["YER", "Yemen Rial"], ["ZWD", "Zimbabwe Dollar"]]
 
     def currency_symbols(self) -> typing.List[str]:
-        ***REMOVED***
+        """
             returns currency symbols only
         :return:
-        ***REMOVED***
+        """
         return [currency[0] for currency in self.currency_list]
 
     def get_currencies(self) -> typing.List[tuple]:
-        ***REMOVED***
+        """
             returns a tuple with currency symbols and definitions
         :return: List of Tuples
-        ***REMOVED***
+        """
         return [(currency[0], currency[1]) for currency in self.currency_list]
 
     @staticmethod
     def get_conversion_rate(from_symbol: str, to_symbol: str) -> typing.Union[float, None]:
-        ***REMOVED***
+        """
             :param from_symbol:
             :param to_symbol:
             :return: float number representing the conversion rate
-        ***REMOVED***
+        """
         # TODO- use an api to get the present conversion_rate
         pass
 
     @app_cache.cache.memoize(timeout=return_ttl('short'))
     def currency_conversion(self, from_amount: AmountMixin, convert_to_symbol: str) -> typing.Union[AmountMixin, None]:
-        ***REMOVED***
+        """
             given an origin amount convert to any supported currency
         :param from_amount:
         :param convert_to_symbol:
         :return:
-        ***REMOVED***
+        """
         conversion_rate: typing.Union[float, None] = self.get_conversion_rate(from_symbol=from_amount.currency,
                                                                               to_symbol=convert_to_symbol)
         if convert_to_symbol is not None:
@@ -107,12 +107,12 @@ class CurrencyUtils:
 
     @app_cache.cache.memoize(timeout=return_ttl('short'))
     def return_minimum_withdrawal_by_currency(self, currency_symbol: str) -> int:
-        ***REMOVED***
+        """
             NOTE: will return the minimum withdrawal amount based on the currency of the wallet
 
         :param currency_symbol: symbol of the currency to return minimum withdrawal amount by
         :return: integer indicating amount in cents
-        ***REMOVED***
+        """
         US_Dollar: str = "USD"
         usd_minimum_withdrawal: int = config_instance.MINIMUM_WITHDRAWAL_AMOUNT_USD
         currency_symbol: str = currency_symbol.strip().upper()
@@ -131,7 +131,7 @@ del CurrencyUtils
 
 
 if __name__ == '__main__':
-    ***REMOVED***
+    """
         quick tests here
-    ***REMOVED***
+    """
     pass

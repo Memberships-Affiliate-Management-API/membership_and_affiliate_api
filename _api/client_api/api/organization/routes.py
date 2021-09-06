@@ -1,8 +1,8 @@
-***REMOVED***
+"""
     **Organization Routes Module**
         Handles API Requests for Organizations
 
-***REMOVED***
+"""
 from typing import Optional
 from flask import request, Blueprint, current_app
 from config.exceptions import UnAuthenticatedError, error_codes, if_bad_request_raise
@@ -15,7 +15,7 @@ client_organizations_api_bp = Blueprint('client_organizations_api', __name__)
 @client_organizations_api_bp.route('/_api/v1/client-admin/organization/<string:path>', methods=['POST'])
 @handle_apps_authentication
 def client_organization_main(path: str) -> tuple:
-    ***REMOVED***
+    """
         **client_organization_main**
             handles requests related to organizations creations and manipulation
             will be used only when clients/ developers registers an api in order
@@ -25,7 +25,7 @@ def client_organization_main(path: str) -> tuple:
             this api will only be called from the main application -
             that means no users for clients will make requests to this endpoint
     :return:
-    ***REMOVED***
+    """
     if_bad_request_raise(request)
     # NOTE: client admin request to create organization
     if path == "create":

@@ -14,18 +14,18 @@ import functools
 
 
 class Validators(HelpDeskValid, TicketValid, TicketThreadValid):
-    ***REMOVED***
+    """
         helpdesk input validators
-    ***REMOVED***
+    """
 
     def __init__(self):
         super(Validators, self).__init__()
 
     @staticmethod
     def is_user(uid: str) -> bool:
-        ***REMOVED***
+        """
             TODO find out if uid contains valid user
-        ***REMOVED***
+        """
 
         return True
 
@@ -35,33 +35,33 @@ class Validators(HelpDeskValid, TicketValid, TicketThreadValid):
 
     @staticmethod
     def is_email_valid(email: str) -> bool:
-        ***REMOVED***
+        """
             TODO - check if user owns email
             TODO - or if email is being used by another user
-        ***REMOVED***
+        """
         regex = '\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b'
         return True if re.search(regex, email) is not None else False
 
     @staticmethod
     def is_cell_valid(cell: str) -> bool:
-        ***REMOVED***
+        """
             TODO - check if user owns cell
             TODO - or if cell is being used by another user
-        ***REMOVED***
+        """
         pass
 
     @staticmethod
     async def is_cell_valid_async(cell: str) -> bool:
-        ***REMOVED***
+        """
             TODO - check if user owns cell
             TODO - or if cell is being used by another user
-        ***REMOVED***
+        """
         pass
 
     def is_ticket_valid(self, uid: str, topic: str, subject: str, message: str, email: str, cell: str) -> bool:
-        ***REMOVED***
+        """
             TODO- validate ticket
-        ***REMOVED***
+        """
         valid_user: bool = self.is_user(uid=uid)
         valid_topic: bool = self.is_topic_valid(topic=topic)
         valid_subject: bool = self.is_subject_valid(subject=subject)
@@ -169,9 +169,9 @@ class HelpDeskView(Validators):
 
 
 class TicketsMessaging(Mailgun):
-    ***REMOVED***
+    """
         **Class TicketsMessaging**
-    ***REMOVED***
+    """
 
     def __init__(self) -> None:
         super(TicketsMessaging, self).__init__()
@@ -185,10 +185,10 @@ class TicketsMessaging(Mailgun):
 
 # noinspection DuplicatedCode
 class TicketView(Validators, TicketsMessaging):
-    ***REMOVED***
+    """
     **Class TicketView**
         class used to work with tickets, and access data
-    ***REMOVED***
+    """
 
     def __init__(self):
         super(TicketView, self).__init__()
@@ -250,10 +250,10 @@ class TicketView(Validators, TicketsMessaging):
     @use_context
     @handle_view_errors
     def resolve_ticket(self, ticket_id: str) -> tuple:
-        ***REMOVED***
+        """
             ticket_id: str
             return: resolved ticket
-        ***REMOVED***
+        """
         ticket_instance: Ticket = Ticket.query(Ticket.ticket_id == ticket_id).get()
 
         if isinstance(ticket_instance, Ticket) and bool(ticket_instance):
@@ -271,10 +271,10 @@ class TicketView(Validators, TicketsMessaging):
     @use_context
     @handle_view_errors
     async def resolve_ticket_async(self, ticket_id: str) -> tuple:
-        ***REMOVED***
+        """
             ticket_id: str
             return: resolved ticket
-        ***REMOVED***
+        """
         ticket_instance: Ticket = Ticket.query(Ticket.ticket_id == ticket_id).get_async().get_result()
 
         if isinstance(ticket_instance, Ticket) and bool(ticket_instance):
@@ -391,9 +391,9 @@ class TicketView(Validators, TicketsMessaging):
     @use_context
     @handle_view_errors
     def send_response_by_email(self, ticket_id: str, subject: str, message: str) -> tuple:
-        ***REMOVED***
+        """
             find ticket send email response mark ticket save ticket save response
-        ***REMOVED***
+        """
         ticket_instance: Ticket = Ticket.query(Ticket.ticket_id == ticket_id).get()
 
         if isinstance(ticket_instance, Ticket) and bool(ticket_instance):
@@ -416,9 +416,9 @@ class TicketView(Validators, TicketsMessaging):
     @use_context
     @handle_view_errors
     async def send_response_by_email_async(self, ticket_id: str, subject: str, message: str) -> tuple:
-        ***REMOVED***
+        """
             find ticket send email response mark ticket save ticket save response
-        ***REMOVED***
+        """
         ticket_instance: Ticket = Ticket.query(Ticket.ticket_id == ticket_id).get_async().get_result()
 
         if isinstance(ticket_instance, Ticket) and bool(ticket_instance):
@@ -442,9 +442,9 @@ class TicketView(Validators, TicketsMessaging):
     @use_context
     @handle_view_errors
     def send_sms_notification(self, ticket_id: str, subject: str, message: str) -> tuple:
-        ***REMOVED***
+        """
             find ticket send notification update ticket to reflect that notification was sent
-        ***REMOVED***
+        """
         ticket_instance: Ticket = Ticket.query(Ticket.ticket_id == ticket_id).get()
 
         if isinstance(ticket_instance, Ticket) and bool(ticket_instance):
@@ -466,9 +466,9 @@ class TicketView(Validators, TicketsMessaging):
     @use_context
     @handle_view_errors
     async def send_sms_notification_async(self, ticket_id: str, subject: str, message: str) -> tuple:
-        ***REMOVED***
+        """
             find ticket send notification update ticket to reflect that notification was sent
-        ***REMOVED***
+        """
         ticket_instance: Ticket = Ticket.query(Ticket.ticket_id == ticket_id).get_async().get_result()
 
         if isinstance(ticket_instance, Ticket) and bool(ticket_instance):
@@ -493,9 +493,9 @@ class TicketView(Validators, TicketsMessaging):
     @use_context
     @handle_view_errors
     def add_response(self, ticket_id: str, subject: str, message: str) -> tuple:
-        ***REMOVED***
+        """
             find ticket add response
-        ***REMOVED***
+        """
         ticket_instance: Ticket = Ticket.query(Ticket.ticket_id == ticket_id).get()
 
         if isinstance(ticket_instance, Ticket) and bool(ticket_instance):
@@ -520,9 +520,9 @@ class TicketView(Validators, TicketsMessaging):
     @use_context
     @handle_view_errors
     async def add_response_async(self, ticket_id: str, subject: str, message: str) -> tuple:
-        ***REMOVED***
+        """
             find ticket add response
-        ***REMOVED***
+        """
         ticket_instance: Ticket = Ticket.query(
             Ticket.ticket_id == ticket_id).get_async().get_result()
 

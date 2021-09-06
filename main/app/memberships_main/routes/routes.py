@@ -1,7 +1,7 @@
-***REMOVED***
+"""
     **Main Memberships & Affiliates Management API Website Routes**
         Routes for requests related to main website for Memberships & Affiliates Management API.
-***REMOVED***
+"""
 
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
@@ -27,14 +27,14 @@ memberships_main_bp = Blueprint('memberships_main', __name__)
 @logged_user
 @app_cache.cache.cached(timeout=return_ttl('short'), unless=can_cache())
 def memberships_main(current_user: Optional[dict]) -> tuple:
-    ***REMOVED***
+    """
         **memberships_main**
             Basic Main route for Memberships & Affiliates Management API Admin APP
             Errors are handled by an error handler, located in a separate blueprint
 
     :param current_user: Logged In User None Otherwise
     :return: template plus status code as a tuple
-    ***REMOVED***
+    """
     get_flashed_messages()
     if isinstance(current_user, dict) and bool(current_user.get('uid')):
         return render_template('main/home.html', current_user=current_user), status_codes.status_ok_code
@@ -47,14 +47,14 @@ def memberships_main(current_user: Optional[dict]) -> tuple:
 @logged_user
 @app_cache.cache.cached(timeout=return_ttl('short'), unless=can_cache())
 def memberships_main_routes(current_user: Optional[dict], path: str) -> tuple:
-    ***REMOVED***
+    """
         @app_cache.cache.memoize( ) caching the results of this function based on function
         parameters current user and path.
 
     :param current_user: user who has logged in, or None if no User has logged in
     :param path: the requested path
     :return: rendered_template plus status code
-    ***REMOVED***
+    """
     get_flashed_messages()
 
     if path == 'home' or path == "home.html":
@@ -145,13 +145,13 @@ def memberships_main_routes(current_user: Optional[dict], path: str) -> tuple:
 @logged_user
 @app_cache.cache.cached(timeout=return_ttl('short'), unless=can_cache())
 def api_demos(current_user: Optional[dict], path: str) -> tuple:
-    ***REMOVED***
+    """
        @app_cache.cache.memoize() this will enable caching based on function arguments in this case current_user, and path
 
     :param current_user: the user making the request None if no user has logged in
     :param path: path being requested
     :return: a tuple containing rendered template and response code
-    ***REMOVED***
+    """
     get_flashed_messages()
     if path == "demos":
         if isinstance(current_user, dict) and bool(current_user.get('uid')):
@@ -202,13 +202,13 @@ def api_demos(current_user: Optional[dict], path: str) -> tuple:
 @logged_user
 @app_cache.cache.cached(timeout=return_ttl('short'), unless=can_cache())
 def sdk_examples(current_user: Optional[dict], path: str) -> tuple:
-    ***REMOVED***
+    """
         @app_cache.cache.memoize() will cache the results of the function based on current_user and path
 
     :param current_user: the user making the request None if user has not logged in
     :param path: the path being requested
     :return: render_template() plus status code as a tuple
-    ***REMOVED***
+    """
     get_flashed_messages()
     if path == "examples":
         # TODO- need to display this once Front End and Back End SDKS are done at least

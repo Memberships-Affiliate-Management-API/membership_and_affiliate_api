@@ -1,9 +1,9 @@
-***REMOVED***
+"""
     module used to set values into ndb database properties,
     this module also has an added function of validating any such values to insure data integrity.
     the module will also trigger events when some database properties are being set or reset.
     allowing certain actions to be triggered if its necessary to do so.
-***REMOVED***
+"""
 
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
@@ -24,7 +24,7 @@ import phonenumbers
 
 
 class Events:
-    ***REMOVED***
+    """
         **Class Events**
            asynchronously triggers events when certain values are changed on the database
            events server must be instantiated or a ready made solution added
@@ -32,17 +32,17 @@ class Events:
            **Suggestion:** or could use a memory based data-structure for now to control
            events, and then create a method which will continuously fetch and execute
            the events asynchronously.
-    ***REMOVED***
+    """
 
     def __init__(self):
         pass
 
 
 class Util:
-    ***REMOVED***
+    """
         **Class Util**
             ndb property validators utilities, constants and helpers
-    ***REMOVED***
+    """
 
     def __init__(self):
         # maximum length for coupon codes
@@ -54,10 +54,10 @@ class Util:
 
     @staticmethod
     def return_payment_status_list() -> List[str]:
-        ***REMOVED***
+        """
         **return this from config**
         :return:
-        ***REMOVED***
+        """
         return ['paid', 'unpaid']
 
     @staticmethod
@@ -70,24 +70,24 @@ class Util:
 
     @staticmethod
     def return_property_name(prop: ndb.Property) -> str:
-        ***REMOVED***
+        """
             **return_property_name**
                 Returns the name of the ndb property
 
             :param prop: -> ndb.Property
             :return str: -> name of class
-        ***REMOVED***
+        """
         return prop._code_name
 
     @staticmethod
     def regex_check_email(email: str) -> bool:
-        ***REMOVED***
+        """
             **regex_check_email**
                 checking if email is valid with regex_pattern
 
         :param email: email address being checked
         :return: bool True if Valid
-        ***REMOVED***
+        """
 
         regex_pattern = r"\"?([-a-zA-Z0-9.`?{}]+@\w+\.\w+)\"?"
         pattern = re.compile(regex_pattern)
@@ -95,7 +95,7 @@ class Util:
 
     @staticmethod
     def password_complexity(password: str) -> bool:
-        ***REMOVED***
+        """
             **password_complexity**
                 1. enforces password complexity
                 2. password contains upper-case and lower-case characters,
@@ -103,7 +103,7 @@ class Util:
 
         :param password: -> text format of the password to be checked
         :return: bool -> True if password is complex enough
-        ***REMOVED***
+        """
         # NOTE: password_complexity checks allows Spaces
         regex_pattern = r'[A-Za-z0-9@#$%^& +=]{8,}'
         pattern = re.compile(regex_pattern)
@@ -111,7 +111,7 @@ class Util:
 
     @staticmethod
     def regex_check_domain(domain: str) -> bool:
-        ***REMOVED***
+        """
             **regex_check_domain**
                 1. checks a domain name for validity with regex pattern
                    r'^[a-z0-9]([a-z0-9-]+\.){1,}[a-z0-9]+\Z'
@@ -119,20 +119,20 @@ class Util:
 
         :param domain: str -> domain name to check
         :return: bool: True -> if pattern matches
-        ***REMOVED***
+        """
         regex_pattern = r'^[a-z0-9]([a-z0-9-]+\.){1,}[a-z0-9]+\Z'
         pattern = re.compile(regex_pattern)
         return bool(re.fullmatch(pattern, domain))
 
     @staticmethod
     def resolve_domain_name(domain: str) -> bool:
-        ***REMOVED***
+        """
             **resolve_domain_name**
                 checks if domain resolves to a valid IP address e.g (102.103.100.01)
 
         :param domain: str -> domain name example : google.com
         :return: True if domain resolves else False
-        ***REMOVED***
+        """
         try:
             return bool(socket.gethostbyname_ex(domain))
         except socket.gaierror:
@@ -140,13 +140,13 @@ class Util:
 
     @staticmethod
     def format_cell_number(cell: str) -> str:
-        ***REMOVED***
+        """
             **format_cell_number**
                 returns an internationally formatted cell_number
 
         :param cell: str -> cell number with international code
         :return: cell: str -> formatted cell number
-        ***REMOVED***
+        """
         try:
             cell_number = phonenumbers.parse(cell.strip(), None)
             return str(phonenumbers.format_number(cell_number, phonenumbers.PhoneNumberFormat.INTERNATIONAL))
@@ -155,13 +155,13 @@ class Util:
 
     @staticmethod
     def regex_check_cell(cell: str) -> bool:
-        ***REMOVED***
+        """
             **regex_check_cell**
                 regex check cell number
 
         :param cell: str -> cell number in international format
         :return: bool -> true if number is valid
-        ***REMOVED***
+        """
         try:
             cell_object = phonenumbers.parse(cell, None)
             possibly_cell_number: bool = phonenumbers.is_possible_number(cell_object)
@@ -177,20 +177,20 @@ class Util:
 
 
 class PropertySetters(Events, Util):
-    ***REMOVED***
+    """
         **Class PropertySetters**
 
             Used to set and validate input to ndb properties.
             If input data is invalid the setters will raise ValueError or
             TypeError depending on the error at hand.
-    ***REMOVED***
+    """
 
     def __init__(self):
         super(PropertySetters, self).__init__()
 
     @staticmethod
     def set_id(prop: ndb.StringProperty, value: Optional[str]) -> str:
-        ***REMOVED***
+        """
             **set_id**
                 sets a unique id used to differentiate between different records in database
 
@@ -201,7 +201,7 @@ class PropertySetters(Events, Util):
         :param prop: property to set
         :param value: value as id to set
         :return: returns id as string
-        ***REMOVED***
+        """
         property_name: str = property_.return_property_name(prop=prop)
         if not (isinstance(value, str)):
             message: str = f'''isinstance ID, should be an instance of : {property_name} , and should represent an _id'''
@@ -214,13 +214,13 @@ class PropertySetters(Events, Util):
 
     @staticmethod
     def set_coupon_code(prop: ndb.StringProperty, value: Optional[str]) -> str:
-        ***REMOVED***
+        """
             **set_coupon_code**
                 validates and sets coupon code for membership payments
         :param prop: coupon code property to set
         :param value: coupon code
         :return:
-        ***REMOVED***
+        """
         property_name: str = property_.return_property_name(prop=prop)
         if not (isinstance(value, str)):
             raise ValueError(f"Coupon Code, is an instance of: {property_name} , and can only be a string")
@@ -235,7 +235,7 @@ class PropertySetters(Events, Util):
     # noinspection DuplicatedCode
     @staticmethod
     def set_paypal(prop: ndb.StringProperty, value: Optional[str]) -> str:
-        ***REMOVED***
+        """
             **set_paypal**
                 validate the paypal email if its really an email return the email
                 to set on the paypal property
@@ -243,7 +243,7 @@ class PropertySetters(Events, Util):
         :param prop: property to set
         :param value: paypal_address to set once validated
          :return: valid paypal_address only
-        ***REMOVED***
+        """
         property_name: str = property_.return_property_name(prop=prop)
         if not isinstance(value, str):
             message: str = f"{property_name} , can only be a string representing paypal_address"
@@ -258,14 +258,14 @@ class PropertySetters(Events, Util):
 
     @staticmethod
     def set_transaction_types(prop: ndb.StringProperty, value: Optional[str]) -> str:
-        ***REMOVED***
+        """
             **set_transaction_types**
                 validated and set transaction_types
 
         :param prop: property representing transaction_types
         :param value: transaction type to check
         :return: valid transaction type, return to set
-        ***REMOVED***
+        """
         property_name: str = property_.return_property_name(prop=prop)
         if not (isinstance(value, str)):
             raise ValueError(f"transaction_type, is an instance of : {property_name} , and can only be a string")
@@ -278,7 +278,7 @@ class PropertySetters(Events, Util):
 
     @staticmethod
     def set_datetime(prop: ndb.DateTimeProperty, value: datetime) -> datetime:
-        ***REMOVED***
+        """
             **set_datetime**
                 checks if value is a python datetime type, if not raise a type error indicating
                 what i should be
@@ -286,7 +286,7 @@ class PropertySetters(Events, Util):
         :param prop: datetime property to set if value is also a python datetime value
         :param value: python datetime
         :return: datetime
-        ***REMOVED***
+        """
         property_name: str = property_.return_property_name(prop=prop)
         if not (isinstance(value, datetime)):
             raise TypeError(f"datetime, is an instance of : {property_name} , must represent a valid python date")
@@ -294,14 +294,14 @@ class PropertySetters(Events, Util):
 
     @staticmethod
     def set_bool(prop: ndb.BooleanProperty, value: Optional[bool]) -> bool:
-        ***REMOVED***
+        """
             **set_bool**
                 checks if value is boolean if not raises a TypeError, then returns the value if valid
 
         :param prop: property boolean to set if value is a boolean
         :param value: boolean value
         :return: returns value as boolean
-        ***REMOVED***
+        """
         property_name: str = property_.return_property_name(prop=prop)
         if not (isinstance(value, bool)):
             raise TypeError(f"boolean, is an instance of : {property_name} , and can only be Either True or False")
@@ -309,21 +309,21 @@ class PropertySetters(Events, Util):
 
     @staticmethod
     def set_status(prop: ndb.StringProperty, value: Optional[str]) -> str:
-        ***REMOVED***
+        """
             **set payment status**
                 only two valid statuses paid and unpaid check if input is valid and set
 
         :param prop:
         :param value:
         :return:
-        ***REMOVED***
+        """
         property_name: str = property_.return_property_name(prop=prop)
         if value is None:
             raise TypeError(f"{property_name} , cannot be Null")
 
         if not (isinstance(value, str)):
-            message: str = f***REMOVED***status, is an instance of : {property_name} , and can only be a string 
-            representing payment status***REMOVED***
+            message: str = f"""status, is an instance of : {property_name} , and can only be a string 
+            representing payment status"""
             raise TypeError(message)
 
         temp = value.strip().lower()
@@ -331,21 +331,21 @@ class PropertySetters(Events, Util):
             raise ValueError(f"status, is an instance of : {property_name} , and cannot be Null")
 
         if temp not in property_.return_payment_status_list():
-            message: str = f***REMOVED***Status should either paid or unpaid this {value} is not a valid status***REMOVED***
+            message: str = f"""Status should either paid or unpaid this {value} is not a valid status"""
             raise TypeError(f"{message} invalid status")
 
         return temp
 
     @staticmethod
     def set_string(prop: ndb.StringProperty, value: Optional[str]) -> str:
-        ***REMOVED***
+        """
             **Generic String Setter**
                 checks only that a string is a string
 
         :param prop: ndb -> property being set
         :param value: string
         :return:
-        ***REMOVED***
+        """
         property_name: str = property_.return_property_name(prop=prop)
         if value is None or value == "None" or not bool(value.strip()):
             raise TypeError(f"{property_name} , cannot be Null")
@@ -357,12 +357,12 @@ class PropertySetters(Events, Util):
 
     @staticmethod
     def set_user_type(prop: ndb.StringProperty, value: Optional[str]) -> str:
-        ***REMOVED***
+        """
 
         :param prop:
         :param value:
         :return:
-        ***REMOVED***
+        """
         property_name: str = property_.return_property_name(prop=prop)
         if value is None or value == "None" or not bool(value.strip()):
             raise TypeError(f"{property_name} , cannot be Null")
@@ -377,7 +377,7 @@ class PropertySetters(Events, Util):
 
     @staticmethod
     def set_schedule_term(prop: ndb.StringProperty, value: Optional[str]) -> str:
-        ***REMOVED***
+        """
         **set_schedule_term**
             set scheduled term - raises an error if scheduled term is not a string or not one of
             the valid scheduled terms
@@ -385,7 +385,7 @@ class PropertySetters(Events, Util):
         :param prop:
         :param value:
         :return:
-        ***REMOVED***
+        """
         property_name: str = property_.return_property_name(prop=prop)
         if value is None:
             raise TypeError(f"{property_name} , cannot be Null")
@@ -405,14 +405,14 @@ class PropertySetters(Events, Util):
 
     @staticmethod
     def set_schedule_day(prop: ndb.IntegerProperty, value: Optional[int]) -> int:
-        ***REMOVED***
+        """
         **set_schedule_day**
             set scheduled day for this plan depending on this plans scheduled term the transaction will
             be made on the first transaction day coinciding with the scheduled term
         :param prop: scheduled day property
         :param value: value to set
         :return: scheduled day as integer
-        ***REMOVED***
+        """
         property_name: str = property_.return_property_name(prop=prop)
         if not (isinstance(value, int)):
             raise TypeError(f'{property_name}, can only be an integer')
@@ -423,7 +423,7 @@ class PropertySetters(Events, Util):
 
     @staticmethod
     def set_number(prop: ndb.IntegerProperty, value: Optional[int]) -> int:
-        ***REMOVED***
+        """
         **set_number**
             set an integer number into a database property
             will check if input is really an integer and then returns the number if not
@@ -431,7 +431,7 @@ class PropertySetters(Events, Util):
         :param prop: property to set
         :param value: value being set must be integer
         :return: valid integer
-        ***REMOVED***
+        """
         property_name: str = property_.return_property_name(prop=prop)
         if not (isinstance(value, int)):
             raise TypeError(f'{property_name}, can only be an integer')
@@ -443,7 +443,7 @@ class PropertySetters(Events, Util):
 
     @staticmethod
     def set_date(prop: ndb.DateProperty, value: date) -> date:
-        ***REMOVED***
+        """
             **set_date**
                 checks to see if date is valid if yes returns the date
                 throws TypeError if an invalid date has been supplied
@@ -451,7 +451,7 @@ class PropertySetters(Events, Util):
         :param prop: property representing the date
         :param value: value to set to property
         :return: returns valid date only
-        ***REMOVED***
+        """
         property_name: str = property_.return_property_name(prop=prop)
         if not (isinstance(value, date)):
             raise TypeError(f"{property_name}, can only be an instance of date")
@@ -459,62 +459,62 @@ class PropertySetters(Events, Util):
 
     @staticmethod
     def set_payment_method(prop: ndb.StringProperty, value: Optional[str]) -> str:
-        ***REMOVED***
+        """
             **set_payment_method**
                 checks to see if payment method is valid if yes then return payment methods
                 raises TypeError in-case of invalid Type and ValueError if value is not a payment method
         :param prop: property we are setting
         :param value: the value to set
         :return: returns a payment method as string
-        ***REMOVED***
+        """
         property_name: str = property_.return_property_name(prop=prop)
         if value is None:
             raise TypeError(f"{property_name} , cannot be Null")
 
         if not (isinstance(value, str)):
-            message: str = f***REMOVED***{property_name}, and can only be a string representing a valid payment method***REMOVED***
+            message: str = f"""{property_name}, and can only be a string representing a valid payment method"""
             raise TypeError(message)
 
         if value.lower().strip() not in get_payment_methods():
-            message: str = f***REMOVED***this value : {value}, is not a valid payment method, supported payment 
-            methods are : {get_payment_methods()}***REMOVED***
+            message: str = f"""this value : {value}, is not a valid payment method, supported payment 
+            methods are : {get_payment_methods()}"""
             raise ValueError(message)
 
         return value.lower().strip()
 
     @staticmethod
     def set_percent(prop: ndb.IntegerProperty, value: Union[int, float]) -> int:
-        ***REMOVED***
+        """
             **set_percent**
                 set_percent will check if the percentage value is an integer and then return the percentage value
                 if not then it will raise ValueError or TypeError depending on the reason
         :param prop: property to set the percentage
         :param value: percentage as integer to set in property
         :return: percentage as an integer
-        ***REMOVED***
+        """
         property_name: str = property_.return_property_name(prop=prop)
         utils_instance: Util = Util()
 
         if not isinstance(value, int):
-            message: str = f***REMOVED***{property_name} and can only be an integer representing a percentage***REMOVED***
+            message: str = f"""{property_name} and can only be an integer representing a percentage"""
             raise TypeError(message)
 
         if utils_instance.percent_valid(percent=value):
-            message: str = f***REMOVED***This value : {value}, is not a valid Percentage, percent may be a value 
-            from 0 to 100***REMOVED***
+            message: str = f"""This value : {value}, is not a valid Percentage, percent may be a value 
+            from 0 to 100"""
             raise ValueError(message)
         return value
 
     @staticmethod
     def set_currency(prop: ndb.StringProperty, value: Optional[str]) -> str:
-        ***REMOVED***
+        """
             **set_currency**
                 checks if currency symbol is one of valid currency symbol if yes returns the symbol
                 if not raise ValueError or TypeError depending on why the value is invalid
         :param prop: property where the currency symbol may be set
         :param value: value representing the currency symbol
         :return: will return currency symbol representing a string
-        ***REMOVED***
+        """
         from config.currencies import currency_util
         property_name: str = property_.return_property_name(prop=prop)
         if value is None:
@@ -530,13 +530,13 @@ class PropertySetters(Events, Util):
     # noinspection PyUnusedLocal,DuplicatedCode
     @staticmethod
     def set_email(prop: ndb.StringProperty, value: Optional[str]) -> str:
-        ***REMOVED***
+        """
             **set_email**
                 used for the following
                 If email is valid return email address else raise an error
             :param value: email address
             :param prop: email property
-        ***REMOVED***
+        """
         property_name: str = property_.return_property_name(prop=prop)
         if value is None:
             raise TypeError(f"{property_name} , cannot be Null")
@@ -554,14 +554,14 @@ class PropertySetters(Events, Util):
 
     @staticmethod
     def set_cell(prop: ndb.StringProperty, value: Optional[str]) -> str:
-        ***REMOVED***
+        """
             **set_cell**
                 check if value is string , regex check the cell number
                 then format the number internationally and return the formatted value
         :param prop: the property as string the cell number will be stored in
         :param value: cell number
         :return: formatted cell number as string
-        ***REMOVED***
+        """
         property_name: str = property_.return_property_name(prop=prop)
         if value is None:
             raise TypeError(f"{property_name} , cannot be Null")
@@ -577,14 +577,14 @@ class PropertySetters(Events, Util):
     # noinspection PyUnusedLocal
     @staticmethod
     def set_password(prop: ndb.StringProperty, value: Optional[str]) -> str:
-        ***REMOVED***
+        """
             **set_password**
                 validate the correctness of the password and its complexity if  accurate
                 then return the hash of the password to be stored on the database
             :param: value: password in plain-text
             :param : prop: the password property being set
             :return: password in hash format
-        ***REMOVED***
+        """
         from werkzeug.security import generate_password_hash
         property_name: str = property_.return_property_name(prop=prop)
         if value is None:
@@ -603,14 +603,14 @@ class PropertySetters(Events, Util):
 
     @staticmethod
     def set_value_amount(prop: ndb.IntegerProperty, value: Optional[int]) -> int:
-        ***REMOVED***
+        """
             DOCS:
                 1. amount in integer used to validate amounts in cash on AmountMixin
                 2. amount is in cents
         :param prop:
         :param value: amount in integer representing cents
         :return: integer representing money in cents of whatever currency is being represented
-        ***REMOVED***
+        """
         property_name: str = property_.return_property_name(prop=prop)
         if not (isinstance(value, int)):
             message: str = f'''{property_name} : can only be an Integer representing money in cents'''
@@ -618,28 +618,28 @@ class PropertySetters(Events, Util):
 
         # NOTE: does not allow negative values
         if value < 0:
-            message: str = f***REMOVED***This value : {value} , is not valid, it must be a currency amount in cents and 
-            must always be a positive integer***REMOVED***
+            message: str = f"""This value : {value} , is not valid, it must be a currency amount in cents and 
+            must always be a positive integer"""
             raise ValueError(message)
 
         return value
 
     @staticmethod
     def set_domain(prop: ndb.StringProperty, value: Optional[str]) -> str:
-        ***REMOVED***
+        """
             Docs:
                 check the domain name regex if it passes resolve
                 the domain name if it passes then return domain name
             :param: prop: ndb.StringProperty where the domain name will be stored
             :param: value: value in string format representing a domain name
             :return: str representing verified domain name
-        ***REMOVED***
+        """
         property_name: str = property_.return_property_name(prop=prop)
         if value is None:
             raise TypeError(f"{property_name} , cannot be Null")
 
         if not (isinstance(value, str)):
-            message: str = f***REMOVED***{property_name}, can only be a string, representing a valid domain name***REMOVED***
+            message: str = f"""{property_name}, can only be a string, representing a valid domain name"""
             raise TypeError(message)
 
         domain = value.strip()

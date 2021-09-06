@@ -1,9 +1,9 @@
-***REMOVED***
+"""
     **Custom Exception Definitions**
         for handling application flow and enable the application to throw errors
     **Error Codes and Status Codes **
         named error codes and status codes to use on the application
-***REMOVED***
+"""
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
 __twitter__ = "@blueitserver"
@@ -11,15 +11,16 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
 from typing import Optional
-from werkzeug.exceptions import HTTPException, BadRequest
+
+from werkzeug.exceptions import HTTPException
 
 
 class ErrorCodes:
-    ***REMOVED***
+    """
         **Class ErrorCodes**
             definitions of error codes, for errors that can be raised in Memberships & Affiliates Management API
             this is in-case requests are not completed successfully
-    ***REMOVED***
+    """
 
     def __init__(self) -> None:
         self.input_error_code: int = 422
@@ -46,10 +47,10 @@ class ErrorCodes:
 
 
 class StatusCodes:
-    ***REMOVED***
+    """
         **Class StatusCodes**
             a list of status codes to be returned when request was successfully completed
-    ***REMOVED***
+    """
 
     def __init__(self):
         self.data_not_found_code: int = 204
@@ -62,13 +63,13 @@ status_codes: StatusCodes = StatusCodes()
 
 
 class DataServiceError(HTTPException):
-    ***REMOVED***
+    """
     **DataServiceError**
         raised when user has been performing an update or edit operation on their resource and the application
         is unable to complete such an operation. due to database errors
 
     **CODE: 512**
-    ***REMOVED***
+    """
     code: int = error_codes.data_service_error_code
     description: str = 'We have a problem connection to the Database'
 
@@ -87,13 +88,13 @@ class DataServiceError(HTTPException):
 
 
 class InputError(Exception):
-    ***REMOVED***
+    """
     **InputError**
         raised when a user has supplied bad data or invalid arguments, for example supplying a None / Null value instead
         of a string will result in this error being thrown
 
     **CODE 422**
-    ***REMOVED***
+    """
     code: int = error_codes.input_error_code
     description: str = "Unable to process input"
 
@@ -112,11 +113,11 @@ class InputError(Exception):
 
 
 class UnAuthenticatedError(HTTPException):
-    ***REMOVED***
+    """
         **UnAuthenticatedError**
             in-case of an authentication error throw this error
         **CODE 401**
-    ***REMOVED***
+    """
     code: int = error_codes.un_auth_error_code
     description: str = "You are not authorized to use this resource"
 
@@ -136,12 +137,12 @@ class UnAuthenticatedError(HTTPException):
 
 
 class RequestError(HTTPException):
-    ***REMOVED***
+    """
     **RequestError**
         when raised it simply means there was an error with the request
         and client/ user may need to verify their request
     **CODE: 400**
-    ***REMOVED***
+    """
     code: int = error_codes.bad_request_error_code
     description: str = "Bad Request Error: cannot proceed"
 
@@ -167,13 +168,13 @@ class RequestError(HTTPException):
 # Errors
 
 class RemoteDataError(IOError):
-    ***REMOVED***
+    """
         **RemoteDataError**
             raised when the server is trying to access a remote server or service in order
             to complete the users transaction but is unable to . the proper response
             would be to retry the action that lead to this error.
         ** CODE 406**
-    ***REMOVED***
+    """
     code: int = error_codes.remote_data_error
     description: str = 'Error connecting to remote server'
     url: str = ""
@@ -199,9 +200,9 @@ class RemoteDataError(IOError):
 
 
 class EnvironNotSet(Exception):
-    ***REMOVED***
+    """
         raised when environment variables are not set
-    ***REMOVED***
+    """
     code: int = error_codes.environment_error_code
     description: str = "environment variables not set please inform admin"
     url: str = ""
@@ -227,14 +228,14 @@ class EnvironNotSet(Exception):
 
 
 def if_bad_request_raise(request) -> None:
-    ***REMOVED***
+    """
         **if_bad_request_raise**
             checks if request headers contains application/json
             if not raises request Error
 
     :param request: client request
     :return: None
-    ***REMOVED***
+    """
     content_type: str = request.headers.get('content-type')
     if not content_type.lower() == 'application/json':
         raise RequestError(description="parameters for this end-point may only be in json format")

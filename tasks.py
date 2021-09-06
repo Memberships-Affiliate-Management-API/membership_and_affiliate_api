@@ -1,6 +1,6 @@
-***REMOVED***
+"""
     will start task scheduler as a service
-***REMOVED***
+"""
 
 from schedulers.scheduler import task_scheduler
 

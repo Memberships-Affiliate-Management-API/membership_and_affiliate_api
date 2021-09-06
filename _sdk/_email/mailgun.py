@@ -1,12 +1,12 @@
-***REMOVED***
+"""
     **Mailgun Emails Integration SDK**
         *Python ^3.8
-    ***REMOVED***
-        ***REMOVED***
-        ***REMOVED***
-        ***REMOVED***
+        class to send emails through a mailgun rest api
+        # You can see a record of this email in your logs: https://app.mailgun.com/app/logs.
+        # You can send up to 300 emails/day from this sandbox server.
+        # Next, you should add your own domain so you can send 10000 emails/month for free.
 
-***REMOVED***
+"""
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
 __twitter__ = "@blueitserver"
@@ -26,19 +26,19 @@ from utils import return_ttl, datetime_now, create_id
 
 
 class Mailgun:
-    ***REMOVED***
+    """
         **MailGun**
             methods to integrate Mailgun Emailing rest API with Memberships & Affiliates APIKeys
             for the purposes of sending notifications and emails on behalf of clients.
 
         TODO - feature development add Mailgun Templates see Email-templates on Github Repos
-    ***REMOVED***
+    """
 
     def __init__(self) -> None:
-        ***REMOVED***
+        """
             mailgun_domain : domain name registered with mailgun
             MAILGUN_API_KEY : can be found from mailgun control panel
-        ***REMOVED***
+        """
         self._base_url: str = config_instance.BASE_URL
         self._mailgun_api_key = config_instance.MAILGUN_API_KEY
         self._mailgun_end_point = "https://api.mailgun.net/v3/{}/messages".format(config_instance.MAILGUN_DOMAIN)
@@ -58,14 +58,14 @@ class Mailgun:
 
     @app_cache.cache.memoize(timeout=return_ttl('short'))
     async def _get_user_data_async(self, organization_id: str, uid: str) -> Optional[dict]:
-        ***REMOVED***
+        """
         **_get_user_data_async**
             from an api obtain user details related to the parameters
 
         :param organization_id: organization_id related to the user
         :param uid: uid of the user
         :return:
-        ***REMOVED***
+        """
         _url: str = f'{self._base_url}{self._admin_get_user_endpoint}'
         json_data: dict = dict(organization_id=organization_id, uid=uid, SECRET_KEY=self._secret_key)
         headers: dict = {'content-type': 'application/json'}
@@ -73,14 +73,14 @@ class Mailgun:
 
     @app_cache.cache.memoize(timeout=return_ttl('short'))
     async def _get_membership_data_async(self, organization_id: str, uid: str) -> Optional[dict]:
-        ***REMOVED***
+        """
             **_get_membership_data_async**
                 asynchronously from an api obtain membership plan details related to the parameters
 
         :param organization_id:
         :param uid:
         :return:
-        ***REMOVED***
+        """
         _url: str = f'{self._base_url}{self._admin_get_membership_plan_endpoint}'
         json_data = dict(organization_id=organization_id, uid=uid, SECRET_KEY=self._secret_key)
         headers: dict = {'content-type': 'application/json'}
@@ -88,13 +88,13 @@ class Mailgun:
 
     @app_cache.cache.memoize(timeout=return_ttl('short'))
     async def _get_organization_data_async(self, organization_id: str) -> Optional[dict]:
-        ***REMOVED***
+        """
             **__get_organization_data**
                 asynchronously returns the organization details based on the organization id and uid
 
         :param organization_id:
         :return:
-        ***REMOVED***
+        """
         # TODO ensure this endpoints works
         _url: str = f'{config_instance.BASE_URL}{self._admin_get_organization_endpoint}'
         json_data: dict = dict(organization_id=organization_id, SECRET_KEY=self._secret_key)
@@ -103,7 +103,7 @@ class Mailgun:
 
     def _send_with_mailgun_rest_api(self, to_list: List[str], subject: str, text: str, html: str,
                                     o_tag: List[str] = None) -> bool:
-        ***REMOVED***
+        """
         **_send_with_mailgun_rest_api**
             a method to send email via rest api
 
@@ -113,7 +113,7 @@ class Mailgun:
         :param text: the text part of the email
         :param html: the html part of the email
         :return: bool
-        ***REMOVED***
+        """
         # NOTE: from mail must be registered with MAILGUN
         from_str: str = f'{config_instance.APP_NAME} <{self._mailgun_no_response_email}>'
         to_str: List[str] = to_list
@@ -125,14 +125,14 @@ class Mailgun:
         return True
 
     def return_organization_user(self, organization_id: str, uid: str) -> tuple:
-        ***REMOVED***
+        """
         **return_organization_user**
         asynchronously returns organization data and user data
 
         :param organization_id:
         :param uid:
         :return: tuple user_data, organization_data
-        ***REMOVED***
+        """
         event_loop = asyncio.get_event_loop()
         tasks: List[Coroutine] = [self._get_user_data_async(organization_id=organization_id, uid=uid),
                                   self._get_organization_data_async(organization_id=organization_id)]
@@ -144,7 +144,7 @@ class Mailgun:
         return user_data, organization_data
 
     def _do_schedule_mail(self, to_email: str, subject: str, text: str, html: str) -> None:
-        ***REMOVED***
+        """
             **_do_schedule_mail**
                 using APScheduler schedule the emails to be sent at a later period
 
@@ -153,7 +153,7 @@ class Mailgun:
         :param text: body in text format
         :param html: body in html format
         :return: None
-        ***REMOVED***
+        """
         # Scheduling email to be sent later with mailgun api
         # Note: creating arguments dict
         _kwargs: dict = dict(to_list=[to_email], sbject=subject, text=text, html=html)
@@ -164,12 +164,12 @@ class Mailgun:
 
     @staticmethod
     def _base_email_scheduler(func: Callable, kwargs: dict, job_name: str = create_id()) -> None:
-        ***REMOVED***
+        """
 
         :param func:
         :param kwargs:
         :return: None
-        ***REMOVED***
+        """
         seconds_after: datetime = datetime_now() + timedelta(seconds=10)
         task_scheduler.add_job(func=func, trigger='date', run_date=seconds_after, kwargs=kwargs, id=create_id(),
                                name=job_name, misfire_grace_time=360)

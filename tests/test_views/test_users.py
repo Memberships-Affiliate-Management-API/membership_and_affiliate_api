@@ -36,11 +36,11 @@ class UsersQueryMock:
 
     @staticmethod
     def rand_user() -> UserModel:
-        ***REMOVED***
+        """
         **rand_user**
             returns a randomly generated user
         :return:
-        ***REMOVED***
+        """
         return UserModel(uid=create_id(), organization_id=config_instance.ORGANIZATION_ID,
                          names='john', surname='doe', cell=f'+278188{choices(population=digits_characters, k=5)}',
                          email=f'{choices(population=ascii_lowercase, k=12)}@example.com',
@@ -49,11 +49,11 @@ class UsersQueryMock:
                          is_support=choice([True, False]), last_login_date=today())
 
     def fetch(self) -> List[UserModel]:
-        ***REMOVED***
+        """
         **fetch**
         returns a list of users
         :return:
-        ***REMOVED***
+        """
         return [self.rand_user() for _ in range(self.results_range)]
 
     def get(self) -> UserModel:
@@ -64,11 +64,11 @@ class UsersQueryMock:
         return self.user_instance
 
     def user_mock_data(self) -> dict:
-        ***REMOVED***
+        """
         **user_mock_data**
 
         :return:
-        ***REMOVED***
+        """
         user_data: dict = self.user_instance.to_dict()
         # NOTE: user_instance.to_dict() returns user dict without password field for security reasons
         user_data.update(password="Complicated Password 12345%$#")
@@ -79,11 +79,11 @@ user_mock_data: dict = UsersQueryMock().user_mock_data()
 
 
 def get_user_data() -> tuple:
-    ***REMOVED***
+    """
     **get_user_data**
         returns complete list of user data
     :return: tuple -> user data
-    ***REMOVED***
+    """
 
     organization_id: str = user_mock_data.get('organization_id')
     uid: str = user_mock_data.get('uid')
@@ -97,23 +97,23 @@ def get_user_data() -> tuple:
 
 
 def nullish_value() -> Optional[str]:
-    ***REMOVED***
+    """
     **nullish_value**
         returns None Null or Empty String
     :return: Nullish
-    ***REMOVED***
+    """
     return choice([None, " ", ""])
 
 
 # noinspection PyUnusedLocal,PyShadowingNames
 def test_create_user(mocker):
-    ***REMOVED***
+    """
     **test_create_user**
         testing user creation with view
 
     :param mocker:
     :return:
-    ***REMOVED***
+    """
     mocker.patch('database.users.UserModel.put', return_value=ndb.KeyProperty('Users'))
     mocker.patch('database.users.UserModel.query', return_value=UsersQueryMock())
 
@@ -135,12 +135,12 @@ def test_create_user(mocker):
 
 # noinspection PyShadowingNames
 def test_create_user_un_auth(mocker):
-    ***REMOVED***
+    """
     **test_create_user_un_auth**
         testing if create_user can throw UnAuthenticatedError
     :param mocker:
     :return:
-    ***REMOVED***
+    """
     mocker.patch('database.users.UserModel.put', return_value=ndb.KeyProperty('Users'))
     mocker.patch('database.users.UserModel.query', return_value=UsersQueryMock())
 
@@ -159,13 +159,13 @@ def test_create_user_un_auth(mocker):
 
 # noinspection PyShadowingNames
 def test_create_user_input_errors(mocker):
-    ***REMOVED***
+    """
     **test_create_user_input_errors**
         tests if create_user throws all required Input Errors
 
     :param mocker:
     :return:
-    ***REMOVED***
+    """
     mocker.patch('database.users.UserModel.put', return_value=ndb.KeyProperty('Users'))
     mocker.patch('database.users.UserModel.query', return_value=UsersQueryMock())
 

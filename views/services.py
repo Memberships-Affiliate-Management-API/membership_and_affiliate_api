@@ -1,4 +1,4 @@
-***REMOVED***
+"""
     ** Services View  Controller** ,
         will handle service Creation
         on the database and also on paypal, Services are necessary in order for organization
@@ -10,7 +10,7 @@
          and expose the service on the admin section of their website.
          users will be able to access any such website admin section upon registering
          and becoming a member of such a service.
-***REMOVED***
+"""
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
 __twitter__ = "@blueitserver"
@@ -35,12 +35,12 @@ from cache.cache_manager import app_cache
 # TODO add notification emails
 
 class ServicesView(ServiceValidator):
-    ***REMOVED***
+    """
         **Class ServicesView**
 
             this will run api endpoints for memberships services, users have to first create a service
             and then payment plans for that service in order to activate the plan
-    ***REMOVED***
+    """
 
     def __init__(self) -> None:
         super(ServicesView, self).__init__()
@@ -52,7 +52,7 @@ class ServicesView(ServiceValidator):
     def create_service(self, organization_id: Optional[str], uid: Optional[str], name: Optional[str],
                        description: Optional[str], category: Optional[str], image_url: Optional[str],
                        home_url: Optional[str]) -> tuple:
-        ***REMOVED***
+        """
             **create_service**
                 creates a service locally and also on paypal
 
@@ -67,7 +67,7 @@ class ServicesView(ServiceValidator):
             :param image_url: if service has an image the location of the image
             :param home_url: page containing service descriptions and pricing
         :return:
-        ***REMOVED***
+        """
         self.check_parameters(name=name, category=category, description=description)
 
         if self.can_create_service(uid=uid, organization_id=organization_id):
@@ -126,7 +126,7 @@ class ServicesView(ServiceValidator):
     def update_service(self, service_id: Optional[str], organization_id: Optional[str], uid: Optional[str],
                        name: Optional[str], description: Optional[str], category: Optional[str],
                        image_url: Optional[str], home_url: Optional[str]) -> tuple:
-        ***REMOVED***
+        """
             **update_service**
                 given service id update service details
 
@@ -139,7 +139,7 @@ class ServicesView(ServiceValidator):
         :param image_url:
         :param home_url:
         :return:
-        ***REMOVED***
+        """
         self.check_parameters(name=name, category=category, description=description)
 
         if not self.can_update_service(uid=uid, organization_id=organization_id, service_id=service_id):
@@ -175,7 +175,7 @@ class ServicesView(ServiceValidator):
     @handle_view_errors
     def service_activation(self, service_id: Optional[str], organization_id: Optional[str], uid: Optional[str],
                            is_active: bool) -> tuple:
-        ***REMOVED***
+        """
             **activate_service**
                 given a service_id activate a service.
                 an active service is viewable by users
@@ -184,7 +184,7 @@ class ServicesView(ServiceValidator):
         :param organization_id:
         :param uid:
         :return: tuple -> response, status_code
-        ***REMOVED***
+        """
         if not isinstance(is_active, bool):
             message: str = "is_active: can only be a boolean"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -216,13 +216,13 @@ class ServicesView(ServiceValidator):
     @handle_view_errors
     @app_cache.cache.memoize(timeout=return_ttl('short'))
     def get_service(self, service_id: Optional[str], organization_id: Optional[str]) -> tuple:
-        ***REMOVED***
+        """
             **get_service**
                 given service_id return service
         :param service_id:
         :param organization_id:
         :return:
-        ***REMOVED***
+        """
         if not isinstance(service_id, str) or not bool(service_id.strip()):
             message: str = "service_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -246,12 +246,12 @@ class ServicesView(ServiceValidator):
     @handle_view_errors
     @app_cache.cache.memoize(timeout=return_ttl('short'))
     def return_services(self, organization_id: Optional[str]) -> tuple:
-        ***REMOVED***
+        """
             **return_services**
                 returns all services under a specific organization
         :param organization_id:
         :return:
-        ***REMOVED***
+        """
         # TODO integrate cache delete events here
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"

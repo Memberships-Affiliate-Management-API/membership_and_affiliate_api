@@ -1,8 +1,8 @@
-***REMOVED***
+"""
     **api requests**
         this module will handle all requests from this application to other api's
 
-***REMOVED***
+"""
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
 __twitter__ = "@blueitserver"
@@ -11,7 +11,7 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 
 import asyncio
 from typing import Optional, List
-from _cron.scheduler import schedule_func
+from schedulers.scheduler import schedule_func
 import aiohttp
 from config.exceptions import EnvironNotSet
 from cache.cache_manager import app_cache
@@ -19,7 +19,7 @@ from utils import timestamp, create_id, return_ttl
 
 
 class APIRequests:
-    ***REMOVED***
+    """
         **Class APIRequests**
             this class handles creating api calls then scheduling them and handles results as they are
             returned asynchronously.
@@ -27,12 +27,12 @@ class APIRequests:
         to make a request schedule a request with schedule_data_send
         obtain the request id then after a while check if the request has been returned with get_response
         using the _request_id
-    ***REMOVED***
+    """
 
     def __init__(self):
-        ***REMOVED***
+        """
         **initializing requests**
-        ***REMOVED***
+        """
         self._base_url: Optional[str] = None
         self._secret_key: Optional[str] = None
         self._responses_queue: List[Optional[dict]] = []
@@ -49,12 +49,12 @@ class APIRequests:
                 return await response.json()
 
     def _request(self, _url: str, json_data: dict, headers: dict) -> None:
-        ***REMOVED***
+        """
         :param _url:
         :param json_data:
         :param headers:
         :return:
-        ***REMOVED***
+        """
         # obtain the _request_id to be used as an identifier for this request
         _request_id: str = headers.get('_request_id')
         print("sending request: ", _request_id)
@@ -64,7 +64,7 @@ class APIRequests:
         self._responses_queue.append(dict(_request_id=_request_id, response=response))
 
     def schedule_data_send(self, _endpoint: Optional[str], body: Optional[dict] = None) -> str:
-        ***REMOVED***
+        """
         **schedule_data_send**
             schedule to send data without expecting a response, as
             responses will be stored on self._responses
@@ -72,7 +72,7 @@ class APIRequests:
         :param _endpoint:
         :param body:
         :return: str -> request_id
-        ***REMOVED***
+        """
         if not self._base_url:
             raise EnvironNotSet()
 
@@ -93,12 +93,12 @@ class APIRequests:
 
     @app_cache.cache.memoize(timeout=return_ttl('short'), cache_none=False)
     def get_response(self, request_id: str) -> Optional[dict]:
-        ***REMOVED***
+        """
         **get_response**
             from responses_queue retrieve response
             as a result of caching a request can be obtained multiple times from response _queue as it would be cached
         :return: dict -> containing response or None - None wont be cached
-        ***REMOVED***
+        """
         if isinstance(self._responses_queue, list) and len(self._responses_queue) > 0:
             # at Best will return None if response not found
             try:

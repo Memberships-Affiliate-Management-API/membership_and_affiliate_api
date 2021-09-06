@@ -6,9 +6,9 @@ from urllib.parse import quote  # Python 3+
 
 # noinspection PyDictCreation
 class OrdersCreateRequest:
-    ***REMOVED***
+    """
     Creates an order.
-    ***REMOVED***
+    """
     def __init__(self):
         self.verb = "POST"
         self.path = "/v2/checkout/orders?"

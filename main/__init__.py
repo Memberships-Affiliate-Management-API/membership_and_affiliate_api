@@ -1,6 +1,6 @@
-***REMOVED***"
+""""
         **main api entry module for memberships & affiliates Management API**
-***REMOVED***
+"""
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
 __twitter__ = "@blueitserver"

@@ -11,11 +11,11 @@ from database.mixins import AmountMixin
 
 
 class PayPalOrders(PayPalClient):
-    ***REMOVED***Setting up the complete JSON request body for creating the Order. The Intent in the
-        request body should be set as "AUTHORIZE" for capture intent flow.***REMOVED***
+    """Setting up the complete JSON request body for creating the Order. The Intent in the
+        request body should be set as "AUTHORIZE" for capture intent flow."""
 
-    ***REMOVED***Setting up the minimum required JSON request body for creating the Order. The Intent in the
-        request body should be set as "AUTHORIZE" for capture intent flow.***REMOVED***
+    """Setting up the minimum required JSON request body for creating the Order. The Intent in the
+        request body should be set as "AUTHORIZE" for capture intent flow."""
     order_response = None
     authorize_response = None
     capture_response = None
@@ -32,7 +32,7 @@ class PayPalOrders(PayPalClient):
         self.authorization_id: typing.Union[str, None] = None
 
     def build_order_request_body(self) -> dict:
-        ***REMOVED***Method to create body with AUTHORIZE intent***REMOVED***
+        """Method to create body with AUTHORIZE intent"""
         return {
             "intent": "AUTHORIZE",
             "application_context": {
@@ -56,14 +56,14 @@ class PayPalOrders(PayPalClient):
             ]
         }
 
-    ***REMOVED***This function can be used to create an order with minimum required request body***REMOVED***
+    """This function can be used to create an order with minimum required request body"""
 
     def create_order(self, debug: bool = True):
-        ***REMOVED***
+        """
                TODO -  from the response take "__approve__" link and redirect the user there, this should be done from the _ipn
         :param debug:
         :return:
-        ***REMOVED***
+        """
         create_order_request = OrdersCreateRequest()
         create_order_request.prefer('return=representation')
         create_order_request.request_body(self.build_order_request_body())
@@ -86,17 +86,17 @@ class PayPalOrders(PayPalClient):
         return response
 
     def get_approve_link(self):
-        ***REMOVED***
+        """
 
         :return:
-        ***REMOVED***
+        """
         if self.order_response:
             for link in self.order_response.result.links:
                 if link.rel == "_approve_":
                     return link
 
     def authorize_order(self, order_id: typing.Union[str, None],  debug: bool = False):
-        ***REMOVED***Method to authorize order using order_id***REMOVED***
+        """Method to authorize order using order_id"""
         if isinstance(order_id, str):
             auth_order_request = OrdersAuthorizeRequest(order_id)
         else:
@@ -126,14 +126,14 @@ class PayPalOrders(PayPalClient):
         return response
 
     def capture_order(self, authorization_id: typing.Union[str, None] = None, debug=False):
-        ***REMOVED***
+        """
             This function can be used to capture an approved authorization.
             Valid authorization id should be passed as an argument to this function.
 
             :param authorization_id:
             :param debug:
             :return:
-        ***REMOVED***
+        """
 
         if isinstance(authorization_id, str):
             capture_request = AuthorizationsCaptureRequest(authorization_id)
@@ -156,9 +156,9 @@ class PayPalOrders(PayPalClient):
 
 
 class PayPalRecurring(PayPalClient):
-    ***REMOVED***
+    """
         used to create membership plans
-    ***REMOVED***
+    """
     name: str = ""
     description: str = ""
     category: str = ""
@@ -178,10 +178,10 @@ class PayPalRecurring(PayPalClient):
         self.home_url = home_url
 
     def build_service_request_body(self) -> dict:
-        ***REMOVED***
+        """
             creating the body of a recurring payment plan
             :return: dict
-        ***REMOVED***
+        """
         return {
                    "name": "{}".format(self.name),
                    "description": "{}".format(self.description),
@@ -195,7 +195,7 @@ class PayPalRecurring(PayPalClient):
     def build_plan_body(product_id: str, plan_name: str, plan_description: str, plan_amount: AmountMixin,
                         setup_amount: AmountMixin, include_trial: bool = True, interval: str = "MONTH",
                         total_cycles: int = 12, include_taxes: bool = False, tax_percent: int = 15):
-        ***REMOVED***
+        """
                 curl -v -k -X POST https://api-m.sandbox.paypal.com/v1/billing/plans \
                   -H "Accept: application/json" \
                   -H "Authorization: Bearer Access-Token" \
@@ -247,7 +247,7 @@ class PayPalRecurring(PayPalClient):
                     "inclusive": false
                   }
                 }'
-        ***REMOVED***
+        """
         if include_trial:
             return {
                 "product_id": "{}".format(product_id),
@@ -332,14 +332,14 @@ class PayPalRecurring(PayPalClient):
 
     # NOTE: use this function to create a service or product for a membership plan
     def create_service(self):
-        ***REMOVED***
+        """
             used to create a new recurring plan
             If creating a product/service succeeds,
             it triggers the CATALOG.PRODUCT.CREATED webhook.
             #TODO - from this webhook save the plan data
             #The data structure to save the plan data must include the organization_id
         :return:
-        ***REMOVED***
+        """
         service_request = PlansCreateServiceProduct()
         service_request.prefer(prefer='return=representation')
         service_request.request_body(service_action_request=self.build_service_request_body())
@@ -357,7 +357,7 @@ class PayPalRecurring(PayPalClient):
                       setup_amount: AmountMixin, include_trial: bool = True, interval: str = "MONTH",
                       total_cycles: int = 0, include_taxes: bool = False, tax_percent: int = 15):
 
-        ***REMOVED***
+        """
             from a defined service, create the plans needed
             example: Basic Plan,Standard and Premium
             /v1/billing/plans
@@ -370,7 +370,7 @@ class PayPalRecurring(PayPalClient):
 
             If creating a plan succeeds, it triggers the BILLING.PLAN.CREATED webhook.
             :return: created_plan
-        ***REMOVED***
+        """
 
         plan_request = PlansCreatePlan()
         plan_request.prefer(prefer='return=representation')
@@ -432,7 +432,7 @@ class PayPalRecurring(PayPalClient):
     def create_subscription(self, plan_id: str, start_time: datetime, name: str, surname: str,
                             paypal_email_address: str, brand_name: str,
                             return_url: str, cancel_url: str,  locale: str = "en-US"):
-        ***REMOVED***
+        """
             Subscriptions with Smart Payment Buttons
                 To use Subscriptions with Smart Payment Buttons:
 
@@ -549,7 +549,7 @@ class PayPalRecurring(PayPalClient):
                     "cancel_url": "https://example.com/cancelUrl"
                   }
                 }'        
-        ***REMOVED***
+        """
 
         subscription_request = PlansCreateSubscriptionRequest()
         subscription_request.prefer(prefer='return=representation')

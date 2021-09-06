@@ -1,7 +1,7 @@
-***REMOVED***
+"""
 ***Users Management API***
 
-***REMOVED***
+"""
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
 __twitter__ = "@blueitserver"
@@ -31,10 +31,10 @@ def get_kwargs(user_data: dict) -> tuple:
 @users_bp.route("/api/v1/public/user/create-user", methods=["POST"])
 @handle_api_auth
 def create_user() -> tuple:
-    ***REMOVED***
+    """
         given user details create new user
         :return: json response as tuple
-    ***REMOVED***
+    """
     # created new user
     user_data: dict = request.get_json()
     names: str = user_data.get("names")
@@ -54,11 +54,11 @@ def create_user() -> tuple:
 @users_bp.route("/api/v1/public/user/<path:path>", methods=["GET", "POST"])
 @handle_api_auth
 def user(path: str) -> tuple:
-    ***REMOVED***
+    """
         update or get a specific user by uid
         :param path:
         :return: json response as tuple
-    ***REMOVED***
+    """
 
     if request.method == "GET":
         # get a specific user
@@ -92,11 +92,11 @@ def user(path: str) -> tuple:
 @users_bp.route("/api/v1/public/users/<string:path>", methods=["GET", "POST"])
 @handle_api_auth
 def get_all(path: str) -> tuple:
-    ***REMOVED***
+    """
         get all , active or in-active users
         :param path:
         :return: json response as tuple
-    ***REMOVED***
+    """
     if path == "all":
         user_data: dict = request.get_json()
         organization_id: str = user_data.get("organization_id")
@@ -116,10 +116,10 @@ def get_all(path: str) -> tuple:
 @users_bp.route("/api/v1/public/check-password", methods=["POST"])
 @handle_api_auth
 def check_password() -> tuple:
-    ***REMOVED***
+    """
         given a password in json check if it matches the hash in file
         :return:
-    ***REMOVED***
+    """
     user_data: dict = request.get_json()
     uid: str = user_data.get("uid")
     organization_id: str = user_data.get("organization_id")
@@ -131,10 +131,10 @@ def check_password() -> tuple:
 @users_bp.route("/api/v1/public/deactivate-user", methods=["POST"])
 @handle_api_auth
 def de_activate_user() -> tuple:
-    ***REMOVED***
+    """
         given uid in json de-activate user
         :return: json as tuple
-    ***REMOVED***
+    """
     user_data: dict = request.get_json()
     uid: str = user_data.get("uid")
     organization_id: str = user_data.get("organization_id")
@@ -145,11 +145,11 @@ def de_activate_user() -> tuple:
 @users_bp.route("/api/v1/public/auth/login", methods=["POST"])
 @handle_api_auth
 def login() -> tuple:
-    ***REMOVED***
+    """
         **login**
             called by main application in order to login
     :return:
-    ***REMOVED***
+    """
 
     user_data: dict = request.get_json()
     email: typing.Union[str, None] = user_data.get("email")
@@ -162,10 +162,10 @@ def login() -> tuple:
 @users_bp.route("/api/v1/public/auth/logout", methods=["POST"])
 @handle_api_auth
 def logout() -> tuple:
-    ***REMOVED***
+    """
         **logout public api**
     :return:
-    ***REMOVED***
+    """
     # Raises Bad Request error if request is not in json format
     if_bad_request_raise(request)
     user_data: dict = request.get_json()

@@ -9,9 +9,9 @@ from urllib.parse import quote  # Python 3+
 
 # noinspection PyDictCreation
 class RefundsGetRequest:
-    ***REMOVED***
+    """
     Shows details for a refund, by ID.
-    ***REMOVED***
+    """
     def __init__(self, refund_id):
         self.verb = "GET"
         self.path = "/v2/payments/refunds/{refund_id}?".replace("{refund_id}", quote(str(refund_id)))

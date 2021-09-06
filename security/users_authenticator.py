@@ -1,6 +1,6 @@
-***REMOVED***
+"""
     handle users and admin authentication
-***REMOVED***
+"""
 import datetime
 import os
 from typing import Optional
@@ -14,31 +14,31 @@ from utils import is_development
 
 # noinspection PyUnusedLocal
 def check_jwt_token(auth_token: str) -> bool:
-    ***REMOVED***
+    """
         TODO - handle JWT authentication
     :param auth_token:
     :return:
-    ***REMOVED***
+    """
     return True
 
 
 # noinspection PyUnusedLocal
 def check_firebase_uid(uid: str) -> bool:
-    ***REMOVED***
+    """
         TODO - handle firebase authentication
     :param uid:
     :return:
-    ***REMOVED***
+    """
     return True
 
 
 def get_admin_user() -> dict:
-    ***REMOVED***
+    """
         **get_admin_user**
             return admin_user - uses include on development server
 
         :return: dict
-    ***REMOVED***
+    """
     if is_development():
         admin_email, cell, names, organization_id, password, surname, uid = get_config_admin_user_details()
     else:
@@ -49,12 +49,12 @@ def get_admin_user() -> dict:
 
 
 def get_admin_user_from_admin_api() -> Optional[dict]:
-    ***REMOVED***
+    """
         **get_api_admin_user_details**
             fetch api admin user details from back-end
 
     :return: dict -> as user
-    ***REMOVED***
+    """
     _endpoint: str = '_api/v1/admin/users/get'
     _base_url: str = config_instance.BASE_URL
     _url: str = f'{_base_url}{_endpoint}'
@@ -76,11 +76,11 @@ def get_admin_user_from_admin_api() -> Optional[dict]:
 
 
 def get_config_admin_user_details() -> tuple:
-    ***REMOVED***
+    """
         **get_config_admin_user_details**
             return admin user details from config_instance
     :return:
-    ***REMOVED***
+    """
     uid: str = config_instance.ADMIN_UID
     organization_id: str = config_instance.ORGANIZATION_ID
     admin_email: str = config_instance.ADMIN_EMAIL
@@ -92,13 +92,13 @@ def get_config_admin_user_details() -> tuple:
 
 
 def is_app_admin(current_user: any) -> bool:
-    ***REMOVED***
+    """
         **is_app_admin**
             checks if user is app admin - meaning admin for main organization for the API
 
     :param current_user:
     :return: boolean indicating if current user is admin or not
-    ***REMOVED***
+    """
     if isinstance(current_user, dict):
         return current_user and current_user.get('uid') and (current_user.get('organization_id') == config_instance.ORGANIZATION_ID)
 
@@ -106,14 +106,14 @@ def is_app_admin(current_user: any) -> bool:
 
 
 def encode_auth_token(uid: str, expiration_days: int = 0) -> Optional[str]:
-    ***REMOVED***
+    """
     **encode_auth_token**
         Generates the Auth Token for JWT Authentication
 
     **PARAMETERS**
         :param: uid -> string - unique user id
         :return: string -> auth-token
-    ***REMOVED***
+    """
     try:
         _payload: dict = dict(exp=datetime.datetime.utcnow() + datetime.timedelta(days=expiration_days, minutes=30, seconds=5),
                               iat=datetime.datetime.utcnow(),
@@ -125,14 +125,14 @@ def encode_auth_token(uid: str, expiration_days: int = 0) -> Optional[str]:
 
 
 def decode_auth_token(auth_token: str) -> Optional[str]:
-    ***REMOVED***
+    """
     **decode_auth_token**
         Decodes the auth token
 
     **PARAMETERS**
         :param auth_token:
         :return: string -> uid
-    ***REMOVED***
+    """
     try:
         payload = jwt.decode(jwt=auth_token, key=current_app.config.get('SECRET_KEY'), algorithms=['HS256'])
         return payload['sub']
@@ -143,14 +143,14 @@ def decode_auth_token(auth_token: str) -> Optional[str]:
 
 
 def send_get_user_request(uid: str) -> Optional[dict]:
-    ***REMOVED***
+    """
     **send_get_user_request**
         send request for user over api and return user dict
 
     **PARAMETERS**
         :param uid:
         :return: dict -> user record
-    ***REMOVED***
+    """
     _base_url: str = os.environ.get("BASE_URL")
     _user_endpoint: str = "_api/v1/client/users/get-user"
     response = requests.post(url=f"{_base_url}{_user_endpoint}", json=dict(uid=uid))
@@ -161,22 +161,22 @@ def send_get_user_request(uid: str) -> Optional[dict]:
 
 
 def handle_users_auth(func):
-    ***REMOVED***
+    """
         **handle_users_auth**
             handles authentication on html routes for users on client dashboard
             and admin dashboard
         :param func:
-    ***REMOVED***
+    """
 
     # noinspection PyBroadException
     @wraps(func)
     def decorated(*args, **kwargs):
-        ***REMOVED***
+        """
             decorated
             :param args:
             :param kwargs:
             :return:
-        ***REMOVED***
+        """
         if is_development():
             current_user: Optional[dict] = get_admin_user()
             return func(current_user, *args, **kwargs)
@@ -219,13 +219,13 @@ def handle_users_auth(func):
 
 
 def logged_user(func):
-    ***REMOVED***
+    """
         **logged_user**
             only accesses the record of the logged in user without denying access to the route
             if user is not logged in.
     :param func: route to wrap
     :return: wrapped function
-    ***REMOVED***
+    """
     @wraps(func)
     def decorated(*args, **kwargs):
         current_user: Optional[dict] = 0
@@ -259,7 +259,7 @@ def logged_user(func):
 
 
 if __name__ == '__main__':
-    ***REMOVED***
+    """
         NOTE: fast testing of functions here 
-    ***REMOVED***
+    """
     pass

@@ -1,9 +1,9 @@
-***REMOVED***
+"""
     **Affiliates NDB database Class **
     used to store and manage access and storage of affiliate data record
     this module also handles Class Errors and Validations while accessing and storing data into the
     class instance for database storage
-***REMOVED***
+"""
 
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
@@ -23,10 +23,10 @@ from database.basemodel import BaseModel
 
 
 class AffiliatesValidators:
-    ***REMOVED***
+    """
         **Class AffiliatesValidators**
             Input Validations for Affiliates
-    ***REMOVED***
+    """
 
     def __init__(self):
         super(AffiliatesValidators, self).__init__()
@@ -34,13 +34,13 @@ class AffiliatesValidators:
     @staticmethod
     @handle_store_errors
     def affiliate_exist(affiliate_id: Optional[str]) -> Optional[bool]:
-        ***REMOVED***
+        """
             **affiliate_exist**
                 test if an affiliate already exists in the organization
                 TODO- ensure this search takes into account the organization_id
         :param affiliate_id:
         :return: boolean -> indicating if affiliate_exist or not
-        ***REMOVED***
+        """
         if not isinstance(affiliate_id, str) or not bool(affiliate_id.strip()):
             message: str = 'affiliate_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -54,14 +54,14 @@ class AffiliatesValidators:
     @handle_store_errors
     def recruiter_registered(organization_id: Optional[str],
                              uid: Optional[str]) -> Optional[bool]:
-        ***REMOVED***
+        """
             **recruiter_registered**
                 returns true or False according to registration status None otherwise
 
         :param organization_id:
         :param uid:
         :return:
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -77,10 +77,10 @@ class AffiliatesValidators:
 
 
 class RecruitsValidators:
-    ***REMOVED***
+    """
         **RecruitsValidators**
             Input Validations for recruits class
-    ***REMOVED***
+    """
 
     def __init__(self) -> None:
         super(RecruitsValidators, self).__init__()
@@ -89,14 +89,14 @@ class RecruitsValidators:
     @staticmethod
     @handle_store_errors
     def user_already_recruited(uid: Optional[str]) -> Optional[bool]:
-        ***REMOVED***
+        """
             **user_already_recruited**
                 method user_already_recruited -> checks if user has already been recruited
                 in this organization
 
         :param uid:
         :return:
-        ***REMOVED***
+        """
         # TODO - an organization_id
         if not (isinstance(uid, str)) or not bool(uid.strip()):
             message: str = "uid is required"
@@ -110,12 +110,12 @@ class RecruitsValidators:
     @staticmethod
     @handle_store_errors
     def user_already_an_affiliate(uid: Optional[str]) -> Optional[bool]:
-        ***REMOVED***
+        """
             ** method user_already_an_affiliate**
                 checks if user is already an affiliate
         :param uid:
         :return:
-        ***REMOVED***
+        """
         # TODO - an organization_id
         if not (isinstance(uid, str)) or not bool(uid.strip()):
             message: str = "uid is required"
@@ -128,11 +128,11 @@ class RecruitsValidators:
 
 
 class EarningsValidators:
-    ***REMOVED***
+    """
         **Class EarningsValidators**
             class used to validate user earnings based on affiliate recruitments and
             membership payments
-    ***REMOVED***
+    """
 
     def __init__(self) -> None:
         super(EarningsValidators, self).__init__()
@@ -151,7 +151,7 @@ class EarningsValidators:
 
 
 class Affiliates(BaseModel):
-    ***REMOVED***
+    """
         **Class Affiliates**
             class used to track affiliates registered
 
@@ -164,7 +164,7 @@ class Affiliates(BaseModel):
             6. total_recruits: int -> indicates the total number of recruits under this affiliate
             7. is_active: bool -> indicates if the affiliate is active
             8. is_deleted: bool -> indicates if an affiliate is deleted or not.
-    ***REMOVED***
+    """
     organization_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
     affiliate_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
     uid: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
@@ -194,7 +194,7 @@ class Affiliates(BaseModel):
 
 
 class Recruits(BaseModel):
-    ***REMOVED***
+    """
         **Class Recruits**
             class used to track recruited affiliates
 
@@ -210,7 +210,7 @@ class Recruits(BaseModel):
             8. is_active: bool -> indicates if a recruit is active
             9. is_deleted: bool -> indicates if a recruit is deleted
 
-    ***REMOVED***
+    """
     organization_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
     affiliate_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
     referrer_uid: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
@@ -243,7 +243,7 @@ class Recruits(BaseModel):
 
 
 class EarningsData(BaseModel):
-    ***REMOVED***
+    """
         **Class EarningsData**
             class used to track periodical earnings per affiliate
 
@@ -255,7 +255,7 @@ class EarningsData(BaseModel):
             5. total_earned: AmountMixin -> Total earned earnings in AmountMixin
             6. is_paid: bool -> true if earnings has been paid
             7. on_hold: bool -> True if earnings has been put on hold
-    ***REMOVED***
+    """
     organization_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
     affiliate_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
     start_date: date = ndb.DateProperty(auto_now_add=True)
@@ -286,7 +286,7 @@ class EarningsData(BaseModel):
 
 
 class AffiliateTransactionItems(BaseModel):
-    ***REMOVED***
+    """
         **Class AffiliateTransactionItems**
             keeps track of singular transaction items, the transaction id's can be found on
             AffiliateEarningsTransactions.transaction_id_list
@@ -298,7 +298,7 @@ class AffiliateTransactionItems(BaseModel):
 
         **NOTE:**
             Transactions here only relates to affiliate earnings so there is no transaction types
-    ***REMOVED***
+    """
     uid: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
     transaction_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
     amount: AmountMixin = ndb.StructuredProperty(AmountMixin, required=True)
@@ -323,7 +323,7 @@ class AffiliateTransactionItems(BaseModel):
 
 
 class AffiliateSettingsStats(BaseModel):
-    ***REMOVED***
+    """
         **Class AffiliateSettingsStats**
             if earnings are recurring then an affiliate will continue to earn income
             on their down-line ,
@@ -342,7 +342,7 @@ class AffiliateSettingsStats(BaseModel):
 
         **NOTE**
             all amounts are in cents
-    ***REMOVED***
+    """
     organization_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
     earnings_percent: int = ndb.IntegerProperty(default=0, validator=property_.set_percent, required=True)
     recurring_earnings: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)

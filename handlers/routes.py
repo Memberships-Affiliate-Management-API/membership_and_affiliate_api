@@ -1,7 +1,7 @@
-***REMOVED***
+"""
     **Module For Common Error Handlers for the application**
     *Routes Definitions for handling common application errors*
-***REMOVED***
+"""
 
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
@@ -22,25 +22,25 @@ default_handlers_bp = Blueprint('handlers', __name__)
 
 @default_handlers_bp.route('/_ah/warmup')
 def warmup() -> tuple:
-    ***REMOVED***
+    """
         Use Context will create a database connection
         APP-Engine Warm UP Handler
         # TODO - send a message that another instance has started up
-    ***REMOVED***
+    """
     return "OK", 200
 
 
 # TODO - send an sms notification or email message to app admin with the error message for each error
 
 def return_error(e) -> tuple:
-    ***REMOVED***
+    """
         **return_error**
             Actually replying with the error and description of the error here
 
         :param e: -> thrown exception
         :return tuple response, status_code
             -> message: exception description
-    ***REMOVED***
+    """
 
     if config_instance.DEBUG:
         print(f"Description: {e.description} Error_Code: {e.code}")
@@ -49,20 +49,20 @@ def return_error(e) -> tuple:
 
 @default_handlers_bp.app_errorhandler(BadRequest)
 def handle_bad_request(e: BadRequest) -> tuple:
-    ***REMOVED***
+    """
     **handle_bad_request**
         Raise if the browser sends something to the application the application
         or server cannot handle.
 
     :param e: error instance
     :return: tuple -> response, status_code
-    ***REMOVED***
+    """
     return return_error(e)
 
 
 @default_handlers_bp.app_errorhandler(Forbidden)
 def handle_forbidden_error(e: Forbidden) -> tuple:
-    ***REMOVED***
+    """
     **handle_forbidden_error**
         Raise if the user doesn't have the permission for the requested resource
         but was authenticated.
@@ -71,26 +71,26 @@ def handle_forbidden_error(e: Forbidden) -> tuple:
 
     :param e: error instance
     :return: error response
-    ***REMOVED***
+    """
     return return_error(e)
 
 
 @default_handlers_bp.app_errorhandler(NotFound)
 def handle_not_found_error(e: NotFound) -> tuple:
-    ***REMOVED***
+    """
         **handle_not_found_error**
             Raise if a resource does not exist and never existed.
 
         *404* `Not Found`
     :param e: error instance
     :return: tuple -> error response and status code
-    ***REMOVED***
+    """
     return return_error(e)
 
 
 @default_handlers_bp.app_errorhandler(MethodNotAllowed)
 def handle_method_not_allowed(e: MethodNotAllowed) -> tuple:
-    ***REMOVED***
+    """
     **handle_method_not_allowed**
         Raise if the server used a method the resource does not handle.  For
         example `POST` if the resource is view only.  Especially useful for REST.
@@ -103,13 +103,13 @@ def handle_method_not_allowed(e: MethodNotAllowed) -> tuple:
 
     :param e: error instance
     :return: tuple of error response and status code
-    ***REMOVED***
+    """
     return return_error(e)
 
 
 @default_handlers_bp.app_errorhandler(Unauthorized)
 def handle_un_authorized_requests(e: Unauthorized) -> tuple:
-    ***REMOVED***
+    """
     **handle_un_authorized_requests**
         Raise if the user is not authorized to access a resource.
 
@@ -123,13 +123,13 @@ def handle_un_authorized_requests(e: Unauthorized) -> tuple:
         *401* ``Unauthorized``
     :param e: error instance
     :return:
-    ***REMOVED***
+    """
     return return_error(e)
 
 
 @default_handlers_bp.app_errorhandler(UnAuthenticatedError)
 def handle_un_authenticated_request(e: UnAuthenticatedError) -> tuple:
-    ***REMOVED***
+    """
     **handle_un_authorized_requests**
         raised when a user is trying to access a resource without supplying the proper credentials for the resource.
 
@@ -141,14 +141,14 @@ def handle_un_authenticated_request(e: UnAuthenticatedError) -> tuple:
 
     :param e: exception -> error instance
     :return: tuple representing the error
-    ***REMOVED***
+    """
     return return_error(e)
 
 
 # Custom Errors
 @default_handlers_bp.app_errorhandler(DataServiceError)
 def handle_data_service_error(e: DataServiceError):
-    ***REMOVED***
+    """
     **handle_data_service_error**
         raised when user has been performing an update or edit operation on their resource and the application
         is unable to complete such an operation.
@@ -157,13 +157,13 @@ def handle_data_service_error(e: DataServiceError):
 
     :param e: exception instance
     :return: tuple representing the error
-    ***REMOVED***
+    """
     return return_error(e)
 
 
 @default_handlers_bp.app_errorhandler(InputError)
 def handle_input_error(e: InputError) -> tuple:
-    ***REMOVED***
+    """
         **handle_input_error**
 
             raised when a user has supplied bad data or invalid arguments, for example supplying a None / Null value instead
@@ -173,13 +173,13 @@ def handle_input_error(e: InputError) -> tuple:
 
     :param e: error_instance
     :return: tuple -> response, status_code
-    ***REMOVED***
+    """
     return return_error(e)
 
 
 @default_handlers_bp.app_errorhandler(RemoteDataError)
 def handle_remote_error(e: RemoteDataError) -> tuple:
-    ***REMOVED***
+    """
         **handle_remote_error**
             raised when the server is trying to access a remote server or service in order
             to complete the users transaction but is unable to . the proper response
@@ -189,13 +189,13 @@ def handle_remote_error(e: RemoteDataError) -> tuple:
 
         :param  e: error_instance
         :return : tuple -> response, status_code
-    ***REMOVED***
+    """
     return return_error(e)
 
 
 @default_handlers_bp.app_errorhandler(RequestError)
 def handle_remote_error(e: RequestError) -> tuple:
-    ***REMOVED***
+    """
     **handle_remote_error**
        raised when the server has created a request which succeeded but the response
        isn't what is expected or the remote server returns an error.
@@ -204,13 +204,13 @@ def handle_remote_error(e: RequestError) -> tuple:
 
     :param e: error_instance
     :return: tuple response, status_code
-    ***REMOVED***
+    """
     return return_error(e)
 
 
 @default_handlers_bp.app_errorhandler(OAuthError)
 def handle_auth_error(e:  OAuthError) -> tuple:
-    ***REMOVED***
+    """
         **handle_auth_error**
             1. handles github authentication error**
             2. raised when something wrong happens during github authentication flow
@@ -218,7 +218,7 @@ def handle_auth_error(e:  OAuthError) -> tuple:
         **CODE: 422 **
     :param e: exception instance
     :return: tuple -> response, status_code
-    ***REMOVED***
+    """
     # Note OAuthError is not compatible with my custom errors
     message: str = e.description
     return return_error(e=UnAuthenticatedError(status=error_codes.input_error_code, description=message))
