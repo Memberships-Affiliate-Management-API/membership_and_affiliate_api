@@ -14,8 +14,8 @@ from datetime import datetime, timedelta
 from apscheduler.schedulers.background import BackgroundScheduler
 from utils import create_id as create_unique_id
 
-task_scheduler = BackgroundScheduler()
-cron_scheduler = BackgroundScheduler()
+task_scheduler = BackgroundScheduler({'apscheduler.timezone': 'Africa/Johannesburg'})
+cron_scheduler = BackgroundScheduler({'apscheduler.timezone': 'Africa/Johannesburg'})
 
 
 def schedule_func(func: Callable, kwargs: dict) -> None:

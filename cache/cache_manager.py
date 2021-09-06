@@ -13,7 +13,7 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 from flask_caching import Cache
 
 from datetime import timedelta, datetime
-from _cron.scheduler import task_scheduler
+from schedulers.scheduler import task_scheduler
 from config import config_instance
 
 from typing import Optional, Callable

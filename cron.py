@@ -15,7 +15,7 @@ import asyncio
 from typing import Optional
 import aiohttp
 from config import config_instance
-from _cron.scheduler import cron_scheduler
+from schedulers.scheduler import cron_scheduler
 from config.exceptions import status_codes
 
 
