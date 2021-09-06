@@ -1,8 +1,79 @@
-version: "2"
+version: "3.2"
 services:
-  web:
-    build: .
+  api:
+    image: memberships-api
+    container_name: 'memberships-api'
+    restart: always    
     expose:
       - 8081
     ports:
-      - 8081:80
+      - 8081:8081
+  system-admin:
+    image: memberships-admin
+    container_name: 'memberships-admin'
+    restart: always    
+    expose:
+      - 8082
+    ports:
+      - 8082:8082
+  client-admin:
+    image: client-admin
+    container_name: 'client-admin'
+    restart: always
+    expose:
+      - 8083
+    ports:
+      - 8083:8083
+  wordpress-docs:
+    depends_on:
+      - db
+    image: wordpress:latest
+    volumes:
+      - wordpress_data:/var/www/html
+    expose:
+      - 8000
+    ports:
+      - 8000:80
+    restart: always
+    environment: 
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress    
+  db:
+    image: mysql:latest
+    container_name: 'mysql-wordpress'
+    expose:
+      - 3306
+    ports:
+      - 3306:3306
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: somewordpress
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress    
+  rabbit:
+    image: rabbitmq:3
+    container_name: 'rabbitmq'
+    expose:
+      - 5672
+      - 15672
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    networks:
+      - rabbitmq_go_net
+networks: 
+  rabbitmq_go_net
+    driver: bridge
+volumes:
+  db_data: {}
+  wordpress_data: {}
+  ~/.docker-conf/rabbitmq/data/: {}
+  ~/.docker-conf/rabbitmq/log/: {}
