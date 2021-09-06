@@ -30,8 +30,7 @@ def cron_affiliate_jobs() -> tuple:
                 2. sending finalized amounts to wallets
                 3. sending affiliate report - recruitments & earnings
     :return:
-    ***REMOVED***
-    # TODO add authentication on this route
+    ***REMOVED***    
     affiliate_cron_tasks: AffiliateJobs = AffiliateJobs()
     affiliate_cron_tasks.run()
     return "OK", status_codes.status_ok_code
