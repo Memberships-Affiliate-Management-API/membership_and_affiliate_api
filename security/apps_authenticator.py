@@ -1,11 +1,11 @@
-***REMOVED***
+"""
     **apps_authenticator**
         will handle internal application api calls
 
     **NOTE:**
         this authenticator runs on the api side will have access to all the data classes
 
-***REMOVED***
+"""
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
 __twitter__ = "@blueitserver"
@@ -28,14 +28,14 @@ from utils import is_development
 
 
 def verify_app_id(app_id: str, domain: str) -> bool:
-    ***REMOVED***
+    """
     **verify_app_id**
         given a micro-services domain name check if the app_id is the same as the app_id
         created
     :param app_id:
     :param domain:
     :return:
-    ***REMOVED***
+    """
     _endpoint: str = '_ipn/micro-services/verify-app-id'
     _url: str = f"{domain}{_endpoint}"
 
@@ -63,14 +63,14 @@ def verify_app_id(app_id: str, domain: str) -> bool:
 @use_context
 def is_app_authenticated(domain: Optional[str], secret_key: Optional[str],
                          auth_token: Optional[str]) -> bool:
-    ***REMOVED***
+    """
         **apps_authenticator**
             authenticate application to api calls
     :param domain:
     :param secret_key:
     :param auth_token:
     :return: True
-    ***REMOVED***
+    """
     decoded_token = decode_auth_token(auth_token=auth_token)
     if not bool(decoded_token):
         return False
@@ -107,13 +107,13 @@ def handle_apps_authentication(func: Callable) -> Callable:
 
 
 def handle_internal_auth(func: Callable) -> Callable:
-    ***REMOVED***
+    """
     **handle_internal_auth**
         handles authentication of internal api calls
 
     :param func:
     :return:
-    ***REMOVED***
+    """
 
     @functools.wraps(func)
     def auth_wrapper(*args, **kwargs) -> Callable:
@@ -124,9 +124,9 @@ def handle_internal_auth(func: Callable) -> Callable:
 
 
 def is_domain_authorised(domain) -> bool:
-    ***REMOVED***
+    """
 
     :param domain:
     :return:
-    ***REMOVED***
+    """
     pass

@@ -1,7 +1,7 @@
-***REMOVED***
+"""
     **Users Database Module**
     *Class Definitions for Accessing And Management of Users and Clients Data**
-***REMOVED***
+"""
 
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
@@ -28,13 +28,13 @@ class UserValidators:
     @staticmethod
     @handle_store_errors
     def is_user_valid(organization_id: str, uid: str) -> Optional[bool]:
-        ***REMOVED***
+        """
             **is_user_valid**
                 returns true if user_instance is found and user_instance.is_active
         :param organization_id:
         :param uid:
         :return:
-        ***REMOVED***
+        """
         if not isinstance(uid, str) or not bool(uid.strip()):
             message: str = "uid cannot be Null"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -51,13 +51,13 @@ class UserValidators:
     @staticmethod
     @handle_store_errors
     async def is_user_valid_async(organization_id: str, uid: str) -> Optional[bool]:
-        ***REMOVED***
+        """
             **is_user_valid_async**
                 returns true if user_instance is valid and user_instance.is_active
         :param organization_id:
         :param uid:
         :return:
-        ***REMOVED***
+        """
         if not (isinstance(uid, str)) or not bool(uid.strip()):
             message: str = "uid cannot be Null"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -75,13 +75,13 @@ class UserValidators:
     @staticmethod
     @handle_store_errors
     def is_email_available(organization_id: str, email: str) -> Optional[bool]:
-        ***REMOVED***
+        """
             **is_email_available**
                 return False if email is not available True otherwise
         :param organization_id:
         :param email:
         :return:
-        ***REMOVED***
+        """
         if not isinstance(email, str) or not bool(email.strip()):
             message: str = "Email cannot be Null"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -99,13 +99,13 @@ class UserValidators:
     @staticmethod
     @handle_store_errors
     def is_cell_available(organization_id: str, cell: str) -> Optional[bool]:
-        ***REMOVED***
+        """
             **is_cell_available**
                 checks if cell is available returns true if that's the case
         :param organization_id:
         :param cell:
         :return:
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id cannot be Null"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -121,7 +121,7 @@ class UserValidators:
 
 
 class UserModel(BaseModel):
-    ***REMOVED***
+    """
         **Documentation**
             `Class UserModel`
                 1. class UserModels allows to store user details to database and also organize the information in an
@@ -149,7 +149,7 @@ class UserModel(BaseModel):
             4. access_rights: dict -> values indicates what access type the user has relating to their organization
             5. user_details: dict -> user general details in dict form
 
-    ***REMOVED***
+    """
     organization_id: str = ndb.StringProperty(default=None, required=True, indexed=True, validator=property_.set_id)
     uid: str = ndb.StringProperty(default=None, required=True, indexed=True, validator=property_.set_id)
     names: str = ndb.StringProperty(validator=property_.set_string)
@@ -185,22 +185,22 @@ class UserModel(BaseModel):
 
     @ndb.model.ComputedProperty
     def full_names(self) -> str:
-        ***REMOVED***
+        """
             **property -> full_names**
                 represents a users full_names meaning surnames and name together
 
         :return: {names}{surname}
-        ***REMOVED***
+        """
         return f'{self.names} {self.surname}'
 
     @ndb.model.ComputedProperty
     def user_auth(self) -> dict:
-        ***REMOVED***
+        """
             **property user_auth**
                 user authentication provide user uid, email and hashed password
 
         :return: dict -> organization_id, uid, email , password
-        ***REMOVED***
+        """
         return {
             'organization_id': self.organization_id,
             'uid': self.uid,
@@ -209,22 +209,22 @@ class UserModel(BaseModel):
 
     @ndb.model.ComputedProperty
     def account_locked(self) -> bool:
-        ***REMOVED***
+        """
             **property account_locked**
                 checks to see if email is verified if yes checks to see if seven days haven't passed since registered
 
         :return: boolean indicating if the account is locked
-        ***REMOVED***
+        """
         return self.email_verified and (self.time_registered > (timestamp() - get_days_in_milliseconds(days=7)))
 
     @ndb.model.ComputedProperty
     def access_rights(self) -> dict:
-        ***REMOVED***
+        """
             **property access_rights**
                 property indicating what a user can and cannot do together with the organization_id and uid
 
         :return: dict -> organization_id, uid, is_admin, is_active, email_verified, account_locked
-        ***REMOVED***
+        """
         return {
             'organization_id': self.organization_id,
             'uid': self.uid,
@@ -236,11 +236,11 @@ class UserModel(BaseModel):
 
     @ndb.model.ComputedProperty
     def user_details(self) -> dict:
-        ***REMOVED***
+        """
             **property user_details**
                 user personal details
         :return: dict -> organization_id, uid, names, surname, cell, email
-        ***REMOVED***
+        """
         return {
             'organization_id': self.organization_id,
             'uid': self.uid,
@@ -251,34 +251,34 @@ class UserModel(BaseModel):
 
     @ndb.model.ComputedProperty
     def organization_details(self) -> dict:
-        ***REMOVED***
+        """
             **property organization_details**
                 fetches organization_details belonging to the user
         :return: organization name and description
-        ***REMOVED***
+        """
         # TODO fetch organization details from an API
         return {
             'organization_name': '',
             'description': ''}
 
     def to_dict(self, include: Optional[List[str]] = None, exclude: Optional[List[str]] = None) -> dict:
-        ***REMOVED***
+        """
             **to_dict method**
                 returns a full dict representing user except password property
 
         :param include: all
         :param exclude: password
         :return: dict -> all user properties excluding password
-        ***REMOVED***
+        """
 
         exclude: List[str] = ['password']
         return super().to_dict(include=include, exclude=exclude)
 
 
 class GithubUser(BaseModel):
-    ***REMOVED***
+    """
         used to stored login with github client details
-    ***REMOVED***
+    """
     uid: str = ndb.StringProperty(default=None, required=True, validator=property_.set_id)
     organization_id: str = ndb.StringProperty(default=None, required=True, validator=property_.set_id)
     # TODO - May need to exclude access_token from to_dict results

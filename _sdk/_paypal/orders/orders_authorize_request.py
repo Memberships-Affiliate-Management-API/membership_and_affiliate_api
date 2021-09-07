@@ -9,9 +9,9 @@ from urllib.parse import quote  # Python 3+
 
 # noinspection PyDictCreation
 class OrdersAuthorizeRequest:
-    ***REMOVED***
+    """
     Authorizes payment for an order. The response shows authorization details.
-    ***REMOVED***
+    """
 
     def __init__(self, order_id):
         self.verb = "POST"

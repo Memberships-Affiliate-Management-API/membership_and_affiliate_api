@@ -1,4 +1,4 @@
-***REMOVED***
+"""
     Wallet API Routes for Memberships & Affiliates Management API
     There are two types of APIS in this module one for clients and
     one for organizations, this is because Organizations also
@@ -6,7 +6,7 @@
 
     User Authentication is handled differently depending on the target or
     purpose of the API
-***REMOVED***
+"""
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
 __twitter__ = "@blueitserver"
@@ -28,10 +28,10 @@ wallet_bp = Blueprint("wallet", __name__)
 @wallet_bp.route('/api/v1/public/wallet', methods=["GET", "POST", "DELETE", "PUT"])
 @handle_api_auth
 def wallet() -> tuple:
-    ***REMOVED***
+    """
         Wallet API Endpoint for servicing users and clients.
     :return: tuple containing response and status code
-    ***REMOVED***
+    """
     # Raises Bad Request error if request is not in json format
     if_bad_request_raise(request)
     json_data: dict = request.get_json()
@@ -66,10 +66,10 @@ def wallet() -> tuple:
 @handle_api_auth
 def org_wallet() -> tuple:
     # NOTE: deprecated remove this endpoint
-    ***REMOVED***
+    """
         API Endpoint for organizational Accounts and Administrative Purposes
     :return: response as tuple
-    ***REMOVED***
+    """
     if_bad_request_raise(request)
     json_data: dict = request.get_json()
 
@@ -100,12 +100,12 @@ def org_wallet() -> tuple:
 @wallet_bp.route('/api/v1/public/wallet/organization/<path:path>', methods=["GET"])
 @handle_api_auth
 def organization_wallets(path: str) -> tuple:
-    ***REMOVED***
+    """
             returns all wallets relating to a specific organization.
             # TODO try and determine if we really need this functionality
 
         :param path: organization_id for the organization to fetch wallets from
         :return: response as tuple
 
-    ***REMOVED***
+    """
     pass

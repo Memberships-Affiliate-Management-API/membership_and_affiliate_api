@@ -9,14 +9,14 @@ from urllib.parse import quote  # Python 3+
 
 # noinspection PyDictCreation
 class AuthorizationsReauthorizeRequest:
-    ***REMOVED***
+    """
     Reauthorizes an authorized PayPal account payment, by ID. To ensure that funds are still available, reauthorize an authorized payment after its initial three-day honor period expires.<br/><br/>After the three-day honor period expires,
     you can reauthorize an authorized payment only once from days four to 29. If 30 days have passed since the date of
     the authorized payment, you must create an authorized payment instead.<br/><br/>A
     reauthorized payment itself has a new three-day honor period. You can reauthorize an authorized payment once
     for up to 115% of the original authorized amount and not to exceed an increase of $75 USD.<br/><br/>Supports
     the <code>amount</code> request parameter only.
-    ***REMOVED***
+    """
     def __init__(self, authorization_id):
         self.verb = "POST"
         self.path = "/v2/payments/authorizations/{authorization_id}/reauthorize?".replace("{authorization_id}", quote(str(authorization_id)))

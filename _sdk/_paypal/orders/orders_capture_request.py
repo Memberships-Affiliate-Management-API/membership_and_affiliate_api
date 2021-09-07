@@ -9,9 +9,9 @@ from urllib.parse import quote  # Python 3+
 
 # noinspection PyDictCreation
 class OrdersCaptureRequest:
-    ***REMOVED***
+    """
     Captures a payment for an order.
-    ***REMOVED***
+    """
     def __init__(self, order_id):
         self.verb = "POST"
         self.path = "/v2/checkout/orders/{order_id}/capture?".replace("{order_id}", quote(str(order_id)))

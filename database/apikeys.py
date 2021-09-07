@@ -1,8 +1,8 @@
-***REMOVED***
+"""
     ** Affiliates Keys Module**
     definition of classes to handle APIKeys for client authorization
 
-***REMOVED***
+"""
 
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
@@ -17,10 +17,10 @@ from database.basemodel import BaseModel
 
 
 class APIKeys(BaseModel):
-    ***REMOVED***
+    """
         **Class APIKeys**
             a class to keep track of all api keys created for clients / organization in order to access our API
-    ***REMOVED***
+    """
     organization_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
     api_key: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
     secret_token: str = ndb.StringProperty(validator=property_.set_id, indexed=True, required=True)

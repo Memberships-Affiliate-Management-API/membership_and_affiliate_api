@@ -1,8 +1,8 @@
-***REMOVED***
+"""
     will start task scheduler as a service
-***REMOVED***
+"""
 
-from _cron.scheduler import task_scheduler
+from schedulers.scheduler import task_scheduler
 
 
 if __name__ == '__main__':

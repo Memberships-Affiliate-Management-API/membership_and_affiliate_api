@@ -1,7 +1,7 @@
 
-***REMOVED***
+"""
     **Contact Module**
-***REMOVED***
+"""
 from typing import Optional
 from flask import Blueprint, request, current_app, jsonify
 from config.exceptions import UnAuthenticatedError, error_codes, if_bad_request_raise
@@ -13,12 +13,12 @@ contact_api_bp = Blueprint('contact-api', __name__)
 @contact_api_bp.route('/_api/v1/client/contact/<string:path>', methods=['POST'])
 @handle_apps_authentication
 def contact(path: str) -> tuple:
-    ***REMOVED***
+    """
         **contact**
             main contact api- handles everything related to contacts
             for both clients and admins
     :return:
-    ***REMOVED***
+    """
     if_bad_request_raise(request)
     json_data: dict = request.get_json()
     # print(json_data)

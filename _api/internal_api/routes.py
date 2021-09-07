@@ -11,10 +11,10 @@ internal_api_bp = Blueprint('internal_api', __name__)
 @internal_api_bp.route('_api/v1/internal/wallet/organization/<string:path>', methods=['POST'])
 @handle_internal_auth
 def int_organizational_wallets(path: str) -> tuple:
-    ***REMOVED***
+    """
 
         :return: tuple
-    ***REMOVED***
+    """
     if_bad_request_raise(request)
     json_data: dict = request.get_json()
 

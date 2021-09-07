@@ -9,9 +9,9 @@ from urllib.parse import quote  # Python 3+
 
 
 class AuthorizationsCaptureRequest:
-    ***REMOVED***
+    """
     Captures an authorized payment, by ID.
-    ***REMOVED***
+    """
 
     def __init__(self, authorization_id):
         self.verb = "POST"

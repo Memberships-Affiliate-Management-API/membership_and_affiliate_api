@@ -1,6 +1,6 @@
-***REMOVED***"
+""""
         **main api entry module for memberships & affiliates Management API**
-***REMOVED***
+"""
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
 __twitter__ = "@blueitserver"
@@ -11,10 +11,10 @@ __licence__ = "MIT"
 from authlib.integrations.flask_client import OAuth
 from flask import Flask
 
-from _cron.scheduler import task_scheduler
+from schedulers.scheduler import task_scheduler, cron_scheduler
 from cache.cache_manager import app_cache
 from config import config_instance
-from cron import cron_scheduler
+
 # TODO: consider upgrading the cache service from version 2 of this api
 from utils import is_development
 

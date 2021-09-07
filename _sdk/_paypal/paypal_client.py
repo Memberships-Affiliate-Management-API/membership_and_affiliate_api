@@ -10,23 +10,23 @@ class PayPalClient:
         self.client_secret_live = app.config.get('PAYPAL_CLIENT_SECRET')
         self.client_id_sand = app.config.get('PAYPAL_CLIENT_ID_SAND')
         self.client_secret_sand = app.config.get('PAYPAL_CLIENT_SECRET_SAND')
-        ***REMOVED***Setting up and Returns PayPal SDK environment with PayPal Access credentials.
+        """Setting up and Returns PayPal SDK environment with PayPal Access credentials.
            For demo purpose, we are using SandboxEnvironment. In production this will be
-           LiveEnvironment.***REMOVED***
+           LiveEnvironment."""
         if app.config.get('IS_PRODUCTION'):
             self.environment = LiveEnvironment(client_id=self.client_id_live, client_secret=self.client_secret_live)
         else:
             self.environment = SandboxEnvironment(client_id=self.client_id_sand, client_secret=self.client_secret_sand)
 
-        ***REMOVED*** Returns PayPal HTTP client instance with environment which has access
+        """ Returns PayPal HTTP client instance with environment which has access
             credentials context. This can be used invoke PayPal API's provided the
-            credentials have the access to do so. ***REMOVED***
+            credentials have the access to do so. """
         self.client = PayPalHttpClient(self.environment)
 
     def object_to_json(self, json_data):
-        ***REMOVED***
+        """
         Function to print all json data in an organized readable manner
-        ***REMOVED***
+        """
         result = {}
         if sys.version_info[0] < 3:
             itr = json_data.__dict__.iteritems()

@@ -1,7 +1,7 @@
-***REMOVED***
+"""
     **NDB Database Common Mixins**
         This Module defines common Mixins which are useful in defining main database classes on the applications
-***REMOVED***
+"""
 
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
@@ -18,14 +18,14 @@ from database.setters import property_
 
 
 class AmountMixin(BaseModel):
-    ***REMOVED***
+    """
     **Class AmountMixin**
         A mixin to represent Money in cents
 
     **Class Properties**
         1. property: Amount: Integer -> Money in Cents
         2. property: Currency: String ->  Currency symbol
-    ***REMOVED***
+    """
     amount_cents: int = ndb.IntegerProperty(default=None, validator=property_.set_value_amount)
     currency: str = ndb.StringProperty(default=config_instance.CURRENCY, validator=property_.set_currency)
 
@@ -73,7 +73,7 @@ class AmountMixin(BaseModel):
 
 
 class UserMixin(BaseModel):
-    ***REMOVED***
+    """
         **Class UserMixin**
             handling user login properties of User Class -
             Passwords Hash are handled by werkzeug.security using the method : "pbkdf2:sha256"
@@ -81,7 +81,7 @@ class UserMixin(BaseModel):
         **Class Properties**
             1. Property: Email : String -> email password
             2. Property: Password : String -> User Password - will be converted to a password hash
-    ***REMOVED***
+    """
     email: str = ndb.StringProperty(validator=property_.set_email)
     password: str = ndb.StringProperty(validator=property_.set_password)
 
@@ -102,7 +102,7 @@ class UserMixin(BaseModel):
 
 
 class AddressMixin(BaseModel):
-    ***REMOVED***
+    """
         **Class AddressMixin**
             a mixin for user addresses
         **Class Properties**
@@ -115,7 +115,7 @@ class AddressMixin(BaseModel):
             7. state: string -> in-case of a countries with states
             8. country: string -> physical address country
     # TODO - validate countries through a country list the membership API Supports
-    ***REMOVED***
+    """
     organization_id: str = ndb.StringProperty(validator=property_.set_id)
     uid: str = ndb.StringProperty(validator=property_.set_id)
     line_1: str = ndb.StringProperty(default=None, validator=property_.set_string)

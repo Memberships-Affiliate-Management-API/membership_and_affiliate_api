@@ -1,9 +1,9 @@
-***REMOVED***
+"""
     **Affiliate API Endpoint**
 
     module intended as an Affiliate Api Route for clients using memberships and affiliate management api
     the module handles routing api requests and authentication of each call
-***REMOVED***
+"""
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
 __twitter__ = "@blueitserver"
@@ -24,7 +24,7 @@ affiliates_bp = Blueprint('affiliates', __name__)
 @affiliates_bp.route('/api/v1/public/affiliate/<path:path>', methods=['POST'])
 @handle_api_auth
 def affiliate(path: str) -> tuple:
-    ***REMOVED***
+    """
     **affiliate**
         returns information to clients / users relating to affiliates management
         required parameter is organization_id must be a part of the request body supplied as json
@@ -63,7 +63,7 @@ def affiliate(path: str) -> tuple:
 
         # TODO finish documentation
 
-    ***REMOVED***
+    """
     # Raises Bad Request error if request is not in json format
     if_bad_request_raise(request)
 
@@ -106,7 +106,7 @@ def affiliate(path: str) -> tuple:
 @affiliates_bp.route('/api/v1/public/recruits/<path:path>', methods=['POST'])
 @handle_api_auth
 def recruits(path: str) -> tuple:
-    ***REMOVED***
+    """
         **recruits**
             Allows Users and Clients to recruit other users and clients to
             their organizations.
@@ -132,7 +132,7 @@ def recruits(path: str) -> tuple:
 
     :param path: route to retrieve
     :return:
-    ***REMOVED***
+    """
     # Raises Bad Request error if request is not in json format
     if_bad_request_raise(request)
 

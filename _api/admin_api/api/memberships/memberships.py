@@ -1,6 +1,6 @@
-***REMOVED***
+"""
     **memberships system admin api**
-***REMOVED***
+"""
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
 __twitter__ = "@blueitserver"
@@ -23,11 +23,11 @@ membership_admin_api_bp = Blueprint('memberships_admin_api', __name__)
 @membership_admin_api_bp.route('/_api/v1/admin/membership-plans/<string:path>', methods=['GET', 'POST'])
 @handle_apps_authentication
 def memberships_plan_admin_api(path: str) -> tuple:
-    ***REMOVED***
+    """
         this endpoint is for purposes of user administration only not for admin purposes
     :param path:
     :return:
-    ***REMOVED***
+    """
     json_data: dict = request.get_json()
     secret_key: Optional[str] = json_data.get('SECRET_KEY')
 
@@ -49,11 +49,11 @@ def memberships_plan_admin_api(path: str) -> tuple:
 
 @membership_admin_api_bp.route('/_api/v1/admin/memberships/<string:path>', methods=['GET', 'POST'])
 def memberships_admin(path: str) -> tuple:
-    ***REMOVED***
+    """
 
     :param path:
     :return:
-    ***REMOVED***
+    """
     json_data: dict = request.get_json()
     secret_key: Optional[str] = json_data.get('SECRET_KEY')
 

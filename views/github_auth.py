@@ -1,7 +1,7 @@
-***REMOVED***
+"""
     **github authentication module**
         allows clients to gain access to the api dashboard through github authorization
-***REMOVED***
+"""
 import json
 import requests
 from flask import current_app, jsonify
@@ -15,9 +15,9 @@ from utils import create_id
 
 
 class Validators:
-    ***REMOVED***
+    """
         **Utilities and Validators for GithubAuthView Class**
-    ***REMOVED***
+    """
 
     def __init__(self) -> None:
         self._admin_check_user_endpoint: str = "_api/admin/users/is-user-unique"
@@ -25,13 +25,13 @@ class Validators:
         self._user_dict: Optional[dict] = None
 
     def account_lookup(self, email: str) -> Optional[str]:
-        ***REMOVED***
+        """
             **does_account_exist**
                 if the account with email address already exists on the users - records return the account uid
                 if not then return create a new uid and return it
         :param email: email address used to lookup account details
         :return: uid -> str
-        ***REMOVED***
+        """
 
         if self._user_dict and self._user_dict.get('email') == email.lower().strip():
             return self._user_dict.get('uid')
@@ -50,12 +50,12 @@ class Validators:
         return None
 
     def create_unique_id(self) -> str:
-        ***REMOVED***
+        """
             **create_unique_id**
                 creates a unique user id
 
         :return: str -> uid
-        ***REMOVED***
+        """
         _uid: str = create_id()
         _url: str = f"{self._base_url}{self._admin_check_user_endpoint}"
         response, _ = requests.post(url=_url, json=json.dumps(dict(uid=_uid)))
@@ -65,13 +65,13 @@ class Validators:
 
 
 def github_auth_get_user(user_details: dict) -> tuple:
-    ***REMOVED***
+    """
     **github_auth_get_user**
         obtain user details from user_details dict
 
     :param user_details:
     :return: tuple -> user details
-    ***REMOVED***
+    """
     organization_id: Optional[str] = current_app.get('organization_id')
     access_token: Optional[str] = user_details.get('access_token')
     twitter_username: Optional[str] = user_details.get('twitter_username')
@@ -88,11 +88,11 @@ def github_auth_get_user(user_details: dict) -> tuple:
 
 
 class GithubAuthView(Validators):
-    ***REMOVED***
+    """
         **Class GithubAuthView**
             view controller for github authorization for the client portal
 
-    ***REMOVED***
+    """
 
     def __init__(self) -> None:
         super(GithubAuthView, self).__init__()
@@ -103,12 +103,12 @@ class GithubAuthView(Validators):
     @use_context
     @handle_view_errors
     def create_user(self, user_details: dict) -> tuple:
-        ***REMOVED***
+        """
             **create_user**
                 gets user details from user_details dict and then create a new user
         :param user_details:
         :return: tuple
-        ***REMOVED***
+        """
         email: Optional[str] = user_details.get('email')
         if not isinstance(email, str) or not bool(email.strip()):
             message: str = 'Email is required'
@@ -143,13 +143,13 @@ class GithubAuthView(Validators):
     @use_context
     @handle_view_errors
     def update_user(self, user_details: dict) -> tuple:
-        ***REMOVED***
+        """
         **update_user**
             update github user
 
         :param user_details:
         :return:
-        ***REMOVED***
+        """
         email: Optional[str] = user_details.get('email')
         if not isinstance(email, str) or not bool(email.strip()):
             message: str = 'Email is required'
@@ -195,14 +195,14 @@ class GithubAuthView(Validators):
     @use_context
     @handle_view_errors
     def delete_user(self, organization_id: Optional[str], uid: Optional[str]) -> tuple:
-        ***REMOVED***
+        """
         **delete_user**
             delete github user
 
         :param organization_id:
         :param uid:
         :return:
-        ***REMOVED***
+        """
         if isinstance(organization_id, str) and bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -231,14 +231,14 @@ class GithubAuthView(Validators):
     @use_context
     @handle_view_errors
     def get_user(self, organization_id: Optional[str], uid: Optional[str]) -> tuple:
-        ***REMOVED***
+        """
         **get_user**
             fetch github user
 
         :param organization_id:
         :param uid:
         :return:
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -260,13 +260,13 @@ class GithubAuthView(Validators):
     @use_context
     @handle_view_errors
     def return_organization_users(self, organization_id: Optional[str]) -> tuple:
-        ***REMOVED***
+        """
         **return_organization_users**
             return organizational users
 
         :param organization_id:
         :return:
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)

@@ -1,7 +1,7 @@
-***REMOVED***
+"""
     **API Authenticator Module**
         authorize client api calls
-***REMOVED***
+"""
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
 __twitter__ = "@blueitserver"
@@ -19,7 +19,7 @@ from cache.cache_manager import app_cache
 
 @app_cache.cache.memoize(timeout=15 * 60)  # timeout equals fifteen minutes // 900 seconds
 def is_request_valid(api_key: str, secret: str, domain: str) -> bool:
-    ***REMOVED***
+    """
     **is_api_key_valid**
         validates api keys on behalf of client api calls
 
@@ -27,7 +27,7 @@ def is_request_valid(api_key: str, secret: str, domain: str) -> bool:
     :param secret: str -> secret token
     :param domain: str -> domain registered for the api_key and secret_token
     :return: bool -> True if api_key is valid
-    ***REMOVED***
+    """
 
     organization_id: str = config_instance.ORGANIZATION_ID
     _endpoint = f'_api/admin/api-keys/{api_key}/org/{organization_id}'
@@ -58,13 +58,13 @@ def is_request_valid(api_key: str, secret: str, domain: str) -> bool:
 
 
 def handle_api_auth(func):
-    ***REMOVED***
+    """
     **handle_api_auth**
         wrapper to handle public api calls authentications
 
     :param func: a function to be wrapped
     :return: wrapped function
-    ***REMOVED***
+    """
 
     @functools.wraps(func)
     def auth_wrapper(*args, **kwargs):
@@ -82,7 +82,7 @@ def handle_api_auth(func):
 
 
 if __name__ == '__main__':
-    ***REMOVED***
+    """
         NOTE: fast testing of functions here 
-    ***REMOVED***
+    """
     pass

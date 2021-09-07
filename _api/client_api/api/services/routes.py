@@ -1,7 +1,7 @@
-***REMOVED***
+"""
     **Services API Module**
 
-***REMOVED***
+"""
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
 __twitter__ = "@blueitserver"
@@ -18,12 +18,12 @@ services_client_api_bp = Blueprint('services_client_api', __name__)
 
 @services_client_api_bp.route('/_api/v1/client/services/<string:path>', methods=["POST"])
 def services_api(path: str) -> tuple:
-    ***REMOVED***
+    """
         **services_api**
             allows clients/ developers to manage their services
     :param path:
     :return:
-    ***REMOVED***
+    """
     if_bad_request_raise(request)
     services_data: dict = request.get_json()
     secret_key: Optional[str] = services_data.get('SECRET_KEY')

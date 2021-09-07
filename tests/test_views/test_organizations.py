@@ -38,11 +38,11 @@ class OrganizationQueryMock:
 
     @staticmethod
     def rand_organization() -> Organization:
-        ***REMOVED***
+        """
         **generate a random organization**
              for testing purposes
         :return: Organization
-        ***REMOVED***
+        """
         return Organization(
             organization_id=create_id(),
             organization_name="Memberships & Affiliates API",
@@ -58,10 +58,10 @@ class OrganizationQueryMock:
         )
 
     def fetch(self) -> List[Organization]:
-        ***REMOVED***
+        """
             :param self:
             :return:
-        ***REMOVED***
+        """
         return [self.rand_organization() for _ in range(self.results_range)]
 
     def get(self) -> Organization:
@@ -72,17 +72,17 @@ organization_mock_data: dict = OrganizationQueryMock().get().to_dict()
 
 
 def nullish_value() -> Optional[str]:
-    ***REMOVED***
+    """
     **nullish_value**
         returns None Null or Empty String
     :return: Nullish
-    ***REMOVED***
+    """
     return choice([None, " ", ""])
 
 
 # noinspection PyShadowingNames
 def test_create_organization(mocker) -> None:
-    ***REMOVED***
+    """
     **test_create_organization**
          tests for the validity of view module create_organization method
 
@@ -98,7 +98,7 @@ def test_create_organization(mocker) -> None:
 
     :param mocker:
     :return:
-    ***REMOVED***
+    """
     with test_app().app_context():
         mocker.patch('database.organization.Organization.put', return_value=ndb.KeyProperty('Organization'))
         mocker.patch('database.organization.Organization.query', return_value=OrganizationQueryMock())

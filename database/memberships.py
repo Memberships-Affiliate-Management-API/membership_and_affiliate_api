@@ -1,10 +1,10 @@
-***REMOVED***
+"""
     **Memberships Module**
         *Class Definitions for: Memberships, Memberships Plans and Coupons*
         This classes are related to creating and management of organizational memberships and their membership plans
         for organizations products or services in order to collect payments from clients
 
-***REMOVED***
+"""
 
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
@@ -26,41 +26,41 @@ from database.basemodel import BaseModel
 
 
 class MembershipValidators:
-    ***REMOVED***
+    """
         **Class Memberships Validators**
             validating input and authenticating calls to memberships database
-    ***REMOVED***
+    """
 
     @staticmethod
     def start_date_valid(start_date: date) -> bool:
-        ***REMOVED***
+        """
             **start_date_valid**
                 check if date is from today and falls within normal parameters
-        ***REMOVED***
+        """
         return isinstance(start_date, date) and start_date > today()
 
     @staticmethod
     async def start_date_valid_async(start_date: date) -> bool:
-        ***REMOVED***
+        """
             **asynchronous version of start_date_valid_async**
                 check if date is from today and falls within normal parameters
-        ***REMOVED***
+        """
 
         return start_date > today()
 
 
 class PlanValidators:
-    ***REMOVED***
+    """
         **Class PlanValidators**
             validating and authenticating calls to MembershipPlans Database
 
-    ***REMOVED***
+    """
 
     # noinspection DuplicatedCode
     @staticmethod
     @handle_store_errors
     def plan_exist(organization_id: str, plan_id: str) -> Optional[bool]:
-        ***REMOVED***
+        """
             **plan_exist**
                 checks if plan exist using plan_id if this is the case the returns True else False
                 raises InputError or TypeError in case of an invalid input
@@ -69,7 +69,7 @@ class PlanValidators:
         :param organization_id: unique organization id
         :param plan_id: unique plan_id
         :return: True if plan exist or False Otherwise
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id cannot be Null"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -86,7 +86,7 @@ class PlanValidators:
     @staticmethod
     @handle_store_errors
     async def plan_exist_async(organization_id: str, plan_id: str) -> Optional[bool]:
-        ***REMOVED***
+        """
             **asynchronous version of of plan_exist_async**
                 checks if plan already exist returns True if it does - uses plan id to check
                 raises InputError or TypeError in case of an invalid input
@@ -94,7 +94,7 @@ class PlanValidators:
         :param organization_id:
         :param plan_id:
         :return:
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id cannot be Null"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -113,7 +113,7 @@ class PlanValidators:
     @staticmethod
     @handle_store_errors
     def plan_name_exist(organization_id: str, plan_name: str) -> Optional[bool]:
-        ***REMOVED***
+        """
             **plan_name_exist**
                 checks if a plan exists by using the plan name , if plan is found returns True, False otherwise
                 raises InputError or TypeError in case of an invalid input
@@ -121,7 +121,7 @@ class PlanValidators:
         :param organization_id: unique organization_id
         :param plan_name:  unique plan_name
         :return: bool -> True / False
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id cannot be Null"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -140,14 +140,14 @@ class PlanValidators:
     @staticmethod
     @handle_store_errors
     async def plan_name_exist_async(organization_id: str, plan_name: str) -> Optional[bool]:
-        ***REMOVED***
+        """
             **async version of plan_name_exist**
                 returns true in-case the plan name is already taken false otherwise
                 raises an error in case of input error
         :param organization_id:
         :param plan_name:
         :return:
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id cannot be Null"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -164,10 +164,10 @@ class PlanValidators:
 
 
 class CouponsValidator:
-    ***REMOVED***
+    """
         **Class Coupons Validator**
             validating input and authenticating calls to Coupons database
-    ***REMOVED***
+    """
     def __init__(self) -> None:
         pass
 
@@ -175,13 +175,13 @@ class CouponsValidator:
     @staticmethod
     @handle_store_errors
     def coupon_exist(organization_id: str, code: str) -> Optional[bool]:
-        ***REMOVED***
+        """
         **coupon_exist**
             checks if a coupon is already created
         :param organization_id:
         :param code:
         :return: True if a coupon is present
-        ***REMOVED***
+        """
 
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id cannot be Null"
@@ -200,14 +200,14 @@ class CouponsValidator:
     @staticmethod
     @handle_store_errors
     async def coupon_exist_async(organization_id: str, code: str) -> Optional[bool]:
-        ***REMOVED***
+        """
         **coupon_exist_async**
             an asynchronous version of coupon_exist
 
         :param organization_id:
         :param code:
         :return:
-        ***REMOVED***
+        """
 
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id cannot be Null"
@@ -224,13 +224,13 @@ class CouponsValidator:
 
     @staticmethod
     def expiration_valid(expiration_time: int) -> bool:
-        ***REMOVED***
+        """
         **expiration_valid**
             checks if expiration_time is valid
 
         :param expiration_time:
         :return:
-        ***REMOVED***
+        """
         if not (isinstance(expiration_time, int)):
             message: str = "expiration_time can only be an integer"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -239,13 +239,13 @@ class CouponsValidator:
 
     @staticmethod
     async def expiration_valid_async(expiration_time: int) -> bool:
-        ***REMOVED***
+        """
             **expiration_valid_async**
                 checks if expiration time is valid
 
         :param expiration_time:
         :return: return bool indicating if membership hasn't expired
-        ***REMOVED***
+        """
 
         if not (isinstance(expiration_time, int)):
             message: str = "expiration_time can only be an integer"
@@ -255,13 +255,13 @@ class CouponsValidator:
 
     @staticmethod
     def discount_valid(discount_valid: int) -> bool:
-        ***REMOVED***
+        """
         **discount_valid**
             checks if discount percentage is valid
 
         :param discount_valid:
         :return: returns True or False
-        ***REMOVED***
+        """
         if not (isinstance(discount_valid, int)):
             message: str = "discount_valid can only be an integer"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -270,13 +270,13 @@ class CouponsValidator:
 
     @staticmethod
     async def discount_valid_async(discount_valid: int) -> bool:
-        ***REMOVED***
+        """
         **discount_valid_async**
             checks if discount percentage is valid
 
         :param discount_valid:
         :return: returns True or False
-        ***REMOVED***
+        """
         if not (isinstance(discount_valid, int)):
             message: str = "discount_valid can only be an integer"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -286,7 +286,7 @@ class CouponsValidator:
 
 # noinspection DuplicatedCode
 class Memberships(BaseModel):
-    ***REMOVED***
+    """
         **Class Memberships**
             **AKA Subscriptions**
             NOTE: Tracks down which user belongs to which plan from which organization_id  and if the user is paid up or unpaid
@@ -302,7 +302,7 @@ class Memberships(BaseModel):
             6. property plan_start_date: the date the plan has been activated
             7. property payment_method: method of payment for the membership plan
             8. property is_active_subscription: is user still actively subscribed or not
-    ***REMOVED***
+    """
     organization_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
     uid: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
     plan_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
@@ -339,7 +339,7 @@ class Memberships(BaseModel):
 
 # noinspection DuplicatedCode
 class MembershipPlans(BaseModel):
-    ***REMOVED***
+    """
         **Class Membership Plans**
             Payment plans for services and products belonging to an organization that created it,
             clients of such organization will subscribe to such payment plans in order to get access to services or products
@@ -365,7 +365,7 @@ class MembershipPlans(BaseModel):
         11. property : is_active: when true people can activate a membership under this payment plan for a service / product.
         12. property : date_created: the date the payment plan has been created
 
-    ***REMOVED***
+    """
     organization_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
     # Service ID will relate the plan to a specific service_id on Services here and on PayPal Products
     service_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
@@ -405,7 +405,7 @@ class MembershipPlans(BaseModel):
 
 # noinspection DuplicatedCode
 class MembershipInvoices(BaseModel):
-    ***REMOVED***
+    """
         **Class Memberships Invoices**
             Invoices created for clients, based on payments made on service payment plans
 
@@ -422,7 +422,7 @@ class MembershipInvoices(BaseModel):
             10. property : payment_amount: AmountMixin : the amount to be paid for this invoice
             11. property : amount_paid: AmountMixin : the amount which has been paid for this invoice
 
-    ***REMOVED***
+    """
     organization_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True)
     uid: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True)
     plan_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True)
@@ -471,18 +471,18 @@ class MembershipInvoices(BaseModel):
                 self.payment_amount.__str__(), self.amount_paid.__str__())
 
     def __bool__(self) -> bool:
-        ***REMOVED***
+        """
         **__bool__**
             returns true if MembershipInvoices is valid
         :return: bool
-        ***REMOVED***
+        """
         user_bool: bool = bool(self.uid) and bool(self.organization_id)
         return user_bool and bool(self.uid) and bool(self.plan_id) and bool(self.invoice_id)
 
 
 # noinspection DuplicatedCode
 class Coupons(BaseModel):
-    ***REMOVED***
+    """
         **Coupons**
             Class for the management and storage of Coupons in the Database
             applied on checkout of memberships
@@ -501,7 +501,7 @@ class Coupons(BaseModel):
             5. property: date_created: datetime: the date and time the coupon code was created
             6. property: expiration_time: int: time in milliseconds when the coupon code will expire
 
-    ***REMOVED***
+    """
     organization_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True)
     code: str = ndb.StringProperty(default=None, validator=property_.set_coupon_code, indexed=True)
     discount_percent: int = ndb.IntegerProperty(default=0, validator=property_.set_number)
@@ -531,14 +531,14 @@ class Coupons(BaseModel):
 
 # noinspection DuplicatedCode
 class AccessRights(BaseModel):
-    ***REMOVED***
+    """
         TODO safely remove this class
         There should be a route that the client app can call to get permission for a route,
         the route should accept route and uid and then respond with True or False
         of all the routes he or she can access
         `Class Properties`
 
-    ***REMOVED***
+    """
     organization_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True)
     plan_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True)
     access_rights_list: typing.List[str] = ndb.StringProperty(repeated=True)  # a list containing the rights of users
@@ -550,10 +550,10 @@ class AccessRights(BaseModel):
 
 
 class MembershipDailyStats(BaseModel):
-    ***REMOVED***
+    """
         provides information and settings pertaining to paying members
         run update stats task against this class daily
-    ***REMOVED***
+    """
     organization_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True)
     daily_id: str = ndb.StringProperty(validator=property_.set_id, indexed=True)
     total_users: int = ndb.IntegerProperty(default=0, validator=property_.set_number)

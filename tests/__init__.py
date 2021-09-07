@@ -33,11 +33,11 @@ def random_float_negative():
 
 
 def is_internet_on() -> bool:
-    ***REMOVED***
+    """
     **is_internet_on**
         checks if internet is on if this is the case run alternate tests
     :return:
-    ***REMOVED***
+    """
     try:
         _url: str = 'https://google.com/'
         requests.get(url=_url, timeout=5)

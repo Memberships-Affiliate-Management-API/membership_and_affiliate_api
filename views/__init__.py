@@ -1,6 +1,6 @@
-***REMOVED***
+"""
 view instances declarations
-***REMOVED***
+"""
 from views.affiliates import AffiliatesView, RecruitsView
 from views.apikeys import APIKeysView
 from views.memberships import MembershipsView, MembershipPlansView, CouponsView

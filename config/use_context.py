@@ -1,7 +1,7 @@
-***REMOVED***
+"""
     **Wrapper to handle application and ndb context**
         Should be used everytime a method which access ndb databases is being created or updated
-***REMOVED***
+"""
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
 __twitter__ = "@blueitserver"
@@ -25,7 +25,7 @@ if is_development():
 
 
 def use_context(func):
-    ***REMOVED***
+    """
         **use_context**
             will insert ndb context for working with ndb. Cloud Databases
         **NOTE**
@@ -33,7 +33,7 @@ def use_context(func):
 
     :param func: function to wrap
     :return: function wrapped with ndb.context
-    ***REMOVED***
+    """
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         if not current_app:

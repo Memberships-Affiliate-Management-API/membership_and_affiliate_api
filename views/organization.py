@@ -1,7 +1,7 @@
-***REMOVED***
+"""
 ** Module - Organization View Controller **
     enables users to add , update Organization Accounts
-***REMOVED***
+"""
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
 __twitter__ = "@blueitserver"
@@ -26,17 +26,17 @@ from cache.cache_manager import app_cache
 
 
 class OrganizationEmails(Mailgun):
-    ***REMOVED***
+    """
         **Class OrganizationEmails**
             class Used to send Emails and Notifications related to Organizations
-    ***REMOVED***
+    """
 
     def __init__(self):
         super(OrganizationEmails, self).__init__()
 
     # noinspection DuplicatedCode
     def send_successfully_created_organization(self, organization_id: str, uid: str) -> None:
-        ***REMOVED***
+        """
             **send_successfully_created_organization**
                 once an organization is created send an email of this to the end user explaining the steps
                 they need to perform in order to complete the transaction
@@ -44,7 +44,7 @@ class OrganizationEmails(Mailgun):
             :param organization_id:
             :param uid:
             :return:
-        ***REMOVED***
+        """
         user_data, organization_data = self.return_organization_user(organization_id=organization_id, uid=uid)
         email_verified: bool = user_data.get('email_verified')
         subject: str = f"{organization_data.get('organization_name')} Organization was created successfully"
@@ -88,13 +88,13 @@ class OrganizationEmails(Mailgun):
         raise RequestError(status=error_codes.bad_request_error_code, description=message)
 
     def send_organization_wallet_created_email(self, organization_id: str, uid: str) -> None:
-        ***REMOVED***
+        """
             **organization_wallet_created**
                 send an email when an organization wallet has been created
         :param organization_id:
         :param uid:
         :return:
-        ***REMOVED***
+        """
         user_data, organization_data = self.return_organization_user(organization_id=organization_id, uid=uid)
         email_verified: bool = user_data.get('email_verified')
         subject: str = f"{organization_data.get('organization_name')} Organization Wallet created successfully"
@@ -126,12 +126,12 @@ class OrganizationEmails(Mailgun):
 
     # noinspection DuplicatedCode
     def send_organization_updated_email(self, organization_id: str, uid: str) -> None:
-        ***REMOVED***
+        """
 
         :param organization_id:
         :param uid:
         :return:
-        ***REMOVED***
+        """
         user_data, organization_data = self.return_organization_user(organization_id=organization_id, uid=uid)
         email_verified: bool = user_data.get('email_verified')
         subject: str = f"{organization_data.get('organization_name')} Successfully updated"
@@ -175,7 +175,7 @@ class OrganizationEmails(Mailgun):
         raise RequestError(status=error_codes.bad_request_error_code, description=message)
 
     def send_organization_stats_email(self, organization_id: str, uid: str) -> None:
-        ***REMOVED***
+        """
             **send_organization_stats_email**
                 sends organizational statistics email to organization owner
 
@@ -183,7 +183,7 @@ class OrganizationEmails(Mailgun):
         :param organization_id:
         :param uid:
         :return:
-        ***REMOVED***
+        """
         user_data, organization_data = self.return_organization_user(organization_id=organization_id, uid=uid)
         email_verified = user_data.get('email_verified')
         subject: str = f"User Statistics for {organization_data.get('organization_name')}"
@@ -242,25 +242,25 @@ class OrganizationEmails(Mailgun):
 
 
 class Validators(OrgValidators, OrganizationEmails):
-    ***REMOVED***
+    """
     **Class Validators**
     validation methods & Utils  for organizations
-    ***REMOVED***
+    """
     # TODO Finish this methods up
     def __init__(self) -> None:
         super(Validators, self).__init__()
 
     def _can_view_organization(self, organization_id: str, uid: str) -> bool:
-        ***REMOVED***
+        """
 
         :param organization_id:
         :param uid:
         :return:
-        ***REMOVED***
+        """
         pass
 
     def _can_create_organization(self, uid: Optional[str], organization_name: Optional[str]) -> bool:
-        ***REMOVED***
+        """
             **_can_create_organization**
                 check if user has registered, and is a paying user... or created an account.
                 Note: also Insures that the user does not have an organization already.
@@ -268,31 +268,31 @@ class Validators(OrgValidators, OrganizationEmails):
         :param uid: user id of the user performing the action --
         :param organization_name: the name of the organization to of which we should check if we can create
         :return: a boolean indicating if we can create the organization
-        ***REMOVED***
+        """
         # TODO - complete can create organization account
         pass
 
     def _can_update_organization(self, uid: Optional[str], organization_id: Optional[str]) -> bool:
-        ***REMOVED***
+        """
             **_can_update_organization**
                 check if user has administrator rights on organization and if organization exist
 
             :param uid: the user performing this action
             :param organization_id: the organization_id of the organization to be updated
             :return: returns a response , status code tuple
-        ***REMOVED***
+        """
         # TODO - complete _can_update_organization organization account
         pass
 
     @handle_store_errors
     def _create_org_id(self) -> str:
-        ***REMOVED***
+        """
             **_create_org_id**
                 create a valid organization_id if theres a conflict it creates another one and checks again if there is no
                 conflict it returns the organization_id
 
         :return: organization_id
-        ***REMOVED***
+        """
         organization_id: str = create_id()
         org_instance: Optional[Organization] = Organization.query(Organization.organization_id == organization_id).get()
         # NOTE: Calling the function again to create a new key if present key is being used or return un-used key
@@ -303,7 +303,7 @@ class Validators(OrgValidators, OrganizationEmails):
     @handle_requests_errors
     def _create_org_wallet(organization_id: Optional[str], uid: Optional[str], currency: Optional[str],
                            paypal_address: Optional[str]) -> str:
-        ***REMOVED***
+        """
             _private function to facilitate the create of organizational wallet
             :param organization_id: id of the organization to create organization wallet
             :return: the wallet key of the created organization wallet
@@ -311,7 +311,7 @@ class Validators(OrgValidators, OrganizationEmails):
             send request to : /api/v1/wallet/organization
             with organization_id and uid on json body
 
-        ***REMOVED***
+        """
         _endpoint: str = '_api/v1/internal/wallet/organization'
         base_url: str = current_app.config.get('BASE_URL')
         request_url: str = f'{base_url}{_endpoint}'
@@ -325,11 +325,11 @@ class Validators(OrgValidators, OrganizationEmails):
 
 
 class OrganizationView(Validators):
-    ***REMOVED***
+    """
         **Class OrganizationView**
             Utilities to validate UserInput Data and also validate access rights of those using the API, While
             accessing and manipulating information related to Client Organization.
-    ***REMOVED***
+    """
     def __init__(self) -> None:
         super(OrganizationView, self).__init__()
         self._max_retries: int = current_app.config.get('DATASTORE_RETRIES')
@@ -340,7 +340,7 @@ class OrganizationView(Validators):
     def create_organization(self, uid: Optional[str], organization_name: Optional[str], description: Optional[str],
                             currency: Optional[str], paypal_address: Optional[str], home_url: Optional[str],
                             login_callback_url: Optional[str], recovery_callback_url: Optional[str]) -> tuple:
-        ***REMOVED***
+        """
 
             :param recovery_callback_url:
             :param login_callback_url:
@@ -351,7 +351,7 @@ class OrganizationView(Validators):
             :param organization_name: the name of the organization being created
             :param description: the description of the organization to be created
         :return: tuple containing response object and status code
-        ***REMOVED***
+        """
         # Note: insures that a valid organization id is created
         organization_id: Optional[str] = self._create_org_id()
 
@@ -411,7 +411,7 @@ class OrganizationView(Validators):
     def update_organization(self, uid: Optional[str], organization_id: Optional[str],
                             organization_name: Optional[str], description: Optional[str], home_url: Optional[str],
                             login_callback_url: Optional[str], recovery_callback_url:  Optional[str]) -> tuple:
-        ***REMOVED***
+        """
             **update_organization**
                 function used to update the name and description of an organization.
 
@@ -423,7 +423,7 @@ class OrganizationView(Validators):
             :param organization_name: the name the organization will be updated to
             :param description: the description the organization will be updated to
             :return: tuple containing response and status code
-        ***REMOVED***
+        """
         if not isinstance(description, str) or not bool(description.strip()):
             message: str = "description is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -470,14 +470,14 @@ class OrganizationView(Validators):
     @handle_view_errors
     @app_cache.cache.memoize(timeout=return_ttl('short'))
     def get_organization(self, organization_id: Optional[str], uid: Optional[str]) -> tuple:
-        ***REMOVED***
+        """
             **get_organization**
                 function used to return the details of user organization,
             :param uid:
             :param organization_id: required: the id of the organization to return
             :return: response object and status code, response contains ,
             response json {'status': True, 'payload': '{Organization}', 'message' : 'success'}, 200
-        ***REMOVED***
+        """
         # NOTE: may not need to check if user can access organization details if the function is being called on behalf
         # of the system
 
@@ -510,13 +510,13 @@ class OrganizationView(Validators):
     @handle_view_errors
     @app_cache.cache.memoize(timeout=return_ttl('short'))
     def _return_all_organizations(self) -> tuple:
-        ***REMOVED***
+        """
             **_return_all_organizations**
                 _private (can be used by system or system admin) function to retrieve all
                 organization details used by system and Application Administrator
 
             :return: a list containing all organization details
-        ***REMOVED***
+        """
         organizations_list: List[dict] = [org.to_dict() for org in Organization.query().fetch()]
         if isinstance(organizations_list, list) and organizations_list:
             message: str = 'successfully retrieved organizations'
@@ -532,13 +532,13 @@ class OrganizationView(Validators):
     @handle_view_errors
     @app_cache.cache.memoize(timeout=return_ttl('short'))
     def _get_organizations(self, organization_id: Optional[str]) -> tuple:
-        ***REMOVED***
+        """
             **_return_all_organizations**
                 _private (can only be used by system and system admin)
                 retrieve a specific organization detail
 
             :return: a list containing all organization details
-        ***REMOVED***
+        """
         organization_instance: Optional[Organization] = Organization.query(
             Organization.organization_id == organization_id).get()
 
@@ -555,7 +555,7 @@ class OrganizationView(Validators):
     @handle_view_errors
     def _update_affiliate_count(self, organization_id: Optional[str], add: Optional[int] = None,
                                 subtract: Optional[int] = None) -> tuple:
-        ***REMOVED***
+        """
             **_update_affiliate_count**
                 Private Function: this function will never be called externally or by the user.
 
@@ -566,7 +566,7 @@ class OrganizationView(Validators):
             :param add: Optional amount to add, if you want to subtract pass None to this value and integer to sub
             :param subtract: Optional amount to subtract, if you want to add pass None to this value and integer to add
             :return: tuple containing response and status code.
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -604,7 +604,7 @@ class OrganizationView(Validators):
     def _update_total_paid(self, organization_id: Optional[str],
                            add_amount: Optional[AmountMixin] = None,
                            subtract_amount: Optional[AmountMixin] = None) -> tuple:
-        ***REMOVED***
+        """
             **_update_total_paid**
                 Private function to update the total amount paid by the organization.
 
@@ -617,7 +617,7 @@ class OrganizationView(Validators):
 
             :return: tuple containing response and status code
 
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -658,7 +658,7 @@ class OrganizationView(Validators):
     @handle_view_errors
     def _update_total_members(self, organization_id: Optional[str], add: Optional[int] = None,
                               subtract: Optional[int] = None) -> tuple:
-        ***REMOVED***
+        """
             **_update_total_members**
                 supply either the amount to add to total members or the amount to subtract
                 Amounts should be integers
@@ -667,7 +667,7 @@ class OrganizationView(Validators):
             :param add: Optional > amount to add <int> or else pass None
             :param subtract: Optional > amount to subtract <int> or else pass None
             :return: tuple containing response code and status
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -702,7 +702,7 @@ class OrganizationView(Validators):
                                               add_payment: Optional[str] = None,
                                               subtract_payment: Optional[str] = None) -> tuple:
 
-        ***REMOVED***
+        """
             # TODO update projected memberships payments may need revision - or can be implemented as a property
 
             **_update_projected_membership_payments**
@@ -712,7 +712,7 @@ class OrganizationView(Validators):
             :param add_payment: Optional payment amount to Add type <AmountMixin> or pass None
             :param subtract_payment: Optional payment amount to Subtract <AmountMixin>, or Pass None
             :return: tuple
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -746,7 +746,7 @@ class OrganizationView(Validators):
     def _update_total_membership_payments(self, organization_id: Optional[str],
                                           subtract_total_membership_payment: Optional[AmountMixin] = None,
                                           add_total_membership_amount: Optional[AmountMixin] = None) -> tuple:
-        ***REMOVED***
+        """
             **_update_total_membership_payments**
                 update overall total_membership_payments for organization, supply either the amount to add or substract
                 but not both
@@ -755,7 +755,7 @@ class OrganizationView(Validators):
             :param subtract_total_membership_payment: amount to subtract
             :param add_total_membership_amount: amount to add
             :return: react a response and status code tuple
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)

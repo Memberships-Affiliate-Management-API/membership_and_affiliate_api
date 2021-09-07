@@ -1,7 +1,7 @@
-***REMOVED***
+"""
     **Microservices Authentication Endpoint**
         this module insures the identity of each micro-service while calling the admin api
-***REMOVED***
+"""
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
 __twitter__ = "@blueitserver"
@@ -23,10 +23,10 @@ microservices_ipn_bp = Blueprint("microservices_ipn", __name__)
 
 @microservices_ipn_bp.route('/_ipn/micro-services/auth', methods=["POST"])
 def micro_services_auth() -> tuple:
-    ***REMOVED***
+    """
 
     :return:
-    ***REMOVED***
+    """
     json_data: dict = request.get_json()
     domain: str = json_data.get('domain')
     app_id: str = json_data.get('app_id')

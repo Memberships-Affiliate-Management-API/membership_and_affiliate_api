@@ -1,9 +1,9 @@
-***REMOVED***
+"""
         **affiliate_jobs**
 
 
 
-***REMOVED***
+"""
 import asyncio
 from datetime import datetime, date
 from typing import List, Coroutine, Optional
@@ -17,11 +17,11 @@ from utils import create_id
 
 
 class AffiliateJobs:
-    ***REMOVED***
+    """
     **Class AffiliateJobs**
         runs affiliate cron jobs to complete recurring tasks
 
-    ***REMOVED***
+    """
 
     def __init__(self):
         self._max_retries = current_app.config.get('DATASTORE_RETRIES')
@@ -32,7 +32,7 @@ class AffiliateJobs:
         asyncio.run(self.create_affiliate_reports())
 
     async def do_finalize_earnings(self, earnings: EarningsData) -> bool:
-        ***REMOVED***
+        """
             go through each affiliate payment record,
             1. then transfer earnings to wallet,
             2. close earnings record
@@ -40,7 +40,7 @@ class AffiliateJobs:
 
         :param earnings:
         :return:
-        ***REMOVED***
+        """
         wallet_instance: WalletModel = await WalletModel.query(WalletModel.organization_id == earnings.organization_id,
                                                                WalletModel.uid == earnings.affiliate_id).get_async()
 
@@ -70,14 +70,14 @@ class AffiliateJobs:
 
     @use_context
     async def finalize_affiliate_earnings(self):
-        ***REMOVED***
+        """
         **finalize_affiliate_payments**
             go through each affiliate payment record,
             1. then transfer earnings to wallet,
             2. close earnings record
             3. create a transaction on earnings transaction
         :return:
-        ***REMOVED***
+        """
         earnings_list: List[EarningsData] = await EarningsData.query(EarningsData.is_paid == False,
                                                                      EarningsData.on_hold == False).fetch_async()
         event_loop = asyncio.get_event_loop()

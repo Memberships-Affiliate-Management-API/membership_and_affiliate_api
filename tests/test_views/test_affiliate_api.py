@@ -1,7 +1,7 @@
-***REMOVED***
+"""
     **Test cases for public affiliate endpoints**
 
-***REMOVED***
+"""
 from pytest import raises
 # noinspection PyUnresolvedReferences
 from pytest_mock import mocker
@@ -42,11 +42,11 @@ class AffiliateQueryMock:
 
     @staticmethod
     def rand_affiliate() -> Affiliates:
-        ***REMOVED***
+        """
         **rand_affiliate**
             returns a randomly generated affiliate for test cases
         :return: Affiliate Instance
-        ***REMOVED***
+        """
         return Affiliates(affiliate_id=create_id(), organization_id=config_instance.ORGANIZATION_ID, uid=create_id(),
                           last_updated=datetime.now(), datetime_recruited=datetime.now(),
                           total_recruits=randint(10, 1000), is_active=bool(randint(0, 1)),
@@ -241,11 +241,11 @@ def test_mark_active(mocker):
 
 # noinspection PyShadowingNames
 def test_mark_active_errors(mocker):
-    ***REMOVED***
+    """
 
     :param mocker:
     :return:
-    ***REMOVED***
+    """
     mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.KeyProperty('Affiliates'))
     mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
 

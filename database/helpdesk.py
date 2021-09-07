@@ -18,9 +18,9 @@ class HelpDesk(BaseModel):
     total_tickets_closed: int = ndb.IntegerProperty(default=0, validator=property_.set_number)
 
     def __str__(self) -> str:
-        ***REMOVED***
+        """
         :return:
-        ***REMOVED***
+        """
         return f"<HelpDesk total_tickets: {self.total_tickets}, total_open : {self.total_tickets_closed}, " \
                f"total_closed: {self.total_tickets_opened}"
 
@@ -42,10 +42,10 @@ class HelpDesk(BaseModel):
 
 
 class TicketValid:
-    ***REMOVED***
+    """
         **Class Ticket Validators**
             useful methods for tickets validations
-    ***REMOVED***
+    """
 
     @staticmethod
     def is_topic_valid(topic: Optional[str]) -> bool:
@@ -67,11 +67,11 @@ class TicketValid:
 
 
 class Ticket(BaseModel):
-    ***REMOVED***
+    """
     **Class Ticket**
         a class to keep track of every ticket detail which is opened
 
-    ***REMOVED***
+    """
     ticket_id: str = ndb.StringProperty(indexed=True, required=True, validator=property_.set_id)
     uid: str = ndb.StringProperty(indexed=True, required=True, validator=property_.set_id)
     topic: str = ndb.StringProperty(indexed=True, required=True, validator=property_.set_string)
@@ -99,10 +99,10 @@ class Ticket(BaseModel):
         return True
 
     def __str__(self) -> str:
-        ***REMOVED***
+        """
         self.topic, self.subject, self.message, self.email, self.cell, self.is_resolved
         :return:
-        ***REMOVED***
+        """
         return f"<Ticket topic: {self.topic}, subject: {self.subject}, message: {self.message}, email: {self.email}, " \
                f"cell: {self.cell}, is_resolved: {self.is_resolved}"
 
@@ -112,20 +112,20 @@ class Ticket(BaseModel):
 
 
 class TicketThreadValid:
-    ***REMOVED***
+    """
         Error checking for ticket thread
-    ***REMOVED***
+    """
     pass
 
 
 class TicketThread(BaseModel):
-    ***REMOVED***
+    """
     **Class TicketThread**
         keeps track of each ticket threads for easy loading on user interfaces
 
     **Note**
         sort by ticket_id, then time_created , then mark by sent_by to create thread
-    ***REMOVED***
+    """
     ticket_id: str = ndb.StringProperty(indexed=True, required=True, validator=property_.set_id)
     thread_id: str = ndb.StringProperty(indexed=True, required=True, validator=property_.set_id)
     user_type: str = ndb.StringProperty(validator=property_.set_user_type)  # Support Staff or Client
@@ -149,9 +149,9 @@ class TicketThread(BaseModel):
         return True
 
     def __str__(self) -> str:
-        ***REMOVED***
+        """
         :return: str representation of TicketThread
-        ***REMOVED***
+        """
         return f"<TicketThread Sent_by: {self.sent_by}, Subject: {self.subject}, Message {self.message} " \
                f"Time_Created: {self.time_created}"
 

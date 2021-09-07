@@ -1,4 +1,4 @@
-***REMOVED***
+"""
     NOTES: configuring memcache in heroku
 # ... run command to enable cache
 heroku addons:create memcachier:dev
@@ -43,4 +43,4 @@ def create_app():
   # ...
 
   return app
-***REMOVED***
+"""

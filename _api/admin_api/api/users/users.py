@@ -1,6 +1,6 @@
-***REMOVED***
+"""
     handle users and admin authentication
-***REMOVED***
+"""
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
 __twitter__ = "@blueitserver"
@@ -25,10 +25,10 @@ admin_users_api_bp = Blueprint("admin_users_api", __name__)
 @admin_users_api_bp.route('/_api/v1/admin/users/<string:path>', methods=["GET", "POST"])
 @handle_apps_authentication
 def admin_users(path: str) -> tuple:
-    ***REMOVED***
+    """
     :param  path: indicates what route to follow for admin users
     :return:
-    ***REMOVED***
+    """
     # NOTE: only this application can call this endpoints-
     # For Purposes of authentication check if the calling url belongs to this app
 
@@ -74,11 +74,11 @@ def admin_users(path: str) -> tuple:
 @admin_users_api_bp.route('/_api/v1/admin/auth/<string:path>', methods=["GET", "POST"])
 @handle_apps_authentication
 def auth_admin(path: str) -> tuple:
-    ***REMOVED***
+    """
 
     :param path:
     :return:
-    ***REMOVED***
+    """
     if_bad_request_raise(request)
 
     json_data: dict = request.get_json()

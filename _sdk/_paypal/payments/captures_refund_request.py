@@ -8,9 +8,9 @@ from urllib.parse import quote  # Python 3+
 
 # noinspection PyDictCreation
 class CapturesRefundRequest:
-    ***REMOVED***
+    """
     Refunds a captured payment, by ID. For a full refund, include an empty payload in the JSON request body. For a partial refund, include an <code>amount</code> object in the JSON request body.
-    ***REMOVED***
+    """
     def __init__(self, capture_id):
         self.verb = "POST"
         self.path = "/v2/payments/captures/{capture_id}/refund?".replace("{capture_id}", quote(str(capture_id)))

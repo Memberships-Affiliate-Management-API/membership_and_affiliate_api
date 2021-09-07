@@ -1,7 +1,7 @@
-***REMOVED***
+"""
     **Module - View Controller for managing API Authentication**
 
-***REMOVED***
+"""
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
 __twitter__ = "@blueitserver"
@@ -30,11 +30,11 @@ class APIKeysValidators(OrgValidators, AuthUserValidators):
 
     @app_cache.cache.memoize(timeout=return_ttl('short'))
     def organization_exist(self, organization_id: Optional[str]) -> bool:
-        ***REMOVED***
+        """
             checks if an organization is in existence
         :param organization_id:
         :return:
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -46,12 +46,12 @@ class APIKeysValidators(OrgValidators, AuthUserValidators):
 
     @app_cache.cache.memoize(timeout=return_ttl('short'))
     def user_can_create_key(self, uid: Optional[str], organization_id: Optional[str]) -> bool:
-        ***REMOVED***
+        """
             checks if user can create key
         :param uid:
         :param organization_id:
         :return:
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -69,9 +69,9 @@ class APIKeysValidators(OrgValidators, AuthUserValidators):
 
 
 class APIKeysView(APIKeysValidators):
-    ***REMOVED***
+    """
         a view class for APIKeys
-    ***REMOVED***
+    """
     def __init__(self):
         super(APIKeysView, self).__init__()
 
@@ -89,7 +89,7 @@ class APIKeysView(APIKeysValidators):
     @handle_view_errors
     def create_keys(self, domain: Optional[str],
                     uid: Optional[str], organization_id: Optional[str]) -> tuple:
-        ***REMOVED***
+        """
                 create api_key secret combination
                 1. check if organization exist
                 2. check if user is member of organization
@@ -100,7 +100,7 @@ class APIKeysView(APIKeysValidators):
             :param uid: the user creating the API keys
             :param organization_id: the organization under which the API key will be created
             :return: response containing the API Key and Secret Combination
-        ***REMOVED***
+        """
         org_exist: bool = self.organization_exist(organization_id=organization_id)
         can_create_key: bool = self.user_can_create_key(uid=uid, organization_id=organization_id)
         if org_exist and can_create_key:
@@ -133,12 +133,12 @@ class APIKeysView(APIKeysValidators):
     @use_context
     @handle_view_errors
     def deactivate_key(self, key: Optional[str]) -> tuple:
-        ***REMOVED***
+        """
             # admin only - this will de-activate the API Key rendering it not usable
 
             :param key: key to de-activate
             :return: deleted api-key
-        ***REMOVED***
+        """
         if not isinstance(key, str) or not bool(key.strip()):
             message: str = "key is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -165,12 +165,12 @@ class APIKeysView(APIKeysValidators):
     @use_context
     @handle_view_errors
     def activate_key(self, key: Optional[str], organization_id: Optional[str]) -> tuple:
-        ***REMOVED***
+        """
             admin only function
         :param organization_id:
         :param key: activate a given api-key
         :return:
-        ***REMOVED***
+        """
         if not isinstance(key, str) or not bool(key.strip()):
             message: str = "key is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -203,11 +203,11 @@ class APIKeysView(APIKeysValidators):
     @handle_view_errors
     @app_cache.cache.memoize(timeout=return_ttl('short'))
     def return_all_organization_keys(self, organization_id: Optional[str]) -> tuple:
-        ***REMOVED***
+        """
             return a list of api-keys belonging to a specific organization
         :param organization_id:
         :return:
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -227,13 +227,13 @@ class APIKeysView(APIKeysValidators):
     @handle_view_errors
     @app_cache.cache.memoize(timeout=return_ttl('short'))
     def return_active_organization_keys(self, organization_id: Optional[str]) -> tuple:
-        ***REMOVED***
+        """
             **return_active_organization_keys**
                 return_active_organization_keys returns all active organizational keys
 
         :param organization_id:
         :return:
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -253,12 +253,12 @@ class APIKeysView(APIKeysValidators):
     @handle_view_errors
     @app_cache.cache.memoize(timeout=return_ttl('short'))
     def get_api_key(self, api_key: Optional[str], organization_id: Optional[str]) -> tuple:
-        ***REMOVED***
+        """
             fetch a specific api key
         :param api_key:
         :param organization_id:
         :return:
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)

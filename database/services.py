@@ -1,4 +1,4 @@
-***REMOVED***
+"""
     **Services Module**
         Services Module works together with memberships module
         for example for a music streaming service a plan will be created
@@ -7,7 +7,7 @@
         will be created both on Memberships Module and also on PayPal
         so that the subscription amount can be taken off the user paypal_address
 
-***REMOVED***
+"""
 
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
@@ -32,24 +32,24 @@ from database.basemodel import BaseModel
 
 
 class ServiceValidator(OrgValidators, AuthUserValidators, UserValidators):
-    ***REMOVED***
+    """
         **Service Class Validator Methods**
             validates services
 
-    ***REMOVED***
+    """
     def __init__(self):
         super(ServiceValidator, self).__init__()
 
     @staticmethod
     @handle_store_errors
     def is_service_in_organization(service_id: str, organization_id: str) -> Optional[bool]:
-        ***REMOVED***
+        """
             **is_service_in_organization**
                 checks if service belongs to the organization
         :param service_id:
         :param organization_id:
         :return: True if yes
-        ***REMOVED***
+        """
 
         service_instance: Services = Services.query(Services.service_id == service_id,
                                                     Services.organization_id == organization_id).get()
@@ -59,7 +59,7 @@ class ServiceValidator(OrgValidators, AuthUserValidators, UserValidators):
     @app_cache.cache.memoize(timeout=return_ttl('short'))
     def can_create_service(self, uid: typing.Union[str, None],
                            organization_id: typing.Union[str, None]) -> Optional[bool]:
-        ***REMOVED***
+        """
             **can_create_service**
                 checks if user can create a new service if this is the case then returns True
                 will raise a DataServiceError if it fails to determine the users ability to create the service
@@ -67,7 +67,7 @@ class ServiceValidator(OrgValidators, AuthUserValidators, UserValidators):
         :param uid:
         :param organization_id:
         :return: boolean indicating if user can create a service
-        ***REMOVED***
+        """
 
         # NOTE: Organization has to be valid itself
         org_exist: typing.Union[None, bool] = self.is_organization_exist(organization_id=organization_id)
@@ -84,14 +84,14 @@ class ServiceValidator(OrgValidators, AuthUserValidators, UserValidators):
 
     def can_update_service(self, service_id: Optional[str], uid: Optional[str],
                            organization_id: Optional[str]) -> Optional[bool]:
-        ***REMOVED***
+        """
             **can_update_service**
                 returns True if user can update service
         :param service_id:
         :param uid:
         :param organization_id:
         :return:
-        ***REMOVED***
+        """
         org_exist: Optional[bool] = self.is_organization_exist(organization_id=organization_id)
         # NOTE: only members of the organization administrator group can create services for a plan
         is_admin: Optional[bool] = self.user_is_member_of_org(uid=uid, organization_id=organization_id)
@@ -110,14 +110,14 @@ class ServiceValidator(OrgValidators, AuthUserValidators, UserValidators):
 
     @staticmethod
     def check_parameters(name: Optional[str], category: Optional[str], description: Optional[str]) -> None:
-        ***REMOVED***
+        """
             **check_parameters**
                 check if name, category and description are valid if not raise an error
         :param name:
         :param category:
         :param description:
         :return: None
-        ***REMOVED***
+        """
         if not isinstance(name, str) or not bool(name.strip()):
             message: str = "Service Name cannot be Null"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -132,7 +132,7 @@ class ServiceValidator(OrgValidators, AuthUserValidators, UserValidators):
 
 
 class Services(BaseModel):
-    ***REMOVED***
+    """
         **Service Class Documentations**
             **The Services Module**, will capture the service data
             the information here will be similar to the information
@@ -154,7 +154,7 @@ class Services(BaseModel):
 
         `Method Properties`
             1. service_details: dict -> returns basic service details
-    ***REMOVED***
+    """
     organization_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
     # NOTE: service_id is the same as product_id in paypal products
     created_by_uid: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
@@ -190,12 +190,12 @@ class Services(BaseModel):
 
     @ndb.model.ComputedProperty
     def service_details(self) -> dict:
-        ***REMOVED***
+        """
             `Service Details Property`
                 returns basic details for this service i.e organization_id, service_id, name, description, image_url, home_url
 
         :return: dict -> containing  organization_id, service_id, name, description, image_url, home_url
-        ***REMOVED***
+        """
         return {
             'organization_id': self.organization_id,
             'service_id': self.service_id,

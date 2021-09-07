@@ -1,7 +1,7 @@
-***REMOVED***
+"""
     **Module Memberships Client API**
         Memberships related api requests will be handled here
-***REMOVED***
+"""
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
 __twitter__ = "@blueitserver"
@@ -22,7 +22,7 @@ memberships_client_api_bp = Blueprint('memberships_client_api', __name__)
 @memberships_client_api_bp.route('/_api/v1/client/memberships/<string:path>', methods=['POST'])
 @handle_apps_authentication
 def memberships_client_api(path: str) -> tuple:
-    ***REMOVED***
+    """
         **memberships_client_api**
             handles client admin requests for memberships -
             this means clients or developers
@@ -33,7 +33,7 @@ def memberships_client_api(path: str) -> tuple:
             in order to start using the API for as a paid client or a free client
     :param path:
     :return:
-    ***REMOVED***
+    """
     if_bad_request_raise(request)
     json_data: dict = request.get_json()
 
@@ -68,7 +68,7 @@ def memberships_client_api(path: str) -> tuple:
 @memberships_client_api_bp.route('/_api/v1/client/admin/memberships/<string:path>', methods=["POST"])
 @handle_apps_authentication
 def client_memberships_management(path: str) -> tuple:
-    ***REMOVED***
+    """
         **client_memberships_management**
             used to manage client's membership plans which they are offering to the
             public - this api will also be called from client dashboard app
@@ -79,7 +79,7 @@ def client_memberships_management(path: str) -> tuple:
 
     :param path:
     :return:
-    ***REMOVED***
+    """
     if_bad_request_raise(request)
     json_data: dict = request.get_json()
 

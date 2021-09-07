@@ -1,4 +1,4 @@
-***REMOVED***
+"""
     **Organization Module**
         *NDB. Class Definitions for Managing Organizations Data*
         ndb. Database Class to handle Organizational Data related
@@ -6,7 +6,7 @@
         the data to GCP DataStore.
 
         Also Contain all validator classes related to Organizational Classes
-***REMOVED***
+"""
 
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
@@ -26,21 +26,21 @@ from database.basemodel import BaseModel
 
 
 class OrgValidators:
-    ***REMOVED***
+    """
         Main Class for Validators related to Organization
-    ***REMOVED***
+    """
     def __init__(self) -> None:
         pass
 
     @staticmethod
     @handle_store_errors
     def is_organization_exist(organization_id: typing.Union[str, None]) -> typing.Union[None, bool]:
-        ***REMOVED***
+        """
             **is_organization_exist**
                 checks if an organization exist
         :param organization_id: unique identifier for the organization
         :return: True if Organization Exist
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id cannot be Null"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -50,7 +50,7 @@ class OrgValidators:
 
 
 class Organization(BaseModel):
-    ***REMOVED***
+    """
         **Organization Documentation**
             class contains information on organizations registered to use our API, this class enables users to
             be registered for under a specific organization as Users, Affiliates, Recruits, and or Memberships on
@@ -75,7 +75,7 @@ class Organization(BaseModel):
             12. login_callback_url: string -> login page url - the page to redirect the user to after successfull authentication
             13. recovery_callback_url: string -> recovery page callback url - specify where the user must be redirected to in order to complete password recovery process
 
-    ***REMOVED***
+    """
     # TODO - fully intergrate total users and total members
     owner_uid: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
     organization_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
@@ -117,10 +117,10 @@ class Organization(BaseModel):
 
 
 class AuthUserValidators:
-    ***REMOVED***
+    """
         `Validator Class Organization Authenticated Users`
             Used to validate users and input data for those accessing the Users View / API
-    ***REMOVED***
+    """
     def __init__(self) -> None:
         pass
 
@@ -128,13 +128,13 @@ class AuthUserValidators:
     @handle_store_errors
     def user_is_member_of_org(uid: typing.Union[str, None],
                               organization_id: typing.Union[str, None]) -> typing.Union[None, bool]:
-        ***REMOVED***
+        """
             **user_is_member_of_org**
                 checks if a specific user is a member of an organization
         :param uid: unique identifier of the user
         :param organization_id: unique organization identity
         :return: True if organization exist
-        ***REMOVED***
+        """
         if not isinstance(uid, str) or not bool(uid.strip()):
             message: str = "uid cannot be Null"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -152,14 +152,14 @@ class AuthUserValidators:
     @handle_store_errors
     def org_user_is_admin(uid: typing.Union[str, None],
                           organization_id: typing.Union[str, None]) -> typing.Union[None, bool]:
-        ***REMOVED***
+        """
             **org_user_is_admin**
                 checks if user belongs to the organization and also if user is an admin of the organization
 
         :param uid:
         :param organization_id:
         :return:
-        ***REMOVED***
+        """
         if not (isinstance(uid, str)):
             raise InputError(status=500, description="uid cannot be Null")
         if not (isinstance(organization_id, str)):
@@ -172,7 +172,7 @@ class AuthUserValidators:
 
 
 class AuthorizedUsers(BaseModel):
-    ***REMOVED***
+    """
         **AuthorizedUsers Class**
             details of the users authorized to update organization details and other data structures for this organization
             the roles are admin, super user, and support.
@@ -186,7 +186,7 @@ class AuthorizedUsers(BaseModel):
             5. date_created: datetime -> date this instance was created
             6. date_updated: datetime -> last date this instance was updated
 
-    ***REMOVED***
+    """
     organization_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
     uid: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
     role: str = ndb.StringProperty(validator=property_.set_string)
@@ -195,8 +195,8 @@ class AuthorizedUsers(BaseModel):
     date_updated: datetime = ndb.DateTimeProperty(auto_now=True, validator=property_.set_datetime)
 
     def __str__(self) -> str:
-        return f***REMOVED***<AuthorizedUser organization_id: {self.organization_id}, uid: {self.uid}, role: {self.role}, 
-        is_active: {self.is_active}***REMOVED***
+        return f"""<AuthorizedUser organization_id: {self.organization_id}, uid: {self.uid}, role: {self.role}, 
+        is_active: {self.is_active}"""
 
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
@@ -214,7 +214,7 @@ class AuthorizedUsers(BaseModel):
 
 
 class OrgAccounts(BaseModel):
-    ***REMOVED***
+    """
         # TODO - Deprecate this not useful Wallets will store org wallets
 
         include details of the main organization payments accounts here
@@ -224,14 +224,14 @@ class OrgAccounts(BaseModel):
         # NOTE: the organization PayPal account
 
         # organizational Wallets in Wallets class can be indicated as such see Wallet Class
-    ***REMOVED***
+    """
     organization_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
     paypal_email: str = ndb.StringProperty(default=None, validator=property_.set_email, indexed=True, required=True)
     is_verified: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool, indexed=True, required=True)
 
     def __str__(self) -> str:
-        return f***REMOVED***<OrgAccounts: organization_id: {self.organization_id}, Paypal Email {self.paypal_email}, 
-        is_verified: {self.is_verified}***REMOVED***
+        return f"""<OrgAccounts: organization_id: {self.organization_id}, Paypal Email {self.paypal_email}, 
+        is_verified: {self.is_verified}"""
 
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
@@ -245,14 +245,14 @@ class OrgAccounts(BaseModel):
 
 
 class PaymentResults(BaseModel):
-    ***REMOVED***
+    """
         # NOTE: this are payments from Organization Wallets to Organization PayPal Accounts
         for every payment which is approved by admin, retain the result of the
         payment here
 
         Mainly this class is updated by the system through cron jobs and users can read its details
 
-    ***REMOVED***
+    """
     organization_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
     transaction_id: str = ndb.StringProperty(default=None, validator=property_.set_id, indexed=True, required=True)
     payment_result: str = ndb.StringProperty(validator=property_.set_string)
@@ -260,8 +260,8 @@ class PaymentResults(BaseModel):
     last_updated: datetime = ndb.DateTimeProperty(auto_now=True, validator=property_.set_datetime)
 
     def __str__(self) -> str:
-        return f***REMOVED***<PaymentResults: Organization_id: {self.organization_id}, Transaction_id: {self.transaction_id}, 
-        Payment_result: {self.payment_result}***REMOVED***
+        return f"""<PaymentResults: Organization_id: {self.organization_id}, Transaction_id: {self.transaction_id}, 
+        Payment_result: {self.payment_result}"""
 
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:

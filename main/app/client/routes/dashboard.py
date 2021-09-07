@@ -1,6 +1,6 @@
-***REMOVED***
+"""
     this is a private route
-***REMOVED***
+"""
 
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
@@ -38,12 +38,12 @@ temp_organizations: List[dict] = [
 @client_dashboard_bp.route('/client/dashboard', methods=["GET"])
 @handle_users_auth
 def client_dashboard(current_user: Optional[dict]) -> tuple:
-    ***REMOVED***
+    """
         **client_dashboard**
             allows client to get access to their organizations
     :param current_user:
     :return:
-    ***REMOVED***
+    """
     get_flashed_messages()
     if not isinstance(current_user, dict) or not bool(current_user.get('uid')):
         # TODO: insure local cache does not cache info if redirected

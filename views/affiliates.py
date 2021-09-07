@@ -1,8 +1,8 @@
-***REMOVED***
+"""
     **Module - View Controller for Affiliates API**
     *Class Definitions for managing access to the database and validation of user input*
 
-***REMOVED***
+"""
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
 __twitter__ = "@blueitserver"
@@ -27,14 +27,14 @@ from _sdk._email import Mailgun
 
 
 class AffiliatesEmails(Mailgun):
-    ***REMOVED***
+    """
         **Class AffiliatesEmails**
             gives the ability to send email notifications to affiliates when certain
             actions must be taken or updates have occurred.
 
         **Class Methods**
             1. __do_send_mail -> actually send emails to users - through mailgun api
-    ***REMOVED***
+    """
 
     def __init__(self):
         super(AffiliatesEmails, self).__init__()
@@ -46,24 +46,24 @@ class AffiliatesEmails(Mailgun):
 # Dont Edit Just Watch can you see this
 
 class Validator(ValidAffiliate, ValidRecruit, ValidEarnings):
-    ***REMOVED***
+    """
         **Class Validator**
             Gathers validator classes needed for validating actions and input on
             while managing Affiliates.
-    ***REMOVED***
+    """
 
     def __init__(self):
         super(Validator, self).__init__()
 
     # noinspection PyTypeChecker
     def can_register_affiliate(self, organization_id: str, uid: str) -> bool:
-        ***REMOVED***
+        """
             **can_register_affiliate**
                 returns true if user can add an affiliate into this organization
         :param organization_id:
         :param uid:
         :return:
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -81,11 +81,11 @@ class Validator(ValidAffiliate, ValidRecruit, ValidEarnings):
         raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
     def _create_unique_affiliate_id(self) -> str:
-        ***REMOVED***
+        """
             **_create_unique_affiliate_id**
                 returns an id that does not conflict with any affiliate id
         :return:
-        ***REMOVED***
+        """
         _id = create_id()
         affiliate_instance: Affiliates = Affiliates.query(Affiliates.affiliate_id == _id).get()
         return self._create_unique_affiliate_id() if affiliate_instance.uid == _id else _id
@@ -93,12 +93,12 @@ class Validator(ValidAffiliate, ValidRecruit, ValidEarnings):
 
 # noinspection DuplicatedCode
 class AffiliatesView(Validator):
-    ***REMOVED***
+    """
         **Class AffiliatesView**
             Enables the api to access methods to access data and create and update affiliates
             also insures that input is validated and users are authenticated
 
-    ***REMOVED***
+    """
 
     def __init__(self):
         super(AffiliatesView, self).__init__()
@@ -108,14 +108,14 @@ class AffiliatesView(Validator):
     @use_context
     @handle_view_errors
     def register_affiliate(self, affiliate_data: dict) -> tuple:
-        ***REMOVED***
+        """
             **register_affiliate**
                 Register new affiliate, affiliate_data must contain the uid of the affiliate
                 being recruited and organization_id of the organization recruiting the affiliate.
 
         :param affiliate_data:
         :return: tuple with registered affiliate
-        ***REMOVED***
+        """
         uid: Optional[str] = affiliate_data.get('uid')
         organization_id: Optional[str] = affiliate_data.get('organization_id')
         # NOTE can register affiliate will check organization_id and uid are valid
@@ -147,14 +147,14 @@ class AffiliatesView(Validator):
     @use_context
     @handle_view_errors
     def total_recruits(self, affiliate_data: dict, add: int = 0) -> tuple:
-        ***REMOVED***
+        """
             **total_recruits**
             given an existing affiliate update total recruits field in the affiliate record
 
         :param affiliate_data:
         :param add:
         :return:
-        ***REMOVED***
+        """
         affiliate_id: Optional[str] = affiliate_data.get('affiliate_id')
         organization_id: Optional[str] = affiliate_data.get('organization_id')
 
@@ -195,7 +195,7 @@ class AffiliatesView(Validator):
     @use_context
     @handle_view_errors
     def delete_affiliate(self, affiliate_data: dict) -> tuple:
-        ***REMOVED***
+        """
             **delete_affiliate**
                 the function soft delete an affiliate record.
 
@@ -204,7 +204,7 @@ class AffiliatesView(Validator):
 
             :param affiliate_data: dict containing affiliate_id and organization_id
             :return: tuple containing the record of the deleted affiliate
-        ***REMOVED***
+        """
 
         affiliate_id: Optional[str] = affiliate_data.get('affiliate_id')
         if not isinstance(affiliate_id, str) or not bool(affiliate_id.strip()):
@@ -243,7 +243,7 @@ class AffiliatesView(Validator):
     @use_context
     @handle_view_errors
     def mark_active(self, affiliate_data: dict, is_active: bool) -> tuple:
-        ***REMOVED***
+        """
             **mark_active**
                 affiliate_id of the affiliate to be marked as active.
                 this action will not have an effect if the affiliate has been soft-deleted
@@ -251,7 +251,7 @@ class AffiliatesView(Validator):
         :param affiliate_data: contains affiliate_id and organization_id
         :param is_active:
         :return:
-        ***REMOVED***
+        """
         affiliate_id: Optional[str] = affiliate_data.get('affiliate_id')
         if not isinstance(affiliate_id, str) or not bool(affiliate_id.strip()):
             message: str = 'affiliate_id is required'
@@ -294,14 +294,14 @@ class AffiliatesView(Validator):
     @handle_view_errors
     @app_cache.cache.memoize(timeout=return_ttl('short'))
     def get_affiliate(self, affiliate_data: dict) -> tuple:
-        ***REMOVED***
+        """
             **get_affiliate**
                 obtains a record of one affiliate from the store. given either uid or affiliate_id, organization_id
                 must be valid
 
         :param affiliate_data: contains affiliate_id and organization_id the affiliate must belong to the organization
         :return: response contain affiliate record
-        ***REMOVED***
+        """
         organization_id: Optional[str] = affiliate_data.get('organization_id')
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
@@ -342,14 +342,14 @@ class AffiliatesView(Validator):
     @handle_view_errors
     @app_cache.cache.memoize(timeout=return_ttl('short'))
     def get_all_affiliates(self, organization_id: Optional[str]) -> tuple:
-        ***REMOVED***
+        """
             **get_all_affiliates**
                 returns a list of all affiliates that belongs to the organization
 
             :param organization_id: the organization id to return affiliates off
             :return: response containing the list of affiliates as payload
             status code ${status_codes.status_ok_code}
-        ***REMOVED***
+        """
 
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
@@ -373,14 +373,14 @@ class AffiliatesView(Validator):
     @handle_view_errors
     @app_cache.cache.memoize(timeout=return_ttl('short'))
     def get_active_affiliates(self, organization_id: Optional[str]) -> tuple:
-        ***REMOVED***
+        """
             **get_active_affiliates**
                 NOTE: active affiliates but not deleted
                 returns a list of active affiliates in an organization
 
         :param organization_id: the organization id of the organization to return the affiliates
         :return: response containing the list of active affiliates
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -401,13 +401,13 @@ class AffiliatesView(Validator):
     @handle_view_errors
     @app_cache.cache.memoize(timeout=return_ttl('short'))
     def get_in_active_affiliates(self, organization_id: Optional[str]) -> tuple:
-        ***REMOVED***
+        """
             **get_in_active_affiliates**
                 returns a list of affiliates who are not active - but not deleted
 
         :param organization_id: the organization_id of the organization to return affiliates of
         :return: a response tuple with a payload of in-active affiliates from the organization
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -430,13 +430,13 @@ class AffiliatesView(Validator):
     @handle_view_errors
     @app_cache.cache.memoize(timeout=return_ttl('short'))
     def get_deleted_affiliates(self, organization_id: Optional[str]) -> tuple:
-        ***REMOVED***
+        """
             **get_deleted_affiliates**
                 return deleted affiliates by organization_id
 
         :param organization_id:
         :return: response containing the list of affiliates who are deleted
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -458,13 +458,13 @@ class AffiliatesView(Validator):
     @handle_view_errors
     @app_cache.cache.memoize(timeout=return_ttl('short'))
     def get_not_deleted_affiliates(self, organization_id: Optional[str]) -> tuple:
-        ***REMOVED***
+        """
             **get_not_deleted_affiliates**
                 # NOTE: this function may be redundant
                 returns a list of affiliates which are not deleted by  ORGANIZATION_ID
         :param : organization_id: the organization to return deleted affiliates from
         :return : response containing the list of deleted affiliates
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -485,10 +485,10 @@ class AffiliatesView(Validator):
 
 # noinspection DuplicatedCode
 class RecruitsView(Validator):
-    ***REMOVED***
+    """
         View Manager for Recruits
         Used by affiliates to register newly recruited members
-    ***REMOVED***
+    """
 
     def __init__(self):
         super(RecruitsView, self).__init__()
@@ -500,11 +500,11 @@ class RecruitsView(Validator):
     @use_context
     @handle_view_errors
     def add_recruit(self, recruit_data: dict) -> tuple:
-        ***REMOVED***
+        """
             given referrer_uid , and organization_id, add new recruit
         :param recruit_data:
         :return:
-        ***REMOVED***
+        """
         # TODO - the action of creating a recruit also modifies the affiliate record who is recruiting
         #  this means an update is also needed on the relevant affiliate record
 
@@ -539,12 +539,12 @@ class RecruitsView(Validator):
     @use_context
     @handle_view_errors
     def delete_recruit(self, recruit_data: dict) -> tuple:
-        ***REMOVED***
+        """
             affiliate_id: is the id of the recruit, of which the record must be removed as a recruit
 
         :param recruit_data:
         :return: tuple as response
-        ***REMOVED***
+        """
         # TODO - the action of deleting a recruit also modifies the affiliate record who is recruiting
         #  this means an update is also needed on the relevant affiliate record
 
@@ -588,12 +588,12 @@ class RecruitsView(Validator):
     @use_context
     @handle_view_errors
     def mark_active(self, recruit_data: dict, is_active: bool) -> tuple:
-        ***REMOVED***
+        """
             convert a recruit into an active or inactive recruit
         :param recruit_data:
         :param is_active:
         :return:
-        ***REMOVED***
+        """
         affiliate_id: Optional[str] = recruit_data.get('affiliate_id')
         if not isinstance(affiliate_id, str) or not bool(affiliate_id.strip()):
             message: str = 'affiliate_id is required'
@@ -634,11 +634,11 @@ class RecruitsView(Validator):
     @handle_view_errors
     @app_cache.cache.memoize(timeout=return_ttl('short'))
     def get_recruit(self, recruit_data: dict) -> tuple:
-        ***REMOVED***
+        """
             given affiliate_id return recruit organization_id has to be valid
         :param recruit_data:
         :return:
-        ***REMOVED***
+        """
         affiliate_id: Optional[str] = recruit_data.get('affiliate_id')
         if not isinstance(affiliate_id, str) or not bool(affiliate_id.strip()):
             message: str = 'affiliate_id is required'
@@ -665,12 +665,12 @@ class RecruitsView(Validator):
     @handle_view_errors
     @app_cache.cache.memoize(timeout=return_ttl('short'))
     def get_recruits_by_active_status(self, organization_id: str, is_active: bool) -> tuple:
-        ***REMOVED***
+        """
             get recruit by active status
         :param organization_id:
         :param is_active:
         :return:
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -690,7 +690,7 @@ class RecruitsView(Validator):
     @handle_view_errors
     @app_cache.cache.memoize(timeout=return_ttl('short'))
     def get_recruits_by_deleted_status(self, organization_id: str, is_deleted: bool) -> tuple:
-        ***REMOVED***
+        """
             **get_recruits_by_deleted_status**
                 returns recruits matching deleted status when true returns deleted when
                 false returns recruits which are not deleted
@@ -698,7 +698,7 @@ class RecruitsView(Validator):
         :param organization_id: str -> the organization_id for the organization to search recruits
         :param is_deleted: bool -> True if you want to search for deleted recruits
         :return: tuple -> response, status_codes , response contains results of the search in payload
-        ***REMOVED***
+        """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
@@ -718,13 +718,13 @@ class RecruitsView(Validator):
     @handle_view_errors
     @app_cache.cache.memoize(timeout=return_ttl('short'))
     def get_recruits_by_affiliate(self, affiliate_data: dict) -> tuple:
-        ***REMOVED***
+        """
             **get_recruits_by_affiliate**
                 return recruits belonging to a certain affiliate
 
         :param affiliate_data:
         :return: list of recruits belonging to a specific affiliate
-        ***REMOVED***
+        """
 
         affiliate_id: Optional[str] = affiliate_data.get('affiliate_id')
         if not isinstance(affiliate_id, str) or not bool(affiliate_id.strip()):
@@ -751,13 +751,13 @@ class RecruitsView(Validator):
     @handle_view_errors
     @app_cache.cache.memoize(timeout=return_ttl('short'))
     def get_recruits_by_active_affiliate(self, affiliate_data: dict, is_active: bool) -> tuple:
-        ***REMOVED***
+        """
             # TODO this function may be irrelevant further refining is needed here
             return a list of recruits by is_active status
         :param affiliate_data:
         :param is_active:
         :return:
-        ***REMOVED***
+        """
         affiliate_id: Optional[str] = affiliate_data.get('affiliate_id')
         if not isinstance(affiliate_id, str) or not bool(affiliate_id.strip()):
             message: str = 'affiliate_id is required'
@@ -787,10 +787,10 @@ class RecruitsView(Validator):
 
 
 class EarningsView(Validator):
-    ***REMOVED***
+    """
         Used by system to register new earnings for affiliates
         # TODO finalize the Earnings Class
-    ***REMOVED***
+    """
 
     def __init__(self):
         super(EarningsView, self).__init__()
@@ -798,28 +798,28 @@ class EarningsView(Validator):
         self._max_timeout = current_app.config.get('DATASTORE_TIMEOUT')
 
     def register_earnings(self, earnings_data: dict) -> tuple:
-        ***REMOVED***
+        """
             register new earnings record
-        ***REMOVED***
+        """
         pass
 
     def mark_paid(self, earnings_data: dict, is_paid: bool) -> tuple:
-        ***REMOVED***
+        """
             mark earnings record as paid or not paid
-        ***REMOVED***
+        """
         pass
 
     def mark_on_hold(self, earnings_data: dict, on_hold: bool) -> bool:
-        ***REMOVED***
+        """
             mark earnings as on hold or not on hold
             earnings which are on-hold may not be paid until problem is resolved
-        ***REMOVED***
+        """
         pass
 
     def transfer_earnings_to_wallet(self, earnings_data: dict) -> tuple:
-        ***REMOVED***
+        """
             transfer earnings to wallet
             wallet earnings can be sent to paypal or through EFT
-        ***REMOVED***
+        """
         pass
 
