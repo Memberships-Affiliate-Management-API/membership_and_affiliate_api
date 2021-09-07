@@ -19,6 +19,8 @@ from schedulers.scheduler import cron_scheduler
 from config.exceptions import status_codes
 
 
+# TODO - can run on docker-compose using command: 'python cron.py'
+
 async def _async_request(_url, json_data, headers) -> Optional[dict]:
     async with aiohttp.ClientSession() as session:
         async with session.post(url=_url, json=json_data, headers=headers) as response:

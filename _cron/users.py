@@ -8,10 +8,11 @@ __email__ = "mobiusndou@gmail.com"
 __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
+
 from flask import Blueprint
 from _cron.jobs.users_jobs import UserJobs
 from config.exceptions import status_codes
-from security.apps_authenticator import  handle_apps_authentication
+from security.apps_authenticator import handle_apps_authentication
 
 cron_users_bp = Blueprint('cron_users', __name__)
 

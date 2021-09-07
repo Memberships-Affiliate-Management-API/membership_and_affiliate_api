@@ -1,8 +1,6 @@
 """
         **affiliate_jobs**
 
-
-
 """
 import asyncio
 from datetime import datetime, date
@@ -41,6 +39,7 @@ class AffiliateJobs:
         :param earnings:
         :return:
         """
+        # TODO implement this through an API so cron jobs can run as a micro service
         wallet_instance: WalletModel = await WalletModel.query(WalletModel.organization_id == earnings.organization_id,
                                                                WalletModel.uid == earnings.affiliate_id).get_async()
 
