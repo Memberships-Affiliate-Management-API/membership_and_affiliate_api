@@ -1,0 +1,10 @@
+bcrypt
+Flask~=1.1.2
+Flask-Bcrypt
+Flask-Caching
+pyjwt
+requests~=2.25.1
+requests-toolbelt
+gunicorn
+elasticsearch==7.0.0
+APScheduler==3.0.0
