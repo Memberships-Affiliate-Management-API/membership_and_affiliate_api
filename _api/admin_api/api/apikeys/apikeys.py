@@ -12,7 +12,6 @@ __licence__ = "MIT"
 
 import hmac
 from typing import Optional
-
 from flask import Blueprint, request, current_app
 
 from config import config_instance
@@ -29,6 +28,7 @@ def api_keys(path: str) -> tuple:
     """
     **api_keys**
         system admin api keys endpoint
+
     :param path:
     :return: results depending on path
     """

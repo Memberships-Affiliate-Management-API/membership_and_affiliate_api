@@ -26,6 +26,8 @@ admin_users_api_bp = Blueprint("admin_users_api", __name__)
 @handle_apps_authentication
 def admin_users(path: str) -> tuple:
     """
+    **admin_users**
+
     :param  path: indicates what route to follow for admin users
     :return:
     """

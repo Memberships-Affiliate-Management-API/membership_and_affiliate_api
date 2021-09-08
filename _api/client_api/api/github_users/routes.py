@@ -5,7 +5,7 @@
 
 """
 from flask import Blueprint, request
-from config.exceptions import if_bad_request_raise
+from config.exceptions import if_bad_request_raise, status_codes
 from security.apps_authenticator import handle_apps_authentication
 from views.github_auth import GithubAuthView
 
@@ -21,4 +21,4 @@ def github_users_api() -> tuple:
     :return:
     """
     if_bad_request_raise(request)
-    pass
+    return "OK", status_codes.status_ok_code

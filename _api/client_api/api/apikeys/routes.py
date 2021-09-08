@@ -34,7 +34,7 @@ def return_api_key(key: str, organization_id) -> tuple:
     if_bad_request_raise(request)
     json_data: dict = request.get_json()
     secret_key: Optional[str] = json_data.get('SECRET_KEY')
-    # TODO revice use hmac compare
+    # TODO revise use hmac compare
     if isinstance(secret_key, str) and secret_key == current_app.config.get('SECRET_KEY'):
         return api_keys_view.get_api_key(api_key=key, organization_id=organization_id)
 

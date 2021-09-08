@@ -24,7 +24,9 @@ membership_admin_api_bp = Blueprint('memberships_admin_api', __name__)
 @handle_apps_authentication
 def memberships_plan_admin_api(path: str) -> tuple:
     """
+    **memberships_plan_admin_api**
         this endpoint is for purposes of user administration only not for admin purposes
+
     :param path:
     :return:
     """

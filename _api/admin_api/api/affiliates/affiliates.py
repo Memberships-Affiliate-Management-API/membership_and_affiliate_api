@@ -12,7 +12,6 @@ __licence__ = "MIT"
 
 import hmac
 from typing import Optional
-
 from flask import Blueprint, request, current_app
 
 from config import config_instance
@@ -27,6 +26,7 @@ admin_affiliates_api_bp = Blueprint("admin_affiliates_api", __name__)
 @handle_apps_authentication
 def admin_affiliates(path: str) -> tuple:
     """
+    **admin_affiliates**
 
     :param path:
     :return:
