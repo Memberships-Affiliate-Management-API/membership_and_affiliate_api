@@ -143,9 +143,4 @@ def create_app(config_class=config_instance):
         app.register_blueprint(default_handlers_bp)
 
         app.register_blueprint(microservices_ipn_bp)
-
-        if is_development():
-            task_scheduler.start()
-            cron_scheduler.start()
-
     return app

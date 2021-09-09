@@ -15,11 +15,9 @@ import asyncio
 from typing import Optional
 import aiohttp
 from config import config_instance
-from schedulers.scheduler import cron_scheduler
+from schedulers.scheduler import cron_scheduler, repeat, every, run_pending
 from config.exceptions import status_codes
 
-
-# TODO - can run on docker-compose using command: 'python cron.py'
 
 async def _async_request(_url, json_data, headers) -> Optional[dict]:
     async with aiohttp.ClientSession() as session:
@@ -31,7 +29,7 @@ async def _async_request(_url, json_data, headers) -> Optional[dict]:
             return None
 
 
-def send_cron_request(_endpoint: str) -> None:
+async def send_cron_request(_endpoint: str) -> None:
     """
     **send_request**
         actually sends a  request to endpoints
@@ -43,10 +41,9 @@ def send_cron_request(_endpoint: str) -> None:
     organization_id: str = config_instance.ORGANIZATION_ID
     headers: dict = {'content-type': 'application/json'}
     json_data = dict(organization_id=organization_id, SECRET_KEY=config_instance.SECRET_KEY)
-    asyncio.run(_async_request(_url=_url, json_data=json_data, headers=headers))
+    await _async_request(_url=_url, json_data=json_data, headers=headers)
 
 
-@cron_scheduler.scheduled_job(trigger='cron', day_of_week='mon-sun', hour=1)
 def heroku_cron_affiliate_jobs() -> tuple:
     """
         **cron_affiliate_jobs**
@@ -54,11 +51,11 @@ def heroku_cron_affiliate_jobs() -> tuple:
         :return: tuple
     """
     _endpoint: str = '_cron/v1/affiliates'
-    send_cron_request(_endpoint=_endpoint)
+    print("Runnning")
+    asyncio.run(send_cron_request(_endpoint=_endpoint))
     return "OK", status_codes.status_ok_code
 
 
-@cron_scheduler.scheduled_job(trigger='cron', day_of_week='mon-sun', hour=3)
 def heroku_cron_memberships() -> tuple:
     """
         **heroku_cron_memberships**
@@ -66,11 +63,10 @@ def heroku_cron_memberships() -> tuple:
         :return: tuple
     """
     _endpoint: str = '_cron/v1/memberships'
-    send_cron_request(_endpoint=_endpoint)
+    asyncio.run(send_cron_request(_endpoint=_endpoint))
     return "OK", status_codes.status_ok_code
 
 
-@cron_scheduler.scheduled_job(trigger='cron', day_of_week='mon-sun', hour=5)
 def heroku_cron_transactions() -> tuple:
     """
     **heroku_cron_transactions**
@@ -79,11 +75,10 @@ def heroku_cron_transactions() -> tuple:
     :return: tuple
     """
     _endpoint: str = '_cron/v1/transactions'
-    send_cron_request(_endpoint=_endpoint)
+    asyncio.run(send_cron_request(_endpoint=_endpoint))
     return "OK", status_codes.status_ok_code
 
 
-@cron_scheduler.scheduled_job(trigger='cron', day_of_week='mon-sun', hour=7)
 def heroku_cron_users() -> tuple:
     """
         **heroku_cron_users**
@@ -91,9 +86,22 @@ def heroku_cron_users() -> tuple:
         :return: tuple
     """
     _endpoint: str = '_cron/v1/users'
-    send_cron_request(_endpoint=_endpoint)
+    asyncio.run(send_cron_request(_endpoint=_endpoint))
     return "OK", status_codes.status_ok_code
 
 
+def main():
+    cron_scheduler.every().day.at(time_str='01:12').do(heroku_cron_affiliate_jobs)
+    cron_scheduler.every().day.at(time_str='03:00').do(heroku_cron_memberships)
+    cron_scheduler.every().day.at(time_str='05:00').do(heroku_cron_transactions)
+    cron_scheduler.every().day.at(time_str='07:00').do(heroku_cron_users)
+    while True:
+        cron_scheduler.run_pending()
+
+
 if __name__ == '__main__':
-    cron_scheduler.start()
+    print('STARTING CRON JOBS')
+    try:
+        main()
+    except Exception as e:
+        print(f'exception : {str(e)}')

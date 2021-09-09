@@ -121,31 +121,12 @@ class Config:
             preferably host the cache as a docker instance on Cloud Run
         :return: dict
         """
-        # TODO learn how to host redis cache on Heroku then change this logic so cache launches redis
-        if not self.IS_PRODUCTION or os.environ.get('IS_HEROKU'):
-            return {
-                "CACHE_TYPE": "simple",
-                "CACHE_DEFAULT_TIMEOUT": self.CACHE_DEFAULT_TIMEOUT,
-                "CACHE_KEY_PREFIX": "memberships_cache_"
-            }
-        else:
-            user = os.environ.get("CACHE_REDIS_USER") or config("CACHE_REDIS_USER")
-            password = os.environ.get("CACHE_REDIS_PASSWORD") or config("CACHE_REDIS_PASSWORD")
-            redis_host = os.environ.get("CACHE_REDIS_HOST") or config("CACHE_REDIS_HOST")
-            db = os.environ.get("CACHE_REDIS_DB") or config("CACHE_REDIS_DB")
-            return {
-                "CACHE_TYPE": "RedisCache",
-                "CACHE_DEFAULT_TIMEOUT": self.CACHE_DEFAULT_TIMEOUT,
-                "CACHE_KEY_PREFIX": "memberships_cache_",
-                "CACHE_REDIS_HOST": redis_host,
-                "CACHE_REDIS_PORT": 18391,
-                "CACHE_REDIS_PASSWORD": password,
-                "CACHE_REDIS_DB": db,
-                "CACHE_REDIS_URL": "redis://{}:{}@{}/0".format(user, password, redis_host),
-                "CACHE_OPTIONS": ""
-            }
-
-            # TODO: Note replace with a redis server connection url
+        # TODO : use memcached on docker
+        return {
+            "CACHE_TYPE": "simple",
+            "CACHE_DEFAULT_TIMEOUT": self.CACHE_DEFAULT_TIMEOUT,
+            "CACHE_KEY_PREFIX": "memberships_cache_"
+        }
 
 
 config_instance: Config = Config()

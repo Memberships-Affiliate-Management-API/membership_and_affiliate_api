@@ -2,6 +2,7 @@
 appengine-generated/
 app.yaml
 .env
+.env.docker
 venv/
 gen/
 .idea/

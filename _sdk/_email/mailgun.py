@@ -16,7 +16,7 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 from datetime import timedelta, datetime
 import requests
 from flask import current_app
-from schedulers.scheduler import task_scheduler
+from schedulers.scheduler import task_scheduler, schedule_func
 from config import config_instance
 from typing import List, Optional, Callable, Coroutine
 import aiohttp
@@ -158,9 +158,11 @@ class Mailgun:
         # Note: creating arguments dict
         _kwargs: dict = dict(to_list=[to_email], sbject=subject, text=text, html=html)
         # 5 seconds after now the email will be sent
-        five_seconds_after: datetime = datetime_now() + timedelta(seconds=5)
-        task_scheduler.add_job(func=self._send_with_mailgun_rest_api, trigger='date', run_date=five_seconds_after,
-                               kwargs=_kwargs, id=create_id(), name="do_schedule_mail_send", misfire_grace_time=360)
+        job = schedule_func(func=self._send_with_mailgun_rest_api, kwargs=_kwargs, job_name=f'send_email_{create_id(size=32)}')
+
+        # five_seconds_after: datetime = datetime_now() + timedelta(seconds=5)
+        # task_scheduler.add_job(func=self._send_with_mailgun_rest_api, trigger='date', run_date=five_seconds_after,
+        #                        kwargs=_kwargs, id=create_id(), name="do_schedule_mail_send", misfire_grace_time=360)
 
     @staticmethod
     def _base_email_scheduler(func: Callable, kwargs: dict, job_name: str = create_id()) -> None:
@@ -170,9 +172,11 @@ class Mailgun:
         :param kwargs:
         :return: None
         """
-        seconds_after: datetime = datetime_now() + timedelta(seconds=10)
-        task_scheduler.add_job(func=func, trigger='date', run_date=seconds_after, kwargs=kwargs, id=create_id(),
-                               name=job_name, misfire_grace_time=360)
+        job = schedule_func(func=func, kwargs=kwargs, job_name=f'base_email_{create_id(size=32)}')
+
+        # seconds_after: datetime = datetime_now() + timedelta(seconds=10)
+        # task_scheduler.add_job(func=func, trigger='date', run_date=seconds_after, kwargs=kwargs, id=create_id(),
+        #                        name=job_name, misfire_grace_time=360)
 
     @staticmethod
     def _create_job_name(header_name: str) -> str: return f'{header_name}{create_id()[0:20]}'

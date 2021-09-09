@@ -13,7 +13,7 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 from flask_caching import Cache
 
 from datetime import timedelta, datetime
-from schedulers.scheduler import task_scheduler
+from schedulers.scheduler import task_scheduler, schedule_func
 from config import config_instance
 
 from typing import Optional, Callable
@@ -181,9 +181,10 @@ class CacheManager:
         :param kwargs:
         :return:
         """
-        twenty_seconds_after: datetime = datetime_now() + timedelta(seconds=20)
-        task_scheduler.add_job(func=func, trigger='date', run_date=twenty_seconds_after, kwargs=kwargs, id=create_id(),
-                               name="cache_deletion", misfire_grace_time=360)
+        job = schedule_func(func=func, kwargs=kwargs, job_name=f'cache_deletion_{create_id(size=32)}')
+        # twenty_seconds_after: datetime = datetime_now() + timedelta(seconds=20)
+        # task_scheduler.add_job(func=func, trigger='date', run_date=twenty_seconds_after, kwargs=kwargs, id=create_id(),
+        #                        name="cache_deletion", misfire_grace_time=360)
 
 
 app_cache: CacheManager = CacheManager()

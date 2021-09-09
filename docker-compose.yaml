@@ -1,48 +1,67 @@
 version: "3.2"
 services:
   api:
+    env_file:
+      - .env.docker
+    build:
+      context: .
+      dockerfile: Docker.API
     image: memberships-api:101
     container_name: 'memberships-api'
-    command: "exec gunicorn --bind 0.0.0.0:8081 --workers 2 --threads 8 --timeout 0 run:app"
+    command: "gunicorn --bind 0.0.0.0:8081 --workers 2 --threads 8 --timeout 0 run:app"
     restart: always
     expose:
       - 8081
     ports:
       - 8081:8081
-    volumes:
-      - .:/app
   system-admin:
-    image: memberships-admin:101
+    env_file:
+      - .env.docker
+    build:
+      context: ../admin-portal-memberships-api/
+      dockerfile: ../admin-portal-memberships-api/Dockerfile.ADMIN
+    image: memberships-admin:102
     container_name: 'memberships-admin'
-    command: "exec gunicorn --bind 0.0.0.0:8082 --workers 2 --threads 8 --timeout 0 run:app"
+    command: "gunicorn --bind 0.0.0.0:8082 --workers 2 --threads 8 --timeout 0 run:app"
     restart: always
     expose:
       - 8082
     ports:
       - 8082:8082
-    volumes:
-      - .:/app
   tasks:
+    env_file:
+      - .env.docker
     build:
       context: .
-      dockerfile: Dockerfile
-    command: "python tasks.py"
+      dockerfile: Docker.TASKS
+    image: memberships-tasks:101
+    container_name: 'memberships-tasks'
+    command: "gunicorn tasks:task_scheduler"
     restart: always
   cron:
+    env_file:
+      - .env.docker
     build:
       context: .
-      dockerfile: Dockerfile
-    command: "python cron.py"
+      dockerfile: Docker.CRON
+    image: memberships-cron-jobs:101
+    container_name: 'memberships-cron'
+    command: "gunicorn cron:cron_scheduler"
     restart: always
   rabbit:
     image: rabbitmq:3-management
-    container_name: 'rabbitmq'
+    container_name: 'memberships-rabbitmq'
     expose:
       - 5672
       - 15672
     ports:
       - 5672:5672
       - 15672:15672
-    volumes:
-      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
-      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+  memcached:
+    image: memcached:alpine3.14
+    command: ["-m", "528"]
+    container_name: 'memberships-memcached'
+    expose:
+      - 11211
+    ports:
+      - 11211:11211

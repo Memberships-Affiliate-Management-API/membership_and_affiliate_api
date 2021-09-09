@@ -29,6 +29,5 @@ pytest~=6.2.4
 pytest_cov
 pytest_mock
 phonenumbers
-elasticsearch==7.0.0
-APScheduler==3.0.0
+schedule
 Authlib
