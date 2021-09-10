@@ -161,6 +161,8 @@ class CacheManager:
 
     def _delete_services_cache(self, services_view, organization_id: str, service_id: str) -> bool:
         """
+        **_delete_services_cache**
+            deletes cache keys and values related to services View
 
         :param services_view:
         :param organization_id:

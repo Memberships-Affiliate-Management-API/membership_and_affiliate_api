@@ -25,7 +25,7 @@
    - **[_Affiliates_](_api/public_api/affiliates/Readme.md)**
    - **[_Coupon Codes_](_api/public_api/coupons/readme.md)**
 
-**[Documentations](docs/readme.md)**
+**[Documentations](http://memberships.blueitmarketing.xyz/)**
 --
   API detailed [developer documentations](docs/developers-docs/readme.md) and [getting started documentations](docs/getting-started-docs/readme.md)
   
@@ -46,12 +46,14 @@
 **Links**
 --
    - _On RapidAPI_  coming soon...
-   - _Platform Home_ [https://memberships-affiliates-man-api.herokuapp.com/](https://memberships-affiliates-man-api.herokuapp.com/)
+   - _Client Admin Dashboard_ [https://client-dashboard.blueitmarketing.xyz](https://client.blueitmarketing.xyz)
+   - _API EndPoints_ [https://api.blueitmarketing.xyz](https://api.blueitmarketing.xyz)
+   - _Documentations_ [http://memberships.blueitmarketing.xyz/](http://memberships.blueitmarketing.xyz/) 
 
 **Developer**
 --
    - **Justice Ndou** _[https://justice-ndou.site](https://justice-ndou.site)_
-   - **Email:*** _mobiusndou@gmail.com_
+   - **Email:** _mobiusndou@gmail.com_
    - **Twitter** [@blueitserver](https://twitter.com/blueitserver)
 
 
