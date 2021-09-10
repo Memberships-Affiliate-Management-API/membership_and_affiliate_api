@@ -12,6 +12,7 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 import typing
 from typing import Optional, List
 from flask import current_app, jsonify
+from flask.views import MethodView
 from google.cloud import ndb
 from cache.cache_manager import app_cache
 from database.affiliates import AffiliatesValidators as ValidAffiliate
@@ -126,9 +127,7 @@ class AffiliatesView(Validator):
         affiliate_id: str = self._create_unique_affiliate_id()
         # NOTE: other affiliates fields will be auto completed - be defaults
 
-        affiliate_instance: Affiliates = Affiliates(organization_id=organization_id,
-                                                    affiliate_id=affiliate_id,
-                                                    uid=uid)
+        affiliate_instance: Affiliates = Affiliates(**affiliate_data)
 
         key: Optional[ndb.Key] = affiliate_instance.put(retries=self._max_retries, timeout=self._max_timeout)
         if not bool(key):
@@ -356,7 +355,7 @@ class AffiliatesView(Validator):
             raise InputError(status=error_codes.input_error_code, description=message)
 
         affiliates_list: List[Affiliates] = Affiliates.query(
-            Affiliates.organization_id == organization_id).fetch()
+            Affiliates.organization_id == organization_id).order(Affiliates.datetime_recruited).fetch()
 
         payload: List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
 
@@ -387,7 +386,7 @@ class AffiliatesView(Validator):
 
         affiliates_list: List[Affiliates] = Affiliates.query(
             Affiliates.organization_id == organization_id,
-            Affiliates.is_active == True, Affiliates.is_deleted == False).fetch()
+            Affiliates.is_active == True, Affiliates.is_deleted == False).order(Affiliates.datetime_recruited).fetch()
         payload: List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
         if len(payload):
             return jsonify({'status': True, 'message': 'successfully returned all affiliates',
@@ -414,7 +413,7 @@ class AffiliatesView(Validator):
 
         affiliates_list: List[Affiliates] = Affiliates.query(
             Affiliates.organization_id == organization_id, Affiliates.is_active == False,
-            Affiliates.is_deleted == False).fetch()
+            Affiliates.is_deleted == False).order(Affiliates.datetime_recruited).fetch()
 
         payload: List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
         if len(payload):
@@ -443,7 +442,7 @@ class AffiliatesView(Validator):
 
         affiliates_list: List[Affiliates] = Affiliates.query(
             Affiliates.organization_id == organization_id,
-            Affiliates.is_deleted == True).fetch()
+            Affiliates.is_deleted == True).order(Affiliates.datetime_recruited).fetch()
 
         payload: List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
         if len(payload):
@@ -469,8 +468,9 @@ class AffiliatesView(Validator):
             message: str = 'organization_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        affiliates_list: List[Affiliates] = Affiliates.query(Affiliates.organization_id == organization_id,
-                                                             Affiliates.is_deleted == False).fetch()
+        affiliates_list: List[Affiliates] = Affiliates.query(
+            Affiliates.organization_id == organization_id,
+            Affiliates.is_deleted == False).order(Affiliates.datetime_recruited).fetch()
 
         payload: List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
         if len(payload):
@@ -519,8 +519,7 @@ class RecruitsView(Validator):
             raise InputError(status=error_codes.input_error_code, description=message)
 
         affiliate_id = self._create_unique_affiliate_id()
-        recruit_instance: Recruits = Recruits(organization_id=organization_id, affiliate_id=affiliate_id,
-                                              referrer_uid=referrer_uid)
+        recruit_instance: Recruits = Recruits(**recruit_data, affiliate_id=affiliate_id)
 
         key = recruit_instance.put(retries=self._max_retries, timeout=self._max_timeout)
         if not bool(key):

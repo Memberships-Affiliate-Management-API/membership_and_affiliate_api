@@ -10,7 +10,7 @@ __licence__ = "MIT"
 
 from authlib.integrations.flask_client import OAuth
 from flask import Flask
-
+from flask_cors import CORS
 from schedulers.scheduler import task_scheduler, cron_scheduler
 from cache.cache_manager import app_cache
 from config import config_instance
@@ -42,6 +42,7 @@ def create_app(config_class=config_instance):
 
     app_cache.init_app(app=app)
     oauth.init_app(app=app, cache=app_cache.cache)
+    CORS(app)
 
     with app.app_context():
         # user facing or public facing api's
