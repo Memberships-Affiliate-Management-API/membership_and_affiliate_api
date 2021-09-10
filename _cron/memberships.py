@@ -14,13 +14,13 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 from flask import Blueprint
 from _cron.jobs.membership_jobs import MembershipsJobs
 from config.exceptions import status_codes
-from security.apps_authenticator import handle_apps_authentication
+from security.apps_authenticator import handle_apps_authentication, handle_cron_auth
 
 cron_memberships_bp = Blueprint('cron_memberships', __name__)
 
 
 @cron_memberships_bp.route('/_cron/v1/memberships', methods=['GET', 'POST'])
-@handle_apps_authentication
+@handle_cron_auth
 def cron_memberships_jobs() -> tuple:
     """
         **cron_memberships_jobs**

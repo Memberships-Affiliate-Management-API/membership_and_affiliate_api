@@ -10,13 +10,13 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 from flask import Blueprint
 from _cron.jobs.transactions_jobs import TransactionsJobs
 from config.exceptions import status_codes
-from security.apps_authenticator import handle_apps_authentication
+from security.apps_authenticator import handle_apps_authentication, handle_cron_auth
 
 cron_transactions_bp = Blueprint('cron_withdrawals', __name__)
 
 
 @cron_transactions_bp.route('/_cron/v1/transactions', methods=['POST', 'GET'])
-@handle_apps_authentication
+@handle_cron_auth
 def cron_transactions_jobs() -> tuple:
     """
         **cron_withdrawals_jobs**

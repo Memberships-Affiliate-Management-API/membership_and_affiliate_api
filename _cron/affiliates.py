@@ -15,13 +15,13 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 from flask import Blueprint
 from _cron.jobs.affiliates_jobs import AffiliateJobs
 from config.exceptions import status_codes
-from security.apps_authenticator import handle_apps_authentication
+from security.apps_authenticator import handle_apps_authentication, handle_cron_auth
 
 cron_affiliate_bp = Blueprint('cron_affiliate', __name__)
 
 
 @cron_affiliate_bp.route('/_cron/v1/affiliates', methods=['POST', 'GET'])
-@handle_apps_authentication
+@handle_cron_auth
 def cron_affiliate_jobs() -> tuple:
     """
         **cron_affiliate_jobs**
@@ -32,5 +32,6 @@ def cron_affiliate_jobs() -> tuple:
     :return:
     """    
     affiliate_cron_tasks: AffiliateJobs = AffiliateJobs()
+    print("Affiliates cron jobs running...")
     affiliate_cron_tasks.run()
     return "OK", status_codes.status_ok_code
