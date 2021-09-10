@@ -135,6 +135,8 @@ def handle_cron_auth(func: Callable) -> Callable:
         json_data: dict = request.get_json()
         _cron_domain: Optional[str] = json_data.get('domain')
         _secret_key: Optional[str] = json_data.get('SECRET_KEY')
+        print(f" cron domain: {_cron_domain}")
+        print(f"cron secret key: {_secret_key}")
         if verify_cron_job(cron_domain=_cron_domain, secret_key=_secret_key):
             return func(*args, **kwargs)
         message: str = "request not authorized"
