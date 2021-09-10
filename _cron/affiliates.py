@@ -15,6 +15,7 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 from flask import Blueprint
 from _cron.jobs.affiliates_jobs import AffiliateJobs
 from config.exceptions import status_codes
+from schedulers.scheduler import schedule_func
 from security.apps_authenticator import handle_apps_authentication, handle_cron_auth
 
 cron_affiliate_bp = Blueprint('cron_affiliate', __name__)
@@ -33,5 +34,5 @@ def cron_affiliate_jobs() -> tuple:
     """    
     affiliate_cron_tasks: AffiliateJobs = AffiliateJobs()
     print("Affiliates cron jobs running...")
-    affiliate_cron_tasks.run()
+    schedule_func(func=affiliate_cron_tasks.run, job_name='cron_affiliate')
     return "OK", status_codes.status_ok_code

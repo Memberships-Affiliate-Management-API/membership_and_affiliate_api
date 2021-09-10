@@ -9,7 +9,7 @@ __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
-from typing import Callable, Hashable
+from typing import Callable, Hashable, Optional
 # noinspection PyUnresolvedReferences
 from schedule import Scheduler, Job, repeat, every, run_pending
 
@@ -17,7 +17,7 @@ task_scheduler = Scheduler()
 cron_scheduler = Scheduler()
 
 
-def schedule_func(func: Callable, kwargs: dict, job_name: str) -> Job:
+def schedule_func(func: Callable,  job_name: str, kwargs: Optional[dict]=None) -> Job:
     """
     **schedule_cache_deletion**
         schedule cache deletion such that it occurs sometime time in the future
@@ -32,4 +32,6 @@ def schedule_func(func: Callable, kwargs: dict, job_name: str) -> Job:
     """
     _args: dict = dict()
     _job_names: Hashable = hash(job_name)
-    return task_scheduler.every(interval=30).seconds.do(job_func=func, args=_args, kwargs=kwargs).tag(tags=_job_names)
+    if kwargs:
+        return task_scheduler.every(interval=30).seconds.do(job_func=func, kwargs=kwargs).tag(_job_names)
+    return task_scheduler.every(interval=30).seconds.do(job_func=func).tag(_job_names)

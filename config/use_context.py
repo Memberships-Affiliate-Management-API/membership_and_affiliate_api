@@ -37,20 +37,14 @@ def use_context(func):
     """
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        if not current_app:
-            app = create_app(config_class=config_instance)
-            app.app_context().push()
-        else:
-            app = current_app
-
         if is_heroku():
             # NOTE: hosted in Heroku service key should be saved as environment variable in heroku
             app_credentials = json.loads(config_instance.GOOGLE_APPLICATION_CREDENTIALS)
             credentials = service_account.Credentials.from_service_account_info(app_credentials)
-            client = ndb.Client(namespace="main", project=app.config.get('PROJECT'), credentials=credentials)
+            client = ndb.Client(namespace="main", project=config_instance.PROJECT, credentials=credentials)
         else:
             # NOTE: could be GCP or another cloud environment
-            client = ndb.Client(namespace="main", project=app.config.get('PROJECT'))
+            client = ndb.Client(namespace="main", project=config_instance.PROJECT)
         # TODO - setup everything related to cache policy and all else here
         with client.context():
             return func(*args, **kwargs)
