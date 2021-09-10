@@ -110,7 +110,7 @@ def heroku_cron_users() -> tuple:
 
 
 def main():
-    cron_scheduler.every().day.at(time_str='13:35').do(heroku_cron_affiliate_jobs)
+    cron_scheduler.every().day.at(time_str='11:37').do(heroku_cron_affiliate_jobs)
     cron_scheduler.every().day.at(time_str='03:00').do(heroku_cron_memberships)
     cron_scheduler.every().day.at(time_str='05:00').do(heroku_cron_transactions)
     cron_scheduler.every().day.at(time_str='07:00').do(heroku_cron_users)
