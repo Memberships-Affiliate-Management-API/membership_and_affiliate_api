@@ -18,6 +18,7 @@ from google.oauth2 import service_account
 from utils.utils import is_development, is_heroku
 import os
 
+
 if is_development():
     # NOTE: Local development service key is saved on local drive
     credential_path = "C:\\gcp_credentials\\heroku.json"

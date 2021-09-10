@@ -29,6 +29,7 @@ class AffiliateJobs:
         asyncio.run(self.finalize_affiliate_earnings())
         asyncio.run(self.create_affiliate_reports())
 
+    @use_context
     async def do_finalize_earnings(self, earnings: EarningsData) -> bool:
         """
             go through each affiliate payment record,
@@ -84,5 +85,6 @@ class AffiliateJobs:
         event_loop.run_until_complete(asyncio.gather(coro))
         event_loop.close()
 
+    @use_context
     async def create_affiliate_reports(self):
         pass
