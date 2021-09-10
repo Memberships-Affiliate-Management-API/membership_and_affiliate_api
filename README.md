@@ -45,7 +45,7 @@
 
 **Links**
 --
-   - _On RapidAPI_  coming soon...
+   - _On RapidAPI_  coming soon..
    - _Client Admin Dashboard_ [https://client-dashboard.blueitmarketing.xyz](https://client.blueitmarketing.xyz)
    - _API EndPoints_ [https://api.blueitmarketing.xyz](https://api.blueitmarketing.xyz)
    - _Documentations_ [http://memberships.blueitmarketing.xyz/](http://memberships.blueitmarketing.xyz/) 
