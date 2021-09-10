@@ -87,6 +87,9 @@ class Config:
         self.TEMPLATES_AUTO_RELOAD: bool = True
         self.PREFERRED_URL_SCHEME: str = "https"
 
+        self.CRON_DOMAIN: str = os.environ.get("CRON_DOMAIN") or config("CRON_DOMAIN")
+        self.CRON_SECRET: str = config("CRON_SECRET") or config("CRON_SECRET")
+
         # NOTE : setting IS_PRODUCTION here - could find a better way of doing this rather
         # than depending on the OS
         if "Windows_NT" == os.environ.get("OS"):
