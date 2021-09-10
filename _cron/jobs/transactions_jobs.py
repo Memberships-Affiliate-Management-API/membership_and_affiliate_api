@@ -21,6 +21,7 @@ class TransactionsJobs:
         asyncio.run(self.send_approved_withdrawals_to_paypal_wallets())
         asyncio.run(self.add_approved_deposits_to_wallet())
 
+    @use_context
     async def do_send_to_client_paypal(self, transaction: WalletTransactionsModel) -> bool:
         """
         **do_send_to_client_paypal**
@@ -62,6 +63,7 @@ class TransactionsJobs:
         event_loop.close()
 
     # Note below methods deals with client deposits
+    @use_context
     async def do_send_to_client_wallet(self, transaction: WalletTransactionsModel) -> bool:
         """
         **do_send_to_client_wallet**
