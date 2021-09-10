@@ -12,6 +12,7 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 from flask import Blueprint
 from _cron.jobs.users_jobs import UserJobs
 from config.exceptions import status_codes
+from schedulers.scheduler import schedule_func
 from security.apps_authenticator import handle_cron_auth
 
 cron_users_bp = Blueprint('cron_users', __name__)
@@ -27,4 +28,6 @@ def cron_users_jobs() -> tuple:
     """
     user_jobs_instance: UserJobs = UserJobs()
     user_jobs_instance.run()
+    print("Users Cron Jobs Running...")
+    schedule_func(func=user_jobs_instance.run, job_name='cron_user_jobs')
     return "OK", status_codes.status_ok_code

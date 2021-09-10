@@ -14,6 +14,7 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 from flask import Blueprint
 from _cron.jobs.membership_jobs import MembershipsJobs
 from config.exceptions import status_codes
+from schedulers.scheduler import schedule_func
 from security.apps_authenticator import handle_apps_authentication, handle_cron_auth
 
 cron_memberships_bp = Blueprint('cron_memberships', __name__)
@@ -30,6 +31,7 @@ def cron_memberships_jobs() -> tuple:
     :return:
     """
     memberships_jobs_instance: MembershipsJobs = MembershipsJobs()
-    memberships_jobs_instance.run()
+    print("Memberships cron jobs running...")
+    schedule_func(func=memberships_jobs_instance.run, job_name='cron_memberships_jobs')
     return "OK", status_codes.status_ok_code
 

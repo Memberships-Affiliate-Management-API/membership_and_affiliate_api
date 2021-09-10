@@ -10,6 +10,7 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 from flask import Blueprint
 from _cron.jobs.transactions_jobs import TransactionsJobs
 from config.exceptions import status_codes
+from schedulers.scheduler import schedule_func
 from security.apps_authenticator import handle_apps_authentication, handle_cron_auth
 
 cron_transactions_bp = Blueprint('cron_withdrawals', __name__)
@@ -25,5 +26,6 @@ def cron_transactions_jobs() -> tuple:
     :return:
     """
     transactions: TransactionsJobs = TransactionsJobs()
-    transactions.run()
+    print("Transactions Cron Jobs Running...")
+    schedule_func(func=transactions.run, job_name='cron_transactions_jobs')
     return "OK", status_codes.status_ok_code
