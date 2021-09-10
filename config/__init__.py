@@ -77,7 +77,7 @@ class Config:
         self.CACHE_TYPE: str = "simple"
         self.CACHE_DEFAULT_TIMEOUT: int = 60 * 60 * 6
         self.MEM_CACHE_SERVER_URI: str = ""
-        self.GOOGLE_APPLICATION_CREDENTIALS: str = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS") or config("GOOGLE_APPLICATION_CREDENTIALS")
+        self.GOOGLE_APPLICATION_CREDENTIALS: str = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
 
         self.PAYMENT_PLANS_SCHEDULES: typing.List[str] = ['monthly', 'quarterly', 'annually']
         self.PAYMENT_PLANS_PAYMENT_DAYS: typing.List[int] = [1, 2, 3, 4, 5]
