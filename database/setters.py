@@ -13,6 +13,8 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 __licence__ = "MIT"
 
 from typing import List, Optional, Union
+
+import requests
 from flask import escape
 from datetime import datetime, date
 from google.cloud import ndb
@@ -120,9 +122,20 @@ class Util:
         :param domain: str -> domain name to check
         :return: bool: True -> if pattern matches
         """
+        to_check: str = domain.replace('https://', '') if domain.startswith('https://') else domain
+        # noinspection HttpUrlsUsage
+        to_check: str = to_check.replace('http://', '') if to_check.startswith('http://') else to_check
+        to_check: str = to_check.replace('/', '') if to_check.endswith('/') else to_check
+        to_check: str = to_check.split(sep='/')[0] if '/' in to_check else to_check
+        print(f' domain to check : {to_check}')
+        # to_check = 'google.com'
+
         regex_pattern = r'^[a-z0-9]([a-z0-9-]+\.){1,}[a-z0-9]+\Z'
+        new_pattern = "\b((?=[a-z0-9-]{1,63}\.)(xn--)?[a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,63}\b"
+
         pattern = re.compile(regex_pattern)
-        return bool(re.fullmatch(pattern, domain))
+        alt_pattern = re.compile(new_pattern)
+        return not not pattern.fullmatch(to_check) or not not alt_pattern.fullmatch(new_pattern)
 
     @staticmethod
     def resolve_domain_name(domain: str) -> bool:
@@ -134,8 +147,13 @@ class Util:
         :return: True if domain resolves else False
         """
         try:
-            return bool(socket.gethostbyname_ex(domain))
-        except socket.gaierror:
+            result = requests.get(domain)
+            return result.ok
+        except requests.RequestException:
+            return False
+        except requests.Timeout:
+            return False
+        except requests.ConnectionError:
             return False
 
     @staticmethod
@@ -643,11 +661,15 @@ class PropertySetters(Events, Util):
             raise TypeError(message)
 
         domain = value.strip()
+        print(f'testing domain : {domain}')
         regex_passes = property_.regex_check_domain(domain=domain)
         domain_valid = property_.resolve_domain_name(domain=domain)
+        print(f"domain valid : {domain_valid}")
+        print(f"regex_passes : {regex_passes}")
+
         if regex_passes and domain_valid:
             return domain
-        raise ValueError(f"This value : {value} is not a valid domain name, or the domain may not be accessible")
+        raise ValueError(f"This : {domain} is not a valid domain name, or the domain may not be accessible")
 
 
 property_: PropertySetters = PropertySetters()

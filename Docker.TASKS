@@ -5,6 +5,7 @@ FROM python:3.9-slim
 
 # Allow statements and log messages to immediately appear in the Knative logs
 ENV PYTHONUNBUFFERED True
+RUN /usr/local/bin/python -m pip install --upgrade pip
 COPY ./requirements.tasks.txt /tasks-app/requirements.txt
 # Copy local code to the container image.
 ENV APP_HOME /tasks-app

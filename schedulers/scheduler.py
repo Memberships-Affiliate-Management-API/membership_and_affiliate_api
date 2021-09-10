@@ -9,10 +9,9 @@ __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
-from typing import Callable
-from datetime import datetime, timedelta
-from schedule import Scheduler, repeat, every, run_pending, Job
-from utils import create_id as create_unique_id
+from typing import Callable, Hashable
+# noinspection PyUnresolvedReferences
+from schedule import Scheduler, Job, repeat, every, run_pending
 
 task_scheduler = Scheduler()
 cron_scheduler = Scheduler()
@@ -30,6 +29,7 @@ def schedule_func(func: Callable, kwargs: dict, job_name: str) -> Job:
     # twenty_seconds_after = datetime.now() + timedelta(seconds=30)
     # task_scheduler.add_job(func=func, trigger='date', run_date=twenty_seconds_after, kwargs=kwargs, id=create_unique_id(),
     #                        name="schedule_func", misfire_grace_time=360)
-
     """
-    return task_scheduler.every(interval=30).seconds.do(func, **kwargs).tag(job_name)
+    _args: dict = dict()
+    _job_names: Hashable = hash(job_name)
+    return task_scheduler.every(interval=30).seconds.do(job_func=func, args=_args, kwargs=kwargs).tag(tags=_job_names)

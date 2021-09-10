@@ -15,8 +15,9 @@ import asyncio
 from typing import Optional
 import aiohttp
 from config import config_instance
+# noinspection PyUnresolvedReferences
 from schedulers.scheduler import cron_scheduler, repeat, every, run_pending
-from config.exceptions import status_codes
+# from config.exceptions import status_codes
 
 
 async def _async_request(_url, json_data, headers) -> Optional[dict]:
@@ -53,7 +54,7 @@ def heroku_cron_affiliate_jobs() -> tuple:
     _endpoint: str = '_cron/v1/affiliates'
     print("Runnning")
     asyncio.run(send_cron_request(_endpoint=_endpoint))
-    return "OK", status_codes.status_ok_code
+    return "OK", 200
 
 
 def heroku_cron_memberships() -> tuple:
@@ -64,7 +65,7 @@ def heroku_cron_memberships() -> tuple:
     """
     _endpoint: str = '_cron/v1/memberships'
     asyncio.run(send_cron_request(_endpoint=_endpoint))
-    return "OK", status_codes.status_ok_code
+    return "OK", 200
 
 
 def heroku_cron_transactions() -> tuple:
@@ -76,7 +77,7 @@ def heroku_cron_transactions() -> tuple:
     """
     _endpoint: str = '_cron/v1/transactions'
     asyncio.run(send_cron_request(_endpoint=_endpoint))
-    return "OK", status_codes.status_ok_code
+    return "OK", 200
 
 
 def heroku_cron_users() -> tuple:
@@ -87,7 +88,7 @@ def heroku_cron_users() -> tuple:
     """
     _endpoint: str = '_cron/v1/users'
     asyncio.run(send_cron_request(_endpoint=_endpoint))
-    return "OK", status_codes.status_ok_code
+    return "OK", 200
 
 
 def main():

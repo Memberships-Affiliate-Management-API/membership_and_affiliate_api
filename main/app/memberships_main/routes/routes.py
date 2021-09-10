@@ -116,6 +116,11 @@ def memberships_main_routes(current_user: Optional[dict], path: str) -> tuple:
 
         return render_template('main/forget.html'), status_codes.status_ok_code
 
+    elif path == 'recovery' or path == "recovery.html":
+        if isinstance(current_user, dict) and bool(current_user.get('uid')):
+            return redirect(url_for('client_dashboard.client_dashboard_routes', path='dashboard'))
+        return render_template('main/forget.html'), status_codes.status_ok_code
+
     elif path == 'terms' or path == "terms.html":
         return render_template('main/terms.html'), status_codes.status_ok_code
 
