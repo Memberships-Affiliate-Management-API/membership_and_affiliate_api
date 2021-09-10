@@ -12,12 +12,31 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
 import asyncio
-from typing import Optional
+from functools import wraps
+
+from typing import Optional, Callable
 import aiohttp
 from config import config_instance
 # noinspection PyUnresolvedReferences
 from schedulers.scheduler import cron_scheduler, repeat, every, run_pending
 # from config.exceptions import status_codes
+from utils import timestamp
+
+
+def cron_logger(func: Callable) -> Callable:
+    """
+        **log_cron_calls**
+    """
+
+    @wraps(func)
+    def logger(*args, **kwargs) -> Callable:
+        print(f" Cron Job {func.__name__} is Running...")
+        started: int = timestamp()
+        _response: Optional[dict] = func(*args, **kwargs)
+        print(f"Total Time Cron Job Ran: {timestamp() - started}")
+        print(f"Response : {_response}")
+
+    return logger
 
 
 async def _async_request(_url, json_data, headers) -> Optional[dict]:
@@ -25,12 +44,12 @@ async def _async_request(_url, json_data, headers) -> Optional[dict]:
         async with session.post(url=_url, json=json_data, headers=headers) as response:
             json_data = await response.json()
             if json_data.get('status'):
-                user_data: dict = json_data.get('payload')
-                return user_data
+                cron_response: dict = json_data.get('payload')
+                return cron_response
             return None
 
 
-async def send_cron_request(_endpoint: str) -> None:
+async def send_cron_request(_endpoint: str) -> Optional[None]:
     """
     **send_request**
         actually sends a  request to endpoints
@@ -42,9 +61,10 @@ async def send_cron_request(_endpoint: str) -> None:
     organization_id: str = config_instance.ORGANIZATION_ID
     headers: dict = {'content-type': 'application/json'}
     json_data = dict(organization_id=organization_id, SECRET_KEY=config_instance.SECRET_KEY)
-    await _async_request(_url=_url, json_data=json_data, headers=headers)
+    return await _async_request(_url=_url, json_data=json_data, headers=headers)
 
 
+@cron_logger
 def heroku_cron_affiliate_jobs() -> tuple:
     """
         **cron_affiliate_jobs**
@@ -52,11 +72,10 @@ def heroku_cron_affiliate_jobs() -> tuple:
         :return: tuple
     """
     _endpoint: str = '_cron/v1/affiliates'
-    print("Runnning")
-    asyncio.run(send_cron_request(_endpoint=_endpoint))
-    return "OK", 200
+    return asyncio.run(send_cron_request(_endpoint=_endpoint)), 200
 
 
+@cron_logger
 def heroku_cron_memberships() -> tuple:
     """
         **heroku_cron_memberships**
@@ -64,10 +83,10 @@ def heroku_cron_memberships() -> tuple:
         :return: tuple
     """
     _endpoint: str = '_cron/v1/memberships'
-    asyncio.run(send_cron_request(_endpoint=_endpoint))
-    return "OK", 200
+    return asyncio.run(send_cron_request(_endpoint=_endpoint)), 200
 
 
+@cron_logger
 def heroku_cron_transactions() -> tuple:
     """
     **heroku_cron_transactions**
@@ -76,10 +95,10 @@ def heroku_cron_transactions() -> tuple:
     :return: tuple
     """
     _endpoint: str = '_cron/v1/transactions'
-    asyncio.run(send_cron_request(_endpoint=_endpoint))
-    return "OK", 200
+    return asyncio.run(send_cron_request(_endpoint=_endpoint)), 200
 
 
+@cron_logger
 def heroku_cron_users() -> tuple:
     """
         **heroku_cron_users**
@@ -87,12 +106,11 @@ def heroku_cron_users() -> tuple:
         :return: tuple
     """
     _endpoint: str = '_cron/v1/users'
-    asyncio.run(send_cron_request(_endpoint=_endpoint))
-    return "OK", 200
+    return asyncio.run(send_cron_request(_endpoint=_endpoint)), 200
 
 
 def main():
-    cron_scheduler.every().day.at(time_str='01:12').do(heroku_cron_affiliate_jobs)
+    cron_scheduler.every().day.at(time_str='13:35').do(heroku_cron_affiliate_jobs)
     cron_scheduler.every().day.at(time_str='03:00').do(heroku_cron_memberships)
     cron_scheduler.every().day.at(time_str='05:00').do(heroku_cron_transactions)
     cron_scheduler.every().day.at(time_str='07:00').do(heroku_cron_users)

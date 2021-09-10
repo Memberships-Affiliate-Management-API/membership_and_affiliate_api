@@ -27,12 +27,14 @@
 
 **[Documentations](http://memberships.blueitmarketing.xyz/)**
 --
-  API detailed [developer documentations](docs/developers-docs/readme.md) and [getting started documentations](docs/getting-started-docs/readme.md)
+  API detailed [developer documentations](http://memberships.blueitmarketing.xyz/) and 
+  [getting started documentations](http://memberships.blueitmarketing.xyz/)
+
   
 
 **License**
 --
-   - _Code Released under MIT License_
+   - _Code Released under [MIT LICENSE](LICENSE)_
 
 
 **[Contributions](CONTRIBUTING.md)**
@@ -45,7 +47,7 @@
 
 **Links**
 --
-   - _On RapidAPI_  coming soon..
+   - _On RapidAPI_  coming soon...
    - _Client Admin Dashboard_ [https://client-dashboard.blueitmarketing.xyz](https://client.blueitmarketing.xyz)
    - _API EndPoints_ [https://api.blueitmarketing.xyz](https://api.blueitmarketing.xyz)
    - _Documentations_ [http://memberships.blueitmarketing.xyz/](http://memberships.blueitmarketing.xyz/) 
@@ -55,7 +57,3 @@
    - **Justice Ndou** _[https://justice-ndou.site](https://justice-ndou.site)_
    - **Email:** _mobiusndou@gmail.com_
    - **Twitter** [@blueitserver](https://twitter.com/blueitserver)
-
-
-
-
