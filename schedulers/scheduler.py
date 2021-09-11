@@ -17,7 +17,7 @@ task_scheduler = Scheduler()
 cron_scheduler = Scheduler()
 
 
-def schedule_func(func: Callable,  job_name: str, kwargs: Optional[dict]=None) -> Job:
+def schedule_func(func: Callable, job_name: str, kwargs: Optional[dict] = None) -> Job:
     """
     **schedule_cache_deletion**
         schedule cache deletion such that it occurs sometime time in the future

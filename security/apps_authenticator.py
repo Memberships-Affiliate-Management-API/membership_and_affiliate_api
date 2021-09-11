@@ -124,19 +124,19 @@ def handle_internal_auth(func: Callable) -> Callable:
 
 
 def verify_cron_job(cron_domain: str, secret_key: str) -> bool:
+    """verify if the executor of the cron job is authorized"""
     is_domain: bool = hmac.compare_digest(cron_domain, config_instance.CRON_DOMAIN)
     is_secret: bool = hmac.compare_digest(secret_key, config_instance.CRON_SECRET)
     return is_domain and is_secret
 
 
 def handle_cron_auth(func: Callable) -> Callable:
+    """authenticate cron job execution routes"""
     @functools.wraps(func)
     def auth_wrapper(*args, **kwargs) -> Callable:
         json_data: dict = request.get_json()
         _cron_domain: Optional[str] = json_data.get('domain')
         _secret_key: Optional[str] = json_data.get('SECRET_KEY')
-        print(f" cron domain: {_cron_domain}")
-        print(f"cron secret key: {_secret_key}")
         if verify_cron_job(cron_domain=_cron_domain, secret_key=_secret_key):
             return func(*args, **kwargs)
         message: str = "request not authorized"
@@ -147,7 +147,6 @@ def handle_cron_auth(func: Callable) -> Callable:
 
 def is_domain_authorised(domain) -> bool:
     """
-
     :param domain:
     :return:
     """

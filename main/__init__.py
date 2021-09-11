@@ -9,7 +9,7 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 __licence__ = "MIT"
 
 import os
-from threading import Thread
+
 from authlib.integrations.flask_client import OAuth
 from flask import Flask
 from flask_cors import CORS
@@ -30,9 +30,6 @@ github_authorize = oauth.register(
     authorize_params=None,
     api_base_url='https://api.github.com/',
     client_kwargs={'scope': 'user:email'})
-
-
-tasks_thread: Thread = Thread(target=tasks.main, args=dict())
 
 
 # TODO divide the public api offering and client api and also admin api to be offered as different micro-services
@@ -145,12 +142,5 @@ def create_app(config_class=config_instance):
         app.register_blueprint(default_handlers_bp)
 
         app.register_blueprint(microservices_ipn_bp)
-
-        if app.config.get('thread_started'):
-            return app
-
-        app.tasks_thread = tasks_thread
-        app.tasks_thread.start()
-        app.config.update(thread_started=True)
 
     return app

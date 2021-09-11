@@ -8,13 +8,13 @@ __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
 __licence__ = "MIT"
-
+from threading import Thread
 import json
 import os
 from config import config_instance
 from main import create_app
 from utils.utils import is_development, today
-
+from tasks import run_tasks
 # TODO create separate run files for client api, admin api, and public_api
 app = create_app(config_class=config_instance)
 
@@ -22,6 +22,17 @@ debug = is_development() and config_instance.DEBUG
 # Press the green button in the gutter to run the script.
 
 # TODO Add logs handler which can send all errors to memberships and Affiliate Management Slack Channel
+
+
+@app.before_request
+def create_thread():
+    app.tasks_thread = Thread(target=run_tasks)
+
+
+@app.after_request
+def start_thread(response):
+    app.tasks_thread.start()
+    return response
 
 
 @app.route('/', methods=['GET', 'POST'])
