@@ -58,6 +58,9 @@ class AffiliateQueryMock:
     def get(self) -> Affiliates:
         return self.affiliates_instance
 
+    def order(self, value):
+        return self
+
     @ndb.tasklet
     def get_async(self) -> Affiliates:
         return self.affiliates_instance
