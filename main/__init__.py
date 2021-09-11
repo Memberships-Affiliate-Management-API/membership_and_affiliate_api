@@ -16,9 +16,7 @@ from flask_cors import CORS
 from schedulers.scheduler import task_scheduler, cron_scheduler
 from cache.cache_manager import app_cache
 from config import config_instance
-
-# TODO: consider upgrading the cache service from version 2 of this api
-from utils import is_development
+import tasks
 
 # github authenticate - enables developers to easily sign-up to our api
 oauth = OAuth()
@@ -34,10 +32,10 @@ github_authorize = oauth.register(
     client_kwargs={'scope': 'user:email'})
 
 
-# TODO divide the public api offering and client api and also admin api to be offered as different micro-services
-import tasks
 tasks_thread: Thread = Thread(target=tasks.main, args=dict())
 
+
+# TODO divide the public api offering and client api and also admin api to be offered as different micro-services
 # noinspection DuplicatedCode
 def create_app(config_class=config_instance):
     app = Flask(__name__, static_folder="app/resources/static", template_folder="app/resources/templates")

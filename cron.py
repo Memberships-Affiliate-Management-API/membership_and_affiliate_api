@@ -3,7 +3,6 @@
     1. will start cron scheduler as a service
     2. and then executes cron endpoints in order to start running cron services when the time for the service
     is reached
-
 """
 __developer__ = "mobius-crypt"
 __email__ = "mobiusndou@gmail.com"
@@ -60,7 +59,8 @@ async def send_cron_request(_endpoint: str) -> Optional[None]:
     _url: str = f"{_base_url}{_endpoint}"
     organization_id: str = config_instance.ORGANIZATION_ID
     headers: dict = {'content-type': 'application/json'}
-    json_data = dict(organization_id=organization_id, SECRET_KEY=config_instance.SECRET_KEY)
+    json_data = dict(organization_id=organization_id, SECRET_KEY=config_instance.CRON_SECRET,
+                     domain=config_instance.CRON_DOMAIN)
     return await _async_request(_url=_url, json_data=json_data, headers=headers)
 
 
@@ -110,7 +110,7 @@ def heroku_cron_users() -> tuple:
 
 
 def main():
-    cron_scheduler.every().day.at(time_str='11:37').do(heroku_cron_affiliate_jobs)
+    cron_scheduler.every().day.at(time_str='01:00').do(heroku_cron_affiliate_jobs)
     cron_scheduler.every().day.at(time_str='03:00').do(heroku_cron_memberships)
     cron_scheduler.every().day.at(time_str='05:00').do(heroku_cron_transactions)
     cron_scheduler.every().day.at(time_str='07:00').do(heroku_cron_users)

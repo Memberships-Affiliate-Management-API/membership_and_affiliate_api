@@ -12,4 +12,4 @@ def main():
         task_scheduler.run_all(delay_seconds=5)
         task_scheduler.clear()
         print(f'tasks fully cleared done running')
-        time.sleep(60)
+        time.sleep(20)
