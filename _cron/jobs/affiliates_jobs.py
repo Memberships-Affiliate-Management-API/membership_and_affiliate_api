@@ -5,13 +5,12 @@
 import asyncio
 from datetime import datetime, date
 from typing import List, Coroutine, Optional
-from flask import current_app
-from google.cloud import ndb
-from config.use_context import use_context
+from google.cloud.ndb import Key as ndb_Key, tasklet, toplevel, Future
 from database.affiliates import EarningsData, AffiliateTransactionItems
 from database.mixins import AmountMixin
 from database.wallet import WalletModel
 from utils import create_id
+from config import config_instance
 
 
 class AffiliateJobs:
@@ -22,16 +21,20 @@ class AffiliateJobs:
     """
 
     def __init__(self):
-        self._max_retries = current_app.config.get('DATASTORE_RETRIES')
-        self._max_timeout = current_app.config.get('DATASTORE_TIMEOUT')
+        self._max_retries = config_instance.DATASTORE_RETRIES
+        self._max_timeout = config_instance.DATASTORE_TIMEOUT
 
+    @toplevel
     def run(self):
-        asyncio.run(self.finalize_affiliate_earnings())
-        asyncio.run(self.create_affiliate_reports())
+        final_earnings = yield self.finalize_affiliate_earnings()
+        for finalized_earning in final_earnings:
+            print(f"finalized earnings: {finalized_earning}")
+        print(f"unable to find any earnings")
 
-    @use_context
-    async def do_finalize_earnings(self, earnings: EarningsData) -> bool:
+    @tasklet
+    def do_finalize_earnings(self, earnings: EarningsData) -> Future:
         """
+        **do_finalize_earnings**
             go through each affiliate payment record,
             1. then transfer earnings to wallet,
             2. close earnings record
@@ -40,12 +43,12 @@ class AffiliateJobs:
         :param earnings:
         :return:
         """
-        wallet_instance: WalletModel = await WalletModel.query(WalletModel.organization_id == earnings.organization_id,
-                                                               WalletModel.uid == earnings.affiliate_id).get_async()
+        wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == earnings.organization_id,
+                                                         WalletModel.uid == earnings.affiliate_id).get_async().get_result()
 
         if wallet_instance.is_verified and (wallet_instance.available_funds.currency == earnings.total_earned.currency):
             wallet_instance.available_funds.amount_cents += earnings.total_earned.amount_cents
-            key: Optional[ndb.Key] = wallet_instance.put_async(retries=self._max_retries,
+            key: Optional[ndb_Key] = wallet_instance.put_async(retries=self._max_retries,
                                                                timeout=self._max_timeout).get_result()
             if bool(key):
                 amount_earned: AmountMixin = earnings.total_earned
@@ -54,21 +57,21 @@ class AffiliateJobs:
                 earnings.start_date = today
                 earnings.last_updated = today
                 earnings.is_paid = True
-                earnings_key: Optional[ndb.Key] = earnings.put_async(retries=self._max_retries,
+                earnings_key: Optional[ndb_Key] = earnings.put_async(retries=self._max_retries,
                                                                      timeout=self._max_timeout).get_result()
                 if bool(earnings_key):
                     transaction_item: AffiliateTransactionItems = AffiliateTransactionItems()
                     transaction_item.amount = amount_earned
                     transaction_item.transaction_id = create_id()
                     transaction_item.uid = earnings.affiliate_id
-                    tran_key: Optional[ndb.Key] = transaction_item.put_async(retries=self._max_retries,
+                    tran_key: Optional[ndb_Key] = transaction_item.put_async(retries=self._max_retries,
                                                                              timeout=self._max_timeout).get_result()
 
-                    return bool(tran_key)
-        return False
+                    yield bool(tran_key)
+        yield False
 
-    @use_context
-    async def finalize_affiliate_earnings(self):
+    @tasklet
+    def finalize_affiliate_earnings(self) -> List[Future]:
         """
         **finalize_affiliate_payments**
             go through each affiliate payment record,
@@ -77,13 +80,11 @@ class AffiliateJobs:
             3. create a transaction on earnings transaction
         :return:
         """
-        earnings_list: List[EarningsData] = await EarningsData.query(EarningsData.is_paid == False,
-                                                                     EarningsData.on_hold == False).fetch_async()
-        event_loop = asyncio.get_event_loop()
-        coro: List[Coroutine] = [self.do_finalize_earnings(earnings=earning) for earning in earnings_list]
-        event_loop.run_until_complete(asyncio.gather(coro))
-        event_loop.close()
+        print(f" running finalize_affiliate_earnings")
+        earnings_list: List[EarningsData] = EarningsData.query(EarningsData.is_paid == False,
+                                                               EarningsData.on_hold == False).fetch_async().get_result()
 
-    @use_context
+        return [self.do_finalize_earnings(earning=earning) for earning in earnings_list]
+
     async def create_affiliate_reports(self):
         pass

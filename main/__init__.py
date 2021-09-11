@@ -35,6 +35,10 @@ github_authorize = oauth.register(
 # TODO divide the public api offering and client api and also admin api to be offered as different micro-services
 # noinspection DuplicatedCode
 def create_app(config_class=config_instance):
+    """
+    :param config_class:
+    :return:
+    """
     app = Flask(__name__, static_folder="app/resources/static", template_folder="app/resources/templates")
     app.config.from_object(config_class)
 
@@ -143,4 +147,4 @@ def create_app(config_class=config_instance):
 
         app.register_blueprint(microservices_ipn_bp)
 
-    return app
+        return app

@@ -13,6 +13,7 @@ import json
 import os
 from flask import Response
 from config import config_instance
+from config.use_context import use_context
 from main import create_app
 from utils.utils import is_development, today
 from tasks import run_tasks
@@ -36,6 +37,7 @@ def create_thread() -> None:
 
 
 @app.after_request
+@use_context
 def start_thread(response: Response) -> Response:
     """
         **start thread**
