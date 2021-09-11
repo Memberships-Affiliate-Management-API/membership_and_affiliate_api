@@ -22,10 +22,11 @@ if is_development():
     credential_path = "C:\\gcp_credentials\\heroku.json"
     os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credential_path
 
+
 def get_client() -> ndb.Client:
     if is_heroku():
         # NOTE: hosted in Heroku service key should be saved as environment variable in heroku
-        app_credentials = json.loads(config_instance.GOOGLE_APPLICATION_CREDENTIALS)
+        app_credentials = json.loads(os.environ.get('GOOGLE_APPLICATION_CREDENTIALS'))
         credentials = service_account.Credentials.from_service_account_info(info=app_credentials)
         ndb_client: ndb.Client = ndb.Client(namespace="main", project=config_instance.PROJECT, credentials=credentials)
     else:
@@ -44,11 +45,12 @@ def use_context(func: Callable):
     :param func: function to wrap
     :return: function wrapped with ndb.context
     """
+
     @functools.wraps(func)
     def wrapper(*args, **kwargs) -> Callable:
         ndb_client = get_client()
         print(f' ndb_client : {str(ndb_client)}')
         with ndb_client.context():
             return func(*args, **kwargs)
-    return wrapper
 
+    return wrapper
