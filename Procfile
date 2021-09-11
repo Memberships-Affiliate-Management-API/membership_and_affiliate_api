@@ -1,3 +1,3 @@
 web: gunicorn run:app
-tasks: python tasks.py
-heroku ps:scale web=2 tasks=1
+cron: python cron.py
+heroku ps:scale web=2 cron=1
