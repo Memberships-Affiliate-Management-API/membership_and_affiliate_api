@@ -45,12 +45,10 @@ def use_context(func: Callable):
     :param func: function to wrap
     :return: function wrapped with ndb.context
     """
-
     @functools.wraps(func)
     def wrapper(*args, **kwargs) -> Callable:
         ndb_client = get_client()
         print(f' ndb_client : {str(ndb_client)}')
         with ndb_client.context():
             return func(*args, **kwargs)
-
     return wrapper
