@@ -3,8 +3,8 @@
 
 
 ![Code Quality](https://github.com/Memberships-Affiliate-Management-API/membership_and_affiliate_api/actions/workflows/codeql-analysis.yml/badge.svg)
-![Depends On](https://github.com/Memberships-Affiliate-Management-API/membership_and_affiliate_api/actions/workflows/depandabot.yml/badge.svg)
-![Tests](https://github.com/Memberships-Affiliate-Management-API/membership_and_affiliate_api/actions/workflows/pytest.yml/badge.svg)
+![Depends On](https://github.com/Memberships-Affiliate-Management-API/membership_and_affiliate_api/blob/master/.github/workflows/dependabot.yml/badge.svg)
+![Tests](https://github.com/Memberships-Affiliate-Management-API/membership_and_affiliate_api/blob/master/.github/workflows/pytest.yaml/badge.svg)
 
  **How it Works?**
  --
