@@ -1,6 +1,11 @@
 ## Memberships & Affiliate Management API 
 ![MembershipsLogo](resource/profile.png)
 
+
+![Code Quality](https://github.com/Memberships-Affiliate-Management-API/membership_and_affiliate_api/actions/workflows/codeql-analysis.yml/badge.svg)
+![Depends On](https://github.com/Memberships-Affiliate-Management-API/membership_and_affiliate_api/actions/workflows/depandabot.yml/badge.svg)
+![Tests](https://github.com/Memberships-Affiliate-Management-API/membership_and_affiliate_api/actions/workflows/pytest.yml/badge.svg)
+
  **How it Works?**
  --
     Our API allows developers to create memberships or subscriptions based services and products 
