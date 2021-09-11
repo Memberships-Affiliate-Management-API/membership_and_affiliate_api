@@ -10,14 +10,12 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 
 import functools
 import json
-from flask import current_app
-from main import create_app
 from config import config_instance
 from google.cloud import ndb
 from google.oauth2 import service_account
 from utils.utils import is_development, is_heroku
 import os
-
+from typing import Callable, Optional
 
 if is_development():
     # NOTE: Local development service key is saved on local drive
@@ -25,7 +23,7 @@ if is_development():
     os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credential_path
 
 
-def use_context(func):
+def use_context(func: Callable):
     """
         **use_context**
             will insert ndb context for working with ndb. Cloud Databases
@@ -36,17 +34,19 @@ def use_context(func):
     :return: function wrapped with ndb.context
     """
     @functools.wraps(func)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args, **kwargs) -> Callable:
         if is_heroku():
             # NOTE: hosted in Heroku service key should be saved as environment variable in heroku
             app_credentials = json.loads(config_instance.GOOGLE_APPLICATION_CREDENTIALS)
-            credentials = service_account.Credentials.from_service_account_info(app_credentials)
-            client = ndb.Client(namespace="main", project=config_instance.PROJECT, credentials=credentials)
+            credentials = service_account.Credentials.from_service_account_info(info=app_credentials)
+            ndb_client: ndb.Client = ndb.Client(namespace="main", project=config_instance.PROJECT, credentials=credentials)
         else:
             # NOTE: could be GCP or another cloud environment
-            client = ndb.Client(namespace="main", project=config_instance.PROJECT)
-        # TODO - setup everything related to cache policy and all else here
-        with client.context():
+            ndb_client: ndb.Client = ndb.Client(namespace="main", project=config_instance.PROJECT)
+
+        print(f' ndb_client : {str(ndb_client)}')
+
+        with ndb_client.context():
             return func(*args, **kwargs)
     return wrapper
 

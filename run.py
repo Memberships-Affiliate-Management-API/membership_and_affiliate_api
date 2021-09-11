@@ -11,6 +11,7 @@ __licence__ = "MIT"
 from threading import Thread
 import json
 import os
+from flask import Response
 from config import config_instance
 from main import create_app
 from utils.utils import is_development, today
@@ -25,12 +26,21 @@ debug = is_development() and config_instance.DEBUG
 
 
 @app.before_request
-def create_thread():
+def create_thread() -> None:
+    """
+    **create_thread**
+        this creates a thread specifically to deal with tasks which will be run after request has been processed
+    :return: None
+    """
     app.tasks_thread = Thread(target=run_tasks)
 
 
 @app.after_request
-def start_thread(response):
+def start_thread(response: Response) -> Response:
+    """
+        **start thread**
+            starting a separate thread to deal with tasks that where put aside during the request
+    """
     app.tasks_thread.start()
     return response
 
