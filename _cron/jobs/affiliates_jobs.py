@@ -31,6 +31,8 @@ class AffiliateJobs:
             print(f"finalized earnings: {finalized_earning}")
         print(f"unable to find any earnings")
 
+        # TODO add create reports below
+
     @tasklet
     def do_finalize_earnings(self, earnings: EarningsData) -> Future:
         """
@@ -81,10 +83,11 @@ class AffiliateJobs:
         :return:
         """
         print(f" running finalize_affiliate_earnings")
-        earnings_list: List[EarningsData] = EarningsData.query(EarningsData.is_paid == False,
-                                                               EarningsData.on_hold == False).fetch_async().get_result()
+        earnings_future: Future = EarningsData.query(EarningsData.is_paid == False,
+                                                     EarningsData.on_hold == False).fetch_async()
 
-        return [self.do_finalize_earnings(earning=earning) for earning in earnings_list]
+        return [self.do_finalize_earnings(earning=earning) for earning in earnings_future.get_result()]
 
-    async def create_affiliate_reports(self):
+    @tasklet
+    def create_affiliate_reports(self) -> List[Future]:
         pass
