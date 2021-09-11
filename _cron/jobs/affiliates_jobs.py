@@ -5,7 +5,9 @@
 import asyncio
 from datetime import datetime, date
 from typing import List, Coroutine, Optional
-from google.cloud.ndb import Key as ndb_Key, tasklet, toplevel, Future
+from google.cloud.ndb import Key as ndb_Key, tasklet, toplevel, Future, wait_all
+
+from config.use_context import use_context
 from database.affiliates import EarningsData, AffiliateTransactionItems
 from database.mixins import AmountMixin
 from database.wallet import WalletModel
@@ -24,6 +26,7 @@ class AffiliateJobs:
         self._max_retries = config_instance.DATASTORE_RETRIES
         self._max_timeout = config_instance.DATASTORE_TIMEOUT
 
+    @use_context
     @toplevel
     def run(self):
         final_earnings = yield self.finalize_affiliate_earnings()
