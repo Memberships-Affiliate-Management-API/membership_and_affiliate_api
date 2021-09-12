@@ -120,7 +120,7 @@ def encode_auth_token(uid: str, expiration_days: int = 0) -> Optional[str]:
                               sub=uid)
         token = jwt.encode(payload=_payload, key=str(current_app.config.get('SECRET_KEY')), algorithm='HS256')
         return token
-    except jwt.InvalidAlgorithmError as e:
+    except jwt.InvalidAlgorithmError:
         return None
 
 
@@ -135,7 +135,8 @@ def decode_auth_token(auth_token: str) -> Optional[str]:
     """
     try:
         payload = jwt.decode(jwt=auth_token, key=current_app.config.get('SECRET_KEY'), algorithms=['HS256'])
-        return payload['sub']
+        return payload.get('sub')
+
     except jwt.ExpiredSignatureError:
         return None
     except jwt.InvalidTokenError:
@@ -181,38 +182,34 @@ def handle_users_auth(func):
             current_user: Optional[dict] = get_admin_user()
             return func(current_user, *args, **kwargs)
 
-        token: Optional[str] = None
-        # print('token headers: {}'.format(request.headers))
-        if 'x-access-token' in request.headers:
-            token = request.headers.get('x-access-token')
-            print('token found : {}'.format(token))
+        token: Optional[str] = request.headers.get('x-access-token')
         # NOTE: if running on development server by-pass authentication and return admin user
-        if not token:
+        if not bool(token):
+            message: str = '''to access restricted areas of this web application please login'''
+            flash(message, 'warning')
             return redirect(url_for('memberships_main.memberships_main_routes', path='login'))
+
         try:
-
             uid: Optional[str] = decode_auth_token(auth_token=token)
-            if bool(uid):
-                # NOTE: using client api to access user details
-                current_user: Optional[dict] = send_get_user_request(uid=uid)
-                if not isinstance(current_user, dict):
-                    message: str = '''Error connecting to database or user does not exist'''
-                    flash(message, 'warning')
-                    current_user: Optional[dict] = None
-            else:
-                message: str = '''to access restricted areas of this web application please login'''
-                flash(message, 'warning')
-                current_user: Optional[dict] = None
-
         except jwt.DecodeError:
             flash('Error decoding your token please login again', 'warning')
             return redirect(url_for('memberships_main.memberships_main_routes', path='login'))
-
-        # TODO fix this with an exception that relates to the operations here
-
-        except Exception:
-            flash('Unable to locate your account please create a new account', 'warning')
+        except jwt.InvalidTokenError:
+            flash('Your Login Expired please login again', 'warning')
             return redirect(url_for('memberships_main.memberships_main_routes', path='register'))
+
+        if not bool(uid):
+            message: str = '''Invalid User'''
+            flash(message, 'warning')
+            return redirect(url_for('memberships_main.memberships_main_routes', path='login'))
+
+        # NOTE: using client api to access user details
+        current_user: Optional[dict] = send_get_user_request(uid=uid)
+        if not isinstance(current_user, dict):
+            message: str = '''Error connecting to database or user does not exist'''
+            flash(message, 'warning')
+            current_user: Optional[dict] = None
+
         return func(current_user, *args, **kwargs)
 
     return decorated
@@ -228,7 +225,7 @@ def logged_user(func):
     """
     @wraps(func)
     def decorated(*args, **kwargs):
-        current_user: Optional[dict] = 0
+        current_user: Optional[dict] = None
         # NOTE: by passes authentication and returns admin user as authenticated
         # user on development
         if is_development():
