@@ -11,6 +11,7 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 __licence__ = "MIT"
 
+import hmac
 from typing import Optional
 from flask import Blueprint, request, current_app
 from config.exceptions import UnAuthenticatedError, error_codes, if_bad_request_raise
@@ -34,8 +35,8 @@ def return_api_key(key: str, organization_id) -> tuple:
     if_bad_request_raise(request)
     json_data: dict = request.get_json()
     secret_key: Optional[str] = json_data.get('SECRET_KEY')
-    # TODO revise use hmac compare
-    if isinstance(secret_key, str) and secret_key == current_app.config.get('SECRET_KEY'):
+    _secret_keys_match: bool = hmac.compare_digest(secret_key, current_app.config.get('SECRET_KEY'))
+    if _secret_keys_match:
         return api_keys_view.get_api_key(api_key=key, organization_id=organization_id)
 
     message: str = "User not Authorized: you are not authorized to call this API"
@@ -55,7 +56,9 @@ def create_client_api_key() -> tuple:
     uid: Optional[str] = json_data.get('uid')
     organization_id: Optional[str] = json_data.get('organization_id')
     secret_key: Optional[str] = json_data.get('SECRET_KEY')
-    if isinstance(secret_key, str) and secret_key == current_app.config.get('SECRET_KEY'):
+    _secret_keys_match: bool = hmac.compare_digest(secret_key, current_app.config.get('SECRET_KEY'))
+
+    if _secret_keys_match:
         return api_keys_view.create_keys(domain=domain, uid=uid, organization_id=organization_id)
 
     message: str = "User not Authorized: you are not authorized to call this API"
@@ -73,7 +76,9 @@ def deactivate_key() -> tuple:
     json_data: dict = request.get_json()
     api_key: Optional[str] = json_data.get('api-key')
     secret_key: Optional[str] = json_data.get('SECRET_KEY')
-    if isinstance(secret_key, str) and secret_key == current_app.config.get('SECRET_KEY'):
+    _secret_keys_match: bool = hmac.compare_digest(secret_key, current_app.config.get('SECRET_KEY'))
+
+    if _secret_keys_match:
         return api_keys_view.deactivate_key(key=api_key)
 
     message: str = "User not Authorized: you are not authorized to call this API"
@@ -92,7 +97,9 @@ def activate_key() -> tuple:
     api_key: Optional[str] = json_data.get('api-key')
     organization_id: Optional[str] = json_data.get('organization_id')
     secret_key: Optional[str] = json_data.get('SECRET_KEY')
-    if isinstance(secret_key, str) and secret_key == current_app.config.get('SECRET_KEY'):
+    _secret_keys_match: bool = hmac.compare_digest(secret_key, current_app.config.get('SECRET_KEY'))
+
+    if _secret_keys_match:
         return api_keys_view.activate_key(key=api_key, organization_id=organization_id)
 
     message: str = "User not Authorized: you are not authorized to call this API"

@@ -2,6 +2,7 @@
     handle users and admin authentication
 """
 import datetime
+import hmac
 import os
 from typing import Optional
 import jwt
@@ -70,7 +71,7 @@ def get_admin_user_from_admin_api() -> Optional[dict]:
 
     response_data: dict = response.json()
 
-    if response_data.get('status') is True:
+    if response_data.get('status'):
         return response_data.get('payload')
     return None
 
@@ -101,8 +102,8 @@ def is_app_admin(current_user: any) -> bool:
     """
     if isinstance(current_user, dict):
         return current_user and current_user.get('uid') and (current_user.get('organization_id') == config_instance.ORGANIZATION_ID)
-
-    return current_user and current_user.uid and (current_user.organization_id == config_instance.ORGANIZATION_ID)
+    _is_system_org: bool = hmac.compare_digest(current_user.organization_id, config_instance.ORGANIZATION_ID)
+    return current_user and current_user.uid and _is_system_org
 
 
 def encode_auth_token(uid: str, expiration_days: int = 0) -> Optional[str]:

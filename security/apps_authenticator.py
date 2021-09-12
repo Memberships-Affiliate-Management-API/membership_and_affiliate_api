@@ -92,7 +92,7 @@ def handle_apps_authentication(func: Callable) -> Callable:
         domain: Optional[str] = json_data.get('domain')
         secret_key: Optional[str] = json_data.get('SECRET')
         auth_token: Optional[str] = json_data.get('app_token')
-        print(f"Domain: {domain}, Secret_key: {secret_key}, Auth_token: {auth_token}")
+        # print(f"Domain: {domain}, Secret_key: {secret_key}, Auth_token: {auth_token}")
 
         if not is_development() and ("localhost" in domain or "127.0.0.1" in domain):
             message: str = "request not authorized"
@@ -137,6 +137,7 @@ def handle_cron_auth(func: Callable) -> Callable:
         json_data: dict = request.get_json()
         _cron_domain: Optional[str] = json_data.get('domain')
         _secret_key: Optional[str] = json_data.get('SECRET_KEY')
+
         if verify_cron_job(cron_domain=_cron_domain, secret_key=_secret_key):
             return func(*args, **kwargs)
         message: str = "request not authorized"
