@@ -1,4 +1,3 @@
-
 """
     **Contact Module**
 """
@@ -11,6 +10,7 @@ from security.apps_authenticator import handle_apps_authentication
 contact_api_bp = Blueprint('contact-api', __name__)
 
 
+# noinspection DuplicatedCode
 @contact_api_bp.route('/_api/v1/client/contact/<string:path>', methods=['POST'])
 @handle_apps_authentication
 def contact(path: str) -> tuple:

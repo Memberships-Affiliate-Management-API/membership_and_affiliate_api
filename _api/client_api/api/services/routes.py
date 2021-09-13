@@ -42,23 +42,21 @@ def services_api(path: str) -> tuple:
 
     if path == "create-service":
         return services_view.create_service(organization_id=organization_id, uid=uid, name=name,
-                                                     description=description, category=category, image_url=image_url,
-                                                     home_url=home_url)
+                                            description=description, category=category, image_url=image_url,
+                                            home_url=home_url)
 
     elif path == "update-service":
         service_id: Optional[str] = services_data.get('service_id')
         return services_view.update_service(service_id=service_id, organization_id=organization_id, uid=uid,
-                                                     name=name, description=description, category=category,
-                                                     image_url=image_url, home_url=home_url)
+                                            name=name, description=description, category=category,
+                                            image_url=image_url, home_url=home_url)
 
     elif path == "activate-service":
         service_id: Optional[str] = services_data.get('service_id')
         return services_view.service_activation(service_id=service_id, organization_id=organization_id,
-                                                         uid=uid, is_active=True)
+                                                uid=uid, is_active=True)
 
     elif path == "de-activate-service":
         service_id: Optional[str] = services_data.get('service_id')
         return services_view.service_activation(service_id=service_id, organization_id=organization_id,
-                                                         uid=uid, is_active=False)
-
-
+                                                uid=uid, is_active=False)

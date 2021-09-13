@@ -65,9 +65,6 @@ pylint==2.10.2
 pymemcache==3.5.0
 pyOpenSSL==20.0.1
 pyparsing==2.4.7
-pytest==6.2.4
-pytest-cov==2.12.1
-pytest-mock==3.6.1
 python-decouple==3.4
 python3-pika==0.9.14
 pytz==2021.1

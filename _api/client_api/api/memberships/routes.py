@@ -71,6 +71,7 @@ def memberships_client_api(path: str) -> tuple:
         return memberships_view.un_subscribe(organization_id=organization_id, uid=uid, plan_id=plan_id)
 
 
+# noinspection DuplicatedCode
 @memberships_client_api_bp.route('/_api/v1/client/admin/memberships/<string:path>', methods=["POST"])
 @handle_apps_authentication
 def client_memberships_management(path: str) -> tuple:
