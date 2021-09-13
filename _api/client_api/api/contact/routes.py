@@ -2,9 +2,10 @@
 """
     **Contact Module**
 """
+import hmac
 from typing import Optional
 from flask import Blueprint, request, current_app, jsonify
-from config.exceptions import UnAuthenticatedError, error_codes, if_bad_request_raise
+from config.exceptions import UnAuthenticatedError, error_codes, if_bad_request_raise, InputError
 from security.apps_authenticator import handle_apps_authentication
 
 contact_api_bp = Blueprint('contact-api', __name__)
@@ -22,27 +23,29 @@ def contact(path: str) -> tuple:
     if_bad_request_raise(request)
     json_data: dict = request.get_json()
     # print(json_data)
-    if isinstance(json_data, dict):
-        secret_key: Optional[str] = json_data.get('SECRET_KEY')
-        # print(f"SecretKey:  {secret_key}")
+    if not isinstance(json_data, dict):
+        message: str = "Invalid Input format this endpoint accept only json_data"
+        raise InputError(status=error_codes.input_error_code, description=message)
 
-        if not isinstance(secret_key, str) or secret_key != current_app.config.get('SECRET_KEY'):
-            message: str = 'User Not Authorized: you cannot perform this action'
-            raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
+    secret_key: Optional[str] = json_data.get('SECRET_KEY')
+    _secret_keys_match: bool = hmac.compare_digest(secret_key, current_app.config.get('SECRET_KEY'))
 
-        elif path == "create":
-            names: Optional[str] = json_data.get('names')
-            email: Optional[str] = json_data.get('email')
-            cell: Optional[str] = json_data.get('cell')
-            topic: Optional[str] = json_data.get('topic')
-            subject: Optional[str] = json_data.get('subject')
-            body: Optional[str] = json_data.get('body')
-            organization_id: Optional[str] = json_data.get('organization_id')
-            # NOTE the only time uid would be available is when the user is already logged in
-            uid: Optional[str] = json_data.get('uid')
+    if not _secret_keys_match:
+        message: str = 'User Not Authorized: you cannot perform this action'
+        raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
 
-            print(f'Names: {names}, Email: {email}, Cell: {cell}, Topic: {topic}, Subject: {subject}, Body: {body}')
-        elif path == "get":
-            pass
+    if path == "create":
+        names: Optional[str] = json_data.get('names')
+        email: Optional[str] = json_data.get('email')
+        cell: Optional[str] = json_data.get('cell')
+        topic: Optional[str] = json_data.get('topic')
+        subject: Optional[str] = json_data.get('subject')
+        body: Optional[str] = json_data.get('body')
+        organization_id: Optional[str] = json_data.get('organization_id')
+        # NOTE the only time uid would be available is when the user is already logged in
+        uid: Optional[str] = json_data.get('uid')
+        # TODO finish up contact its the same as helpdesk
 
-    return jsonify({'status': False, 'message': 'Unable to send request please try again later'}), 200
+        print(f'Names: {names}, Email: {email}, Cell: {cell}, Topic: {topic}, Subject: {subject}, Body: {body}')
+    elif path == "get":
+        pass
