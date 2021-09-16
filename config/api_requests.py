@@ -10,12 +10,41 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
 import asyncio
+import time
+from functools import wraps
 from typing import Optional, List
 from schedulers.scheduler import schedule_func
 import aiohttp
 from config.exceptions import EnvironNotSet
 from cache.cache_manager import app_cache
 from utils import timestamp, create_id, return_ttl
+
+
+class RetryOnError:
+
+    def __init__(self, exception=Exception, max_retries: int = 3, delay: int = 0, backoff: int = 1):
+        self.max_tries = max_retries
+        self.delay = delay
+        self.backoff = backoff
+        self.exception = exception
+
+    def _retry(self, to_wrap):
+        @wraps(to_wrap)
+        def wrapped_function(*args, **kwargs):
+            tries = 0
+            while tries < self.max_tries:
+                try:
+                    return to_wrap(*args, **kwargs)
+                except self.exception as e:
+                    delay = self.delay * self.backoff ** tries
+                    print(f"{e}, Trying again in {delay} seconds...")
+                    time.sleep(delay)
+                    tries += 1
+            return to_wrap(*args, **kwargs)
+
+        return wrapped_function
+
+_retries:RetryOnError = RetryOnError()
 
 
 class APIRequests:
@@ -48,6 +77,7 @@ class APIRequests:
             async with session.post(url=_url, json=json_data, headers=headers) as response:
                 return await response.json()
 
+    @
     def _request(self, _url: str, json_data: dict, headers: dict) -> None:
         """
         :param _url:
@@ -106,7 +136,7 @@ class APIRequests:
                         if _response.get('_request_id') == request_id][0] or None
             except IndexError:
                 # continue as there is nothing to do
-                pass
+                return None
 
         # Note: None results will not be cached
         print('failed to get response : ', request_id)
