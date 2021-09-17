@@ -667,11 +667,11 @@ class PropertySetters(Events, Util):
         print(f"domain valid : {domain_valid}")
         print(f"regex_passes : {regex_passes}")
 
-        if regex_passes and domain_valid:
+        if regex_passes or domain_valid:
             return domain
         raise ValueError(f"This : {domain} is not a valid domain name, or the domain may not be accessible")
 
 
 property_: PropertySetters = PropertySetters()
 # NOTE: insures that setters is a singleton or declared only once
-del PropertySetters
+# del PropertySetters

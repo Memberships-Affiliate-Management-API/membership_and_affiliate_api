@@ -42,7 +42,8 @@ class APIKeysValidators(OrgValidators, AuthUserValidators):
         does_organization_exist: typing.Union[bool, None] = self.is_organization_exist(organization_id=organization_id)
         if isinstance(does_organization_exist, bool):
             return does_organization_exist
-        raise DataServiceError(status=error_codes.data_service_error_code, description="Database Error: Unable to verify organization")
+        raise DataServiceError(status=error_codes.data_service_error_code,
+                               description="Database Error: Unable to verify organization")
 
     @app_cache.cache.memoize(timeout=return_ttl('short'))
     def user_can_create_key(self, uid: Optional[str], organization_id: Optional[str]) -> bool:
@@ -60,7 +61,8 @@ class APIKeysValidators(OrgValidators, AuthUserValidators):
             message: str = "uid is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        is_member_of_org: typing.Union[bool, None] = self.user_is_member_of_org(uid=uid, organization_id=organization_id)
+        is_member_of_org: typing.Union[bool, None] = self.user_is_member_of_org(uid=uid,
+                                                                                organization_id=organization_id)
         user_is_admin: typing.Union[bool, None] = self.org_user_is_admin(uid=uid, organization_id=organization_id)
         if isinstance(is_member_of_org, bool) and isinstance(user_is_admin, bool):
             return is_member_of_org and user_is_admin
@@ -72,18 +74,29 @@ class APIKeysView(APIKeysValidators):
     """
         a view class for APIKeys
     """
+
     def __init__(self):
         super(APIKeysView, self).__init__()
 
     def _create_unique_api_key(self) -> str:
         _key = create_id()
         api_instance: APIKeys = APIKeys.query(APIKeys.api_key == _key).get()
-        return self._create_unique_secret_key() if bool(api_instance) else _key
+        api_found: bool = isinstance(api_instance, APIKeys) and api_instance.api_key == _key
+        try:
+            return self._create_unique_secret_key() if api_found else _key
+        except RecursionError:
+            message: str = "unable to create a new api key"
+            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
     def _create_unique_secret_key(self) -> str:
         _secret = create_id()
         api_instance: APIKeys = APIKeys.query(APIKeys.secret_token == _secret).get()
-        return self._create_unique_secret_key() if bool(api_instance) else _secret
+        api_found: bool = isinstance(api_instance, APIKeys) and api_instance.secret_token == _secret
+        try:
+            return self._create_unique_secret_key() if api_found else _secret
+        except RecursionError:
+            message: str = "unable to create a new api key"
+            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
     @use_context
     @handle_view_errors
@@ -103,32 +116,32 @@ class APIKeysView(APIKeysValidators):
         """
         org_exist: bool = self.organization_exist(organization_id=organization_id)
         can_create_key: bool = self.user_can_create_key(uid=uid, organization_id=organization_id)
-        if org_exist and can_create_key:
-            # create key secret key combo
-            api_key: str = self._create_unique_api_key()
-            secret_token: str = self._create_unique_secret_key()
+        if not org_exist or not can_create_key:
+            message: str = 'User not authorized to create keys'
+            raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
-            api_key_instance: APIKeys = APIKeys(organization_id=organization_id,
-                                                api_key=api_key,
-                                                secret_token=secret_token,
-                                                assigned_to_uid=uid,
-                                                domain=domain,
-                                                is_active=True)
-            key = api_key_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-            if not bool(key):
-                message: str = "database error: unable to create api_key"
-                raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+        # create key secret key combo
+        api_key: str = self._create_unique_api_key()
+        secret_token: str = self._create_unique_secret_key()
 
-            # Scheduling deletion of Memoized items which will need this item as part of the results
-            _kwargs: dict = dict(api_keys_view=APIKeysView, api_key=key, organization_id=organization_id)
-            app_cache._schedule_cache_deletion(func=app_cache._delete_api_keys_cache, kwargs=_kwargs)
+        api_key_instance: APIKeys = APIKeys(organization_id=organization_id,
+                                            api_key=api_key,
+                                            secret_token=secret_token,
+                                            assigned_to_uid=uid,
+                                            domain=domain,
+                                            is_active=True)
+        key = api_key_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+        if not bool(key):
+            message: str = "database error: unable to create api_key"
+            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-            message: str = "successfully created api_key secret_token combo"
-            return jsonify({'status': True, 'payload': api_key_instance.to_dict(),
-                            'message': message}), status_codes.successfully_updated_code
+        # Scheduling deletion of Memoized items which will need this item as part of the results
+        _kwargs: dict = dict(api_keys_view=APIKeysView, api_key=key, organization_id=organization_id)
+        app_cache._schedule_cache_deletion(func=app_cache._delete_api_keys_cache, kwargs=_kwargs)
 
-        message: str = 'User not authorized to create keys'
-        raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
+        message: str = "successfully created api_key secret_token combo"
+        return jsonify({'status': True, 'payload': api_key_instance.to_dict(),
+                        'message': message}), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
@@ -143,7 +156,7 @@ class APIKeysView(APIKeysValidators):
             message: str = "key is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        api_key_instance: APIKeys = APIKeys.query(APIKeys.key == key).get()
+        api_key_instance: APIKeys = APIKeys.query(APIKeys.api_key == key).get()
         if isinstance(api_key_instance, APIKeys):
             api_key_instance.is_active = False
             key = api_key_instance.put()
@@ -158,7 +171,7 @@ class APIKeysView(APIKeysValidators):
 
             message: str = "successfully deactivated api_key"
             return jsonify({'status': True, 'payload': api_key_instance.to_dict(),
-                            'message': message}), status_codes.status_ok_code
+                            'message': message}), status_codes.successfully_updated_code
 
         return jsonify({'status': False, 'message': 'api key not found'}), status_codes.data_not_found_code
 
@@ -179,7 +192,7 @@ class APIKeysView(APIKeysValidators):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        api_key_instance: APIKeys = APIKeys.query(APIKeys.key == key, APIKeys.organization_id == organization_id).get()
+        api_key_instance: APIKeys = APIKeys.query(APIKeys.api_key == key, APIKeys.organization_id == organization_id).get()
         if isinstance(api_key_instance, APIKeys):
             api_key_instance.is_active = True
             key: Optional[ndb.Key] = api_key_instance.put(retries=self._max_retries, timeout=self._max_timeout)
