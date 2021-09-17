@@ -18,6 +18,7 @@ from pytest_mock import mocker
 with test_app().app_context():
     from views import MembershipsView
 
+
 class MembershipsQueryMock:
     membership_instance: Memberships = Memberships()
     results_range: int = randint(0, 100)
@@ -152,7 +153,7 @@ def test_memberships_create_memberships_data_service_error(mocker) -> None:
 
         with raises(DataServiceError):
             memberships_view.add_membership(organization_id=organization_id, uid=uid, plan_id=plan_id,
-                                                                        plan_start_date=plan_start_date)
+                                            plan_start_date=plan_start_date)
 
     mocker.stopall()
 
@@ -259,7 +260,6 @@ def test_update_membership_input_errors(mocker) -> None:
     # Note: Patching put and Query Model requests so they do not perform the operations on the database
     mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
     mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
-
 
     with test_app().app_context():
         memberships_view: MembershipsView = MembershipsView()

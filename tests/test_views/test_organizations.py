@@ -22,7 +22,7 @@ with test_app().app_context():
 
 class OrganizationQueryMock:
     organization_instance: Organization = Organization()
-    results_range: int = randint(0, 1000)
+    results_range: int = randint(10, 1000)
 
     def __init__(self):
         self.organization_instance.organization_id = create_id()
@@ -67,9 +67,6 @@ class OrganizationQueryMock:
 
     def get(self) -> Organization:
         return self.organization_instance
-
-
-
 
 
 def nullish_value() -> Optional[str]:
