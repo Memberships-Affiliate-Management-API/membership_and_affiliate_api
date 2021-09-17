@@ -133,12 +133,10 @@ def test_create_api_key_raises(mocker) -> None:
     mocker.stopall()
 
 
-# noinspection PyShadowingNames
-def test_api_keys_validators(mocker) -> None:
+def test_api_keys_validators() -> None:
     """
     **test_api_keys_validators**
         testing api keys validators
-    :param mocker:
     :return:
     """
     with test_app().app_context():
@@ -179,13 +177,11 @@ def test_deactivate_key(mocker) -> None:
 
 
 # noinspection PyShadowingNames
-def test_deactivate_raises(mocker) -> None:
+def test_deactivate_raises() -> None:
     """
 
-    :param mocker:
     :return:
     """
-    api_key_mock_data: dict = APIKeysQueryMock().get().to_dict()
     with test_app().app_context():
         with raises(InputError):
             api_keys_view.deactivate_key(key=None)
@@ -272,14 +268,10 @@ def test_return_all_organization_keys(mocker) -> None:
     mocker.stopall()
 
 
-# noinspection PyShadowingNames
-def test_raises_return_all_organization_keys(mocker) -> None:
+def test_raises_return_all_organization_keys() -> None:
     """
-
-    :param mocker:
-    :return:
+    :return: None
     """
-    api_key_mock_data: dict = APIKeysQueryMock().get().to_dict()
     with test_app().app_context():
         with raises(InputError):
             api_keys_view.return_all_organization_keys(organization_id="")
@@ -310,15 +302,11 @@ def test_return_active_organization_keys(mocker) -> None:
     mocker.stopall()
 
 
-# noinspection PyShadowingNames
-def test_raises_return_active_organization_keys(mocker) -> None:
+def test_raises_return_active_organization_keys() -> None:
     """
         **test_raises_return_active_organization_keys**
-
-    :param mocker:
-    :return:
+    :return: None
     """
-    api_key_mock_data: dict = APIKeysQueryMock().get().to_dict()
     with test_app().app_context():
         with raises(InputError):
             api_keys_view.return_active_organization_keys(organization_id="")
