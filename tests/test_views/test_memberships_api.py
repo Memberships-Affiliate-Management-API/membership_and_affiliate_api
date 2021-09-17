@@ -6,6 +6,7 @@ from google.cloud import ndb
 from config import config_instance
 from config.currencies import currency_util
 from config.exceptions import DataServiceError, status_codes, UnAuthenticatedError, InputError
+from config.use_context import get_client
 from database.mixins import AmountMixin
 
 from database.memberships import Memberships, MembershipPlans
@@ -101,8 +102,9 @@ def test_create_membership(mocker) -> None:
     :return: None
     """
     # Note: Patching put and Query Model requests so they do not perform the operations on the database
-    mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
-    mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
+    with get_client().context():
+        mocker.patch('database.memberships.Memberships.put', return_value=ndb.Key(Memberships, create_id()))
+        mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
         memberships_view: MembershipsView = MembershipsView()
@@ -136,8 +138,9 @@ def test_memberships_create_memberships_data_service_error(mocker) -> None:
     :return: None
     """
     # Note: Patching put and Query Model requests so they do not perform the operations on the database
-    mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
-    mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
+    with get_client().context():
+        mocker.patch('database.memberships.Memberships.put', return_value=ndb.Key(Memberships, create_id()))
+        mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
     mocker.patch('views.MembershipsView.is_user_valid', return_value=None)
     mocker.patch('views.MembershipsView.plan_exist', return_value=None)
@@ -168,8 +171,9 @@ def test_create_memberships_input_errors(mocker) -> None:
     :return: None
     """
     # Note: Patching put and Query Model requests so they do not perform the operations on the database
-    mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
-    mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
+    with get_client().context():
+        mocker.patch('database.memberships.Memberships.put', return_value=ndb.Key(Memberships, create_id()))
+        mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
         memberships_view: MembershipsView = MembershipsView()
@@ -220,8 +224,9 @@ def test_update_membership(mocker) -> None:
     :return: None
     """
     # Note: Patching put and Query Model requests so they do not perform the operations on the database
-    mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
-    mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
+    with get_client().context():
+        mocker.patch('database.memberships.Memberships.put', return_value=ndb.Key(Memberships, create_id()))
+        mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
         memberships_view: MembershipsView = MembershipsView()
@@ -258,8 +263,9 @@ def test_update_membership_input_errors(mocker) -> None:
     :return: None
     """
     # Note: Patching put and Query Model requests so they do not perform the operations on the database
-    mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
-    mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
+    with get_client().context():
+        mocker.patch('database.memberships.Memberships.put', return_value=ndb.Key(Memberships, create_id()))
+        mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
         memberships_view: MembershipsView = MembershipsView()
@@ -300,8 +306,9 @@ def test_set_membership_status(mocker) -> None:
     :param mocker:
     :return: None
     """
-    mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
-    mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
+    with get_client().context():
+        mocker.patch('database.memberships.Memberships.put', return_value=ndb.Key(Memberships, create_id()))
+        mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
         memberships_view: MembershipsView = MembershipsView()
@@ -327,8 +334,9 @@ def test_set_membership_status_errors(mocker) -> None:
     :param mocker:
     :return: None
     """
-    mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
-    mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
+    with get_client().context():
+        mocker.patch('database.memberships.Memberships.put', return_value=ndb.Key(Memberships, create_id()))
+        mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
         memberships_view: MembershipsView = MembershipsView()
@@ -364,10 +372,11 @@ def test_change_membership(mocker) -> None:
     :param mocker:
     :return: None
     """
-    mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
-    membership_query_mock_instance = MembershipsQueryMock()
-    membership_query_mock_instance.membership_instance.plan_id = membership_mock_data['plan_id']
-    mocker.patch('database.memberships.Memberships.query', return_value=membership_query_mock_instance)
+    with get_client().context():
+        mocker.patch('database.memberships.Memberships.put', return_value=ndb.Key(Memberships, create_id()))
+        membership_query_mock_instance = MembershipsQueryMock()
+        membership_query_mock_instance.membership_instance.plan_id = membership_mock_data['plan_id']
+        mocker.patch('database.memberships.Memberships.query', return_value=membership_query_mock_instance)
 
     with test_app().app_context():
         memberships_view: MembershipsView = MembershipsView()
@@ -392,8 +401,9 @@ def test_change_memberships_input_errors(mocker):
     :param mocker:
     :return:
     """
-    mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
-    mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
+    with get_client().context():
+        mocker.patch('database.memberships.Memberships.put', return_value=ndb.Key(Memberships, create_id()))
+        mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
         memberships_view: MembershipsView = MembershipsView()
@@ -436,8 +446,9 @@ def test_send_welcome_email(mocker) -> None:
     :param mocker:
     :return: None
     """
-    mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
-    mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
+    with get_client().context():
+        mocker.patch('database.memberships.Memberships.put', return_value=ndb.Key(Memberships, create_id()))
+        mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
         memberships_view: MembershipsView = MembershipsView()
@@ -462,8 +473,9 @@ def test_plan_members_payment_status(mocker) -> None:
     :param mocker:
     :return: None
     """
-    mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
-    mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
+    with get_client().context():
+        mocker.patch('database.memberships.Memberships.put', return_value=ndb.Key(Memberships, create_id()))
+        mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
         memberships_view: MembershipsView = MembershipsView()
@@ -491,8 +503,9 @@ def test_return_plan_members(mocker) -> None:
     :param mocker:
     :return: None
     """
-    mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
-    mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
+    with get_client().context():
+        mocker.patch('database.memberships.Memberships.put', return_value=ndb.Key(Memberships, create_id()))
+        mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
         memberships_view: MembershipsView = MembershipsView()
@@ -517,8 +530,9 @@ def test_is_member_off(mocker) -> None:
     :param mocker:
     :return: None
     """
-    mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
-    mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
+    with get_client().context():
+        mocker.patch('database.memberships.Memberships.put', return_value=ndb.Key(Memberships, create_id()))
+        mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
 
     with test_app().app_context():
         memberships_view: MembershipsView = MembershipsView()
@@ -543,9 +557,10 @@ def test_payment_amount(mocker) -> None:
     :param mocker:
     :return: None
     """
-    mocker.patch('database.memberships.Memberships.put', return_value=ndb.KeyProperty('Memberships'))
-    mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
-    mocker.patch('views.MembershipPlansView._get_plan', return_value=MembershipPlansQueryMock().get())
+    with get_client().context():
+        mocker.patch('database.memberships.Memberships.put', return_value=ndb.Key(Memberships, create_id()))
+        mocker.patch('database.memberships.Memberships.query', return_value=MembershipsQueryMock())
+        mocker.patch('views.MembershipPlansView._get_plan', return_value=MembershipPlansQueryMock().get())
 
     with test_app().app_context():
         memberships_view: MembershipsView = MembershipsView()
