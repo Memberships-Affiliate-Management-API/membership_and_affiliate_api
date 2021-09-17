@@ -81,7 +81,7 @@ class HelpDeskView(Validators):
     @handle_view_errors
     def create_help_desk(self) -> tuple:
         help_desk_instance: HelpDesk = HelpDesk.query().get()
-        if isinstance(help_desk_instance, HelpDesk):
+        if isinstance(help_desk_instance, HelpDesk) and bool(help_desk_instance):
             return jsonify({'status': True, 'payload': help_desk_instance.to_dict(),
                             'message': 'help desk already created'}), 200
         help_desk_instance = HelpDesk()
@@ -95,7 +95,7 @@ class HelpDeskView(Validators):
     @handle_view_errors
     async def create_help_desk_async(self) -> tuple:
         help_desk_instance: HelpDesk = HelpDesk.query().get_async().get_result()
-        if isinstance(help_desk_instance, HelpDesk):
+        if isinstance(help_desk_instance, HelpDesk) and bool(help_desk_instance):
             return jsonify({'status': True, 'payload': help_desk_instance.to_dict(),
                             'message': 'help desk already created'}), 200
         help_desk_instance = HelpDesk()
@@ -110,7 +110,7 @@ class HelpDeskView(Validators):
     @functools.lru_cache(maxsize=1)
     def get_help_desk(self) -> tuple:
         help_desk_instance: HelpDesk = HelpDesk.query().get()
-        if isinstance(help_desk_instance, HelpDesk):
+        if isinstance(help_desk_instance, HelpDesk) and bool(help_desk_instance):
             return jsonify({'status': True, 'payload': help_desk_instance.to_dict(),
                             'message': 'successfully fetched helpdesk'}), 200
 
@@ -121,7 +121,7 @@ class HelpDeskView(Validators):
     @functools.lru_cache(maxsize=1)
     async def get_help_desk_async(self) -> tuple:
         help_desk_instance: HelpDesk = HelpDesk.query().get_async().get_result()
-        if isinstance(help_desk_instance, HelpDesk):
+        if isinstance(help_desk_instance, HelpDesk) and bool(help_desk_instance):
             return jsonify({'status': True, 'payload': help_desk_instance.to_dict(),
                             'message': 'successfully fetched helpdesk'}), 200
 
@@ -130,7 +130,7 @@ class HelpDeskView(Validators):
     @use_context
     def add_ticket(self) -> bool:
         help_desk_instance: HelpDesk = HelpDesk.query().get()
-        if isinstance(help_desk_instance, HelpDesk):
+        if isinstance(help_desk_instance, HelpDesk) and bool(help_desk_instance):
             help_desk_instance.total_tickets += 1
             help_desk_instance.total_tickets_opened += 1
             help_desk_instance.put()
@@ -140,7 +140,7 @@ class HelpDeskView(Validators):
     @use_context
     async def add_ticket_async(self) -> bool:
         help_desk_instance: HelpDesk = HelpDesk.query().get_async().get_result()
-        if isinstance(help_desk_instance, HelpDesk):
+        if isinstance(help_desk_instance, HelpDesk) and bool(help_desk_instance):
             help_desk_instance.total_tickets += 1
             help_desk_instance.total_tickets_opened += 1
             help_desk_instance.put()
@@ -150,7 +150,7 @@ class HelpDeskView(Validators):
     @use_context
     def close_ticket(self) -> bool:
         help_desk_instance: HelpDesk = HelpDesk.query().get()
-        if isinstance(help_desk_instance, HelpDesk):
+        if isinstance(help_desk_instance, HelpDesk) and bool(help_desk_instance):
             help_desk_instance.total_tickets_opened -= 1
             help_desk_instance.total_tickets_closed += 1
             help_desk_instance.put()
@@ -160,7 +160,7 @@ class HelpDeskView(Validators):
     @use_context
     async def close_ticket_async(self) -> bool:
         help_desk_instance: HelpDesk = HelpDesk.query().get_async().get_result()
-        if isinstance(help_desk_instance, HelpDesk):
+        if isinstance(help_desk_instance, HelpDesk) and bool(help_desk_instance):
             help_desk_instance.total_tickets_opened -= 1
             help_desk_instance.total_tickets_closed += 1
             help_desk_instance.put_async().get_result()
