@@ -157,23 +157,24 @@ class APIKeysView(APIKeysValidators):
             raise InputError(status=error_codes.input_error_code, description=message)
 
         api_key_instance: APIKeys = APIKeys.query(APIKeys.api_key == key).get()
-        if isinstance(api_key_instance, APIKeys):
-            api_key_instance.is_active = False
-            key = api_key_instance.put()
-            if not bool(key):
-                message: str = "database error: unable to deactivate_key"
-                raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-            organization_id: str = api_key_instance.organization_id
-            # Scheduling deletion of Memoized items which will need this item as part of the results
-            _kwargs: dict = dict(api_keys_view=APIKeysView, api_key=key, organization_id=organization_id)
-            app_cache._schedule_cache_deletion(func=app_cache._delete_api_keys_cache, kwargs=_kwargs)
+        if not isinstance(api_key_instance, APIKeys) or not bool(api_key_instance):
+            return jsonify({'status': False, 'message': 'api key not found'}), status_codes.data_not_found_code
 
-            message: str = "successfully deactivated api_key"
-            return jsonify({'status': True, 'payload': api_key_instance.to_dict(),
-                            'message': message}), status_codes.successfully_updated_code
+        api_key_instance.is_active = False
+        key = api_key_instance.put()
+        if not bool(key):
+            message: str = "database error: unable to deactivate_key"
+            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-        return jsonify({'status': False, 'message': 'api key not found'}), status_codes.data_not_found_code
+        organization_id: str = api_key_instance.organization_id
+        # Scheduling deletion of Memoized items which will need this item as part of the results
+        _kwargs: dict = dict(api_keys_view=APIKeysView, api_key=key, organization_id=organization_id)
+        app_cache._schedule_cache_deletion(func=app_cache._delete_api_keys_cache, kwargs=_kwargs)
+
+        message: str = "successfully deactivated api_key"
+        return jsonify({'status': True, 'payload': api_key_instance.to_dict(),
+                        'message': message}), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
@@ -192,24 +193,26 @@ class APIKeysView(APIKeysValidators):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        api_key_instance: APIKeys = APIKeys.query(APIKeys.api_key == key, APIKeys.organization_id == organization_id).get()
-        if isinstance(api_key_instance, APIKeys):
-            api_key_instance.is_active = True
-            key: Optional[ndb.Key] = api_key_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-            if not isinstance(key, ndb.Key):
-                message: str = "database error: unable to activate_key"
-                raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+        api_key_instance: APIKeys = APIKeys.query(APIKeys.api_key == key,
+                                                  APIKeys.organization_id == organization_id).get()
+        if not isinstance(api_key_instance, APIKeys) or not bool(api_key_instance):
+            return jsonify({'status': False, 'message': 'api key not found'}), status_codes.data_not_found_code
 
-            organization_id: str = api_key_instance.organization_id
-            # Scheduling deletion of Memoized items which will need this item as part of the results
-            _kwargs: dict = dict(api_keys_view=APIKeysView, api_key=key, organization_id=organization_id)
-            app_cache._schedule_cache_deletion(func=app_cache._delete_api_keys_cache, kwargs=_kwargs)
+        api_key_instance.is_active = True
+        key: Optional[ndb.Key] = api_key_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+        print(f'key: {key}')
+        if not isinstance(key, ndb.Key):
+            message: str = "database error: unable to activate_key"
+            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-            message: str = "successfully activated api_key"
-            return jsonify({'status': True, 'payload': api_key_instance.to_dict(),
-                            'message': message}), status_codes.successfully_updated_code
+        organization_id: str = api_key_instance.organization_id
+        # Scheduling deletion of Memoized items which will need this item as part of the results
+        _kwargs: dict = dict(api_keys_view=APIKeysView, api_key=key, organization_id=organization_id)
+        app_cache._schedule_cache_deletion(func=app_cache._delete_api_keys_cache, kwargs=_kwargs)
 
-        return jsonify({'status': False, 'message': 'api key not found'}), status_codes.data_not_found_code
+        message: str = "successfully activated api_key"
+        return jsonify({'status': True, 'payload': api_key_instance.to_dict(),
+                        'message': message}), status_codes.successfully_updated_code
 
     # noinspection DuplicatedCode
     @use_context
@@ -283,7 +286,7 @@ class APIKeysView(APIKeysValidators):
         api_instance: APIKeys = APIKeys.query(APIKeys.organization_id == organization_id,
                                               APIKeys.api_key == api_key).get()
 
-        if bool(api_instance):
+        if isinstance(api_instance, APIKeys) and bool(api_instance):
             message: str = "successfully fetched api_key record"
             return jsonify({'status': True, 'payload': api_instance.to_dict(),
                             'message': message}), status_codes.status_ok_code
