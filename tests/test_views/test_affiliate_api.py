@@ -10,6 +10,7 @@ from random import randint, choice
 from typing import List
 from google.cloud import ndb
 from config.exceptions import status_codes, InputError, UnAuthenticatedError, DataServiceError
+from config.use_context import get_client
 from database.affiliates import Affiliates
 from tests import test_app
 from utils import create_id
@@ -68,10 +69,11 @@ class AffiliateQueryMock:
 
 # noinspection PyShadowingNames
 def test_register_affiliate(mocker):
-    mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.KeyProperty('Affiliates'))
-    mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
-    mocker.patch('database.affiliates.AffiliatesValidators.recruiter_registered', return_value=False)
-    data_mock: dict = affiliate_data_mock.copy()
+    with get_client().context():
+        mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.Key(Affiliates, create_id()))
+        mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
+        mocker.patch('database.affiliates.AffiliatesValidators.recruiter_registered', return_value=False)
+        data_mock: dict = affiliate_data_mock.copy()
 
     with test_app().app_context():
         from views import affiliates_view
@@ -87,10 +89,11 @@ def test_register_affiliate(mocker):
 
 # noinspection PyShadowingNames
 def test_register_affiliate_raises_data_service_error(mocker):
-    mocker.patch('database.affiliates.Affiliates.put', return_value=None)
-    mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
-    mocker.patch('database.affiliates.AffiliatesValidators.recruiter_registered', return_value=False)
-    data_mock: dict = affiliate_data_mock.copy()
+    with get_client().context():
+        mocker.patch('database.affiliates.Affiliates.put', return_value=None)
+        mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
+        mocker.patch('database.affiliates.AffiliatesValidators.recruiter_registered', return_value=False)
+        data_mock: dict = affiliate_data_mock.copy()
     with test_app().app_context():
         from views import affiliates_view
         with raises(DataServiceError):
@@ -101,8 +104,9 @@ def test_register_affiliate_raises_data_service_error(mocker):
 
 # noinspection PyShadowingNames
 def test_register_affiliate_un_auth_error(mocker):
-    mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.KeyProperty('Affiliates'))
-    mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
+    with get_client().context():
+        mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.Key(Affiliates, create_id()))
+        mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
 
     with test_app().app_context():
         from views import affiliates_view
@@ -117,9 +121,10 @@ def test_register_affiliate_un_auth_error(mocker):
 
 # noinspection PyShadowingNames
 def test_register_affiliate_input_error(mocker):
-    mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.KeyProperty('Affiliates'))
-    mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
-    mocker.patch('database.affiliates.AffiliatesValidators.recruiter_registered', return_value=False)
+    with get_client().context():
+        mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.Key(Affiliates, create_id()))
+        mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
+        mocker.patch('database.affiliates.AffiliatesValidators.recruiter_registered', return_value=False)
     with test_app().app_context():
         from views import affiliates_view
         with raises(InputError):
@@ -137,8 +142,9 @@ def test_register_affiliate_input_error(mocker):
 
 # noinspection PyShadowingNames
 def test_increment_decrement_total_recruits(mocker):
-    mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.KeyProperty('Affiliates'))
-    mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
+    with get_client().context():
+        mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.Key(Affiliates, create_id()))
+        mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
 
     with test_app().app_context():
         from views import affiliates_view
@@ -154,8 +160,9 @@ def test_increment_decrement_total_recruits(mocker):
 
 # noinspection PyShadowingNames
 def test_increment_decrement_total_recruits_errors(mocker):
-    mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.KeyProperty('Affiliates'))
-    mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
+    with get_client().context():
+        mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.Key(Affiliates, create_id()))
+        mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
 
     with test_app().app_context():
         from views import affiliates_view
@@ -179,8 +186,9 @@ def test_increment_decrement_total_recruits_errors(mocker):
 
 # noinspection PyShadowingNames
 def test_delete_affiliate(mocker):
-    mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.KeyProperty('Affiliates'))
-    mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
+    with get_client().context():
+        mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.Key(Affiliates, create_id()))
+        mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
 
     with test_app().app_context():
         from views import affiliates_view
@@ -197,8 +205,9 @@ def test_delete_affiliate(mocker):
 
 # noinspection PyShadowingNames
 def test_delete_affiliate_data_service_error(mocker):
-    mocker.patch('database.affiliates.Affiliates.put', return_value=None)
-    mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
+    with get_client().context():
+        mocker.patch('database.affiliates.Affiliates.put', return_value=None)
+        mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
 
     with test_app().app_context():
         from views import affiliates_view
@@ -209,8 +218,9 @@ def test_delete_affiliate_data_service_error(mocker):
 
 # noinspection PyShadowingNames
 def test_delete_affiliate_auth_error(mocker):
-    mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.KeyProperty('Affiliates'))
-    mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
+    with get_client().context():
+        mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.Key(Affiliates, create_id()))
+        mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
 
     with test_app().app_context():
         from views import affiliates_view
@@ -229,8 +239,9 @@ def test_delete_affiliate_auth_error(mocker):
 
 # noinspection PyShadowingNames
 def test_mark_active(mocker):
-    mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.KeyProperty('Affiliates'))
-    mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
+    with get_client().context():
+        mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.Key(Affiliates, create_id()))
+        mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
 
     with test_app().app_context():
         from views import affiliates_view
@@ -249,8 +260,9 @@ def test_mark_active_errors(mocker):
     :param mocker:
     :return:
     """
-    mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.KeyProperty('Affiliates'))
-    mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
+    with get_client().context():
+        mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.Key(Affiliates, create_id()))
+        mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
 
     with test_app().app_context():
         from views import affiliates_view
@@ -272,8 +284,9 @@ def test_mark_active_errors(mocker):
 
 # noinspection PyShadowingNames
 def test_get_affiliate(mocker):
-    mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.KeyProperty('Affiliates'))
-    mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
+    with get_client().context():
+        mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.Key(Affiliates, create_id()))
+        mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
 
     with test_app().app_context():
         from views import affiliates_view
@@ -290,8 +303,9 @@ def test_get_affiliate(mocker):
 
 # noinspection PyShadowingNames,DuplicatedCode
 def test_get_affiliate_input_errors(mocker):
-    mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.KeyProperty('Affiliates'))
-    mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
+    with get_client().context():
+        mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.Key(Affiliates, create_id()))
+        mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
 
     with test_app().app_context():
         from views import affiliates_view
@@ -311,8 +325,9 @@ def test_get_affiliate_input_errors(mocker):
 
 # noinspection PyShadowingNames,DuplicatedCode
 def test_get_all_affiliate(mocker):
-    mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.KeyProperty('Affiliates'))
-    mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
+    with get_client().context():
+        mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.Key(Affiliates, create_id()))
+        mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
     # TODo complete the test cases
     with test_app().app_context():
         from views import affiliates_view
@@ -327,8 +342,9 @@ def test_get_all_affiliate(mocker):
 
 # noinspection PyShadowingNames,DuplicatedCode
 def test_get_all_affiliate_input_errors(mocker):
-    mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.KeyProperty('Affiliates'))
-    mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
+    with get_client().context():
+        mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.Key(Affiliates, create_id()))
+        mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
     # TODo complete the test cases
     with test_app().app_context():
         from views import affiliates_view
@@ -340,8 +356,9 @@ def test_get_all_affiliate_input_errors(mocker):
 
 # noinspection PyShadowingNames,DuplicatedCode
 def test_active_affiliates(mocker):
-    mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.KeyProperty('Affiliates'))
-    mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
+    with get_client().context():
+        mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.Key(Affiliates, create_id()))
+        mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
     with test_app().app_context():
         from views import affiliates_view
         response, status = affiliates_view.get_active_affiliates(organization_id=config_instance.ORGANIZATION_ID)
@@ -355,8 +372,9 @@ def test_active_affiliates(mocker):
 
 # noinspection PyShadowingNames,DuplicatedCode
 def test_active_affiliates_errors(mocker):
-    mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.KeyProperty('Affiliates'))
-    mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
+    with get_client().context():
+        mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.Key(Affiliates, create_id()))
+        mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
     with test_app().app_context():
         from views import affiliates_view
         with raises(InputError):
@@ -366,8 +384,9 @@ def test_active_affiliates_errors(mocker):
 
 # noinspection PyShadowingNames,DuplicatedCode
 def test_inactive_affiliates(mocker):
-    mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.KeyProperty('Affiliates'))
-    mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
+    with get_client().context():
+        mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.Key(Affiliates, create_id()))
+        mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
 
     with test_app().app_context():
         from views import affiliates_view
@@ -381,8 +400,9 @@ def test_inactive_affiliates(mocker):
 
 # noinspection PyShadowingNames,DuplicatedCode
 def test_inactive_affiliates_errors(mocker):
-    mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.KeyProperty('Affiliates'))
-    mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
+    with get_client().context():
+        mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.Key(Affiliates, create_id()))
+        mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
 
     with test_app().app_context():
         from views import affiliates_view
@@ -394,8 +414,9 @@ def test_inactive_affiliates_errors(mocker):
 
 # noinspection PyShadowingNames,DuplicatedCode
 def test_deleted_affiliates(mocker):
-    mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.KeyProperty('Affiliates'))
-    mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
+    with get_client().context():
+        mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.Key(Affiliates, create_id()))
+        mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
 
     with test_app().app_context():
         from views import affiliates_view
@@ -409,8 +430,9 @@ def test_deleted_affiliates(mocker):
 
 # noinspection PyShadowingNames,DuplicatedCode
 def test_deleted_affiliates_errors(mocker):
-    mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.KeyProperty('Affiliates'))
-    mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
+    with get_client().context():
+        mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.Key(Affiliates, create_id()))
+        mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
 
     with test_app().app_context():
         from views import affiliates_view
@@ -421,8 +443,9 @@ def test_deleted_affiliates_errors(mocker):
 
 # noinspection PyShadowingNames,DuplicatedCode
 def test_undeleted_affiliates(mocker):
-    mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.KeyProperty('Affiliates'))
-    mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
+    with get_client().context():
+        mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.Key(Affiliates, create_id()))
+        mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
 
     with test_app().app_context():
         from views import affiliates_view
@@ -437,8 +460,9 @@ def test_undeleted_affiliates(mocker):
 
 # noinspection PyShadowingNames,DuplicatedCode
 def test_undeleted_affiliates_errors(mocker):
-    mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.KeyProperty('Affiliates'))
-    mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
+    with get_client().context():
+        mocker.patch('database.affiliates.Affiliates.put', return_value=ndb.Key(Affiliates, create_id()))
+        mocker.patch('database.affiliates.Affiliates.query', return_value=AffiliateQueryMock())
 
     with test_app().app_context():
         from views import affiliates_view
