@@ -10,6 +10,7 @@ from pytest_mock import mocker
 
 from config import config_instance
 from config.exceptions import status_codes, UnAuthenticatedError, InputError
+from config.use_context import get_client
 from database.users import UserModel
 from tests import test_app
 from utils import create_id, timestamp, today, _char_set
@@ -114,8 +115,9 @@ def test_create_user(mocker):
     :param mocker:
     :return:
     """
-    mocker.patch('database.users.UserModel.put', return_value=ndb.KeyProperty('Users'))
-    mocker.patch('database.users.UserModel.query', return_value=UsersQueryMock())
+    with get_client().context():
+        mocker.patch('database.users.UserModel.put', return_value=ndb.Key(UserModel, create_id()))
+        mocker.patch('database.users.UserModel.query', return_value=UsersQueryMock())
 
     with test_app().app_context():
         mocker.patch('views.users.UserView.is_organization_exist', return_value=True)
@@ -141,8 +143,9 @@ def test_create_user_un_auth(mocker):
     :param mocker:
     :return:
     """
-    mocker.patch('database.users.UserModel.put', return_value=ndb.KeyProperty('Users'))
-    mocker.patch('database.users.UserModel.query', return_value=UsersQueryMock())
+    with get_client().context():
+        mocker.patch('database.users.UserModel.put', return_value=ndb.Key(UserModel, create_id()))
+        mocker.patch('database.users.UserModel.query', return_value=UsersQueryMock())
 
     with test_app().app_context():
         mocker.patch('views.users.UserView.is_organization_exist', return_value=False)
@@ -166,8 +169,9 @@ def test_create_user_input_errors(mocker):
     :param mocker:
     :return:
     """
-    mocker.patch('database.users.UserModel.put', return_value=ndb.KeyProperty('Users'))
-    mocker.patch('database.users.UserModel.query', return_value=UsersQueryMock())
+    with get_client().context():
+        mocker.patch('database.users.UserModel.put', return_value=ndb.Key(UserModel, create_id()))
+        mocker.patch('database.users.UserModel.query', return_value=UsersQueryMock())
 
     with test_app().app_context():
         mocker.patch('views.users.UserView.is_organization_exist', return_value=True)
