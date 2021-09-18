@@ -83,13 +83,13 @@ class HelpDeskView(Validators):
         help_desk_instance: HelpDesk = HelpDesk.query().get()
         if isinstance(help_desk_instance, HelpDesk) and bool(help_desk_instance):
             return jsonify({'status': True, 'payload': help_desk_instance.to_dict(),
-                            'message': 'help desk already created'}), 200
+                            'message': 'help desk already created'}), status_codes.status_ok_code
         help_desk_instance = HelpDesk()
         key: Optional[ndb.Key] = help_desk_instance.put()
         if not bool(key):
             return jsonify({'status': False, 'message': 'Error updating database'}), status_codes.data_not_found_code
         return jsonify({'status': True, 'payload': help_desk_instance.to_dict(),
-                        'message': 'help desk created'}), 200
+                        'message': 'help desk created'}), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
@@ -97,13 +97,13 @@ class HelpDeskView(Validators):
         help_desk_instance: HelpDesk = HelpDesk.query().get_async().get_result()
         if isinstance(help_desk_instance, HelpDesk) and bool(help_desk_instance):
             return jsonify({'status': True, 'payload': help_desk_instance.to_dict(),
-                            'message': 'help desk already created'}), 200
+                            'message': 'help desk already created'}), status_codes.status_ok_code
         help_desk_instance = HelpDesk()
         key: Optional[ndb.Key] = help_desk_instance.put()
         if not bool(key):
             return jsonify({'status': False, 'message': 'Error updating database'}), status_codes.data_not_found_code
         return jsonify({'status': True, 'payload': help_desk_instance.to_dict(),
-                        'message': 'help desk created'}), 200
+                        'message': 'help desk created'}), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
@@ -112,7 +112,7 @@ class HelpDeskView(Validators):
         help_desk_instance: HelpDesk = HelpDesk.query().get()
         if isinstance(help_desk_instance, HelpDesk) and bool(help_desk_instance):
             return jsonify({'status': True, 'payload': help_desk_instance.to_dict(),
-                            'message': 'successfully fetched helpdesk'}), 200
+                            'message': 'successfully fetched helpdesk'}), status_codes.status_ok_code
 
         return jsonify({'status': False, 'message': 'unable to find helpdesk'}), status_codes.data_not_found_code
 
@@ -123,7 +123,7 @@ class HelpDeskView(Validators):
         help_desk_instance: HelpDesk = HelpDesk.query().get_async().get_result()
         if isinstance(help_desk_instance, HelpDesk) and bool(help_desk_instance):
             return jsonify({'status': True, 'payload': help_desk_instance.to_dict(),
-                            'message': 'successfully fetched helpdesk'}), 200
+                            'message': 'successfully fetched helpdesk'}), status_codes.status_ok_code
 
         return jsonify({'status': False, 'message': 'unable to find helpdesk'}), status_codes.data_not_found_code
 
@@ -199,16 +199,9 @@ class TicketView(Validators, TicketsMessaging):
                       cell: str) -> tuple:
         if self.is_ticket_valid(uid=uid, topic=topic, subject=subject, message=message, email=email,
                                 cell=cell):
-            ticket_instance: Ticket = Ticket()
-            ticket_instance.ticket_id = create_id()
-            ticket_instance.uid = uid
-            ticket_instance.topic = topic
-            ticket_instance.subject = subject
-            ticket_instance.message = message
-            ticket_instance.email = email
-            ticket_instance.cell = cell
+            ticket_instance: Ticket = Ticket(ticket_id=create_id(), uid=uid, topic=topic, subject=subject,
+                                             message=message, email=email, cell=cell)
             key: Optional[ndb.Key] = ticket_instance.put()
-
             if not bool(key):
                 message: str = "Database Error: Unable to update ticket"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
@@ -227,14 +220,8 @@ class TicketView(Validators, TicketsMessaging):
         if self.is_ticket_valid(uid=uid, topic=topic, subject=subject, message=message,
                                 email=email, cell=cell):
 
-            ticket_instance: Ticket = Ticket()
-            ticket_instance.ticket_id = create_id()
-            ticket_instance.uid = uid
-            ticket_instance.topic = topic
-            ticket_instance.subject = subject
-            ticket_instance.message = message
-            ticket_instance.email = email
-            ticket_instance.cell = cell
+            ticket_instance: Ticket = Ticket(ticket_id=create_id(), uid=uid, topic=topic, subject=subject,
+                                             message=message, email=email, cell=cell)
             key: Optional[ndb.Key] = ticket_instance.put_async().get_result()
 
             if not bool(key):
