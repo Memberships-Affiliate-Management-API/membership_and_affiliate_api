@@ -158,7 +158,7 @@ class Mailgun:
         # Note: creating arguments dict
         _kwargs: dict = dict(to_list=[to_email], sbject=subject, text=text, html=html)
         # 5 seconds after now the email will be sent
-        job = schedule_func(func=self._send_with_mailgun_rest_api, kwargs=_kwargs, job_name=f'send_email_{create_id(size=32)}')
+        job = schedule_func(func=self._send_with_mailgun_rest_api, kwargs=_kwargs, job_name=self._create_job_name('send_mail_'))
 
         # five_seconds_after: datetime = datetime_now() + timedelta(seconds=5)
         # task_scheduler.add_job(func=self._send_with_mailgun_rest_api, trigger='date', run_date=five_seconds_after,
@@ -172,7 +172,7 @@ class Mailgun:
         :param kwargs:
         :return: None
         """
-        job = schedule_func(func=func, kwargs=kwargs, job_name=f'base_email_{create_id(size=32)}')
+        job = schedule_func(func=func, kwargs=kwargs, job_name=f'{job_name}_{create_id(size=32)}')
 
         # seconds_after: datetime = datetime_now() + timedelta(seconds=10)
         # task_scheduler.add_job(func=func, trigger='date', run_date=seconds_after, kwargs=kwargs, id=create_id(),
