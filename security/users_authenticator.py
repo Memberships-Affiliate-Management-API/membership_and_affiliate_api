@@ -10,6 +10,7 @@ import requests
 from flask import current_app, request, redirect, url_for, flash
 from functools import wraps
 from config import config_instance
+from config.use_context import get_client
 from utils import is_development
 
 
@@ -43,37 +44,10 @@ def get_admin_user() -> dict:
     if is_development():
         admin_email, cell, names, organization_id, password, surname, uid = get_config_admin_user_details()
     else:
-        return get_admin_user_from_admin_api()
+        return get_user(uid=config_instance.ADMIN_UID)
 
     return dict(uid=uid, organization_id=organization_id, email=admin_email, names=names, surname=surname,
                 cell=cell, password=password, is_admin=True)
-
-
-def get_admin_user_from_admin_api() -> Optional[dict]:
-    """
-        **get_api_admin_user_details**
-            fetch api admin user details from back-end
-
-    :return: dict -> as user
-    """
-    _endpoint: str = '_api/v1/admin/users/get'
-    _base_url: str = config_instance.BASE_URL
-    _url: str = f'{_base_url}{_endpoint}'
-    _secret_key: str = config_instance.SECRET_KEY
-    _auth_token: str = encode_auth_token(uid=_secret_key)
-    _organization_id: str = config_instance.ORGANIZATION_ID
-    _uid: str = config_instance.ADMIN_UID
-    user_data: dict = dict(SECRET_KEY=_secret_key, auth_token=_auth_token,
-                           organization_id=_organization_id, uid=_uid)
-
-    _headers = dict(content_type='application/json', domain=config_instance.ADMIN_APP_BASEURL)
-    response = requests.post(url=_url, json=user_data, headers=_headers)
-
-    response_data: dict = response.json()
-
-    if response_data.get('status'):
-        return response_data.get('payload')
-    return None
 
 
 def get_config_admin_user_details() -> tuple:
@@ -101,7 +75,8 @@ def is_app_admin(current_user: any) -> bool:
     :return: boolean indicating if current user is admin or not
     """
     if isinstance(current_user, dict):
-        return current_user and current_user.get('uid') and (current_user.get('organization_id') == config_instance.ORGANIZATION_ID)
+        return current_user and current_user.get('uid') and (
+                current_user.get('organization_id') == config_instance.ORGANIZATION_ID)
     _is_system_org: bool = hmac.compare_digest(current_user.organization_id, config_instance.ORGANIZATION_ID)
     return current_user and current_user.uid and _is_system_org
 
@@ -116,9 +91,10 @@ def encode_auth_token(uid: str, expiration_days: int = 0) -> Optional[str]:
         :return: string -> auth-token
     """
     try:
-        _payload: dict = dict(exp=datetime.datetime.utcnow() + datetime.timedelta(days=expiration_days, minutes=30, seconds=5),
-                              iat=datetime.datetime.utcnow(),
-                              sub=uid)
+        _payload: dict = dict(
+            exp=datetime.datetime.utcnow() + datetime.timedelta(days=expiration_days, minutes=30, seconds=5),
+            iat=datetime.datetime.utcnow(),
+            sub=uid)
         token = jwt.encode(payload=_payload, key=str(current_app.config.get('SECRET_KEY')), algorithm='HS256')
         return token
     except jwt.InvalidAlgorithmError:
@@ -144,7 +120,7 @@ def decode_auth_token(auth_token: str) -> Optional[str]:
         return None
 
 
-def send_get_user_request(uid: str) -> Optional[dict]:
+def get_user(uid: str) -> Optional[dict]:
     """
     **send_get_user_request**
         send request for user over api and return user dict
@@ -153,13 +129,10 @@ def send_get_user_request(uid: str) -> Optional[dict]:
         :param uid:
         :return: dict -> user record
     """
-    _base_url: str = os.environ.get("BASE_URL")
-    _user_endpoint: str = "_api/v1/client/users/get-user"
-    response = requests.post(url=f"{_base_url}{_user_endpoint}", json=dict(uid=uid))
-    response_data: dict = response.json()
-    if response_data['status']:
-        return response_data['payload']
-    return None
+    with get_client().context():
+        from database.users import UserModel
+        user_instance: dict = UserModel.query(UserModel.uid == uid).get()
+        return user_instance if isinstance(user_instance, UserModel) and bool(user_instance) else None
 
 
 def handle_users_auth(func):
@@ -205,7 +178,7 @@ def handle_users_auth(func):
             return redirect(url_for('memberships_main.memberships_main_routes', path='login'))
 
         # NOTE: using client api to access user details
-        current_user: Optional[dict] = send_get_user_request(uid=uid)
+        current_user: Optional[dict] = get_user(uid=uid)
         if not isinstance(current_user, dict):
             message: str = '''Error connecting to database or user does not exist'''
             flash(message, 'warning')
@@ -224,6 +197,7 @@ def logged_user(func):
     :param func: route to wrap
     :return: wrapped function
     """
+
     @wraps(func)
     def decorated(*args, **kwargs):
         current_user: Optional[dict] = None
@@ -241,7 +215,7 @@ def logged_user(func):
                 try:
                     uid: Optional[str] = decode_auth_token(auth_token=token)
                     if bool(uid):
-                        user_instance: Optional[dict] = send_get_user_request(uid=uid)
+                        user_instance: Optional[dict] = get_user(uid=uid)
                         if isinstance(user_instance, dict):
                             current_user: dict = user_instance
                     else:
