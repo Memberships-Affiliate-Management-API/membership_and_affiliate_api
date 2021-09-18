@@ -5,7 +5,7 @@ import hmac
 from typing import Optional
 from flask import Blueprint, request, current_app, jsonify
 from config.exceptions import UnAuthenticatedError, error_codes, if_bad_request_raise, InputError
-from security.apps_authenticator import handle_apps_authentication
+from security.apps_authenticator import handle_apps_authentication, verify_secret_key
 
 contact_api_bp = Blueprint('contact-api', __name__)
 
@@ -28,11 +28,7 @@ def contact(path: str) -> tuple:
         raise InputError(status=error_codes.input_error_code, description=message)
 
     secret_key: Optional[str] = json_data.get('SECRET_KEY')
-    _secret_keys_match: bool = hmac.compare_digest(secret_key, current_app.config.get('SECRET_KEY'))
-
-    if not _secret_keys_match:
-        message: str = 'User Not Authorized: you cannot perform this action'
-        raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
+    verify_secret_key(secret_key)
 
     if path == "create":
         names: Optional[str] = json_data.get('names')

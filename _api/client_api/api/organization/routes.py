@@ -7,7 +7,7 @@ import hmac
 from typing import Optional
 from flask import request, Blueprint, current_app
 from config.exceptions import UnAuthenticatedError, error_codes, if_bad_request_raise
-from security.apps_authenticator import handle_apps_authentication
+from security.apps_authenticator import handle_apps_authentication, verify_secret_key
 from views import organization_view
 
 client_organizations_api_bp = Blueprint('client_organizations_api', __name__)
@@ -31,11 +31,7 @@ def client_organization_main(path: str) -> tuple:
     # NOTE: client admin request to create organization
     json_data: dict = request.get_json()
     secret_key: str = current_app.config.get('SECRET_KEY')
-
-    compare_secret_key: bool = hmac.compare_digest(secret_key, current_app.config.get('SECRET_KEY'))
-    if not compare_secret_key:
-        message: str = 'User Not Authorized: you cannot perform this action'
-        raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
+    verify_secret_key(secret_key)
 
     if path == "create":
         uid: Optional[str] = json_data.get('uid')

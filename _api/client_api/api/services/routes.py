@@ -12,6 +12,7 @@ import hmac
 from typing import Optional
 from flask import Blueprint, request, current_app
 from config.exceptions import if_bad_request_raise, UnAuthenticatedError, error_codes
+from security.apps_authenticator import verify_secret_key
 from views import services_view
 
 services_client_api_bp = Blueprint('services_client_api', __name__)
@@ -28,11 +29,7 @@ def services_api(path: str) -> tuple:
     if_bad_request_raise(request)
     services_data: dict = request.get_json()
     secret_key: Optional[str] = services_data.get('SECRET_KEY')
-
-    compare_secret_key: bool = hmac.compare_digest(secret_key, current_app.config.get('SECRET_KEY'))
-    if not compare_secret_key:
-        message: str = 'User Not Authorized: you cannot perform this action'
-        raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
+    verify_secret_key(secret_key)
 
     organization_id: Optional[str] = services_data.get('organization_id')
     uid: Optional[str] = services_data.get('uid')

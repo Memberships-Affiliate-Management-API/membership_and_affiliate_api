@@ -27,6 +27,13 @@ from security.users_authenticator import decode_auth_token
 from utils import is_development
 
 
+def verify_secret_key(secret_key: str) -> None:
+    if not hmac.compare_digest(secret_key, config_instance.SECRET_KEY):
+        message: str = "User not Authorized: you are not authorized to call this API"
+        raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
+
+
+
 def verify_app_id(app_id: str, domain: str) -> bool:
     """
     **verify_app_id**

@@ -15,7 +15,7 @@ import hmac
 from typing import Optional
 from flask import Blueprint, request, current_app
 from config.exceptions import UnAuthenticatedError, error_codes, if_bad_request_raise
-from security.apps_authenticator import handle_apps_authentication
+from security.apps_authenticator import handle_apps_authentication, verify_secret_key
 from views import api_keys_view
 
 client_api_keys_bp = Blueprint('api-keys', __name__)
@@ -76,11 +76,7 @@ def deactivate_key() -> tuple:
     json_data: dict = request.get_json()
     api_key: Optional[str] = json_data.get('api-key')
     secret_key: Optional[str] = json_data.get('SECRET_KEY')
-    _secret_keys_match: bool = hmac.compare_digest(secret_key, current_app.config.get('SECRET_KEY'))
-
-    if not _secret_keys_match:
-        message: str = "User not Authorized: you are not authorized to call this API"
-        raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
+    verify_secret_key(secret_key)
 
     return api_keys_view.deactivate_key(key=api_key)
 

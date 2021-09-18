@@ -2,7 +2,7 @@ import hmac
 
 from flask import Blueprint, request, current_app
 from config.exceptions import error_codes, UnAuthenticatedError, if_bad_request_raise
-from security.apps_authenticator import handle_apps_authentication
+from security.apps_authenticator import handle_apps_authentication, verify_secret_key
 from views import user_view
 from typing import Optional
 
@@ -22,11 +22,7 @@ def client_users(path: str) -> tuple:
     if_bad_request_raise(request)
     user_data: dict = request.get_json()
     secret_key: Optional[str] = user_data.get("SECRET_KEY")
-
-    compare_secret_key: bool = hmac.compare_digest(secret_key, current_app.config.get('SECRET_KEY'))
-    if not compare_secret_key:
-        message: str = 'User Not Authorized: you cannot perform this action'
-        raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
+    verify_secret_key(secret_key)
 
     if path == "login":
         email: Optional[str] = user_data.get("email")

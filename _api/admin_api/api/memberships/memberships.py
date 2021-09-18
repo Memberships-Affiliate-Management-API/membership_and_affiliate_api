@@ -14,7 +14,7 @@ from typing import Union, Optional
 from flask import Blueprint, request, current_app
 
 from config.exceptions import UnAuthenticatedError, error_codes
-from security.apps_authenticator import handle_apps_authentication
+from security.apps_authenticator import handle_apps_authentication, verify_secret_key
 from views import membership_plans_view, memberships_view
 
 membership_admin_api_bp = Blueprint('memberships_admin_api', __name__)
@@ -32,11 +32,7 @@ def memberships_plan_admin_api(path: str) -> tuple:
     """
     json_data: dict = request.get_json()
     secret_key: Optional[str] = json_data.get('SECRET_KEY')
-
-    compare_secret_key: bool = hmac.compare_digest(secret_key, current_app.config.get('SECRET_KEY'))
-    if not compare_secret_key:
-        message: str = 'User Not Authorized: you cannot perform this action'
-        raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
+    verify_secret_key(secret_key)
 
     if path == "get":
         organization_id: Union[str, None] = json_data.get('organization_id')
@@ -58,11 +54,7 @@ def memberships_admin(path: str) -> tuple:
     """
     json_data: dict = request.get_json()
     secret_key: Optional[str] = json_data.get('SECRET_KEY')
-
-    compare_secret_key: bool = hmac.compare_digest(secret_key, current_app.config.get('SECRET_KEY'))
-    if not compare_secret_key:
-        message: str = 'User Not Authorized: you cannot perform this action'
-        raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
+    verify_secret_key(secret_key)
 
     if path == "get-all":
         # get all subscriptions for a specific organization

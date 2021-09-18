@@ -16,7 +16,7 @@ from flask import Blueprint, request, current_app
 
 from config import config_instance
 from config.exceptions import UnAuthenticatedError, error_codes
-from security.apps_authenticator import handle_apps_authentication
+from security.apps_authenticator import handle_apps_authentication, verify_secret_key
 from views import api_keys_view
 
 admin_api_keys_api_bp = Blueprint("admin_api_keys_api", __name__)
@@ -34,11 +34,7 @@ def api_keys(path: str) -> tuple:
     """
     json_data: dict = request.get_json()
     secret_key: Optional[str] = json_data.get('SECRET_KEY')
-
-    compare_secret_key: bool = hmac.compare_digest(secret_key, current_app.config.get('SECRET_KEY'))
-    if not compare_secret_key:
-        message: str = 'User Not Authorized: you cannot perform this action'
-        raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
+    verify_secret_key(secret_key)
 
     if path == "get-all":
         organization_id: str = json_data.get('organization_id')

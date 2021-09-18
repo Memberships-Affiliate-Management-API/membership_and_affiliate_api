@@ -13,7 +13,7 @@ from datetime import date
 from typing import Optional
 from flask import Blueprint, request, current_app
 from config.exceptions import if_bad_request_raise, UnAuthenticatedError, error_codes, InputError
-from security.apps_authenticator import handle_apps_authentication
+from security.apps_authenticator import handle_apps_authentication, verify_secret_key
 from utils import today
 from views import memberships_view, membership_plans_view
 
@@ -44,12 +44,7 @@ def memberships_client_api(path: str) -> tuple:
         raise InputError(status=error_codes.input_error_code, description=message)
 
     secret_key: Optional[str] = json_data.get('SECRET_KEY')
-    _secret_keys_match: bool = hmac.compare_digest(secret_key, current_app.config.get('SECRET_KEY'))
-
-    if not _secret_keys_match:
-        message: str = 'User Not Authorized: you cannot perform this action'
-        raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code,
-                                   description=message)
+    verify_secret_key(secret_key)
     # NOTE : this enable clients to join membership plans in order to start
     #  using api
     if path == "subscribe":
@@ -98,12 +93,7 @@ def client_memberships_management(path: str) -> tuple:
         raise InputError(status=error_codes.input_error_code, description=message)
 
     secret_key: Optional[str] = json_data.get('SECRET_KEY')
-    _secret_keys_match: bool = hmac.compare_digest(secret_key, current_app.config.get('SECRET_KEY'))
-
-    if not _secret_keys_match:
-        message: str = 'User Not Authorized: you cannot perform this action'
-        raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code,
-                                   description=message)
+    verify_secret_key(secret_key)
 
     # NOTE: creates a new membership plan
     organization_id: Optional[str] = current_app.config.get('ORGANIZATION_ID')

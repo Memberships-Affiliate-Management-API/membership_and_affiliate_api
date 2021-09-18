@@ -12,7 +12,7 @@ import hmac
 from flask import Blueprint, request, current_app
 from config.exceptions import UnAuthenticatedError, error_codes
 from database.mixins import AmountMixin
-from security.apps_authenticator import handle_apps_authentication
+from security.apps_authenticator import handle_apps_authentication, verify_secret_key
 from views import organization_view
 from typing import Optional
 
@@ -35,11 +35,7 @@ def organization_admin_api(path: str) -> tuple:
     """
     json_data: dict = request.get_json()
     secret_key: Optional[str] = json_data.get('SECRET_KEY')
-
-    compare_secret_key: bool = hmac.compare_digest(secret_key, current_app.config.get('SECRET_KEY'))
-    if not compare_secret_key:
-        message: str = 'User Not Authorized: you cannot perform this action'
-        raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
+    verify_secret_key(secret_key)
 
     # NOTE: here the system admin is actually requesting client or developers organizations
     if path == "get":
