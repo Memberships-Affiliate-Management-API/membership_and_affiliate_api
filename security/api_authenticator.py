@@ -61,11 +61,28 @@ def handle_api_auth(func):
     :return: wrapped function
     """
 
+    # noinspection DuplicatedCode
     @functools.wraps(func)
     def auth_wrapper(*args, **kwargs):
         api_key: Optional[str] = request.headers.get('x-api-key')
         secret_token: Optional[str] = request.headers.get('x-secret-token')
         domain: Optional[str] = request.base_url
+
+        if api_key is None:
+            print(f'api_key is Null: {api_key}')
+            message: str = "request not authorized"
+            raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
+
+        if secret_token is None:
+            print(f'secret_token is Null: {secret_token}')
+            message: str = "request not authorized"
+            raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
+
+        if domain is None:
+            print(f'domain is Null: {domain}')
+            message: str = "request not authorized"
+            raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
+
         if is_request_valid(api_key=api_key, secret=secret_token, domain=domain):
             return func(*args, **kwargs)
         message: str = "request not authorized"
