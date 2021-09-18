@@ -8,6 +8,7 @@ __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
+import hmac
 from typing import Optional
 from flask import Blueprint, request, current_app
 from config.exceptions import if_bad_request_raise, UnAuthenticatedError, error_codes
@@ -28,7 +29,8 @@ def services_api(path: str) -> tuple:
     services_data: dict = request.get_json()
     secret_key: Optional[str] = services_data.get('SECRET_KEY')
 
-    if not isinstance(secret_key, str) or secret_key != current_app.config.get('SECRET_KEY'):
+    compare_secret_key: bool = hmac.compare_digest(secret_key, current_app.config.get('SECRET_KEY'))
+    if not compare_secret_key:
         message: str = 'User Not Authorized: you cannot perform this action'
         raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
 

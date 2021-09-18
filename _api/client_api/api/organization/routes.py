@@ -3,6 +3,7 @@
         Handles API Requests for Organizations
 
 """
+import hmac
 from typing import Optional
 from flask import request, Blueprint, current_app
 from config.exceptions import UnAuthenticatedError, error_codes, if_bad_request_raise
@@ -28,9 +29,15 @@ def client_organization_main(path: str) -> tuple:
     """
     if_bad_request_raise(request)
     # NOTE: client admin request to create organization
+    json_data: dict = request.get_json()
+    secret_key: str = current_app.config.get('SECRET_KEY')
+
+    compare_secret_key: bool = hmac.compare_digest(secret_key, current_app.config.get('SECRET_KEY'))
+    if not compare_secret_key:
+        message: str = 'User Not Authorized: you cannot perform this action'
+        raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
+
     if path == "create":
-        json_data: dict = request.get_json()
-        secret_key: str = current_app.config.get('SECRET_KEY')
         uid: Optional[str] = json_data.get('uid')
         organization_name: Optional[str] = json_data.get('organization_name')
         description: Optional[str] = json_data.get('description')
@@ -49,8 +56,6 @@ def client_organization_main(path: str) -> tuple:
         message: str = 'User Not Authorized: cannot create new organization'
         raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
     elif path == "update":
-        json_data: dict = request.get_json()
-        secret_key: str = current_app.config.get('SECRET_KEY')
         uid: Optional[str] = json_data.get('uid')
         organization_id: Optional[str] = json_data.get('organization_id')
         organization_name: Optional[str] = json_data.get('organization_name')
@@ -72,8 +77,6 @@ def client_organization_main(path: str) -> tuple:
         raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
 
     elif path == "get":
-        json_data: dict = request.get_json()
-        secret_key: str = current_app.config.get('SECRET_KEY')
         organization_id: Optional[str] = json_data.get('organization_id')
         uid: Optional[str] = json_data.get('uid')
         if isinstance(secret_key, str) and secret_key == current_app.config.get('SECRET_KEY'):

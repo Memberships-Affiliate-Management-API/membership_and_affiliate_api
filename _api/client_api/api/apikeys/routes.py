@@ -58,11 +58,11 @@ def create_client_api_key() -> tuple:
     secret_key: Optional[str] = json_data.get('SECRET_KEY')
     _secret_keys_match: bool = hmac.compare_digest(secret_key, current_app.config.get('SECRET_KEY'))
 
-    if _secret_keys_match:
-        return api_keys_view.create_keys(domain=domain, uid=uid, organization_id=organization_id)
+    if not _secret_keys_match:
+        message: str = "User not Authorized: you are not authorized to call this API"
+        raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
-    message: str = "User not Authorized: you are not authorized to call this API"
-    raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
+    return api_keys_view.create_keys(domain=domain, uid=uid, organization_id=organization_id)
 
 
 @client_api_keys_bp.route('/_api/v1/client/api-keys/deactivate', methods=['POST'])
@@ -78,11 +78,11 @@ def deactivate_key() -> tuple:
     secret_key: Optional[str] = json_data.get('SECRET_KEY')
     _secret_keys_match: bool = hmac.compare_digest(secret_key, current_app.config.get('SECRET_KEY'))
 
-    if _secret_keys_match:
-        return api_keys_view.deactivate_key(key=api_key)
+    if not _secret_keys_match:
+        message: str = "User not Authorized: you are not authorized to call this API"
+        raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
-    message: str = "User not Authorized: you are not authorized to call this API"
-    raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
+    return api_keys_view.deactivate_key(key=api_key)
 
 
 @client_api_keys_bp.route('/_api/v1/client/api-keys/activate-key', methods=['POST'])
