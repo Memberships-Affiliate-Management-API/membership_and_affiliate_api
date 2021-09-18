@@ -4,15 +4,16 @@ from _sdk._paypal.core.paypal_http_client import PayPalHttpClient
 
 
 class PayPalClient:
+    """Setting up and Returns PayPal SDK environment with PayPal Access credentials.
+       For demo purpose, we are using SandboxEnvironment. In production this will be
+       LiveEnvironment."""
+
     def __init__(self, app):
 
         self.client_id_live = app.config.get('PAYPAL_CLIENT_ID')
         self.client_secret_live = app.config.get('PAYPAL_CLIENT_SECRET')
         self.client_id_sand = app.config.get('PAYPAL_CLIENT_ID_SAND')
         self.client_secret_sand = app.config.get('PAYPAL_CLIENT_SECRET_SAND')
-        """Setting up and Returns PayPal SDK environment with PayPal Access credentials.
-           For demo purpose, we are using SandboxEnvironment. In production this will be
-           LiveEnvironment."""
         if app.config.get('IS_PRODUCTION'):
             self.environment = LiveEnvironment(client_id=self.client_id_live, client_secret=self.client_secret_live)
         else:
