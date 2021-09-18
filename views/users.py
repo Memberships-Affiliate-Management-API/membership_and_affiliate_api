@@ -1317,18 +1317,20 @@ class UserView(Validators, UserEmails):
 
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.uid == uid).get()
-        if isinstance(user_instance, UserModel) and user_instance.uid == uid:
-            user_instance.is_active = False
-            user_instance.put()
+        if not isinstance(user_instance, UserModel) or not bool(user_instance):
+            message: str = "User Not found"
+            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
-            cell: str = user_instance.cell
-            email: str = user_instance.email
-            _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
-            app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
+        user_instance.is_active = False
+        user_instance.put()
 
-            return jsonify({'status': True, 'message': 'user deactivated'}), status_codes.status_ok_code
+        cell: str = user_instance.cell
+        email: str = user_instance.email
+        _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+        app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
 
-        return jsonify({'status': False, 'message': 'user not found'}), status_codes.data_not_found_code
+        return jsonify({'status': True, 'message': 'user deactivated'}), status_codes.status_ok_code
+
 
     @use_context
     @handle_view_errors
@@ -1350,17 +1352,17 @@ class UserView(Validators, UserEmails):
 
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.uid == uid).get_async().get_result()
-        if isinstance(user_instance, UserModel) and user_instance.uid == uid:
-            user_instance.is_active = False
-            user_instance.put_async().get_result()
-            cell: str = user_instance.cell
-            email: str = user_instance.email
-            _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
-            app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
+        if not isinstance(user_instance, UserModel) or not bool(user_instance):
+            message: str = "User Not found"
+            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+        user_instance.is_active = False
+        user_instance.put_async().get_result()
+        cell: str = user_instance.cell
+        email: str = user_instance.email
+        _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+        app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
 
-            return jsonify({'status': True, 'message': 'user deactivated'}), status_codes.status_ok_code
-
-        return jsonify({'status': False, 'message': 'user not found'}), status_codes.data_not_found_code
+        return jsonify({'status': True, 'message': 'user deactivated'}), status_codes.status_ok_code
 
     @use_context
     @handle_view_errors
