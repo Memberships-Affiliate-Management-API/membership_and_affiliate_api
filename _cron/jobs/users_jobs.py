@@ -6,6 +6,7 @@
 import asyncio
 from typing import List, Coroutine, Optional
 
+from google.api_core.exceptions import RetryError
 from google.cloud.ndb import toplevel, tasklet, Future, wait_all
 
 from _sdk._email import Mailgun
@@ -65,14 +66,17 @@ class UserJobs(Mailgun):
         self._do_schedule_mail(to_email=user_instance.email, subject=subject, text=text, html=html)
 
     @tasklet
-    def send_login_reminders(self) -> List[Future]:
+    def send_login_reminders(self) -> Optional[List[Future]]:
         """
         **send_login_reminders**
             sends login reminders to users and developers
         :return: None
         """
-        seven_days_ago = date_days_ago(days=7)
-        users_list: List[UserModel] = [user for user in UserModel.query(UserModel.email_verified == True).fetch_async().get_result()
-                                       if user.last_login_date < seven_days_ago]
+        try:
+            seven_days_ago = date_days_ago(days=7)
+            users_list: List[UserModel] = [user for user in UserModel.query(UserModel.email_verified == True).fetch_async().get_result()
+                                           if user.last_login_date < seven_days_ago]
+        except RetryError as e:
+            return None
 
         return [self.do_send_login_reminder(user_instance=user) for user in users_list]
