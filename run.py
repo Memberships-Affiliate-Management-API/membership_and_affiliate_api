@@ -16,13 +16,12 @@ from config import config_instance
 from config.use_context import use_context
 from main import create_app
 from utils.utils import is_development, today
-from tasks import run_tasks
+from tasks import start_task
 # TODO create separate run files for client api, admin api, and public_api
 app = create_app(config_class=config_instance)
 
 debug = is_development() and config_instance.DEBUG
 # Press the green button in the gutter to run the script.
-
 # TODO Add logs handler which can send all errors to memberships and Affiliate Management Slack Channel
 
 
@@ -33,7 +32,15 @@ def create_thread() -> None:
         this creates a thread specifically to deal with tasks which will be run after request has been processed
     :return: None
     """
-    app.tasks_thread = Thread(target=run_tasks)
+    try:
+        if not app.tasks_thread:
+            app.tasks_thread = Thread(target=start_task)
+            print('Tasks Thread Created...')
+        return None
+    except AttributeError as e:
+        print(str(e))
+    finally:
+        return None
 
 
 @app.after_request
@@ -43,7 +50,13 @@ def start_thread(response: Response) -> Response:
         **start thread**
             starting a separate thread to deal with tasks that where put aside during the request
     """
-    app.tasks_thread.start()
+    try:
+        if isinstance(app.tasks_thread, Thread) and not app.tasks_thread.is_alive():
+            app.tasks_thread.start()
+    except RuntimeError as e:
+        print(repr(e))
+        app.tasks_thread = Thread(target=start_task)
+        app.tasks_thread.start()
     return response
 
 
