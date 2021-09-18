@@ -1,18 +1,5 @@
 import paypalhttp
 from urllib.parse import quote  # Python 3+
-#
-# curl -v -X POST https://api-m.sandbox.paypal.com/v1/catalogs/products \
-#   -H "Content-Type: application/json" \
-#   -H "Authorization: Bearer <Access-Token>" \
-#   -H "PayPal-Request-Id: <merchant-generated-ID>" \ // Optional and if passed, helps identify idempotent requests
-# -d '{
-#   "name": "Video Streaming Service",
-#   "description": "Video streaming service",
-#   "type": "SERVICE",
-#   "category": "SOFTWARE",
-#   "image_url": "https://example.com/streaming.jpg",
-#   "home_url": "https://example.com/home"
-# }'
 
 
 class PlansCreateServiceProduct:
