@@ -579,26 +579,26 @@ class UserView(Validators, UserEmails):
 
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.uid == uid).get()
-        if isinstance(user_instance, UserModel) and user_instance.uid == uid:
-            user_instance.names = names
-            user_instance.surname = surname
-            key = user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-            if not bool(key):
-                message: str = "Database Error: unable to update names"
-                raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+        if not isinstance(user_instance, UserModel) and bool(user_instance):
+            message: str = "User not found: Unable to update names"
+            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
-            cell: str = user_instance.cell
-            email: str = user_instance.email
+        user_instance.names = names
+        user_instance.surname = surname
+        key = user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+        if not bool(key):
+            message: str = "Database Error: unable to update names"
+            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-            _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
-            app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
+        cell: str = user_instance.cell
+        email: str = user_instance.email
 
-            message: str = "Successfully updated user names"
-            return jsonify({'status': True, 'payload': user_instance.to_dict(),
-                            'message': message}), status_codes.successfully_updated_code
+        _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+        app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
 
-        message: str = "User not found: Unable to update names"
-        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+        message: str = "Successfully updated user names"
+        return jsonify({'status': True, 'payload': user_instance.to_dict(),
+                        'message': message}), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
@@ -618,26 +618,27 @@ class UserView(Validators, UserEmails):
 
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.uid == uid).get()
-        if isinstance(user_instance, UserModel) and user_instance.uid == uid:
-            old_cell: str = user_instance.cell
-            user_instance.cell = cell
-            # TODO - run a function to send verification sms if available_funds
-            key = user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-            if not bool(key):
-                message: str = "Database Error: unable to save updated user record"
-                raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+        if not isinstance(user_instance, UserModel) and bool(user_instance):
+            message: str = "User Record not found: Unable to update cell number"
+            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
-            # Note that the old cache needs to be removed as it has now an entry relating to the old cell
-            cell: str = old_cell
-            email: str = user_instance.email
-            _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
-            app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
+        old_cell: str = user_instance.cell
+        user_instance.cell = cell
+        # TODO - run a function to send verification sms if available_funds
+        key = user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+        if not bool(key):
+            message: str = "Database Error: unable to save updated user record"
+            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-            message: str = "Successfully Updated Cell Number"
-            return jsonify({'status': True, 'payload': user_instance.to_dict(),
-                            'message': message}), status_codes.successfully_updated_code
-        message: str = "User Record not found: Unable to update cell number"
-        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+        # Note that the old cache needs to be removed as it has now an entry relating to the old cell
+        cell: str = old_cell
+        email: str = user_instance.email
+        _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+        app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
+
+        message: str = "Successfully Updated Cell Number"
+        return jsonify({'status': True, 'payload': user_instance.to_dict(),
+                        'message': message}), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
@@ -657,32 +658,32 @@ class UserView(Validators, UserEmails):
 
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.uid == uid).get()
-        if isinstance(user_instance, UserModel) and user_instance.uid == uid:
-            if user_instance.email != email:
-                old_email: str = user_instance.emai
-                user_instance.email = email
-                # TODO send verification email and mark email as not verified
-                key = user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-                if not bool(key):
-                    message: str = "Database Error: Unable to update user record"
-                    raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+        if not isinstance(user_instance, UserModel) and bool(user_instance):
+            message: str = "Unable to find User record: Email not updated"
+            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
-                cell: str = user_instance.cell
-                email: str = old_email
-                _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email,
-                                     cell=cell)
-                app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
-
-                message: str = "Successfully Updated Email Record please check your email inbox for verification email"
-                return jsonify({'status': True, 'payload': user_instance.to_dict(),
-                                'message': message}), status_codes.successfully_updated_code
-
+        if user_instance.email == email:
             message: str = "Email is already upto-date"
             return jsonify({'status': True, 'payload': user_instance.to_dict(),
                             'message': message}), status_codes.status_ok_code
 
-        message: str = "Unable to find User record: Email not updated"
-        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+        old_email: str = user_instance.emai
+        user_instance.email = email
+        # TODO send verification email and mark email as not verified
+        key = user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+        if not bool(key):
+            message: str = "Database Error: Unable to update user record"
+            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+
+        cell: str = user_instance.cell
+        email: str = old_email
+        _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email,
+                             cell=cell)
+        app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
+
+        message: str = "Successfully Updated Email Record please check your email inbox for verification email"
+        return jsonify({'status': True, 'payload': user_instance.to_dict(),
+                        'message': message}), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
@@ -710,31 +711,31 @@ class UserView(Validators, UserEmails):
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.uid == uid).get()
 
-        if isinstance(user_instance, UserModel) and user_instance.uid == uid:
-            # Note: checking if old password is equal to the password on file
-            if not check_password_hash(password=password, pwhash=user_instance.password):
-                message: str = "Passwords do not match - please try again"
-                raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
+        if not isinstance(user_instance, UserModel) and bool(user_instance):
+            message: str = "User Record not found: Unable to update password"
+            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
-            user_instance.password = new_password
-            key = user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-            if not bool(key):
-                message: str = "Database Error: unable to update password"
-                raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+        # Note: checking if old password is equal to the password on file
+        if not check_password_hash(password=password, pwhash=user_instance.password):
+            message: str = "Passwords do not match - please try again"
+            raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
-            cell: str = user_instance.cell
-            email: str = user_instance.email
-            _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
-            app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
+        user_instance.password = new_password
+        key = user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+        if not bool(key):
+            message: str = "Database Error: unable to update password"
+            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-            # TODO - logoff the user
-            message: str = "Successfully Updated Password - please login again"
-            return jsonify({'status': True,
-                            'payload': user_instance.to_dict(),
-                            'message': message}), status_codes.successfully_updated_code
+        cell: str = user_instance.cell
+        email: str = user_instance.email
+        _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+        app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
 
-        message: str = "User Record not found: Unable to update password"
-        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+        # TODO - logoff the user
+        message: str = "Successfully Updated Password - please login again"
+        return jsonify({'status': True,
+                        'payload': user_instance.to_dict(),
+                        'message': message}), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
