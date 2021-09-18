@@ -221,9 +221,7 @@ class UserEmails(Mailgun):
         _url = _url[:-1] if _url.endswith("/") else _url
 
         password_reset_link: str = f"{_url}/{recovery_code}"
-
         subject = f"{organization_data.get('organization_name')} Please reset your password"
-
         text: str = f'''
          Hi {user_data.get('names', " ")} {user_data.get('surname', " ")}
         
@@ -486,26 +484,26 @@ class UserView(Validators, UserEmails):
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.uid == uid).get()
 
-        if isinstance(user_instance, UserModel) and user_instance.uid == uid:
-            user_instance.names = names
-            user_instance.surname = surname
-            user_instance.cell = cell
-            user_instance.email = email
-            user_instance.is_admin = is_admin
-            user_instance.is_support = is_support
-            key = user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-            if not bool(key):
-                message: str = "Unable to save user database"
-                raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+        if not isinstance(user_instance, UserModel) and bool(user_instance):
+            message: str = 'user not found cannot update user details'
+            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
-            _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
-            app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
+        user_instance.names = names
+        user_instance.surname = surname
+        user_instance.cell = cell
+        user_instance.email = email
+        user_instance.is_admin = is_admin
+        user_instance.is_support = is_support
+        key = user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+        if not bool(key):
+            message: str = "Unable to save user database"
+            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-            return jsonify({'status': True, 'message': 'successfully updated user details',
-                            'payload': user_instance.to_dict()}), status_codes.successfully_updated_code
+        _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+        app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
 
-        return jsonify({'status': False,
-                        'message': 'user not found cannot update user details'}), status_codes.data_not_found_code
+        return jsonify({'status': True, 'message': 'successfully updated user details',
+                        'payload': user_instance.to_dict()}), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
