@@ -1,6 +1,7 @@
 import asyncio
 from typing import List, Coroutine, Optional
 from flask import current_app
+from google.api_core.exceptions import RetryError
 from google.cloud import ndb
 from google.cloud.ndb import toplevel, tasklet, Future, wait_all
 
@@ -50,7 +51,7 @@ class TransactionsJobs:
         yield False
 
     @tasklet
-    def send_approved_withdrawals_to_paypal_wallets(self) -> List[Future]:
+    def send_approved_withdrawals_to_paypal_wallets(self) -> Optional[List[Future]]:
         """
             **send_approved_withdrawals_to_paypal_wallets**
                 fetches all processed and approved withdrawals and schedule them for sending to the client
@@ -58,11 +59,16 @@ class TransactionsJobs:
 
             :return: None
         """
-        wallet_transactions: List[WalletTransactionsModel] = WalletTransactionsModel.query(
-            WalletTransactionsModel.is_verified == True, WalletTransactionsModel.is_settled == False).fetch_async().get_result()
-        print('approved withdrawals running')
-        return [self.do_send_to_client_paypal(transaction=transaction) for transaction in wallet_transactions
-                if transaction.transaction_type == 'withdrawal']
+        try:
+            wallet_transactions: List[WalletTransactionsModel] = WalletTransactionsModel.query(
+                WalletTransactionsModel.is_verified == True, WalletTransactionsModel.is_settled == False).fetch_async().get_result()
+            print('approved withdrawals running')
+
+            return [self.do_send_to_client_paypal(transaction=transaction) for transaction in wallet_transactions
+                    if transaction.transaction_type == 'withdrawal']
+        except RetryError as e:
+            # TODO Log this error
+            return None
 
     # Note below methods deals with client deposits
     @tasklet
@@ -91,15 +97,19 @@ class TransactionsJobs:
         yield False
 
     @tasklet
-    def add_approved_deposits_to_wallet(self) -> List[Future]:
+    def add_approved_deposits_to_wallet(self) -> Optional[List[Future]]:
         """
         **add_approved_deposits_to_wallet**
         fetches all processed deposits which are not yet settled and then adding them to the client wallet
 
         :return: None
         """
-        wallet_transactions: List[WalletTransactionsModel] = WalletTransactionsModel.query(
-            WalletTransactionsModel.is_verified == True, WalletTransactionsModel.is_settled == False).fetch_async().get_result()
-        print("approved deposits running")
-        return [self.do_send_to_client_wallet(transaction=transaction) for transaction in wallet_transactions
-                if transaction.transaction_type == 'deposit']
+        try:
+            wallet_transactions: List[WalletTransactionsModel] = WalletTransactionsModel.query(
+                WalletTransactionsModel.is_verified == True, WalletTransactionsModel.is_settled == False).fetch_async().get_result()
+            print("approved deposits running")
+            return [self.do_send_to_client_wallet(transaction=transaction) for transaction in wallet_transactions
+                    if transaction.transaction_type == 'deposit']
+        except RetryError as e:
+            # TODO log this errors
+            return None
