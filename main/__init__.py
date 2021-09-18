@@ -146,5 +146,6 @@ def create_app(config_class=config_instance):
         app.register_blueprint(default_handlers_bp)
 
         app.register_blueprint(microservices_ipn_bp)
+        app.tasks_thread = None
 
         return app
