@@ -755,26 +755,29 @@ class UserView(Validators, UserEmails):
 
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.uid == uid).get()
-        if isinstance(user_instance, UserModel) and user_instance.uid == uid:
-            user_instance.is_admin = is_admin
-            key = user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-            if not bool(key):
-                message: str = "Database Error: Unable to update user admin status"
-                raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+        if not isinstance(user_instance, UserModel) and bool(user_instance):
+            message: str = "User Record not found: Unable to update admin"
+            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
-            if is_admin:
-                self.send_welcome_to_admins_email(organization_id=organization_id, uid=uid)
-            else:
-                self.send_goodbye_admin_email(organization_id=organization_id, uid=uid)
+        user_instance.is_admin = is_admin
+        key = user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+        if not bool(key):
+            message: str = "Database Error: Unable to update user admin status"
+            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-            cell: str = user_instance.cell
-            email: str = user_instance.email
-            _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
-            app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
+        if is_admin:
+            self.send_welcome_to_admins_email(organization_id=organization_id, uid=uid)
+        else:
+            self.send_goodbye_admin_email(organization_id=organization_id, uid=uid)
 
-            message: str = "Successfully Update admin status"
-            return jsonify({'status': True, 'payload': user_instance.to_dict(),
-                            'message': message}), status_codes.successfully_updated_code
+        cell: str = user_instance.cell
+        email: str = user_instance.email
+        _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+        app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
+
+        message: str = "Successfully Update admin status"
+        return jsonify({'status': True, 'payload': user_instance.to_dict(),
+                        'message': message}), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
@@ -794,26 +797,29 @@ class UserView(Validators, UserEmails):
 
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.uid == uid).get()
-        if isinstance(user_instance, UserModel) and user_instance.uid == uid:
-            user_instance.is_support = is_support
-            key = user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-            if not bool(key):
-                message: str = "Database Error: Unable to update user support status"
-                raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+        if not isinstance(user_instance, UserModel) and bool(user_instance):
+            message: str = "User Record not found: Unable to update support"
+            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
-            if is_support:
-                self.send_welcome_to_support_email(organization_id=organization_id, uid=uid)
-            else:
-                self.send_goodbye_support_email(organization_id=organization_id, uid=uid)
+        user_instance.is_support = is_support
+        key = user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+        if not bool(key):
+            message: str = "Database Error: Unable to update user support status"
+            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-            cell: str = user_instance.cell
-            email: str = user_instance.email
-            _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
-            app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
+        if is_support:
+            self.send_welcome_to_support_email(organization_id=organization_id, uid=uid)
+        else:
+            self.send_goodbye_support_email(organization_id=organization_id, uid=uid)
 
-            message: str = "Successfully Update support status"
-            return jsonify({'status': True, 'payload': user_instance.to_dict(),
-                            'message': message}), status_codes.successfully_updated_code
+        cell: str = user_instance.cell
+        email: str = user_instance.email
+        _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+        app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
+
+        message: str = "Successfully Update support status"
+        return jsonify({'status': True, 'payload': user_instance.to_dict(),
+                        'message': message}), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
@@ -858,26 +864,27 @@ class UserView(Validators, UserEmails):
 
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.uid == uid).get()
-        if isinstance(user_instance, UserModel) and user_instance.uid == uid:
-            address_instance = AddressMixin(organization_id=organization_id, uid=uid, line_1=line_1, city=city,
-                                            zip_code=zip_code, province=province, state=state, country=country)
-            address_instance.put()
-            user_instance.address = address_instance
-            user_key = user_instance.put()
-            if not bool(user_key):
-                message: str = "Database Error: unable to update user"
-                raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+        if not isinstance(user_instance, UserModel) and bool(user_instance):
+            message: str = "User Not Found: Unable to update address"
+            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
-            cell: str = user_instance.cell
-            email: str = user_instance.email
-            _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
-            app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
+        address_instance = AddressMixin(organization_id=organization_id, uid=uid, line_1=line_1, city=city,
+                                        zip_code=zip_code, province=province, state=state, country=country)
+        address_instance.put()
+        user_instance.address = address_instance
+        user_key = user_instance.put()
+        if not bool(user_key):
+            message: str = "Database Error: unable to update user"
+            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-            message: str = "Successfully updated user address"
-            return jsonify({'status': True, 'payload': user_instance.to_dict(),
-                            'message': message}), status_codes.successfully_updated_code
-        message: str = "User Not Found: Unable to update address"
-        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+        cell: str = user_instance.cell
+        email: str = user_instance.email
+        _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
+        app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
+
+        message: str = "Successfully updated user address"
+        return jsonify({'status': True, 'payload': user_instance.to_dict(),
+                        'message': message}), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
