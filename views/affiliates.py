@@ -11,19 +11,22 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 
 import typing
 from typing import Optional, List
+
 from flask import current_app, jsonify
-from flask.views import MethodView
 from google.cloud import ndb
-from cache.cache_manager import app_cache
-from database.affiliates import AffiliatesValidators as ValidAffiliate
-from database.affiliates import RecruitsValidators as ValidRecruit
-from database.affiliates import EarningsValidators as ValidEarnings
-from database.affiliates import Affiliates, Recruits
-from config.exceptions import DataServiceError, InputError, UnAuthenticatedError, error_codes, status_codes
-from utils.utils import create_id, return_ttl
-from config.exception_handlers import handle_view_errors
-from config.use_context import use_context
+
 from _sdk._email import Mailgun
+from cache.cache_manager import app_cache
+from config.exception_handlers import handle_view_errors
+from config.exceptions import DataServiceError, InputError, UnAuthenticatedError, error_codes, status_codes
+from config.use_context import use_context
+from database.affiliates import Affiliates, Recruits
+from database.affiliates import AffiliatesValidators as ValidAffiliate
+from database.affiliates import EarningsValidators as ValidEarnings
+from database.affiliates import RecruitsValidators as ValidRecruit
+from utils.utils import create_id, return_ttl
+
+
 # from cache.cache_manager import CacheManager
 
 
