@@ -1314,8 +1314,7 @@ class MembershipsView(Validators, MembershipsEmails):
             message: str = 'could not find plan associate with the plan_id'
             return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
-        if bool(membership_plan_instance.term_payment_amount) and bool(
-                membership_plan_instance.registration_amount):
+        if bool(membership_plan_instance.term_payment_amount) and bool(membership_plan_instance.registration_amount):
             amount_data: dict = {'term_payment_amount': membership_plan_instance.term_payment_amount.to_dict(),
                                  'registration_amount': membership_plan_instance.registration_amount.to_dict()}
             message: str = 'successfully returned payment details'
@@ -1364,9 +1363,9 @@ class MembershipsView(Validators, MembershipsEmails):
 
         amount_data: dict = {'term_payment_amount': membership_plan_instance.term_payment_amount.to_dict(),
                              'registration_amount': membership_plan_instance.registration_amount.to_dict()}
+
         message: str = 'successfully returned payment details'
-        return jsonify(
-            {'status': True, 'payload': amount_data, 'message': message}), status_codes.status_ok_code
+        return jsonify({'status': True, 'payload': amount_data, 'message': message}), status_codes.status_ok_code
 
     @use_context
     @handle_view_errors
@@ -1411,10 +1410,10 @@ class MembershipsView(Validators, MembershipsEmails):
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
         # TODO please update cache
-        message: str = "Successfully un-subscribed from your membership plan"
         # TODO important please also un-subscribe from paypal services
-        return jsonify({'status': True,
-                        'payload': membership_instance.to_dict(),
+
+        message: str = "Successfully un-subscribed from your membership plan"
+        return jsonify({'status': True, 'payload': membership_instance.to_dict(),
                         'message': message}), status_codes.successfully_updated_code
 
 
@@ -1553,36 +1552,36 @@ class MembershipPlansView(Validators):
             message: str = "Unable to create Payment Plan check your service_id or inform admin"
             raise RequestError(status=error_codes.input_error_code, description=message)
 
-        if self.can_add_plan(organization_id=organization_id, plan_name=plan_name) is True:
-            total_members: int = 0
-            # Creating Amount Mixins to represent real currency
-            curr_term_payment: AmountMixin = AmountMixin(amount=term_payment, currency=currency)
-            curr_registration_amount: AmountMixin = AmountMixin(amount=registration_amount, currency=currency)
-            # IF one of the values is not defined then this will throw an error
-            plan_instance: MembershipPlans = MembershipPlans(organization_id=organization_id,
-                                                             service_id=service_id,
-                                                             plan_id=plan_id,
-                                                             plan_name=plan_name,
-                                                             description=description,
-                                                             total_members=total_members,
-                                                             schedule_day=schedule_day,
-                                                             schedule_term=schedule_term,
-                                                             term_payment=curr_term_payment,
-                                                             registration_amount=curr_registration_amount,
-                                                             is_active=is_active,
-                                                             date_created=datetime.now().date())
+        if not self.can_add_plan(organization_id=organization_id, plan_name=plan_name):
+            # TODO refactor other forbidden errors
+            message: str = 'Operation Denied: Unable to create plan'
+            raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
 
-            key: Optional[ndb.Key] = plan_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-            if not bool(key):
-                message: str = 'Database Error: error creating plan please try again later'
-                raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+        total_members: int = 0
+        # Creating Amount Mixins to represent real currency
+        curr_term_payment: AmountMixin = AmountMixin(amount=term_payment, currency=currency)
+        curr_registration_amount: AmountMixin = AmountMixin(amount=registration_amount, currency=currency)
+        # IF one of the values is not defined then this will throw an error
+        plan_instance: MembershipPlans = MembershipPlans(organization_id=organization_id,
+                                                         service_id=service_id,
+                                                         plan_id=plan_id,
+                                                         plan_name=plan_name,
+                                                         description=description,
+                                                         total_members=total_members,
+                                                         schedule_day=schedule_day,
+                                                         schedule_term=schedule_term,
+                                                         term_payment=curr_term_payment,
+                                                         registration_amount=curr_registration_amount,
+                                                         is_active=is_active,
+                                                         date_created=datetime.now().date())
 
-            return jsonify({'status': True, 'message': 'successfully created new membership plan',
-                            'payload': plan_instance.to_dict()}), status_codes.status_ok_code
+        key: Optional[ndb.Key] = plan_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+        if not bool(key):
+            message: str = 'Database Error: error creating plan please try again later'
+            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-        # TODO refactor other forbidden errors
-        message: str = 'Operation Denied: Unable to create plan'
-        raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
+        return jsonify({'status': True, 'message': 'successfully created new membership plan',
+                        'payload': plan_instance.to_dict()}), status_codes.status_ok_code
 
     @use_context
     @handle_view_errors
@@ -1612,36 +1611,36 @@ class MembershipPlansView(Validators):
             message: str = "Unable to create Payment Plan check your service_id or inform admin"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        if self.can_add_plan_async(organization_id=organization_id, plan_name=plan_name) is True:
-            total_members: int = 0
-            # Creating Amount Mixins to represent real currency
-            curr_term_payment: AmountMixin = AmountMixin(amount=term_payment, currency=currency)
-            curr_registration_amount: AmountMixin = AmountMixin(amount=registration_amount, currency=currency)
-            # IF one of the values is not defined then this will throw an error
-            plan_instance: MembershipPlans = MembershipPlans(organization_id=organization_id,
-                                                             service_id=service_id,
-                                                             plan_id=plan_id,
-                                                             plan_name=plan_name,
-                                                             description=description,
-                                                             total_members=total_members,
-                                                             schedule_day=schedule_day,
-                                                             schedule_term=schedule_term,
-                                                             term_payment=curr_term_payment,
-                                                             registration_amount=curr_registration_amount,
-                                                             is_active=is_active,
-                                                             date_created=datetime.now().date())
+        if await self.can_add_plan_async(organization_id=organization_id, plan_name=plan_name) is False:
+            message: str = "Operation Denied: Unable to create new  membership plan"
+            raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
 
-            key: Optional[ndb.Key] = plan_instance.put_async(retries=self._max_retries,
-                                                             timeout=self._max_timeout).get_result()
-            if not bool(key):
-                message: str = 'for some reason we are unable to create a new plan'
-                raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+        total_members: int = 0
+        # Creating Amount Mixins to represent real currency
+        curr_term_payment: AmountMixin = AmountMixin(amount=term_payment, currency=currency)
+        curr_registration_amount: AmountMixin = AmountMixin(amount=registration_amount, currency=currency)
+        # IF one of the values is not defined then this will throw an error
+        plan_instance: MembershipPlans = MembershipPlans(organization_id=organization_id,
+                                                         service_id=service_id,
+                                                         plan_id=plan_id,
+                                                         plan_name=plan_name,
+                                                         description=description,
+                                                         total_members=total_members,
+                                                         schedule_day=schedule_day,
+                                                         schedule_term=schedule_term,
+                                                         term_payment=curr_term_payment,
+                                                         registration_amount=curr_registration_amount,
+                                                         is_active=is_active,
+                                                         date_created=datetime.now().date())
 
-            return jsonify({'status': True, 'message': 'successfully created new membership plan',
-                            'payload': plan_instance.to_dict()}), status_codes.successfully_updated_code
+        key: Optional[ndb.Key] = plan_instance.put_async(retries=self._max_retries,
+                                                         timeout=self._max_timeout).get_result()
+        if not bool(key):
+            message: str = 'for some reason we are unable to create a new plan'
+            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-        message: str = "Operation Denied: Unable to create new  membership plan"
-        raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
+        return jsonify({'status': True, 'message': 'successfully created new membership plan',
+                        'payload': plan_instance.to_dict()}), status_codes.successfully_updated_code
 
     # noinspection DuplicatedCode
     @use_context
@@ -1717,9 +1716,9 @@ class MembershipPlansView(Validators):
             message: str = 'Membership plan not found'
             return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
-        curr_term_payment: AmountMixin = AmountMixin(amount=term_payment, currency=currency)
-        curr_registration_amount: AmountMixin = AmountMixin(amount=registration_amount,
-                                                            currency=currency)
+        curr_term_payment: AmountMixin = AmountMixin(amount_cents=term_payment, currency=currency)
+        curr_registration_amount: AmountMixin = AmountMixin(amount_cents=registration_amount, currency=currency)
+
         membership_plans_instance.plan_name = plan_name
         membership_plans_instance.description = description
         membership_plans_instance.schedule_day = schedule_day
@@ -1727,6 +1726,7 @@ class MembershipPlansView(Validators):
         membership_plans_instance.term_payment_amount = curr_term_payment
         membership_plans_instance.registration_amount = curr_registration_amount
         membership_plans_instance.is_active = is_active
+
         key: Optional[ndb.Key] = membership_plans_instance.put_async(retries=self._max_retries,
                                                                      timeout=self._max_timeout).get_result()
         if not bool(key):
@@ -1803,7 +1803,7 @@ class MembershipPlansView(Validators):
             MembershipPlans.organization_id == organization_id,
             MembershipPlans.plan_id == plan_id).get_async().get_result()
 
-        if not bool(membership_plans_instance) or membership_plans_instance.organization_id != organization_id:
+        if not isinstance(membership_plans_instance, MembershipPlans) or not bool(membership_plans_instance):
             message: str = 'Membership plan not found'
             return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
@@ -1900,7 +1900,7 @@ class MembershipPlansView(Validators):
             raise InputError(status=error_codes.input_error_code, description=message)
 
         membership_plan_instance: MembershipPlans = MembershipPlans.query(
-            Memberships.organization_id == organization_id, MembershipPlans.plan_id == plan_id).get()
+            MembershipPlans.plan_id == plan_id, Memberships.organization_id == organization_id).get()
 
         return membership_plan_instance if bool(membership_plan_instance) else None
 
@@ -2008,14 +2008,14 @@ class MembershipPlansView(Validators):
         membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                              Memberships.uid == uid).get()
 
-        if bool(membership_instance):
-            plan_instance = self._get_plan(organization_id=organization_id, plan_id=membership_instance.plan_id)
-            message: str = "successfully fetched user plan"
-            return jsonify({'status': True, 'payload': plan_instance.to_dict(),
-                            'message': message}), status_codes.status_ok_code
+        if not isinstance(membership_instance, Memberships) or not bool(membership_instance):
+            return jsonify({'status': False,
+                            'message': 'Unable to get plan'}), status_codes.data_not_found_code
 
-        return jsonify({'status': False,
-                        'message': 'Unable to get plan'}), status_codes.data_not_found_code
+        plan_instance = self._get_plan(organization_id=organization_id, plan_id=membership_instance.plan_id)
+        message: str = "successfully fetched user plan"
+        return jsonify({'status': True, 'payload': plan_instance.to_dict(),
+                        'message': message}), status_codes.status_ok_code
 
     @staticmethod
     @use_context
@@ -2336,8 +2336,7 @@ class CouponsView(Validators):
             message: str = "organization id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        coupon_instance: Coupons = Coupons.query(Coupons.organization_id == organization_id,
-                                                 Coupons.code == code).get()
+        coupon_instance: Coupons = Coupons.query(Coupons.organization_id == organization_id, Coupons.code == code).get()
 
         if not isinstance(coupon_instance, Coupons) or not bool(coupon_instance):
             message: str = "coupon not found: unable to cancel coupon code"
@@ -2386,9 +2385,9 @@ class CouponsView(Validators):
         if not bool(key):
             message: str = "Unable to cancel coupon"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
-        return jsonify({'status': True,
-                        'payload': coupon_instance.to_dict(),
-                        'message': 'successfully cancelled coupon code'}), status_codes.successfully_updated_code
+        message: str = 'successfully cancelled coupon code'
+        return jsonify({'status': True, 'payload': coupon_instance.to_dict(),
+                        'message': message}), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
@@ -2412,8 +2411,7 @@ class CouponsView(Validators):
                             'message': message}), status_codes.status_ok_code
 
         message: str = "coupons not found"
-        return jsonify({'status': True, 'payload': payload,
-                        'message': message}), status_codes.data_not_found_code
+        return jsonify({'status': True, 'payload': payload, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -2565,8 +2563,7 @@ class CouponsView(Validators):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        coupon_instance: Coupons = Coupons.query(Coupons.organization_id == organization_id,
-                                                 Coupons.code == code).get()
+        coupon_instance: Coupons = Coupons.query(Coupons.organization_id == organization_id, Coupons.code == code).get()
 
         if isinstance(coupon_instance, Coupons) and bool(coupon_instance):
             message: str = "Coupon has been found"
