@@ -30,7 +30,16 @@ def micro_services_auth() -> tuple:
     json_data: dict = request.get_json()
     domain: str = json_data.get('domain')
     app_id: str = json_data.get('app_id')
-    secret_key: str = json_data.get('secret_key')
+    secret_key: str = json_data.get('SECRET_KEY')
+    if domain is None:
+        message: str = "Application not authorized: domain is Null"
+        raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
+    if app_id is None:
+        message: str = "Application not authorized: app_id is Null"
+        raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
+    if secret_key is None:
+        message: str = "Application not authorized: Secret_key is Null"
+        raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
     # TODO consider checking if the domain which makes the call is the same as the domain which was passed
 
