@@ -58,7 +58,6 @@ def client_wallets(path: str) -> tuple:
         currency: str = json_data.get('currency')
         # Note: Amount is in cents
         amount: int = json_data.get('amount')
-        paypal_address: str = json_data.get('paypal_address')
         return wallet_view._wallet_withdraw_funds(organization_id=organization_id, uid=uid, amount=amount)
 
     elif path == 'balance':
