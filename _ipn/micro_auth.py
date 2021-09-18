@@ -59,6 +59,8 @@ def micro_services_auth() -> tuple:
 
     # Note: checking if secret key matches
     _secret_key: str = config_instance.SECRET_KEY
+    print(f'{secret_key}')
+    print(f'{_secret_key}')
     compare_secret_key: bool = hmac.compare_digest(secret_key, _secret_key)
 
     # Note: checking if app_id is really the same as the app_id created by the app itself
@@ -82,7 +84,7 @@ def micro_services_auth() -> tuple:
         message: str = "Application not authorized"
         raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
-    _payload: dict = dict(app_id=app_id, domain=domain, secret_key=secret_key, auth_token=_auth_token)
+    _payload: dict = dict(app_id=app_id, domain=domain, SECRET_KEY=secret_key, auth_token=_auth_token)
     _message: str = 'application successfully authenticated'
 
     return jsonify(dict(result=True, payload=_payload, message=_message)), status_codes.successfully_updated_code
