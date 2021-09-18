@@ -86,6 +86,7 @@ def is_app_authenticated(domain: Optional[str], secret_key: Optional[str],
 
 
 def handle_apps_authentication(func: Callable) -> Callable:
+    # noinspection DuplicatedCode
     @functools.wraps(func)
     def auth_wrapper(*args, **kwargs) -> Callable:
         json_data: dict = request.get_json()
@@ -93,6 +94,19 @@ def handle_apps_authentication(func: Callable) -> Callable:
         secret_key: Optional[str] = json_data.get('SECRET_KEY')
         auth_token: Optional[str] = json_data.get('app_token')
         # print(f"Domain: {domain}, Secret_key: {secret_key}, Auth_token: {auth_token}")
+        if domain is None:
+            print(f'domain is Null: {domain}')
+            message: str = "request not authorized"
+            raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
+        if secret_key is None:
+            print(f'secret_key is Null: {secret_key}')
+            message: str = "request not authorized"
+            raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
+
+        if auth_token is None:
+            print(f'auth_token is Null: {auth_token}')
+            message: str = "request not authorized"
+            raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
         if not is_development() and ("localhost" in domain or "127.0.0.1" in domain):
             message: str = "request not authorized"
@@ -137,6 +151,16 @@ def handle_cron_auth(func: Callable) -> Callable:
         json_data: dict = request.get_json()
         _cron_domain: Optional[str] = json_data.get('domain')
         _secret_key: Optional[str] = json_data.get('SECRET_KEY')
+
+        if _cron_domain is None:
+            print(f'cron domain is Null: {_cron_domain}')
+            message: str = "request not authorized"
+            raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
+
+        if _secret_key is None:
+            print(f'secret key is Null: {_secret_key}')
+            message: str = "request not authorized"
+            raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
         if verify_cron_job(cron_domain=_cron_domain, secret_key=_secret_key):
             return func(*args, **kwargs)
