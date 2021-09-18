@@ -92,7 +92,7 @@ class Config:
 
         # NOTE : setting IS_PRODUCTION here - could find a better way of doing this rather
         # than depending on the OS
-        if "Windows_NT" == os.environ.get("OS"):
+        if "DESKTOP-B52R0UU" == os.environ.get('COMPUTERNAME'):
             self.DEBUG = True
             self.IS_PRODUCTION = False
             self.ENV = "development"

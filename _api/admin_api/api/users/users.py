@@ -96,16 +96,18 @@ def auth_admin(path: str) -> tuple:
         password: Optional[str] = json_data.get("password")
         uid: Optional[str] = json_data.get("uid")
         organization_id: Optional[str] = json_data.get("organization_id")
+        print(f'json data: {json_data}')
 
         # Comparing Digests
         compare_email: bool = hmac.compare_digest(email, config_instance.ADMIN_EMAIL)
         compare_password: bool = hmac.compare_digest(password, config_instance.ADMIN_PASSWORD)
         compare_uid: bool = hmac.compare_digest(uid, config_instance.ADMIN_UID)
         compare_org: bool = hmac.compare_digest(organization_id, config_instance.ORGANIZATION_ID)
+        print(f'compare org : {compare_org}')
+        print(f'compare uid: {compare_uid}')
 
         if compare_email and compare_password and compare_uid and compare_org:
-            user_dict: dict = get_admin_user()
-            user_dict.update(password="")
+            user_dict: dict = get_admin_user().to_dict()
             token: Optional[str] = encode_auth_token(uid=uid)
             message: str = 'welcome admin'
             payload: dict = dict(token=token, user=user_dict)
@@ -130,7 +132,7 @@ def auth_admin(path: str) -> tuple:
 
         # NOTE remove any cached tokens
         if compare_email and compare_uid and compare_org:
-            user_dict: dict = get_admin_user()
+            user_dict: dict = get_admin_user().to_dict()
             user_dict.update(password="")
             token: Optional[str] = None
             message: str = 'successfully logged out user'
@@ -145,7 +147,7 @@ def auth_admin(path: str) -> tuple:
         compare_org: bool = hmac.compare_digest(organization_id, config_instance.ORGANIZATION_ID)
 
         if compare_org and compare_uid:
-            user_dict: dict = get_admin_user()
+            user_dict: dict = get_admin_user().to_dict()
             user_dict.update(password="")
             message: str = 'user successfully retrieved'
             return jsonify({'status': True, 'payload': user_dict, 'message': message})
