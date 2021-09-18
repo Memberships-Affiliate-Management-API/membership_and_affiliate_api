@@ -13,9 +13,6 @@ from database.mixins import AmountMixin
 class PayPalOrders(PayPalClient):
     """Setting up the complete JSON request body for creating the Order. The Intent in the
         request body should be set as "AUTHORIZE" for capture intent flow."""
-
-    """Setting up the minimum required JSON request body for creating the Order. The Intent in the
-        request body should be set as "AUTHORIZE" for capture intent flow."""
     order_response = None
     authorize_response = None
     capture_response = None
