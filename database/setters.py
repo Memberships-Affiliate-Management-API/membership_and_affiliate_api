@@ -151,10 +151,6 @@ class Util:
             return result.ok
         except requests.RequestException:
             return False
-        except requests.Timeout:
-            return False
-        except requests.ConnectionError:
-            return False
 
     @staticmethod
     def format_cell_number(cell: str) -> str:
@@ -221,11 +217,14 @@ class PropertySetters(Events, Util):
         :return: returns id as string
         """
         property_name: str = property_.return_property_name(prop=prop)
-        if not (isinstance(value, str)):
+        try:
+            assert isinstance(value, str)
+        except AssertionError:
             message: str = f'''isinstance ID, should be an instance of : {property_name} , and should represent an _id'''
             raise ValueError(message)
-
-        if not bool(value.strip()):
+        try:
+            assert not bool(value.strip())
+        except AssertionError:
             raise ValueError(f"isinstance ID, should be an instance of : {property_name} , and  cannot be Null")
 
         return value.strip()
@@ -240,12 +239,14 @@ class PropertySetters(Events, Util):
         :return:
         """
         property_name: str = property_.return_property_name(prop=prop)
-        if not (isinstance(value, str)):
+        try:
+            assert isinstance(value, str)
+        except AssertionError:
             raise ValueError(f"Coupon Code, is an instance of: {property_name} , and can only be a string")
-
-        if len(value.strip()) != property_._max_coupon_code_len:
+        try:
+            assert len(value.strip()) != property_._max_coupon_code_len
+        except AssertionError:
             message: str = f"Coupon Code, is an instance of: {property_name} , and must be 12 characters long"
-
             raise ValueError(message)
 
         return value.strip().lower()
