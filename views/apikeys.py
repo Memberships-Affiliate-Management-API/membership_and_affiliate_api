@@ -124,12 +124,8 @@ class APIKeysView(APIKeysValidators):
         api_key: str = self._create_unique_api_key()
         secret_token: str = self._create_unique_secret_key()
 
-        api_key_instance: APIKeys = APIKeys(organization_id=organization_id,
-                                            api_key=api_key,
-                                            secret_token=secret_token,
-                                            assigned_to_uid=uid,
-                                            domain=domain,
-                                            is_active=True)
+        api_key_instance: APIKeys = APIKeys(organization_id=organization_id, api_key=api_key, secret_token=secret_token,
+                                            assigned_to_uid=uid, domain=domain, is_active=True)
         key = api_key_instance.put(retries=self._max_retries, timeout=self._max_timeout)
         if not bool(key):
             message: str = "database error: unable to create api_key"
