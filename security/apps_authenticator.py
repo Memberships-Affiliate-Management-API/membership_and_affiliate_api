@@ -54,7 +54,7 @@ def verify_app_id(app_id: str, domain: str) -> bool:
     _payload: dict = json_data.get('payload')
 
     # Note: comparing a known secret_key with the returned secret_key
-    compare_secret_key: bool = hmac.compare_digest(_secret_key, _payload.get('secret_key'))
+    compare_secret_key: bool = hmac.compare_digest(_secret_key, _payload.get('SECRET_KEY'))
 
     compare_app_id: bool = hmac.compare_digest(app_id, _payload.get('app_id'))
     return json_data.get('status') and compare_secret_key and compare_app_id
@@ -90,7 +90,7 @@ def handle_apps_authentication(func: Callable) -> Callable:
     def auth_wrapper(*args, **kwargs) -> Callable:
         json_data: dict = request.get_json()
         domain: Optional[str] = json_data.get('domain')
-        secret_key: Optional[str] = json_data.get('SECRET')
+        secret_key: Optional[str] = json_data.get('SECRET_KEY')
         auth_token: Optional[str] = json_data.get('app_token')
         # print(f"Domain: {domain}, Secret_key: {secret_key}, Auth_token: {auth_token}")
 
