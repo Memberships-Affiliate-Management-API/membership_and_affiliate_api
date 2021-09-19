@@ -1,0 +1,5 @@
+indexes:
+- kind: Affiliates
+  properties:
+  - name: organization_id
+  - name: datetime_recruited

@@ -33,5 +33,5 @@ def schedule_func(func: Callable, job_name: str, kwargs: Optional[dict] = None) 
     _args: dict = dict()
     _job_names: Hashable = hash(job_name)
     if kwargs:
-        return task_scheduler.every(interval=30).seconds.do(func, **_args, **kwargs).tag(_job_names)
+        return task_scheduler.every(interval=30).seconds.do(func, *_args, **kwargs).tag(_job_names)
     return task_scheduler.every(interval=30).seconds.do(job_func=func).tag(_job_names)

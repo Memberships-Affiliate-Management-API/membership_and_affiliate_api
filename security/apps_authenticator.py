@@ -33,6 +33,14 @@ def verify_secret_key(secret_key: str) -> None:
         raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
 
+def debug_verify_app_id(_result, domain):
+    print(f'---------debug output verify_app_id-------')
+    print(f'domain ------- {domain}')
+    print(f'result -----------: {_result}')
+    print(f'------------status code : {_result.status_code}')
+    print(f'------------------headers : {_result.headers}')
+
+
 def verify_app_id(app_id: str, domain: str) -> bool:
     """
     **verify_app_id**
@@ -53,10 +61,7 @@ def verify_app_id(app_id: str, domain: str) -> bool:
     if _result.status_code in _ok_codes and _result.headers['content-type'] == 'application/json':
         json_data: dict = _result.json()
     else:
-        print(f'domain ------- {domain}')
-        print(f'result -----------: {_result}')
-        print(f'------------status code : {_result.status_code}')
-        print(f'------------------headers : {_result.headers}')
+        debug_verify_app_id(_result, domain)
         message: str = 'Application not authenticated'
         raise UnAuthenticatedError(description=message)
 
