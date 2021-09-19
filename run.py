@@ -33,7 +33,7 @@ def create_thread() -> None:
     :return: None
     """
     try:
-        if not app.tasks_thread:
+        if not isinstance(app.tasks_thread, Thread):
             app.tasks_thread = Thread(target=start_task)
             print('Tasks Thread Created...')
         return None
