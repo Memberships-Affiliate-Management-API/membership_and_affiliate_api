@@ -52,6 +52,7 @@ def verify_app_id(app_id: str, domain: str) -> bool:
     if _result.status_code == 200 and _result.headers['content-type'] == 'application/json':
         json_data: dict = _result.json()
     else:
+        print(f'domain ------- {domain}')
         print(f'result -----------: {_result}')
         print(f'------------status code : {_result.status_code}')
         print(f'------------------headers : {_result.headers}')
