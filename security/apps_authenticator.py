@@ -15,13 +15,13 @@ __licence__ = "MIT"
 
 import functools
 import hmac
-from typing import Optional, Callable
+from typing import Optional, Callable, List
 
 import requests
 from flask import request
 
 from config import config_instance
-from config.exceptions import UnAuthenticatedError, error_codes
+from config.exceptions import UnAuthenticatedError, error_codes, status_codes
 from config.use_context import use_context
 from security.users_authenticator import decode_auth_token
 from utils import is_development
@@ -49,7 +49,8 @@ def verify_app_id(app_id: str, domain: str) -> bool:
     _kwargs: dict = dict(domain=domain, app_id=app_id, SECRET_KEY=_secret_key)
 
     _result: requests.Response = requests.post(url=_url, json=_kwargs)
-    if _result.status_code == 200 and _result.headers['content-type'] == 'application/json':
+    _ok_codes: List[int] = [status_codes.successfully_updated_code, status_codes.status_ok_code]
+    if _result.status_code in _ok_codes and _result.headers['content-type'] == 'application/json':
         json_data: dict = _result.json()
     else:
         print(f'domain ------- {domain}')
