@@ -220,12 +220,12 @@ class PropertySetters(Events, Util):
         try:
             assert isinstance(value, str)
         except AssertionError:
-            message: str = f'''isinstance ID, should be an instance of : {property_name} , and should represent an _id'''
+            message: str = f'{property_name} , can only be a string'
             raise ValueError(message)
         try:
-            assert not bool(value.strip())
+            assert bool(value.strip())
         except AssertionError:
-            raise ValueError(f"isinstance ID, should be an instance of : {property_name} , and  cannot be Null")
+            raise ValueError(f"{property_name} , cannot be Null")
 
         return value.strip()
 
@@ -242,11 +242,11 @@ class PropertySetters(Events, Util):
         try:
             assert isinstance(value, str)
         except AssertionError:
-            raise ValueError(f"Coupon Code, is an instance of: {property_name} , and can only be a string")
+            raise ValueError(f"Must be an instance of: {property_name} , and can only be a string")
         try:
-            assert len(value.strip()) != property_._max_coupon_code_len
+            assert len(value.strip()) == property_._max_coupon_code_len
         except AssertionError:
-            message: str = f"Coupon Code, is an instance of: {property_name} , and must be 12 characters long"
+            message: str = f"{property_name} , must be 12 characters long"
             raise ValueError(message)
 
         return value.strip().lower()
