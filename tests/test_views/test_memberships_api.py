@@ -1,5 +1,5 @@
 import random
-from typing import Optional, List
+from typing import Optional, List, Generator
 from datetime import datetime, timedelta, date
 from random import randint
 from google.cloud import ndb
@@ -22,7 +22,6 @@ with test_app().app_context():
 
 class MembershipsQueryMock:
     membership_instance: Memberships = Memberships()
-    results_range: int = randint(0, 100)
 
     def __init__(self) -> None:
         self.membership_instance.plan_id = create_id()
@@ -46,8 +45,12 @@ class MembershipsQueryMock:
                            plan_start_date=today(), payment_method='paypal',
                            is_active_subscription=random.choice([True, False]))
 
+    def fetch_generator(self) -> Generator:
+        _results_range: int = randint(10, 1000)
+        return (self.rand_membership() for _ in range(_results_range))
+
     def fetch(self) -> List[Memberships]:
-        return [self.rand_membership() for _ in range(self.results_range)]
+        return [membership for membership in self.fetch_generator()]
 
     def get(self) -> Memberships:
         return self.membership_instance
@@ -76,6 +79,7 @@ class MembershipPlansQueryMock:
         self.membership_plan_instance.registration_amount = AmountMixin(
             amount_cents=10000, currency=random.choice(currency_util.currency_symbols()))
 
+    # TODO add fetch_generator
     def fetch(self) -> List[MembershipPlans]:
         return [self.membership_plan_instance for _ in range(self.results_range)]
 

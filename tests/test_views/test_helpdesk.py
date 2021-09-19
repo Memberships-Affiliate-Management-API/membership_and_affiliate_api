@@ -22,7 +22,6 @@ with test_app().app_context():
 
 class HelpDeskQueryMock:
     helpdesk_instance: HelpDesk = HelpDesk()
-    results_range: int = randint(10, 1000)
 
     def __init__(self) -> None:
         self.helpdesk_instance.help_desk_active = True
@@ -34,5 +33,5 @@ class HelpDeskQueryMock:
         return self.helpdesk_instance
 
     def fetch(self) -> List[HelpDesk]:
-        return [self.helpdesk_instance for _ in range(self.results_range)]
+        return [self.helpdesk_instance]
 

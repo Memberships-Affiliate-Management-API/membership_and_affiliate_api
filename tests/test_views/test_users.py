@@ -1,7 +1,7 @@
 from random import choice, randint, choices
 from string import ascii_lowercase
 from string import digits as digits_characters
-from typing import List, Optional
+from typing import List, Optional, Generator
 
 from google.cloud import ndb
 from pytest import raises
@@ -49,13 +49,17 @@ class UsersQueryMock:
                          is_active=choice([True, False]), time_registered=timestamp(), is_admin=choice([True, False]),
                          is_support=choice([True, False]), last_login_date=today())
 
+    def fetch_generator(self) -> Generator:
+        _results_range: int = randint(10, 1000)
+        return (self.rand_user() for _ in range(_results_range))
+
     def fetch(self) -> List[UserModel]:
         """
         **fetch**
         returns a list of users
         :return:
         """
-        return [self.rand_user() for _ in range(self.results_range)]
+        return [_user for _user in self.fetch_generator()]
 
     def get(self) -> UserModel:
         return self.user_instance

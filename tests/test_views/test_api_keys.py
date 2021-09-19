@@ -1,5 +1,5 @@
 from random import choice, randint
-from typing import List, Optional
+from typing import List, Optional, Generator
 
 from google.cloud import ndb
 from pytest import raises
@@ -19,7 +19,6 @@ with test_app().app_context():
 
 class APIKeysQueryMock:
     api_key_instance: APIKeys = APIKeys()
-    results_range: int = randint(10, 1000)
 
     def __init__(self):
         self.api_key_instance.organization_id = config_instance.ORGANIZATION_ID
@@ -44,8 +43,12 @@ class APIKeysQueryMock:
             domain='https://example.com',
             is_active=choice([True, False]))
 
+    def fetch_generator(self) -> Generator:
+        _results_range: int = randint(10, 1000)
+        return (self.rand_api_key() for _ in range(_results_range))
+
     def fetch(self) -> List[APIKeys]:
-        return [self.rand_api_key() for _ in range(self.results_range)]
+        return [api_key for api_key in self.fetch_generator()]
 
     def get(self) -> APIKeys:
         return self.api_key_instance

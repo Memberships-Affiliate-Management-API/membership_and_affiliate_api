@@ -1,5 +1,5 @@
 from random import choice, randint
-from typing import List, Optional
+from typing import List, Optional, Generator
 
 import pytest
 from google.cloud import ndb
@@ -18,7 +18,6 @@ with test_app().app_context():
 
 class OrganizationQueryMock:
     organization_instance: Organization = Organization()
-    results_range: int = randint(10, 1000)
 
     def __init__(self):
         self.organization_instance.organization_id = create_id()
@@ -54,12 +53,16 @@ class OrganizationQueryMock:
             recovery_callback_url='https://memberships-affiliates-api.heroku.com/recovery'
         )
 
+    def fetch_generator(self) -> Generator:
+        _results_range: int = randint(10, 1000)
+        return (self.rand_organization() for _ in range(_results_range))
+
     def fetch(self) -> List[Organization]:
         """
             :param self:
             :return:
         """
-        return [self.rand_organization() for _ in range(self.results_range)]
+        return [organization for organization in self.fetch_generator()]
 
     def get(self) -> Organization:
         return self.organization_instance

@@ -7,7 +7,7 @@ from pytest import raises
 from pytest_mock import mocker
 from datetime import datetime
 from random import randint, choice
-from typing import List
+from typing import List, Generator
 from google.cloud import ndb
 from config.exceptions import status_codes, InputError, UnAuthenticatedError, DataServiceError
 from config.use_context import get_client
@@ -29,7 +29,6 @@ affiliate_data_mock: dict = {
 
 class AffiliateQueryMock:
     affiliates_instance: Affiliates = Affiliates()
-    results_range: int = randint(0, 100)
 
     def __init__(self):
         self.affiliates_instance.affiliate_id = affiliate_data_mock.get('affiliate_id')
@@ -53,8 +52,12 @@ class AffiliateQueryMock:
                           total_recruits=randint(10, 1000), is_active=bool(randint(0, 1)),
                           is_deleted=bool(randint(0, 1)))
 
+    def fetch_generator(self) -> Generator:
+        _results_range: int = randint(0, 100)
+        return (self.rand_affiliate() for _ in range(_results_range))
+
     def fetch(self) -> List[Affiliates]:
-        return [self.rand_affiliate() for _ in range(self.results_range)]
+        return [affiliate for affiliate in self.fetch_generator()]
 
     def get(self) -> Affiliates:
         return self.affiliates_instance

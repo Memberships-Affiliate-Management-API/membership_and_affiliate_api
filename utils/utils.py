@@ -258,7 +258,7 @@ def task_counter(timer_limit: int = 1000000) -> any:
     :param timer_limit:
     :return:
     """
-    yield [y for y in range(timer_limit)][0]
+    return (y for y in range(timer_limit))
 
 
 # Counter Generator
