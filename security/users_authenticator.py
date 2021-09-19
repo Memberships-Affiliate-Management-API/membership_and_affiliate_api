@@ -34,7 +34,7 @@ def create_user(_kwargs: dict) -> Optional[UserModel]:
     from google.cloud import ndb
     with get_client().context():
         _user_instance: Optional[UserModel] = UserModel.query(UserModel.uid == _kwargs['uid']).get()
-        if not isinstance(_user_instance, UserModel) and bool(_user_instance) and is_development():
+        if not isinstance(_user_instance, UserModel) or not bool(_user_instance):
             _user_instance: UserModel = UserModel(**_kwargs)
             _key: Optional[ndb.Key] = _user_instance.put()
             # NOTE: ignoring key because it does not matter if internet is not on
@@ -134,7 +134,6 @@ def handle_users_auth(func):
             and admin dashboard
         :param func:
     """
-
     # noinspection PyBroadException
     @wraps(func)
     def decorated(*args, **kwargs):
@@ -145,6 +144,7 @@ def handle_users_auth(func):
             :return:
         """
         if is_development():
+            # TODO also do this on initial setup of application - could be triggered from admin application
             current_user: Optional[UserModel] = get_admin_user()
             return func(current_user, *args, **kwargs)
 
@@ -189,15 +189,12 @@ def logged_user(func):
     :param func: route to wrap
     :return: wrapped function
     """
-
     @wraps(func)
     def decorated(*args, **kwargs):
         current_user: Optional[UserModel] = None
         # NOTE: by passes authentication and returns admin user as authenticated
         # user on development
         if is_development():
-            # TODO use api here instead of user model
-
             current_user: Optional[UserModel] = get_admin_user()
             return func(current_user, *args, **kwargs)
 
@@ -218,7 +215,6 @@ def logged_user(func):
             else:
                 pass
         return func(current_user, *args, **kwargs)
-
     return decorated
 
 
