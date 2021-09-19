@@ -33,7 +33,6 @@ def verify_secret_key(secret_key: str) -> None:
         raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
 
-
 def verify_app_id(app_id: str, domain: str) -> bool:
     """
     **verify_app_id**
@@ -49,9 +48,12 @@ def verify_app_id(app_id: str, domain: str) -> bool:
     _secret_key: str = config_instance.SECRET_KEY
     _kwargs: dict = dict(domain=domain, app_id=app_id, SECRET_KEY=_secret_key)
 
-    _result = requests.post(url=_url, json=_kwargs)
-
-    json_data: dict = _result.json()
+    _result: requests.Response = requests.post(url=_url, json=_kwargs)
+    if _result.status_code == 200 and _result.headers['content-type'] == 'application/json':
+        json_data: dict = _result.json()
+    else:
+        message: str = 'Application not authenticated'
+        raise UnAuthenticatedError(description=message)
 
     if not json_data.get('status'):
         # TODO if app not authenticated adding the ip address to a black list may be a good idea
@@ -159,6 +161,7 @@ def verify_cron_job(cron_domain: str, secret_key: str) -> bool:
 
 def handle_cron_auth(func: Callable) -> Callable:
     """authenticate cron job execution routes"""
+
     @functools.wraps(func)
     def auth_wrapper(*args, **kwargs) -> Callable:
         json_data: dict = request.get_json()
