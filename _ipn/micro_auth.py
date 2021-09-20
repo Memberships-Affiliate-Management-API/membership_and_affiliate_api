@@ -59,8 +59,6 @@ def micro_services_auth() -> tuple:
 
     # Note: checking if secret key matches
     _secret_key: str = config_instance.SECRET_KEY
-    print(f'{secret_key}')
-    print(f'{_secret_key}')
     compare_secret_key: bool = hmac.compare_digest(secret_key, _secret_key)
 
     # Note: checking if app_id is really the same as the app_id created by the app itself

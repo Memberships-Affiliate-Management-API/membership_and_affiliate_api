@@ -34,11 +34,7 @@ def verify_secret_key(secret_key: str) -> None:
 
 
 def debug_verify_app_id(_result, domain):
-    print(f'---------debug output verify_app_id-------')
-    print(f'domain ------- {domain}')
-    print(f'result -----------: {_result}')
-    print(f'------------status code : {_result.status_code}')
-    print(f'------------------headers : {_result.headers}')
+    pass
 
 
 def verify_app_id(app_id: str, domain: str) -> bool:
@@ -95,18 +91,18 @@ def is_app_authenticated(domain: Optional[str], secret_key: Optional[str],
     if not bool(decoded_token):
         print('token not decoded: ')
         return False
-    print(f'app token : {decoded_token}')
+    # print(f'app token : {decoded_token}')
     _domain, _secret_key, _app_id = decoded_token.split('#')
-    print(f"DOMAIN: {domain} SECRET_KEY: {secret_key}, app_id: {_app_id}")
+    # print(f"DOMAIN: {domain} SECRET_KEY: {secret_key}, app_id: {_app_id}")
     domain = f"{domain}/" if not domain.endswith("/") else domain
     if is_development() and domain == 'http://localhost:8082/':
         domain = 'http://127.0.0.1:8082/'
 
     compare_secret_key: bool = hmac.compare_digest(_secret_key, secret_key)
     compare_domain: bool = hmac.compare_digest(_domain, domain)
-    print(f"domain : {domain}, _domain: {_domain}")
-    print(compare_domain)
-    print(compare_secret_key)
+    # print(f"domain : {domain}, _domain: {_domain}")
+    # print(compare_domain)
+    # print(compare_secret_key)
     return compare_secret_key and compare_domain and verify_app_id(app_id=_app_id, domain=_domain)
 
 
@@ -120,16 +116,16 @@ def handle_apps_authentication(func: Callable) -> Callable:
         auth_token: Optional[str] = json_data.get('app_token')
         # print(f"Domain: {domain}, Secret_key: {secret_key}, Auth_token: {auth_token}")
         if domain is None:
-            print(f'domain is Null: {domain}')
+            # print(f'domain is Null: {domain}')
             message: str = "request not authorized"
             raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
         if secret_key is None:
-            print(f'secret_key is Null: {secret_key}')
+            # print(f'secret_key is Null: {secret_key}')
             message: str = "request not authorized"
             raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
         if auth_token is None:
-            print(f'auth_token is Null: {auth_token}')
+            # print(f'auth_token is Null: {auth_token}')
             message: str = "request not authorized"
             raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
@@ -179,12 +175,12 @@ def handle_cron_auth(func: Callable) -> Callable:
         _secret_key: Optional[str] = json_data.get('SECRET_KEY')
 
         if _cron_domain is None:
-            print(f'cron domain is Null: {_cron_domain}')
+            # print(f'cron domain is Null: {_cron_domain}')
             message: str = "request not authorized"
             raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
         if _secret_key is None:
-            print(f'secret key is Null: {_secret_key}')
+            # print(f'secret key is Null: {_secret_key}')
             message: str = "request not authorized"
             raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 

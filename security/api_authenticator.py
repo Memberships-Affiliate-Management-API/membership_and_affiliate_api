@@ -69,17 +69,17 @@ def handle_api_auth(func):
         domain: Optional[str] = request.base_url
 
         if api_key is None:
-            print(f'api_key is Null: {api_key}')
+            # print(f'api_key is Null: {api_key}')
             message: str = "request not authorized"
             raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
         if secret_token is None:
-            print(f'secret_token is Null: {secret_token}')
+            # print(f'secret_token is Null: {secret_token}')
             message: str = "request not authorized"
             raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
         if domain is None:
-            print(f'domain is Null: {domain}')
+            # print(f'domain is Null: {domain}')
             message: str = "request not authorized"
             raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
