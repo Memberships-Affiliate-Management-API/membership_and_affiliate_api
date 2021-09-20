@@ -15,7 +15,6 @@ tests/
 .vscode/
 .github/
 Procfile
-requirements-dev.txt
 runtime.txt
 .sass-cache/
 *.css.map
