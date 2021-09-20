@@ -107,30 +107,32 @@ def date_string_to_date(date_str: str) -> date:
     :param date_str: string representation of date
     :return: returns a python date object
     """
-    if isinstance(date_str, str):
-        if "/" in date_str:
-            date_list: List[str] = date_str.split("/")
-        elif "-" in date_str:
-            date_list: List[str] = date_str.split("-")
-        else:
-            raise ValueError('Date format invalid')
-        try:
-            year: int = int(date_list[0])
-            month: int = int(date_list[1])
-            day: int = int(date_list[2])
-        except KeyError:
-            raise ValueError("Date Format invalid")
-        if 0 < month > 12:
-            raise ValueError("Date Format Invalid")
-        if 0 < day > 31:
-            raise ValueError("Date Format invalid")
-        if year < 1990:
-            raise ValueError("Date Format invalid")
-        return date(year=year, month=month, day=day)
-    elif isinstance(date_str, date):
+    if isinstance(date_str, date):
         return date_str
-    else:
+
+    if not isinstance(date_str, str):
         raise ValueError('Date format invalid')
+
+    if not ("/" in date_str or "-" in date_str):
+        raise ValueError('Date format invalid')
+
+    date_list: List[str] = date_str.split("/") if "/" in date_str else date_str.split("-")
+    if len(date_list) != 3:
+        raise ValueError("Date Format invalid")
+
+    year: int = int(date_list[0])
+    month: int = int(date_list[1])
+    day: int = int(date_list[2])
+
+    if 0 < month > 12:
+        raise ValueError("Date Format Invalid")
+    if 0 < day > 31:
+        raise ValueError("Date Format invalid")
+    if year < 1990:
+        # Not interested in anything that old
+        raise ValueError("Date Format invalid")
+
+    return date(year=year, month=month, day=day)
 
 
 def end_of_month() -> bool:
