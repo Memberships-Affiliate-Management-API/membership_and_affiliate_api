@@ -3,7 +3,7 @@
 
 
 ![Code Quality](https://github.com/Memberships-Affiliate-Management-API/membership_and_affiliate_api/actions/workflows/codeql-analysis.yml/badge.svg)
-![Py.Test](https://github.com/Memberships-Affiliate-Management-API/membership_and_affiliate_api/blob/master/.github/workflows/pytest.yaml/badge.svg)
+![Py.Test](https://github.com/Memberships-Affiliate-Management-API/membership_and_affiliate_api/actions/workflows/pytest.yaml/badge.svg)
 
  **How it Works?**
  --
