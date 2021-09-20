@@ -6,6 +6,7 @@
 ![Py.Test](https://github.com/Memberships-Affiliate-Management-API/membership_and_affiliate_api/actions/workflows/pytest.yaml/badge.svg)
 [Depandabot](https://github.com/Memberships-Affiliate-Management-API/membership_and_affiliate_api/actions/workflows/dependabot.yml/badge.svg)
 
+
  **How it Works?**
  --
     Our API allows developers to create memberships or subscriptions based services and products 
