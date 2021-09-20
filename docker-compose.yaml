@@ -29,7 +29,7 @@ services:
 
   api:
     env_file:
-      - .environ.docker
+      - .env.docker
     build:
       context: .
       dockerfile: Docker.API
@@ -54,7 +54,7 @@ services:
 
   system-admin:
     env_file:
-      - .environ.docker
+      - .env.docker
     build:
       context: ../admin-portal-memberships-api/
       dockerfile: ../admin-portal-memberships-api/Dockerfile.ADMIN
@@ -93,7 +93,7 @@ services:
 
   tasks:
     env_file:
-      - .environ.docker
+      - .env.docker
     build:
       context: .
       dockerfile: Docker.TASKS
@@ -109,7 +109,7 @@ services:
 
   cron:
     env_file:
-      - .environ.docker
+      - .env.docker
     build:
       context: .
       dockerfile: Docker.CRON

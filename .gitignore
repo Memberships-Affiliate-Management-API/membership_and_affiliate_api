@@ -2,10 +2,11 @@
 appengine-generated/
 app.yaml
 .env
-.environ.docker
+.env.docker
 venv/
 gen/
 .idea/
 .vscode/
 .pytest_cache/
 *.pyc
+/.env.docker
