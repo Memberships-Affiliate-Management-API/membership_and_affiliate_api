@@ -359,7 +359,7 @@ class AffiliatesView(Validator):
 
         affiliates_list: List[Affiliates] = Affiliates.query(
             Affiliates.organization_id == organization_id).order(Affiliates.datetime_recruited).fetch()
-
+        # TODO use Generators to get affiliates in a batch of thousand at a time
         payload: List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
 
         if len(payload):
@@ -390,6 +390,8 @@ class AffiliatesView(Validator):
         affiliates_list: List[Affiliates] = Affiliates.query(
             Affiliates.organization_id == organization_id,
             Affiliates.is_active == True, Affiliates.is_deleted == False).order(Affiliates.datetime_recruited).fetch()
+
+        # TODO use Generators to get affiliates in a batch of thousand at a time
         payload: List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
         if len(payload):
             return jsonify({'status': True, 'message': 'successfully returned all affiliates',
