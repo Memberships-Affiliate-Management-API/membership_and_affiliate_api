@@ -18,23 +18,7 @@ import aiohttp
 from config.exceptions import EnvironNotSet
 from cache.cache_manager import app_cache
 from utils import timestamp, create_id, return_ttl
-
-
-def _retry(func: Callable, exception: Exception = Exception, _max_retries: int = 3, delay: int = 0, backoff: int = 1):
-    @wraps(func)
-    def wrapped_function(*args, **kwargs):
-        tries = 0
-        while tries < _max_retries:
-            try:
-                return func(*args, **kwargs)
-            except exception as e:
-                _delay = delay * backoff ** tries
-                print(f"{e}, Trying again in {_delay} seconds...")
-                time.sleep(_delay)
-                tries += 1
-        return func(*args, **kwargs)
-
-    return wrapped_function
+from utils.utils import _retry
 
 
 class APIRequests:
@@ -57,8 +41,8 @@ class APIRequests:
         self._responses_queue: List[Optional[dict]] = []
         self._event_loop = None
 
-    @_retry
     @staticmethod
+    @_retry
     async def _async_request(_url, json_data, headers) -> Optional[dict]:
         async with aiohttp.ClientSession() as session:
             async with session.post(url=_url, json=json_data, headers=headers) as response:

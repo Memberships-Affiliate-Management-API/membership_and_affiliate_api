@@ -1331,7 +1331,6 @@ class UserView(Validators, UserEmails):
 
         return jsonify({'status': True, 'message': 'user deactivated'}), status_codes.status_ok_code
 
-
     @use_context
     @handle_view_errors
     async def deactivate_user_async(self, organization_id: Optional[str],
@@ -1451,6 +1450,7 @@ class UserView(Validators, UserEmails):
     @handle_view_errors
     def _system_user_exist(self, email: Optional[str] = None, uid: Optional[str] = None) -> tuple:
         """
+            **_system_user_exist**
 
         :param email:
         :return:

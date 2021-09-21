@@ -13,7 +13,8 @@ import datetime
 import random
 import string
 import time
-from typing import List, Optional, Union
+from functools import wraps
+from typing import List, Optional, Union, Callable
 from datetime import date
 from datetime import time as time_class
 from config import config_instance
@@ -23,6 +24,22 @@ _char_set = string.ascii_lowercase + string.ascii_uppercase + string.digits
 
 # NOTE input character set
 _input_character_set = string.printable
+
+
+def _retry(func: Callable, exception: Exception = Exception, _max_retries: int = 3, delay: int = 0, backoff: int = 1):
+    # noinspection PyBroadException
+    @wraps(func)
+    def wrapped_function(*args, **kwargs):
+        tries = 0
+        while tries < _max_retries:
+            try:
+                return func(*args, **kwargs)
+            except exception as e:
+                _delay = delay * backoff ** tries
+                time.sleep(_delay)
+                tries += 1
+        return func(*args, **kwargs)
+    return wrapped_function
 
 
 # Creates an ID for use as a unique ID

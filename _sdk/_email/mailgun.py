@@ -23,9 +23,25 @@ import aiohttp
 import asyncio
 from cache.cache_manager import app_cache
 from utils import return_ttl, datetime_now, create_id
+from jinja2 import Template
 
 
-class Mailgun:
+class EmailTemplates:
+    """
+    **Class EmailTemplates**
+        This templates are used to create email designs for sending
+    """
+    def __init__(self):
+        self.template: Optional[Template] = None
+
+    def use_template(self, template: str):
+        self.template = Template(template)
+
+    def render_context(self, context: dict):
+        return self.template.render(context)
+
+
+class Mailgun(EmailTemplates):
     """
         **MailGun**
             methods to integrate Mailgun Emailing rest API with Memberships & Affiliates APIKeys
@@ -39,6 +55,7 @@ class Mailgun:
             mailgun_domain : domain name registered with mailgun
             MAILGUN_API_KEY : can be found from mailgun control panel
         """
+        super(Mailgun, self).__init__()
         self._base_url: str = config_instance.BASE_URL
         self._mailgun_api_key = config_instance.MAILGUN_API_KEY
         self._mailgun_end_point = "https://api.mailgun.net/v3/{}/messages".format(config_instance.MAILGUN_DOMAIN)
