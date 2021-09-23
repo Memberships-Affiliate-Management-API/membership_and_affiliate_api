@@ -72,7 +72,7 @@ def micro_services_auth() -> tuple:
 
     # If auth details are found and app id is valid and secret_key matches default key proceed to
     # authenticate
-    if not is_id_valid or not compare_secret_key:
+    if not (is_id_valid and compare_secret_key):
         message: str = "Application not authorized"
         raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 

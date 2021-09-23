@@ -144,7 +144,7 @@ class Mailgun(EmailTemplates):
     def return_organization_user(self, organization_id: str, uid: str) -> tuple:
         """
         **return_organization_user**
-        asynchronously returns organization data and user data
+            asynchronously returns organization data and user data
 
         :param organization_id:
         :param uid:
@@ -184,6 +184,7 @@ class Mailgun(EmailTemplates):
     @staticmethod
     def _base_email_scheduler(func: Callable, kwargs: dict, job_name: str = create_id()) -> None:
         """
+            **_base_email_scheduler**
 
         :param func:
         :param kwargs:
@@ -196,4 +197,4 @@ class Mailgun(EmailTemplates):
         #                        name=job_name, misfire_grace_time=360)
 
     @staticmethod
-    def _create_job_name(header_name: str) -> str: return f'{header_name}{create_id()[0:20]}'
+    def _create_job_name(header_name: str) -> str: return f'{header_name}{create_id()[:20]}'
