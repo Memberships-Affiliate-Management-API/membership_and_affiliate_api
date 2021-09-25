@@ -30,11 +30,7 @@ class AffiliateJobs:
     @toplevel
     def run(self):
         final_earnings = yield self.finalize_affiliate_earnings()
-        for finalized_earning in final_earnings:
-            print(f"finalized earnings: {finalized_earning}")
-        print(f"unable to find any earnings")
-
-        # TODO add create reports below
+        return final_earnings
 
     @tasklet
     def do_finalize_earnings(self, earnings: EarningsData) -> Future:
