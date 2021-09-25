@@ -23,7 +23,8 @@ class MembershipsJobs:
 
     def check_membership_payment_status(self):
         """
+            **check_membership_payment_status**
 
-        :return:
+            :return:
         """
         pass

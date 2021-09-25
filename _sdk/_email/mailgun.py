@@ -13,7 +13,6 @@ __twitter__ = "@blueitserver"
 __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affiliate-api"
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
-from datetime import timedelta, datetime
 import requests
 from flask import current_app
 from schedulers.scheduler import task_scheduler, schedule_func
@@ -65,7 +64,6 @@ class Mailgun(EmailTemplates):
         self._admin_get_organization_endpoint = '_api/v1/admin/organizations/get'
         self._secret_key: str = current_app.config.get('SECRET_KEY')
 
-    # TODO - replace requests with this all over the application
     @staticmethod
     async def _async_request(_url, json_data, headers) -> Optional[dict]:
         async with aiohttp.ClientSession() as session:
