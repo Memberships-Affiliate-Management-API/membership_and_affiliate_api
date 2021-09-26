@@ -10,6 +10,7 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
 import typing
+from email import message
 from typing import Optional, List
 
 from flask import current_app, jsonify
@@ -20,7 +21,7 @@ from cache.cache_manager import app_cache
 from config.exception_handlers import handle_view_errors
 from config.exceptions import DataServiceError, InputError, UnAuthenticatedError, error_codes, status_codes
 from config.use_context import use_context
-from database.affiliates import Affiliates, Recruits
+from database.affiliates import Affiliates, Recruits, EarningsData
 from database.affiliates import AffiliatesValidators as ValidAffiliate
 from database.affiliates import EarningsValidators as ValidEarnings
 from database.affiliates import RecruitsValidators as ValidRecruit
@@ -803,15 +804,44 @@ class EarningsView(Validator):
 
     def register_earnings(self, earnings_data: dict) -> tuple:
         """
+        **register_earnings**
             register new earnings record
         """
-        pass
+        # TODO verify input data
+        earnings_instance: EarningsData = EarningsData(**earnings_data)
+        key: Optional[ndb.Key] = earnings_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+        if not isinstance(key, ndb.Key):
+            _message: str = 'Database Error: creating new earnings record'
+            raise DataServiceError(status=error_codes.data_service_error_code, description=_message)
+
+        _message: str = 'successfully created new earnings record'
+        return jsonify(dict(status=True,
+                            payload=earnings_instance.to_dict(),
+                            message=_message)), status_codes.successfully_updated_code
 
     def mark_paid(self, earnings_data: dict, is_paid: bool) -> tuple:
         """
             mark earnings record as paid or not paid
         """
-        pass
+        if not isinstance(is_paid, bool):
+            _message: str = 'is_paid is required and should be boolean'
+            raise InputError(status=error_codes.input_error_code, description=_message)
+
+        earnings_instance: EarningsData = EarningsData.query(
+            EarningsData.affiliate_id == earnings_data.get('affiliate_id'),
+            EarningsData.organization_id == earnings_data.get('organization_id')).get()
+        if isinstance(earnings_instance, EarningsData) and bool(earnings_instance):
+            earnings_instance.is_paid = is_paid
+            key: Optional[ndb.Key] = earnings_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+            if not isinstance(key, ndb.Key):
+                _message: str = 'Database Error: updating earnings record'
+                raise DataServiceError(status=error_codes.data_service_error_code, description=_message)
+
+            _message: str = 'successfully updated earnings data'
+            return jsonify(dict(status=True,
+                                payload=earnings_instance.to_dict(),
+                                message=_message)), status_codes.successfully_updated_code
+
 
     def mark_on_hold(self, earnings_data: dict, on_hold: bool) -> bool:
         """
@@ -826,4 +856,3 @@ class EarningsView(Validator):
             wallet earnings can be sent to paypal or through EFT
         """
         pass
-
