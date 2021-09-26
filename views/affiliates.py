@@ -13,6 +13,7 @@ import typing
 from email import message
 from typing import Optional, List
 
+import self as self
 from flask import current_app, jsonify
 from google.cloud import ndb
 
@@ -842,13 +843,27 @@ class EarningsView(Validator):
                                 payload=earnings_instance.to_dict(),
                                 message=_message)), status_codes.successfully_updated_code
 
-
     def mark_on_hold(self, earnings_data: dict, on_hold: bool) -> bool:
         """
             mark earnings as on hold or not on hold
             earnings which are on-hold may not be paid until problem is resolved
         """
-        pass
+        if not isinstance(on_hold, bool):
+            _message: str = 'on_hold is required and can only be a boolean'
+            raise InputError(status=error_codes.input_error_code, description=_message)
+
+        affiliate_id: Optional[str] = earnings_data.get('affiliate_id')
+        organization_id: Optional[str] = earnings_data.get('organization_id')
+
+        earnings_instance: EarningsData = EarningsData.query(EarningsData.affiliate_id == affiliate_id,
+                                                             EarningsData.organization_id == organization_id).get()
+
+    if isinstance(earnings_instance, EarningsData) and bool(earnings_instance):
+        earnings_instance.on_hold = on_hold
+        key: Optional[ndb.Key] = earnings_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+        if not isinstance(key, ndb.Key):
+            _message: str = 'Database Error: updating earnings data'
+
 
     def transfer_earnings_to_wallet(self, earnings_data: dict) -> tuple:
         """
