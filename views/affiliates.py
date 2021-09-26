@@ -766,17 +766,17 @@ class RecruitsView(Validator):
         """
         affiliate_id: Optional[str] = affiliate_data.get('affiliate_id')
         if not isinstance(affiliate_id, str) or not bool(affiliate_id.strip()):
-            message: str = 'affiliate_id is required'
-            raise InputError(status=error_codes.input_error_code, description=message)
+            _message: str = 'affiliate_id is required'
+            raise InputError(status=error_codes.input_error_code, description=_message)
 
         organization_id: Optional[str] = affiliate_data.get('organization_id')
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            message: str = 'organization_id is required'
-            raise InputError(status=error_codes.input_error_code, description=message)
+            _message: str = 'organization_id is required'
+            raise InputError(status=error_codes.input_error_code, description=_message)
 
         if not (isinstance(is_active, bool)):
-            message: str = 'is_active status is required and can only be a boolean'
-            raise InputError(status=error_codes.input_error_code, description=message)
+            _message: str = 'is_active status is required and can only be a boolean'
+            raise InputError(status=error_codes.input_error_code, description=_message)
 
         recruits_list: List[Recruits] = Recruits.query(Recruits.organization_id == organization_id,
                                                        Recruits.affiliate_id == affiliate_id,
@@ -784,12 +784,12 @@ class RecruitsView(Validator):
 
         payload: List[dict] = [recruit.to_dict() for recruit in recruits_list]
         if len(payload):
-            message: str = "{} recruits successfully fetched affiliate recruits by status".format(
+            _message: str = "{} recruits successfully fetched affiliate recruits by status".format(
                 str(len(recruits_list)))
-            return jsonify({'status': True, 'message': message, 'payload': payload}), status_codes.status_ok_code
+            return jsonify({'status': True, 'message': _message, 'payload': payload}), status_codes.status_ok_code
 
-        message: str = "recruits by is_active status not found"
-        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+        _message: str = "recruits by is_active status not found"
+        return jsonify({'status': False, 'message': _message}), status_codes.data_not_found_code
 
 
 class EarningsView(Validator):
