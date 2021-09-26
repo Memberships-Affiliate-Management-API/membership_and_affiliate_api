@@ -868,10 +868,10 @@ class EarningsView(Validator):
             return jsonify(dict(status=True, payload=earnings_instance.to_dict(),
                                 message=_message)), status_codes.successfully_updated_code
 
-
     def transfer_earnings_to_wallet(self, earnings_data: dict) -> tuple:
         """
-            transfer earnings to wallet
-            wallet earnings can be sent to paypal or through EFT
+            **transfer_earnings_to_wallet**
+                wallet earnings can be sent to paypal or through EFT
+
         """
         pass
