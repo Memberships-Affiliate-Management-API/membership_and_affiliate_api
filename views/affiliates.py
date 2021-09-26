@@ -843,7 +843,7 @@ class EarningsView(Validator):
                                 payload=earnings_instance.to_dict(),
                                 message=_message)), status_codes.successfully_updated_code
 
-    def mark_on_hold(self, earnings_data: dict, on_hold: bool) -> bool:
+    def mark_on_hold(self, earnings_data: dict, on_hold: bool) -> tuple:
         """
             mark earnings as on hold or not on hold
             earnings which are on-hold may not be paid until problem is resolved
@@ -858,11 +858,15 @@ class EarningsView(Validator):
         earnings_instance: EarningsData = EarningsData.query(EarningsData.affiliate_id == affiliate_id,
                                                              EarningsData.organization_id == organization_id).get()
 
-    if isinstance(earnings_instance, EarningsData) and bool(earnings_instance):
-        earnings_instance.on_hold = on_hold
-        key: Optional[ndb.Key] = earnings_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-        if not isinstance(key, ndb.Key):
-            _message: str = 'Database Error: updating earnings data'
+        if isinstance(earnings_instance, EarningsData) and bool(earnings_instance):
+            earnings_instance.on_hold = on_hold
+            key: Optional[ndb.Key] = earnings_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+            if not isinstance(key, ndb.Key):
+                _message: str = 'Database Error: updating earnings data'
+                raise DataServiceError(status=error_codes.data_service_error_code, description=_message)
+            _message: str = 'successfully updated earnings data'
+            return jsonify(dict(status=True, payload=earnings_instance.to_dict(),
+                                message=_message)), status_codes.successfully_updated_code
 
 
     def transfer_earnings_to_wallet(self, earnings_data: dict) -> tuple:
