@@ -16,7 +16,16 @@ from decouple import config
 import datetime
 
 
-class Config:
+class Singleton:
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls, *args, **kwargs)
+        return cls._instance
+
+
+class Config(Singleton):
     """
         **APP Configuration Settings**
             configuration variables for setting up the application

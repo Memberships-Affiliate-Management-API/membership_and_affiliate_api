@@ -39,6 +39,7 @@ def _retry(func: Callable, exception: Exception = Exception, _max_retries: int =
                 time.sleep(_delay)
                 tries += 1
         return func(*args, **kwargs)
+
     return wrapped_function
 
 
