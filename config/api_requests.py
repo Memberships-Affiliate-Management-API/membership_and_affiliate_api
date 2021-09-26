@@ -92,7 +92,7 @@ class APIRequests:
         headers.update(_request_id=_request_id)
         _kwargs: dict = dict(_url=_url, json_data=body, headers=headers)
         # Scheduling the request to run later and then continue
-        schedule_func(func=self._request, kwargs=_kwargs)
+        schedule_func(func=self._request, kwargs=_kwargs, job_name='data_send_')
         # returning the _request_id so it can be used to retrieve the results at a later stage
         return _request_id
 
