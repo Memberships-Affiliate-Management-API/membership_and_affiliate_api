@@ -1056,7 +1056,7 @@ class UserView(Validators, UserEmails):
         users_list: List[dict] = [user.to_dict() for user in UserModel.query(
             UserModel.organization_id == organization_id, UserModel.is_active == False).fetch_async().get_result()]
 
-        if isinstance(users_list, list) and users_list:
+        if users_list:
             message: str = 'successfully retrieved in-active users'
             return jsonify(dict(status=True,
                                 payload=users_list,
