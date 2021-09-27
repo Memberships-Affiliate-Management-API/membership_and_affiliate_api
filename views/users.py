@@ -955,23 +955,25 @@ class UserView(Validators, UserEmails):
         if isinstance(uid, str) and bool(uid.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.uid == uid).get_async().get_result()
-            if isinstance(user_instance, UserModel) and user_instance.uid == uid:
+            if isinstance(user_instance, UserModel) and bool(user_instance):
                 user_instance.key.delete()
-                return jsonify({'status': True,
-                                'message': 'successfully deleted user'}), status_codes.data_not_found_code
+                return jsonify(dict(status=True,
+                                    payload=user_instance.to_dict(),
+                                    message='successfully deleted user')), status_codes.successfully_updated_code
 
         elif isinstance(email, str) and bool(email.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.email == email).get_async().get_result()
-            if isinstance(user_instance, UserModel) and user_instance.email == email:
+            if isinstance(user_instance, UserModel) and bool(user_instance):
                 user_instance.key.delete()
-                return jsonify({'status': True,
-                                'message': 'successfully deleted user'}), status_codes.data_not_found_code
+                return jsonify(dict(status=True,
+                                    payload=user_instance.to_dict(),
+                                    message='successfully deleted user')), status_codes.successfully_updated_code
 
         elif isinstance(cell, str) and bool(cell.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.cell == cell).get_async().get_result()
-            if isinstance(user_instance, UserModel) and user_instance.cell == cell:
+            if isinstance(user_instance, UserModel) and bool(user_instance):
                 # TODO- rather mark user as deleted
                 cell: str = user_instance.cell
                 email: str = user_instance.email
@@ -980,10 +982,11 @@ class UserView(Validators, UserEmails):
                 app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
 
                 user_instance.key.delete()
-                return jsonify({'status': True,
-                                'message': 'successfully deleted user'}), status_codes.data_not_found_code
+                return jsonify(dict(status=True,
+                                    payload=user_instance.to_dict(),
+                                    message='successfully deleted user')), status_codes.successfully_updated_code
 
-        return jsonify({'status': False, 'message': 'user not found'}), status_codes.data_not_found_code
+        return jsonify(dict(status=False, message='User not found')), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -1000,11 +1003,13 @@ class UserView(Validators, UserEmails):
         users_list: List[dict] = [user.to_dict() for user in UserModel.query(
             UserModel.organization_id == organization_id, UserModel.is_active == True).fetch()]
 
-        if isinstance(users_list, list) and users_list:
-            return jsonify({'status': True, 'payload': users_list,
-                            'message': 'successfully retrieved active users'}), status_codes.status_ok_code
+        if users_list:
+            message: str = 'successfully retrieved active users'
+            return jsonify(dict(status=True,
+                                payload=users_list,
+                                message=message)), status_codes.status_ok_code
         message: str = "Unable to find users"
-        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -1023,13 +1028,14 @@ class UserView(Validators, UserEmails):
         users_list: List[dict] = [user.to_dict() for user in UserModel.query(
             UserModel.organization_id == organization_id, UserModel.is_active == True).fetch_async().get_result()]
 
-        if isinstance(users_list, list) and users_list:
-            return jsonify({'status': True,
-                            'payload': users_list,
-                            'message': 'successfully retrieved active users'}), status_codes.status_ok_code
+        if users_list:
+            message: str = 'successfully retrieved active users'
+            return jsonify(dict(status=True,
+                                payload=users_list,
+                                message=message)), status_codes.status_ok_code
 
         message: str = "Unable to find users list"
-        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -1047,13 +1053,14 @@ class UserView(Validators, UserEmails):
         users_list: List[dict] = [user.to_dict() for user in UserModel.query(
             UserModel.organization_id == organization_id, UserModel.is_active == False).fetch()]
 
-        if isinstance(users_list, list) and users_list:
-            message: str = 'successfully retrieved active users'
-            return jsonify({'status': True, 'payload': users_list,
-                            'message': message}), status_codes.status_ok_code
+        if users_list:
+            message: str = 'successfully retrieved in-active users'
+            return jsonify(dict(status=True,
+                                payload=users_list,
+                                message=message)), status_codes.status_ok_code
 
         message: str = "Unable to find active users"
-        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -1072,12 +1079,13 @@ class UserView(Validators, UserEmails):
             UserModel.organization_id == organization_id, UserModel.is_active == False).fetch_async().get_result()]
 
         if isinstance(users_list, list) and users_list:
-            return jsonify({'status': True,
-                            'payload': users_list,
-                            'message': 'successfully retrieved active users'}), status_codes.status_ok_code
+            message: str = 'successfully retrieved in-active users'
+            return jsonify(dict(status=True,
+                                payload=users_list,
+                                message=message)), status_codes.status_ok_code
 
         message: str = "Unable to find active users"
-        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -1095,13 +1103,14 @@ class UserView(Validators, UserEmails):
         users_list: List[dict] = [user.to_dict() for user in UserModel.query(
             UserModel.organization_id == organization_id).fetch()]
 
-        if isinstance(users_list, list) and users_list:
+        if users_list:
             message: str = 'successfully retrieved active users'
-            return jsonify({'status': True,
-                            'payload': users_list, 'message': message}), status_codes.status_ok_code
+            return jsonify(dict(status=True,
+                                payload=users_list,
+                                message=message)), status_codes.status_ok_code
 
         message: str = "Unable to retrieve active users"
-        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -1119,13 +1128,14 @@ class UserView(Validators, UserEmails):
         users_list: List[dict] = [user.to_dict() for user in UserModel.query(
             UserModel.organization_id == organization_id).fetch_async().get_result()]
 
-        if isinstance(users_list, list) and users_list:
+        if users_list:
             message: str = 'successfully retrieved active users'
-            return jsonify({'status': True,
-                            'payload': users_list, 'message': message}), status_codes.status_ok_code
+            return jsonify(dict(status=True,
+                                payload=users_list,
+                                message=message)), status_codes.status_ok_code
 
         message: str = "Unable to retrieve all users"
-        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -1181,7 +1191,6 @@ class UserView(Validators, UserEmails):
 
         message: str = "Unable to find user with that email address"
         return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
-
 
     @use_context
     @handle_view_errors
