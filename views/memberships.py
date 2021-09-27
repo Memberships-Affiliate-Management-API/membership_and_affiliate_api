@@ -1714,7 +1714,7 @@ class MembershipPlansView(Validators):
 
         if not isinstance(membership_plans_instance, MembershipPlans) or not bool(membership_plans_instance):
             message: str = 'Membership plan not found'
-            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+            return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
         curr_term_payment: AmountMixin = AmountMixin(amount_cents=term_payment, currency=currency)
         curr_registration_amount: AmountMixin = AmountMixin(amount_cents=registration_amount, currency=currency)
@@ -1732,8 +1732,10 @@ class MembershipPlansView(Validators):
         if not isinstance(key, ndb.Key):
             message: str = 'for some reason we are unable to create a new plan'
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
-        return jsonify({'status': True, 'message': 'successfully created new membership plan',
-                        'payload': membership_plans_instance.to_dict()}), status_codes.status_ok_code
+        message: str = 'successfully created memberships plan instance'
+        return jsonify(dict(status=True,
+                            payload=membership_plans_instance.to_dict(),
+                            message=message)), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
@@ -1764,7 +1766,7 @@ class MembershipPlansView(Validators):
 
         if not isinstance(membership_plans_instance, MembershipPlans) or not bool(membership_plans_instance):
             message: str = 'Membership plan not found'
-            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+            return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
         membership_plans_instance.is_active = is_active
         key: Optional[ndb.Key] = membership_plans_instance.put(retries=self._max_retries, timeout=self._max_timeout)
@@ -1773,8 +1775,9 @@ class MembershipPlansView(Validators):
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
         message: str = 'successfully update membership plan status'
-        return jsonify({'status': True, 'message': message,
-                        'payload': membership_plans_instance.to_dict()}), status_codes.status_ok_code
+        return jsonify(dict(status=True,
+                            payload=membership_plans_instance.to_dict(),
+                            message=message)), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
@@ -1805,7 +1808,7 @@ class MembershipPlansView(Validators):
 
         if not isinstance(membership_plans_instance, MembershipPlans) or not bool(membership_plans_instance):
             message: str = 'Membership plan not found'
-            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+            return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
         membership_plans_instance.is_active = is_active
         # TODO- this action has to be updated also in PayPal
@@ -1814,8 +1817,10 @@ class MembershipPlansView(Validators):
         if not isinstance(key, ndb.Key):
             message: str = 'for some reason we are unable to create a new plan'
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
-        return jsonify({'status': True, 'message': 'successfully update membership plan status',
-                        'payload': membership_plans_instance.to_dict()}), status_codes.status_ok_code
+        message: str = 'successfully update membership plan status'
+        return jsonify(dict(status=True,
+                            payload=membership_plans_instance.to_dict(),
+                            message=message)), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
