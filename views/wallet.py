@@ -774,11 +774,11 @@ class WalletView(Validator, WalletEmails):
                                higher_bound < wallet.available_funds.amount_cents > lower_bound]
 
         if payload:
-            return jsonify({'status': True, 'payload': payload,
-                            'message': 'wallets returned'}), status_codes.status_ok_code
+            message: str = 'Wallets returned'
+            return jsonify(dict(status=True, payload=payload, message=message)), status_codes.status_ok_code
 
-        message: str = "Wallets not found"
-        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+        message: str = "Data Not Found: There are no wallets found meeting your search criteria"
+        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -810,11 +810,10 @@ class WalletView(Validator, WalletEmails):
                                higher_bound < wallet.available_funds.amount_cents > lower_bound]
 
         if payload:
-            return jsonify({'status': True, 'payload': payload,
-                            'message': 'wallets returned'}), status_codes.status_ok_code
+            return jsonify(dict(status=True, payload=payload, message='wallets returned')), status_codes.status_ok_code
 
         message: str = "Wallets not found"
-        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -867,8 +866,9 @@ class WalletView(Validator, WalletEmails):
         self._base_email_scheduler(func=self.send_balance_changed_notification, kwargs=kwargs)
 
         message: str = "Successfully created transaction"
-        return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
-                        'message': message}), status_codes.successfully_updated_code
+        return jsonify(dict(status=True,
+                            payload=wallet_instance.to_dict(),
+                            message=message)), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
@@ -899,7 +899,7 @@ class WalletView(Validator, WalletEmails):
 
         if not isinstance(wallet_instance, WalletModel) or wallet_instance.uid != uid:
             message: str = "Unable to find wallet - cannot perform transaction"
-            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+            return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
         if isinstance(sub, int):
             wallet_instance.available_funds.amount_cents -= sub
@@ -915,8 +915,9 @@ class WalletView(Validator, WalletEmails):
         app_cache._schedule_cache_deletion(func=app_cache._delete_wallet_cache, kwargs=_kwargs)
 
         message: str = "Successfully created transaction"
-        return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
-                        'message': message}), status_codes.successfully_updated_code
+        return jsonify(dict(status=True,
+                            payload=wallet_instance.to_dict(),
+                            message=message)), status_codes.successfully_updated_code
 
     # noinspection PyUnusedLocal
     @use_context
