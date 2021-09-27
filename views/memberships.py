@@ -1869,11 +1869,11 @@ class MembershipPlansView(Validators):
 
         payload: List[dict] = [membership.to_dict() for membership in membership_plan_list]
         if payload:
-            return jsonify({'status': True, 'payload': payload,
-                            'message': 'successfully retrieved monthly plans'}), status_codes.status_ok_code
+            message: str = 'successfully retrieved monthly membership plans'
+            return jsonify(dict(status=True, payload=payload, message=message)), status_codes.status_ok_code
 
         message: str = "Unable to find plans by schedule term"
-        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
     @staticmethod
     @handle_store_errors
@@ -1950,13 +1950,15 @@ class MembershipPlansView(Validators):
             message: str = 'plan_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        plan_instance = self._get_plan(organization_id=organization_id, plan_id=plan_id)
-        if bool(plan_instance):
+        plan_instance: Optional[MembershipPlans] = self._get_plan(organization_id=organization_id, plan_id=plan_id)
+        if isinstance(plan_instance, MembershipPlans):
             message: str = "successfully fetched plan"
-            return jsonify({'status': True, 'payload': plan_instance.to_dict(),
-                            'message': message}), status_codes.status_ok_code
+            return jsonify(dict(status=True,
+                                payload=plan_instance.to_dict(),
+                                message=message)), status_codes.status_ok_code
 
-        return jsonify({'status': False, 'message': 'Unable to get plan'}), status_codes.data_not_found_code
+        message: str = 'Data Not Found: unable to get memberships plans'
+        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -1976,16 +1978,16 @@ class MembershipPlansView(Validators):
             message: str = 'plan_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        plan_instance = await self._get_plan_async(organization_id=organization_id, plan_id=plan_id)
-        if bool(plan_instance):
+        plan_instance: Optional[MembershipPlans] = await self._get_plan_async(organization_id=organization_id,
+                                                                              plan_id=plan_id)
+        if isinstance(plan_instance, MembershipPlans):
             message: str = "successfully fetched plan"
             return jsonify(dict(status=True,
                                 payload=plan_instance.to_dict(),
                                 message=message)), status_codes.status_ok_code
 
         message: str = 'Data Not Found: unable to get memberships plans'
-        return jsonify(dict(status=False,
-                            message=message)), status_codes.data_not_found_code
+        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
