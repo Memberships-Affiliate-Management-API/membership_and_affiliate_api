@@ -2070,6 +2070,29 @@ class CouponsView(Validators):
     def __init__(self) -> None:
         super(CouponsView, self).__init__()
 
+    @staticmethod
+    def _return_coupons_list(coupons_list):
+        payload: List[dict] = [coupon.to_dict() for coupon in coupons_list]
+        if payload:
+            message: str = "successfully fetched expired coupon codes"
+            return jsonify(dict(status=True,
+                                message=message,
+                                payload=payload)), status_codes.status_ok_code
+        message: str = "expired coupons not found"
+        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
+
+    @staticmethod
+    def _check_org_coupon_code(coupon_data):
+        code: str = coupon_data.get("code")
+        if not isinstance(code, str) or not bool(code.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+        organization_id: str = coupon_data.get('organization_id')
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+        return code, organization_id
+
     @get_coupon_data
     @use_context
     @handle_view_errors
@@ -2312,16 +2335,7 @@ class CouponsView(Validators):
             raise InputError(status=error_codes.input_error_code, description=message)
 
         coupons_list: List[Coupons] = Coupons.query(Coupons.organization_id == organization_id).fetch()
-
-        payload: List[dict] = [coupon.to_dict() for coupon in coupons_list]
-        if payload:
-            message: str = "coupons successfully created"
-            return jsonify(dict(status=True,
-                                message=message,
-                                payload=payload)), status_codes.status_ok_code
-
-        message: str = "coupons not found"
-        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
+        return self._return_coupons_list(coupons_list)
 
     @use_context
     @handle_view_errors
@@ -2338,15 +2352,7 @@ class CouponsView(Validators):
 
         coupons_list: List[Coupons] = Coupons.query(
             Coupons.organization_id == organization_id).fetch_async().get_result()
-        payload: List[dict] = [coupon.to_dict() for coupon in coupons_list]
-        if payload:
-            message: str = "coupons successfully retrieved"
-            return jsonify(dict(status=True,
-                                message=message,
-                                payload=payload)), status_codes.status_ok_code
-
-        message: str = "coupons not found"
-        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
+        return self._return_coupons_list(coupons_list)
 
     @use_context
     @handle_view_errors
@@ -2363,15 +2369,7 @@ class CouponsView(Validators):
 
         coupons_list: List[Coupons] = Coupons.query(
             Coupons.organization_id == organization_id, Coupons.is_valid == True).fetch()
-        payload: List[dict] = [coupon.to_dict() for coupon in coupons_list]
-        if payload:
-            message: str = "valid successfully retrieved"
-            return jsonify(dict(status=True,
-                                message=message,
-                                payload=payload)), status_codes.status_ok_code
-
-        message: str = "valid coupon codes not found"
-        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
+        return self._return_coupons_list(coupons_list)
 
     @use_context
     @handle_view_errors
@@ -2388,16 +2386,7 @@ class CouponsView(Validators):
 
         coupons_list: List[Coupons] = Coupons.query(Coupons.organization_id == organization_id,
                                                     Coupons.is_valid == True).fetch_async().get_result()
-
-        payload: List[dict] = [coupon.to_dict() for coupon in coupons_list]
-        if payload:
-            message: str = "coupons successfully retrieved"
-            return jsonify(dict(status=True,
-                                message=message,
-                                payload=payload)), status_codes.status_ok_code
-
-        message: str = "coupons not found"
-        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
+        return self._return_coupons_list(coupons_list)
 
     @use_context
     @handle_view_errors
@@ -2415,15 +2404,7 @@ class CouponsView(Validators):
         coupons_list: List[Coupons] = Coupons.query(Coupons.organization_id == organization_id,
                                                     Coupons.expiration_time < timestamp()).fetch()
 
-        payload: List[dict] = [coupon.to_dict() for coupon in coupons_list]
-        if payload:
-            message: str = "expired coupons successfully retrieved"
-            return jsonify(dict(status=True,
-                                message=message,
-                                payload=payload)), status_codes.status_ok_code
-
-        message: str = "expired coupons not found"
-        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
+        return self._return_coupons_list(coupons_list)
 
     @use_context
     @handle_view_errors
@@ -2442,15 +2423,8 @@ class CouponsView(Validators):
             Coupons.organization_id == organization_id,
             Coupons.expiration_time < timestamp()).fetch_async().get_result()
 
-        payload: List[dict] = [coupon.to_dict() for coupon in coupons_list]
-        if payload:
-            message: str = "successfully fetched expired coupon codes"
-            return jsonify(dict(status=True,
-                                message=message,
-                                payload=payload)), status_codes.status_ok_code
+        return self._return_coupons_list(coupons_list)
 
-        message: str = "expired coupons not found"
-        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -2461,17 +2435,7 @@ class CouponsView(Validators):
         :param coupon_data: dict containing code and organization_id as required parameters
         :return: coupon_data
         """
-        code: str = coupon_data.get("code")
-
-        if not isinstance(code, str) or not bool(code.strip()):
-            message: str = "organization_id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        organization_id: str = coupon_data.get('organization_id')
-        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            message: str = "organization_id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
+        code, organization_id = self._check_org_coupon_code(coupon_data)
         coupon_instance: Coupons = Coupons.query(Coupons.organization_id == organization_id, Coupons.code == code).get()
 
         if isinstance(coupon_instance, Coupons) and bool(coupon_instance):
@@ -2487,17 +2451,8 @@ class CouponsView(Validators):
     @handle_view_errors
     @app_cache.cache.memoize(timeout=return_ttl('short'))
     async def get_coupon_async(self, coupon_data: dict) -> tuple:
-        code: str = coupon_data.get("code")
 
-        if not bool(code):
-            message: str = "Coupon Code is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        organization_id: str = coupon_data.get('organization_id')
-        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            message: str = 'organization_id is required'
-            raise InputError(status=error_codes.input_error_code, description=message)
-
+        code, organization_id = self._check_org_coupon_code(coupon_data)
         coupon_instance: Coupons = Coupons.query(Coupons.organization_id == organization_id,
                                                  Coupons.code == code).get_async().get_result()
 
