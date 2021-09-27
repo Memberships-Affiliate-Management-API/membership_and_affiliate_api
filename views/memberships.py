@@ -540,6 +540,36 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
             message: str = "plan_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
+    @staticmethod
+    def _check_org_plan_id_is_active(is_active, organization_id, plan_id):
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = 'organization_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
+        if not isinstance(plan_id, str) or not bool(plan_id.strip()):
+            message: str = 'organization_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
+        if not isinstance(is_active, bool):
+            message: str = "is_active can only be a boolean"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+    @staticmethod
+    def _check_org_schedule_term(organization_id, schedule_term):
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = 'organization_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
+        if not isinstance(schedule_term, str) or not bool(schedule_term.strip()):
+            message: str = 'schedule_term is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+    @staticmethod
+    def _check_org_status(organization_id, status):
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "Organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+        if not isinstance(status, str) or not bool(status.strip()):
+            message: str = "status is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
 
 # noinspection DuplicatedCode
 class MembershipsView(Validators, MembershipsEmails):
@@ -646,7 +676,7 @@ class MembershipsView(Validators, MembershipsEmails):
         membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                              Memberships.uid == uid).get_async().get_result()
 
-        if not bool(membership_instance) and Memberships.uid == uid:
+        if not isinstance(membership_instance, Memberships) or not bool(membership_instance):
             membership_instance: Memberships = Memberships()
 
             membership_instance.uid = uid
@@ -906,7 +936,7 @@ class MembershipsView(Validators, MembershipsEmails):
                                                              Memberships.uid == uid).get()
         if not isinstance(membership_instance, Memberships) or not bool(membership_instance):
             message: str = "Memberships record not found: Unable to update payment method"
-            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+            return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
         membership_instance.payment_method = payment_method
         key: Optional[ndb.Key] = membership_instance.put(retries=self._max_retries, timeout=self._max_timeout)
@@ -919,8 +949,9 @@ class MembershipsView(Validators, MembershipsEmails):
         self._base_email_scheduler(func=self.send_payment_method_changed_email, kwargs=_kwargs)
 
         message: str = "successfully updated payment method"
-        return jsonify({'status': True, 'payload': membership_instance.to_dict(),
-                        'message': message}), status_codes.successfully_updated_code
+        return jsonify(dict(status=True,
+                            payload=membership_instance.to_dict(),
+                            message=message)), status_codes.successfully_updated_code
 
     # noinspection PyUnusedLocal
     @use_context
@@ -936,7 +967,7 @@ class MembershipsView(Validators, MembershipsEmails):
         """
         _kwargs: dict = dict(organization_id=organization_id, uid=uid)
         self._base_email_scheduler(func=self.send_memberships_welcome_email, kwargs=_kwargs)
-        return jsonify({'status': True, 'message': 'welcome email will be sent'}), status_codes.status_ok_code
+        return jsonify(dict(status=True, message='welcome email will be sent')), status_codes.status_ok_code
 
     # noinspection PyUnusedLocal
     @use_context
@@ -955,7 +986,7 @@ class MembershipsView(Validators, MembershipsEmails):
         """
         _kwargs: dict = dict(organization_id=organization_id, uid=uid)
         self._base_email_scheduler(func=self.send_memberships_welcome_email, kwargs=_kwargs)
-        return jsonify({'status': True, 'message': 'welcome email will be sent'}), status_codes.status_ok_code
+        return jsonify(dict(status=True, message='welcome email will be sent')), status_codes.status_ok_code
 
     @use_context
     @handle_view_errors
@@ -1034,14 +1065,7 @@ class MembershipsView(Validators, MembershipsEmails):
         :param status: payment status
         :return:
         """
-        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            message: str = "Organization_id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(status, str) or not bool(status.strip()):
-            message: str = "status is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
+        self._check_org_status(organization_id, status)
         membership_list: List[Memberships] = Memberships.query(Memberships.organization_id == organization_id,
                                                                Memberships.payment_status == status).fetch()
 
@@ -1060,14 +1084,7 @@ class MembershipsView(Validators, MembershipsEmails):
         :param status: payment status
         :return: 
         """
-        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            message: str = "Organization_id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(status, str) or not bool(status.strip()):
-            message: str = "status is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
+        self._check_org_status(organization_id, status)
         membership_list: List[Memberships] = Memberships.query(Memberships.organization_id == organization_id,
                                                                Memberships.payment_status == status
                                                                ).fetch_async().get_result()
@@ -1654,17 +1671,7 @@ class MembershipPlansView(Validators):
             :param is_active: bool indicating weather to activate or de-activate the membership plan.
             :return:
         """
-        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            message: str = 'organization_id is required'
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(plan_id, str) or not bool(plan_id.strip()):
-            message: str = 'organization_id is required'
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(is_active, bool):
-            message: str = "is_active can only be a boolean"
-            raise InputError(status=error_codes.input_error_code, description=message)
+        self._check_org_plan_id_is_active(is_active, organization_id, plan_id)
 
         membership_plans_instance: MembershipPlans = MembershipPlans.query(
             MembershipPlans.organization_id == organization_id, MembershipPlans.plan_id == plan_id).get()
@@ -1695,17 +1702,7 @@ class MembershipPlansView(Validators):
             :param is_active: bool indicating weather to activate or de-activate the membership plan.
             :return:
         """
-        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            message: str = 'organization_id is required'
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(plan_id, str) or not bool(plan_id.strip()):
-            message: str = 'organization_id is required'
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(is_active, bool):
-            message: str = "is_active can only be a boolean"
-            raise InputError(status=error_codes.input_error_code, description=message)
+        self._check_org_plan_id_is_active(is_active, organization_id, plan_id)
 
         membership_plans_instance: MembershipPlans = MembershipPlans.query(
             MembershipPlans.organization_id == organization_id,
@@ -1737,21 +1734,15 @@ class MembershipPlansView(Validators):
         :param schedule_term:
         :return:
         """
-        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            message: str = 'organization_id is required'
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(schedule_term, str) or not bool(schedule_term.strip()):
-            message: str = 'schedule_term is required'
-            raise InputError(status=error_codes.input_error_code, description=message)
+        await self._check_org_schedule_term(organization_id, schedule_term)
 
         membership_plan_list: List[MembershipPlans] = MembershipPlans.query(
             MembershipPlans.organization_id == organization_id, MembershipPlans.schedule_term == schedule_term).fetch()
-
-        payload: List[dict] = [membership.to_dict() for membership in membership_plan_list]
-        if payload:
+        if membership_plan_list:
             message: str = 'successfully retrieved monthly membership plans'
-            return jsonify(dict(status=True, payload=payload, message=message)), status_codes.status_ok_code
+            return jsonify(dict(status=True,
+                                payload=[membership.to_dict() for membership in membership_plan_list],
+                                message=message)), status_codes.status_ok_code
 
         message: str = "Unable to find plans by schedule term"
         return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
@@ -1766,22 +1757,17 @@ class MembershipPlansView(Validators):
         :param schedule_term:
         :return:
         """
-        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            message: str = 'organization_id is required'
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(schedule_term, str) or not bool(schedule_term.strip()):
-            message: str = 'schedule_term is required'
-            raise InputError(status=error_codes.input_error_code, description=message)
+        self._check_org_schedule_term(organization_id, schedule_term)
 
         membership_plan_list: List[MembershipPlans] = MembershipPlans.query(
             MembershipPlans.organization_id == organization_id,
             MembershipPlans.schedule_term == schedule_term).fetch_async().get_result()
 
-        payload: List[dict] = [membership.to_dict() for membership in membership_plan_list]
-        if payload:
+        if membership_plan_list:
             message: str = 'successfully retrieved monthly membership plans'
-            return jsonify(dict(status=True, payload=payload, message=message)), status_codes.status_ok_code
+            return jsonify(dict(status=True,
+                                payload=[membership.to_dict() for membership in membership_plan_list],
+                                message=message)), status_codes.status_ok_code
 
         message: str = "Unable to find plans by schedule term"
         return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
@@ -1927,7 +1913,9 @@ class MembershipPlansView(Validators):
 
         plan_instance = self._get_plan(organization_id=organization_id, plan_id=membership_instance.plan_id)
         message: str = "successfully fetched user plan"
-        return jsonify(dict(status=True, payload=plan_instance.to_dict(), message=message)), status_codes.status_ok_code
+        return jsonify(dict(status=True,
+                            payload=plan_instance.to_dict(),
+                            message=message)), status_codes.status_ok_code
 
     @staticmethod
     @use_context
@@ -1949,7 +1937,8 @@ class MembershipPlansView(Validators):
         plan_list: List[dict] = [plan.to_dict() for plan in membership_plan_list]
 
         if plan_list:
-            return jsonify(status=True, payload=plan_list,
+            return jsonify(status=True,
+                           payload=plan_list,
                            message='plans successfully retrieved'), status_codes.status_ok_code
 
         message: str = "Unable to find membership plans"
@@ -1974,7 +1963,8 @@ class MembershipPlansView(Validators):
 
         plan_list: List[dict] = [plan.to_dict() for plan in membership_plan_list]
         if plan_list:
-            return jsonify(status=True, payload=plan_list,
+            return jsonify(status=True,
+                           payload=plan_list,
                            message='plans successfully retrieved'), status_codes.status_ok_code
 
         message: str = "Unable to find membership plans"
@@ -2376,8 +2366,9 @@ class CouponsView(Validators):
         payload: List[dict] = [coupon.to_dict() for coupon in coupons_list]
         if payload:
             message: str = "valid successfully retrieved"
-            return jsonify({'status': True, 'payload': payload,
-                            'message': message}), status_codes.status_ok_code
+            return jsonify(dict(status=True,
+                                message=message,
+                                payload=payload)), status_codes.status_ok_code
 
         message: str = "valid coupon codes not found"
         return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
