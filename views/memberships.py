@@ -1580,8 +1580,10 @@ class MembershipPlansView(Validators):
             message: str = 'Database Error: error creating plan please try again later'
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-        return jsonify({'status': True, 'message': 'successfully created new membership plan',
-                        'payload': plan_instance.to_dict()}), status_codes.status_ok_code
+        message: str = 'successfully created new membership plan'
+        return jsonify(dict(status=True,
+                            payload=plan_instance.to_dict(),
+                            message=message)), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
@@ -1638,9 +1640,10 @@ class MembershipPlansView(Validators):
         if not isinstance(key, ndb.Key):
             message: str = 'for some reason we are unable to create a new plan'
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
-
-        return jsonify({'status': True, 'message': 'successfully created new membership plan',
-                        'payload': plan_instance.to_dict()}), status_codes.successfully_updated_code
+        message: str = 'successfully created new membership plan'
+        return jsonify(dict(status=True,
+                            payload=plan_instance.to_dict(),
+                            message=message)), status_codes.successfully_updated_code
 
     # noinspection DuplicatedCode
     @use_context
