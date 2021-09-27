@@ -792,7 +792,7 @@ class MembershipsView(Validators, MembershipsEmails):
 
         if not isinstance(membership_instance, Memberships) or not bool(membership_instance):
             message: str = "Memberships record not found"
-            return jsonify({'status': True, 'message': message}), status_codes.data_not_found_code
+            return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
         membership_instance.payment_status = status
         key: Optional[ndb.Key] = membership_instance.put_async(retries=self._max_retries,
@@ -1203,7 +1203,7 @@ class MembershipsView(Validators, MembershipsEmails):
 
         members_list: List[Memberships] = Memberships.query(Memberships.organization_id == organization_id).fetch()
         payload: List[dict] = [member.to_dict() for member in members_list]
-        if isinstance(payload, list) and payload:
+        if payload:
             message: str = "memberships successfully retrieved"
             return jsonify(dict(status=True, payload=payload, message=message)), status_codes.status_ok_code
 
@@ -1217,9 +1217,9 @@ class MembershipsView(Validators, MembershipsEmails):
         """
             **is_member_off**
                 returns user membership details
-            :param organization_id -> string 
-            :param uid -> string 
-            :return -> tuple : response, status_code 
+            :param organization_id -> string
+            :param uid -> string
+            :return -> tuple : response, status_code
         """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
@@ -1246,15 +1246,15 @@ class MembershipsView(Validators, MembershipsEmails):
 
         """
             **is_member_off_async**
-                returns user membership details - membership details will be returned on payload 
+                returns user membership details - membership details will be returned on payload
                 as a dict -- see Memberships for full documentations on parameters
 
             **Note**
                 response format json {'status': True/False, 'payload': dict, 'message': '**what happened**'}
 
-            :param organization_id -> string 
+            :param organization_id -> string
             :param uid -> string
-            :return -> tuple response, status_code : 
+            :return -> tuple response, status_code :
         """
         if not isinstance(organization_id, str) or bool(organization_id.strip()):
             message: str = "organization_id is required"
@@ -1283,13 +1283,13 @@ class MembershipsView(Validators, MembershipsEmails):
                 for a specific user return payment amount - dict from AmountMixin
 
             **NOTE**
-                response is dict in json format 
+                response is dict in json format
                 the dict contains amount_data -- see AmountMixin for parameters
 
             **PARAMETERS**
                 :param organization_id: -> str
                 :param uid -> string
-                :return tuple -> as response, status_code 
+                :return tuple -> as response, status_code
         """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
@@ -1330,7 +1330,7 @@ class MembershipsView(Validators, MembershipsEmails):
             **payment_amount_async**
                 for a specific user return payment amount
             **NOTE**
-                response is dict in json format 
+                response is dict in json format
                 the dict contains amount_data -- see AmountMixin for parameters
 
             **PARAMETERS**
@@ -1373,16 +1373,16 @@ class MembershipsView(Validators, MembershipsEmails):
         """
             **un_subscribe**
                 enables the client to un-subscribe from a plan
-            
+
             **NOTE**
-                when successful the payload dict will contain contents of Memberships 
+                when successful the payload dict will contain contents of Memberships
                 see Memberships Class for parameters
-            
+
             **PARAMETERS**
                 :param organization_id:
                 :param uid:
                 :param plan_id:
-                :return: tuple -> as response, status_code 
+                :return: tuple -> as response, status_code
         """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
@@ -1839,10 +1839,9 @@ class MembershipPlansView(Validators):
             MembershipPlans.organization_id == organization_id, MembershipPlans.schedule_term == schedule_term).fetch()
 
         payload: List[dict] = [membership.to_dict() for membership in membership_plan_list]
-        if isinstance(payload, list) and payload:
+        if payload:
             return jsonify({'status': True, 'payload': payload,
                             'message': 'successfully retrieved monthly plans'}), status_codes.status_ok_code
-
         message: str = "Unable to find plans by schedule term"
         return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
@@ -1869,8 +1868,7 @@ class MembershipPlansView(Validators):
             MembershipPlans.schedule_term == schedule_term).fetch_async().get_result()
 
         payload: List[dict] = [membership.to_dict() for membership in membership_plan_list]
-
-        if isinstance(payload, list) and payload:
+        if payload:
             return jsonify({'status': True, 'payload': payload,
                             'message': 'successfully retrieved monthly plans'}), status_codes.status_ok_code
 
@@ -2268,9 +2266,10 @@ class CouponsView(Validators):
             message: str = "Error updating coupon"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-        return jsonify({'status': True,
-                        'payload': coupon_instance.to_dict(),
-                        'message': 'successfully updated coupon'}), status_codes.successfully_updated_code
+        message: str = 'Successfully updated coupon code'
+        return jsonify(dict(status=True,
+                            message=message,
+                            payload=coupon_instance.to_dict())), status_codes.successfully_updated_code
 
     @get_coupon_data
     @use_context
@@ -2314,9 +2313,10 @@ class CouponsView(Validators):
             message: str = "Database Error: Error updating coupon"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-        return jsonify({'status': True,
-                        'payload': coupon_instance.to_dict(),
-                        'message': 'successfully updated coupon'}), status_codes.status_ok_code
+        message: str = 'successfully updated coupon code'
+        return jsonify(dict(status=True,
+                            message=message,
+                            payload=coupon_instance.to_dict())), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
@@ -2340,7 +2340,7 @@ class CouponsView(Validators):
 
         if not isinstance(coupon_instance, Coupons) or not bool(coupon_instance):
             message: str = "coupon not found: unable to cancel coupon code"
-            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+            return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
         coupon_instance.is_valid = False
         key: Optional[ndb.Key] = coupon_instance.put(retries=self._max_retries, timeout=self._max_timeout)
@@ -2348,10 +2348,10 @@ class CouponsView(Validators):
         if not isinstance(key, ndb.Key):
             message: str = "Unable to cancel coupon"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
-
-        return jsonify({'status': True,
-                        'payload': coupon_instance.to_dict(),
-                        'message': 'successfully cancelled coupon code'}), status_codes.successfully_updated_code
+        message: str = 'successfully cancelled coupon code'
+        return jsonify(dict(status=True,
+                            message=message,
+                            payload=coupon_instance.to_dict())), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
@@ -2377,7 +2377,7 @@ class CouponsView(Validators):
 
         if not isinstance(coupon_instance, Coupons) or not bool(coupon_instance):
             message: str = "coupon not found: unable to cancel coupon code"
-            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+            return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
         coupon_instance.is_valid = False
         key: Optional[ndb.Key] = coupon_instance.put_async(retries=self._max_retries,
@@ -2386,8 +2386,9 @@ class CouponsView(Validators):
             message: str = "Unable to cancel coupon"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
         message: str = 'successfully cancelled coupon code'
-        return jsonify({'status': True, 'payload': coupon_instance.to_dict(),
-                        'message': message}), status_codes.successfully_updated_code
+        return jsonify(dict(status=True,
+                            message=message,
+                            payload=coupon_instance.to_dict())), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
@@ -2405,13 +2406,14 @@ class CouponsView(Validators):
         coupons_list: List[Coupons] = Coupons.query(Coupons.organization_id == organization_id).fetch()
 
         payload: List[dict] = [coupon.to_dict() for coupon in coupons_list]
-        if isinstance(payload, list) and payload:
+        if payload:
             message: str = "coupons successfully created"
-            return jsonify({'status': True, 'payload': payload,
-                            'message': message}), status_codes.status_ok_code
+            return jsonify(dict(status=True,
+                                message=message,
+                                payload=payload)), status_codes.status_ok_code
 
         message: str = "coupons not found"
-        return jsonify({'status': True, 'payload': payload, 'message': message}), status_codes.data_not_found_code
+        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -2429,14 +2431,14 @@ class CouponsView(Validators):
         coupons_list: List[Coupons] = Coupons.query(
             Coupons.organization_id == organization_id).fetch_async().get_result()
         payload: List[dict] = [coupon.to_dict() for coupon in coupons_list]
-        if isinstance(payload, list) and payload:
+        if payload:
             message: str = "coupons successfully retrieved"
-            return jsonify({'status': True, 'payload': payload,
-                            'message': message}), status_codes.status_ok_code
+            return jsonify(dict(status=True,
+                                message=message,
+                                payload=payload)), status_codes.status_ok_code
 
         message: str = "coupons not found"
-        return jsonify({'status': True, 'payload': payload,
-                        'message': message}), status_codes.data_not_found_code
+        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -2454,15 +2456,13 @@ class CouponsView(Validators):
         coupons_list: List[Coupons] = Coupons.query(
             Coupons.organization_id == organization_id, Coupons.is_valid == True).fetch()
         payload: List[dict] = [coupon.to_dict() for coupon in coupons_list]
-
-        if isinstance(payload, list) and payload:
+        if payload:
             message: str = "valid successfully retrieved"
             return jsonify({'status': True, 'payload': payload,
                             'message': message}), status_codes.status_ok_code
 
         message: str = "valid coupon codes not found"
-        return jsonify({'status': True, 'payload': payload,
-                        'message': message}), status_codes.data_not_found_code
+        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -2481,14 +2481,14 @@ class CouponsView(Validators):
                                                     Coupons.is_valid == True).fetch_async().get_result()
 
         payload: List[dict] = [coupon.to_dict() for coupon in coupons_list]
-        if isinstance(payload, list) and payload:
+        if payload:
             message: str = "coupons successfully retrieved"
-            return jsonify({'status': True, 'payload': payload,
-                            'message': message}), status_codes.status_ok_code
+            return jsonify(dict(status=True,
+                                message=message,
+                                payload=payload)), status_codes.status_ok_code
 
         message: str = "coupons not found"
-        return jsonify({'status': True, 'payload': payload,
-                        'message': message}), status_codes.data_not_found_code
+        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -2507,14 +2507,14 @@ class CouponsView(Validators):
                                                     Coupons.expiration_time < timestamp()).fetch()
 
         payload: List[dict] = [coupon.to_dict() for coupon in coupons_list]
-        if isinstance(payload, list) and payload:
+        if payload:
             message: str = "expired coupons successfully retrieved"
-            return jsonify({'status': True, 'payload': payload,
-                            'message': message}), status_codes.status_ok_code
+            return jsonify(dict(status=True,
+                                message=message,
+                                payload=payload)), status_codes.status_ok_code
 
         message: str = "expired coupons not found"
-        return jsonify({'status': True, 'payload': payload,
-                        'message': message}), status_codes.data_not_found_code
+        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -2534,14 +2534,14 @@ class CouponsView(Validators):
             Coupons.expiration_time < timestamp()).fetch_async().get_result()
 
         payload: List[dict] = [coupon.to_dict() for coupon in coupons_list]
-        if isinstance(payload, list) and payload:
+        if payload:
             message: str = "successfully fetched expired coupon codes"
-            return jsonify({'status': True, 'payload': payload,
-                            'message': message}), status_codes.status_ok_code
+            return jsonify(dict(status=True,
+                                message=message,
+                                payload=payload)), status_codes.status_ok_code
 
         message: str = "expired coupons not found"
-        return jsonify({'status': True, 'payload': payload,
-                        'message': message}), status_codes.data_not_found_code
+        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -2567,11 +2567,12 @@ class CouponsView(Validators):
 
         if isinstance(coupon_instance, Coupons) and bool(coupon_instance):
             message: str = "Coupon has been found"
-            return jsonify({'status': True, 'message': message,
-                            'payload': coupon_instance.to_dict()}), status_codes.status_ok_code
+            return jsonify(dict(status=True,
+                                message=message,
+                                payload=coupon_instance.to_dict())), status_codes.status_ok_code
 
         message: str = "Invalid Coupon Code - Or Coupon not found"
-        return jsonify({'status': True, 'message': message}), status_codes.data_not_found_code
+        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -2593,9 +2594,9 @@ class CouponsView(Validators):
 
         if isinstance(coupon_instance, Coupons) and bool(coupon_instance):
             message: str = "Coupon found"
-            return jsonify({'status': True,
-                            'message': message,
-                            'payload': coupon_instance.to_dict()}), status_codes.status_ok_code
+            return jsonify(dict(status=True,
+                                message=message,
+                                payload=coupon_instance.to_dict())), status_codes.status_ok_code
 
         message: str = "Invalid Coupon Code - Or Coupon Code not found"
-        return jsonify({'status': True, 'message': message}), status_codes.data_not_found_code
+        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
