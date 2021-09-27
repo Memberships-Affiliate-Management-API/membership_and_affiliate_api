@@ -77,10 +77,9 @@ class ServicesView(ServiceValidator):
             services_instance: Services = Services.query(Services.name == name,
                                                          Services.organization_id == organization_id).get()
 
-            if bool(services_instance):
+            if isinstance(services_instance, Services) and bool(services_instance):
                 message: str = '''a service with that name already exist in your organization 
                 please use a different name'''
-
                 return jsonify({'status': False, 'message': message}), error_codes.resource_conflict_error_code
 
             # TODO create service in paypal obtain service_id
@@ -149,9 +148,9 @@ class ServicesView(ServiceValidator):
         # TODO - first update service in paypal services
         service_instance: Optional[Services] = Services.query(Services.service_id == service_id).get()
 
-        if not isinstance(service_instance, Services) or not bool(service_instance):
+        if not (isinstance(service_instance, Services) and bool(service_instance)):
             message: str = "Data not Found: unable to update service as service was not found"
-            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+            return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
         service_instance.name = name
         service_instance.description = description
@@ -167,8 +166,9 @@ class ServicesView(ServiceValidator):
         app_cache._schedule_cache_deletion(func=app_cache._delete_services_cache, kwargs=_kwargs)
 
         message: str = "Successfully updated service or product"
-        return jsonify({'status': True, 'payload': service_instance.to_dict(),
-                        'message': message}), status_codes.status_ok_code
+        return jsonify(dict(status=True,
+                            payload=service_instance.to_dict(),
+                            message=message)), status_codes.status_ok_code
 
     # noinspection DuplicatedCode
     @use_context
@@ -195,9 +195,9 @@ class ServicesView(ServiceValidator):
 
         service_instance: Optional[Services] = Services.query(Services.service_id == service_id).get()
 
-        if not isinstance(service_instance, Services) or not bool(service_instance):
+        if not (isinstance(service_instance, Services) and bool(service_instance)):
             message: str = "Data not Found: unable to update service as service was not found"
-            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+            return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
         service_instance.is_service_active = is_active
         key: Optional[ndb.Key] = service_instance.put(retries=self._max_retries, timeout=self._max_timeout)
@@ -209,8 +209,9 @@ class ServicesView(ServiceValidator):
         app_cache._schedule_cache_deletion(func=app_cache._delete_services_cache, kwargs=_kwargs)
 
         message: str = "successfully activated service"
-        return jsonify({'status': True, 'payload': service_instance.to_dict(),
-                        'message': message}), status_codes.status_ok_code
+        return jsonify(dict(status=True,
+                            payload=service_instance.to_dict(),
+                            message=message)), status_codes.status_ok_code
 
     @use_context
     @handle_view_errors
@@ -234,13 +235,14 @@ class ServicesView(ServiceValidator):
         service_instance: Services = Services.query(Services.organization_id == organization_id,
                                                     Services.service_id == service_id).get()
 
-        if not isinstance(service_instance, Services) or not bool(service_instance):
+        if not(isinstance(service_instance, Services) and bool(service_instance)):
             message: str = "Data Error: Service not found"
-            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+            return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
         message: str = "successfully retrieved service"
-        return jsonify({'status': True, 'payload': service_instance.to_dict(),
-                        'message': message}), status_codes.status_ok_code
+        return jsonify(dict(status=True,
+                            payload=service_instance.to_dict(),
+                            message=message)), status_codes.status_ok_code
 
     @use_context
     @handle_view_errors
@@ -260,9 +262,11 @@ class ServicesView(ServiceValidator):
         payload: List[Services] = [serv.to_dict() for serv in
                                    Services.query(Services.organization_id == organization_id)]
 
-        if isinstance(payload, list) and payload:
+        if payload:
             message: str = "successfully retrieved services"
-            return jsonify({'status': True, 'payload': payload, 'message': message}), status_codes.status_ok_code
+            return jsonify(dict(status=True,
+                                payload=payload,
+                                message=message)), status_codes.status_ok_code
 
         message: str = "Data Error: No services found"
-        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
