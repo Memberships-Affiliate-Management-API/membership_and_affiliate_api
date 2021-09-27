@@ -1979,7 +1979,8 @@ class MembershipPlansView(Validators):
         plan_instance = await self._get_plan_async(organization_id=organization_id, plan_id=plan_id)
         if bool(plan_instance):
             message: str = "successfully fetched plan"
-            return jsonify(dict(status=True, payload=plan_instance.to_dict(),
+            return jsonify(dict(status=True,
+                                payload=plan_instance.to_dict(),
                                 message=message)), status_codes.status_ok_code
 
         message: str = 'Data Not Found: unable to get memberships plans'
