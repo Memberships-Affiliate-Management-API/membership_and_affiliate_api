@@ -1840,10 +1840,11 @@ class MembershipPlansView(Validators):
 
         payload: List[dict] = [membership.to_dict() for membership in membership_plan_list]
         if payload:
-            return jsonify({'status': True, 'payload': payload,
-                            'message': 'successfully retrieved monthly plans'}), status_codes.status_ok_code
+            message: str = 'successfully retrieved monthly membership plans'
+            return jsonify(dict(status=True, payload=payload, message=message)), status_codes.status_ok_code
+
         message: str = "Unable to find plans by schedule term"
-        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
