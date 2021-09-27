@@ -2151,8 +2151,8 @@ def get_coupon_data(func: Callable) -> Callable:
             message: str = "Please specify organization_id"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        return func(organization_id=organization_id, code=code, discount=discount, expiration_time=expiration_time,
-                    *args)
+        return func(*args, organization_id=organization_id, code=code, discount=discount,
+                    expiration_time=expiration_time)
 
     return wrapper
 
@@ -2185,16 +2185,18 @@ class CouponsView(Validators):
             message: str = 'Unable to add coupon, please check expiration time or coupon code'
             raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
 
-        coupons_instance: Coupons = Coupons(organization_id=organization_id, code=code, discount=discount,
+        coupon_instance: Coupons = Coupons(organization_id=organization_id, code=code, discount=discount,
                                             expiration_time=expiration_time)
 
-        key: Optional[ndb.Key] = coupons_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+        key: Optional[ndb.Key] = coupon_instance.put(retries=self._max_retries, timeout=self._max_timeout)
         if not isinstance(key, ndb.Key):
             message: str = "an error occurred while creating coupon"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-        return jsonify({'status': True, 'message': 'successfully created coupon code',
-                        'payload': coupons_instance.to_dict()}), status_codes.successfully_updated_code
+        message: str = 'successfully created coupon code'
+        return jsonify(dict(status=True,
+                            message=message,
+                            payload=coupon_instance.to_dict())), status_codes.successfully_updated_code
 
     @get_coupon_data
     @use_context
@@ -2215,17 +2217,19 @@ class CouponsView(Validators):
             message: str = 'Unable to add coupon, please check expiration time or coupon code'
             raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
 
-        coupons_instance: Coupons = Coupons(organization_id=organization_id, code=code,
+        coupon_instance: Coupons = Coupons(organization_id=organization_id, code=code,
                                             discount=discount, expiration_time=expiration_time)
 
-        key: Optional[ndb.Key] = coupons_instance.put_async(retries=self._max_retries,
+        key: Optional[ndb.Key] = coupon_instance.put_async(retries=self._max_retries,
                                                             timeout=self._max_timeout).get_result()
         if not isinstance(key, ndb.Key):
             message: str = "an error occurred while creating coupon"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-        return jsonify({'status': True, 'message': 'successfully created coupon code',
-                        'payload': coupons_instance.to_dict()}), status_codes.successfully_updated_code
+        message: str = 'successfully created coupon code'
+        return jsonify(dict(status=True,
+                            message=message,
+                            payload=coupon_instance.to_dict())), status_codes.successfully_updated_code
 
     @get_coupon_data
     @use_context
