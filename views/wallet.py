@@ -715,11 +715,10 @@ class WalletView(Validator, WalletEmails):
         payload: List[dict] = [wallet.to_dict() for wallet in wallet_list]
 
         if payload:
-            return jsonify({'status': True,
-                            'payload': payload,
-                            'message': 'wallets returned'}), status_codes.status_ok_code
-
-        return jsonify({'status': False, 'message': 'no wallets found'}), status_codes.data_not_found_code
+            return jsonify(dict(status=True, payload=payload,
+                                message='Wallets Found and Returned')), status_codes.status_ok_code
+        message: str = 'Data Not Found: Wallets not found meeting the search criteria'
+        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -742,10 +741,9 @@ class WalletView(Validator, WalletEmails):
         payload: List[dict] = [wallet.to_dict() for wallet in wallet_list]
 
         if payload:
-            return jsonify({'status': True,
-                            'payload': payload,
-                            'message': 'wallets returned'}), status_codes.status_ok_code
-        return jsonify({'status': False, 'message': 'wallets not found'}), status_codes.data_not_found_code
+            message: str = 'Wallets found'
+            return jsonify(dict(status=True, payload=payload, message=message)), status_codes.status_ok_code
+        return jsonify(dict(status=False, message='wallets not found')), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
