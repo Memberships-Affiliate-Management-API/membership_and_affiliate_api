@@ -86,7 +86,7 @@ class HelpDeskView(Validators):
                             'message': 'help desk already created'}), status_codes.status_ok_code
         help_desk_instance = HelpDesk()
         key: Optional[ndb.Key] = help_desk_instance.put()
-        if not bool(key):
+        if not isinstance(key, ndb.Key):
             return jsonify({'status': False, 'message': 'Error updating database'}), status_codes.data_not_found_code
         return jsonify({'status': True, 'payload': help_desk_instance.to_dict(),
                         'message': 'help desk created'}), status_codes.successfully_updated_code
@@ -100,7 +100,7 @@ class HelpDeskView(Validators):
                             'message': 'help desk already created'}), status_codes.status_ok_code
         help_desk_instance = HelpDesk()
         key: Optional[ndb.Key] = help_desk_instance.put()
-        if not bool(key):
+        if not isinstance(key, ndb.Key):
             return jsonify({'status': False, 'message': 'Error updating database'}), status_codes.data_not_found_code
         return jsonify({'status': True, 'payload': help_desk_instance.to_dict(),
                         'message': 'help desk created'}), status_codes.successfully_updated_code
@@ -202,7 +202,7 @@ class TicketView(Validators, TicketsMessaging):
             ticket_instance: Ticket = Ticket(ticket_id=create_id(), uid=uid, topic=topic, subject=subject,
                                              message=message, email=email, cell=cell)
             key: Optional[ndb.Key] = ticket_instance.put()
-            if not bool(key):
+            if not isinstance(key, ndb.Key):
                 message: str = "Database Error: Unable to update ticket"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
@@ -224,7 +224,7 @@ class TicketView(Validators, TicketsMessaging):
                                              message=message, email=email, cell=cell)
             key: Optional[ndb.Key] = ticket_instance.put_async().get_result()
 
-            if not bool(key):
+            if not isinstance(key, ndb.Key):
                 message: str = "Database Error: Unable to update ticket"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
@@ -246,7 +246,7 @@ class TicketView(Validators, TicketsMessaging):
         if isinstance(ticket_instance, Ticket) and bool(ticket_instance):
             ticket_instance.is_resolved = True
             key: Optional[ndb.Key] = ticket_instance.put()
-            if not bool(key):
+            if not isinstance(key, ndb.Key):
                 message: str = "Database Error: Unable to update ticket"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
@@ -267,7 +267,7 @@ class TicketView(Validators, TicketsMessaging):
         if isinstance(ticket_instance, Ticket) and bool(ticket_instance):
             ticket_instance.is_resolved = True
             key: Optional[ndb.Key] = ticket_instance.put_async().get_result()
-            if not bool(key):
+            if not isinstance(key, ndb.Key):
                 message: str = "Database Error: Unable to update ticket"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
@@ -299,7 +299,7 @@ class TicketView(Validators, TicketsMessaging):
             if assigned_to_uid is not None:
                 ticket_instance.assigned_to_uid = assigned_to_uid
             key: Optional[ndb.Key] = ticket_instance.put()
-            if not bool(key):
+            if not isinstance(key, ndb.Key):
                 message: str = "Database Error: Unable to update ticket"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
@@ -330,7 +330,7 @@ class TicketView(Validators, TicketsMessaging):
             if assigned_to_uid is not None:
                 ticket_instance.assigned_to_uid = assigned_to_uid
             key: Optional[ndb.Key] = ticket_instance.put_async().get_result()
-            if not bool(key):
+            if not isinstance(key, ndb.Key):
                 message: str = "Database Error: Unable to update ticket"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
@@ -348,7 +348,7 @@ class TicketView(Validators, TicketsMessaging):
 
             ticket_instance.assigned_to_uid = assigned_to_uid
             key: Optional[ndb.Key] = ticket_instance.put()
-            if not bool(key):
+            if not isinstance(key, ndb.Key):
                 message: str = "Database Error: Unable to update ticket"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
@@ -366,7 +366,7 @@ class TicketView(Validators, TicketsMessaging):
 
             ticket_instance.assigned_to_uid = assigned_to_uid
             key: Optional[ndb.Key] = ticket_instance.put_async().get_result()
-            if not bool(key):
+            if not isinstance(key, ndb.Key):
                 message: str = "Database Error: Unable to update ticket"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
@@ -386,7 +386,7 @@ class TicketView(Validators, TicketsMessaging):
         if isinstance(ticket_instance, Ticket) and bool(ticket_instance):
             ticket_instance.response_sent = True
             key: Optional[ndb.Key] = ticket_instance.put()
-            if not bool(key):
+            if not isinstance(key, ndb.Key):
                 message: str = "Database Error: Unable to update ticket"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
@@ -413,7 +413,7 @@ class TicketView(Validators, TicketsMessaging):
             ticket_instance.response_sent = True
             key: Optional[ndb.Key] = ticket_instance.put_async().get_result()
             # TODO Send response here
-            if not bool(key):
+            if not isinstance(key, ndb.Key):
                 message: str = "Database Error: Unable to update ticket"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
@@ -438,7 +438,7 @@ class TicketView(Validators, TicketsMessaging):
 
             ticket_instance.response_sent = True
             key: Optional[ndb.Key] = ticket_instance.put()
-            if not bool(key):
+            if not isinstance(key, ndb.Key):
                 message: str = "Database Error: Unable to update ticket"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
             # Note: scheduled sms notifications
@@ -463,7 +463,7 @@ class TicketView(Validators, TicketsMessaging):
             ticket_instance.response_sent = True
             key: Optional[ndb.Key] = ticket_instance.put_async().get_result()
 
-            if not bool(key):
+            if not isinstance(key, ndb.Key):
                 message: str = "Database Error: Unable to update ticket"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
@@ -490,7 +490,7 @@ class TicketView(Validators, TicketsMessaging):
             ticket_instance.response_sent = True
             key: Optional[ndb.Key] = ticket_instance.put()
 
-            if not bool(key):
+            if not isinstance(key, ndb.Key):
                 message: str = "Database Error: While creating ticket - Ticket not saved"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
@@ -518,7 +518,7 @@ class TicketView(Validators, TicketsMessaging):
             ticket_instance.response_sent = True
             key: Optional[ndb.Key] = ticket_instance.put_async().get_result()
 
-            if not bool(key):
+            if not isinstance(key, ndb.Key):
                 message: str = "Database Error: While creating ticket - Ticket not saved"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 

@@ -132,7 +132,7 @@ class GithubAuthView(Validators):
             repos_url=repos_url)
 
         key: Optional[ndb.Key] = github_user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-        if not bool(key):
+        if not isinstance(key, ndb.Key):
             message: str = "Database Error: while creating new User"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 

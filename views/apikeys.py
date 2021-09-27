@@ -127,7 +127,7 @@ class APIKeysView(APIKeysValidators):
         api_key_instance: APIKeys = APIKeys(organization_id=organization_id, api_key=api_key, secret_token=secret_token,
                                             assigned_to_uid=uid, domain=domain, is_active=True)
         key = api_key_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-        if not bool(key):
+        if not isinstance(key, ndb.Key):
             message: str = "database error: unable to create api_key"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
@@ -159,7 +159,7 @@ class APIKeysView(APIKeysValidators):
 
         api_key_instance.is_active = False
         key = api_key_instance.put()
-        if not bool(key):
+        if not isinstance(key, ndb.Key):
             message: str = "database error: unable to deactivate_key"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 

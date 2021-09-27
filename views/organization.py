@@ -387,7 +387,7 @@ class OrganizationView(Validators):
                                                                recovery_callback_url=recovery_callback_url)
 
             key: Optional[ndb.Key] = organization_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-            if not bool(key):
+            if not isinstance(key, ndb.Key):
                 message: str = "Database Error: could not create or update organization - please inform Admin"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
@@ -451,7 +451,7 @@ class OrganizationView(Validators):
         organization_instance.recovery_callback_url = recovery_callback_url
 
         key: Optional[ndb.Key] = organization_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-        if not bool(key):
+        if not isinstance(key, ndb.Key):
             message: str = "Database Error: could not create or update organization - please inform Admin"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
@@ -504,7 +504,6 @@ class OrganizationView(Validators):
         return jsonify({'status': True,
                         'payload': organization_instance.to_dict(),
                         'message': message}), status_codes.status_ok_code
-
 
     @use_context
     @handle_view_errors
@@ -587,7 +586,7 @@ class OrganizationView(Validators):
             raise InputError(status=error_codes.input_error_code, description=message)
 
         key: Optional[ndb.Key] = organization_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-        if not bool(key):
+        if not isinstance(key, ndb.Key):
             message: str = "An Unspecified error occurred while adding to or subtract from affiliate count"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
         # NOTE: scheduling cache deletions
@@ -638,7 +637,7 @@ class OrganizationView(Validators):
 
             key: Optional[ndb.Key] = organization_instance.put(retries=self._max_retries, timeout=self._max_timeout)
 
-            if not bool(key):
+            if not isinstance(key, ndb.Key):
                 message: str = 'for some reason we are unable to add to total_amount'
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 

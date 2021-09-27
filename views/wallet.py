@@ -384,8 +384,8 @@ class WalletView(Validator, WalletEmails):
                                                    is_org_wallet=is_org_wallet, available_funds=amount_instance,
                                                    paypal_address=paypal_address)
 
-        key = wallet_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-        if not bool(key):
+        key: Optional[ndb.Key] = wallet_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+        if not isinstance(key, ndb.Key):
             message: str = "Database Error: Wallet may not have been created"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
@@ -428,7 +428,7 @@ class WalletView(Validator, WalletEmails):
 
         key: Optional[ndb.Key] = wallet_instance.put_async(retries=self._max_retries,
                                                            timeout=self._max_timeout).get_result()
-        if not bool(key):
+        if not isinstance(key, ndb.Key):
             raise DataServiceError(status=error_codes.data_service_error_code,
                                    description="An Error occurred creating Wallet")
 
@@ -534,7 +534,7 @@ class WalletView(Validator, WalletEmails):
         wallet_instance.available_funds = amount_instance
         wallet_instance.paypal_address = paypal_address
         key: Optional[ndb.Key] = wallet_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-        if not bool(key):
+        if not isinstance(key, ndb.Key):
             message: str = "Database Error: occurred updating Wallet"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
@@ -591,8 +591,9 @@ class WalletView(Validator, WalletEmails):
         amount_instance: AmountMixin = AmountMixin(amount_cents=available_funds, currency=currency)
         wallet_instance.available_funds = amount_instance
         wallet_instance.paypal_address = paypal_address
-        key = wallet_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
-        if not bool(key):
+        key: Optional[ndb.Key] = wallet_instance.put_async(
+            retries=self._max_retries, timeout=self._max_timeout).get_result()
+        if not isinstance(key, ndb.Key):
             message: str = "Database Error: while updating wallet"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
@@ -634,7 +635,7 @@ class WalletView(Validator, WalletEmails):
         amount_instance: AmountMixin = AmountMixin(amount_cents=0, currency=currency)
         wallet_instance.available_funds = amount_instance
         key: Optional[ndb.Key] = wallet_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-        if not bool(key):
+        if not isinstance(key, ndb.Key):
             message: str = "Database Error: while updating wallet"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
@@ -678,8 +679,9 @@ class WalletView(Validator, WalletEmails):
 
         amount_instance: AmountMixin = AmountMixin(amount_cents=0, currency=currency)
         wallet_instance.available_funds = amount_instance
-        key = wallet_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
-        if not bool(key):
+        key: Optional[ndb.Key] = wallet_instance.put_async(
+            retries=self._max_retries, timeout=self._max_timeout).get_result()
+        if not isinstance(key, ndb.Key):
             message: str = "Database error while resetting wallet"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
@@ -851,8 +853,8 @@ class WalletView(Validator, WalletEmails):
         if isinstance(add, int):
             wallet_instance.available_funds.amount_cents += sub
 
-        key = wallet_instance.put()
-        if not bool(key):
+        key: Optional[ndb.Key] = wallet_instance.put()
+        if not isinstance(key, ndb.Key):
             message: str = "General error updating database"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
@@ -904,8 +906,8 @@ class WalletView(Validator, WalletEmails):
         if isinstance(add, int):
             wallet_instance.available_funds.amount_cents += add
 
-        key = wallet_instance.put_async().get_result()
-        if not bool(key):
+        key: Optional[ndb.Key] = wallet_instance.put_async().get_result()
+        if not isinstance(key, ndb.Key):
             message: str = "General error updating database"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 

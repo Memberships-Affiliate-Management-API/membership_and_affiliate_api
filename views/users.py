@@ -396,7 +396,7 @@ class UserView(Validators, UserEmails):
                                              is_active=True)
 
         key = user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-        if not bool(key):
+        if not isinstance(key, ndb.Key):
             message: str = "Unable to save database"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
@@ -442,7 +442,7 @@ class UserView(Validators, UserEmails):
                                              cell=cell, email=email, password=password, is_active=True)
 
         key = user_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
-        if not bool(key):
+        if not isinstance(key, ndb.Key):
             message: str = "Unable to save user database"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
@@ -495,7 +495,7 @@ class UserView(Validators, UserEmails):
         user_instance.is_admin = is_admin
         user_instance.is_support = is_support
         key = user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-        if not bool(key):
+        if not isinstance(key, ndb.Key):
             message: str = "Unable to save user database"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
@@ -541,7 +541,7 @@ class UserView(Validators, UserEmails):
             user_instance.is_admin = is_admin
             user_instance.is_support = is_support
             key = user_instance.put_async(retries=self._max_retries, timeout=self._max_timeout).get_result()
-            if not bool(key):
+            if not isinstance(key, ndb.Key):
                 message: str = "Unable to save user database"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
@@ -586,7 +586,7 @@ class UserView(Validators, UserEmails):
         user_instance.names = names
         user_instance.surname = surname
         key = user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-        if not bool(key):
+        if not isinstance(key, ndb.Key):
             message: str = "Database Error: unable to update names"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
@@ -626,7 +626,7 @@ class UserView(Validators, UserEmails):
         user_instance.cell = cell
         # TODO - run a function to send verification sms if available_funds
         key = user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-        if not bool(key):
+        if not isinstance(key, ndb.Key):
             message: str = "Database Error: unable to save updated user record"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
@@ -671,7 +671,7 @@ class UserView(Validators, UserEmails):
         user_instance.email = email
         # TODO send verification email and mark email as not verified
         key = user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-        if not bool(key):
+        if not isinstance(key, ndb.Key):
             message: str = "Database Error: Unable to update user record"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
@@ -722,7 +722,7 @@ class UserView(Validators, UserEmails):
 
         user_instance.password = new_password
         key = user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-        if not bool(key):
+        if not isinstance(key, ndb.Key):
             message: str = "Database Error: unable to update password"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
@@ -761,7 +761,7 @@ class UserView(Validators, UserEmails):
 
         user_instance.is_admin = is_admin
         key = user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-        if not bool(key):
+        if not isinstance(key, ndb.Key):
             message: str = "Database Error: Unable to update user admin status"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
@@ -803,7 +803,7 @@ class UserView(Validators, UserEmails):
 
         user_instance.is_support = is_support
         key = user_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-        if not bool(key):
+        if not isinstance(key, ndb.Key):
             message: str = "Database Error: Unable to update user support status"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
@@ -1429,7 +1429,7 @@ class UserView(Validators, UserEmails):
         if isinstance(user_model, UserModel) and user_model.email == email:
             user_model.recovery_code = create_id()
             key: Optional[ndb.Key] = user_model.put(retries=self._max_retries, timeout=self._max_timeout)
-            if not bool(key):
+            if not isinstance(key, ndb.Key):
                 message: str = "Database Error: Unable to create recovery code please try again later"
                 raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
