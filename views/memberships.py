@@ -589,7 +589,7 @@ class MembershipsView(Validators, MembershipsEmails):
                                 payload=[member.to_dict() for member in membership_list],
                                 message=message)), status_codes.status_ok_code
         message: str = "Unable to find members of plan"
-        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -647,8 +647,10 @@ class MembershipsView(Validators, MembershipsEmails):
             _kwargs: dict = dict(organization_id=organization_id, uid=uid)
             self._base_email_scheduler(func=self.send_memberships_welcome_email, kwargs=_kwargs)
 
-        return jsonify({'status': True, 'message': 'successfully subscribed to membership',
-                        'payload': membership_instance.to_dict()}), status_codes.successfully_updated_code
+        message: str = "successfully subscribed to service"
+        return jsonify(dict(status=True,
+                            payload=membership_instance.to_dict(),
+                            message=message)), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
@@ -691,8 +693,11 @@ class MembershipsView(Validators, MembershipsEmails):
         if not isinstance(key, ndb.Key):
             message: str = "Unable to save membership instance to database, please try again"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
-        return jsonify({'status': True, 'message': 'successfully updated membership',
-                        'payload': membership_instance.to_dict()}), status_codes.status_ok_code
+
+        message: str = "successfully updated membership"
+        return jsonify(dict(status=True,
+                            payload=membership_instance.to_dict(),
+                            message=message)), status_codes.successfully_updated_code
 
     def add_membership(self, organization_id: Optional[str], uid: Optional[str],
                        plan_id: Optional[str], plan_start_date: date,
@@ -795,8 +800,7 @@ class MembershipsView(Validators, MembershipsEmails):
 
         if not isinstance(membership_instance, Memberships) or not bool(membership_instance):
             message: str = "Memberships record not found"
-            return jsonify({'status': True, 'payload': membership_instance.to_dict(),
-                            'message': message}), status_codes.data_not_found_code
+            return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
         membership_instance.payment_status = status
         key: Optional[ndb.Key] = membership_instance.put(retries=self._max_retries, timeout=self._max_timeout)
@@ -805,9 +809,10 @@ class MembershipsView(Validators, MembershipsEmails):
             message: str = "Unable to save membership instance to database, please try again"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-        message: str = "Successfully update membership status"
-        return jsonify({'status': True, 'payload': membership_instance.to_dict(),
-                        'message': message}), status_codes.successfully_updated_code
+        message: str = "successfully updated membership"
+        return jsonify(dict(status=True,
+                            payload=membership_instance.to_dict(),
+                            message=message)), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
@@ -838,9 +843,11 @@ class MembershipsView(Validators, MembershipsEmails):
         if not isinstance(key, ndb.Key):
             message: str = "Unable to save membership instance to database, please try again"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
-        message: str = "Successfully update membership status"
-        return jsonify({'status': True, 'payload': membership_instance.to_dict(),
-                        'message': message}), status_codes.successfully_updated_code
+
+        message: str = "successfully updated membership"
+        return jsonify(dict(status=True,
+                            payload=membership_instance.to_dict(),
+                            message=message)), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
@@ -879,9 +886,10 @@ class MembershipsView(Validators, MembershipsEmails):
 
         _kwargs: dict = dict(organization_id=organization_id, uid=uid)
         self._base_email_scheduler(func=self.send_change_of_membership_notification_email, kwargs=_kwargs)
-
-        return jsonify({'status': True, 'message': 'successfully updated membership',
-                        'payload': membership_instance.to_dict()}), status_codes.successfully_updated_code
+        message: str = "successfully updated membership"
+        return jsonify(dict(status=True,
+                            payload=membership_instance.to_dict(),
+                            message=message)), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
@@ -907,15 +915,17 @@ class MembershipsView(Validators, MembershipsEmails):
             key: Optional[ndb.Key] = membership_instance.put_async(retries=self._max_retries,
                                                                    timeout=self._max_timeout).get_result()
 
-        if not (bool(key)):
+        if not isinstance(key, ndb.Key):
             message: str = "Database Error: Unable to update Membership, please try again later"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
         _kwargs: dict = dict(organization_id=organization_id, uid=uid)
         self._base_email_scheduler(func=self.send_change_of_membership_notification_email, kwargs=_kwargs)
 
-        return jsonify({'status': True, 'message': 'successfully updated membership',
-                        'payload': membership_instance.to_dict()}), status_codes.successfully_updated_code
+        message: str = "successfully updated membership"
+        return jsonify(dict(status=True,
+                            payload=membership_instance.to_dict(),
+                            message=message)), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
