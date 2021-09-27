@@ -861,7 +861,7 @@ class MembershipsView(Validators, MembershipsEmails):
 
         if not isinstance(membership_instance, Memberships) or not bool(membership_instance):
             message: str = "Unable to change membership, cannot find original membership record"
-            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+            return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
         if self.plan_exist(organization_id=organization_id, plan_id=dest_plan_id) is True:
             membership_instance.plan_id = dest_plan_id
@@ -893,7 +893,7 @@ class MembershipsView(Validators, MembershipsEmails):
 
         if not isinstance(membership_instance, Memberships) or not bool(membership_instance):
             message: str = "Data Not Found: Unable to update membership"
-            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+            return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
         if await self.plan_exist_async(organization_id=organization_id, plan_id=dest_plan_id) is True:
             membership_instance.plan_id = dest_plan_id
