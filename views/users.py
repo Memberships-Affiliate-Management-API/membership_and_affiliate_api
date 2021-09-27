@@ -886,6 +886,19 @@ class UserView(Validators, UserEmails):
         return jsonify({'status': True, 'payload': user_instance.to_dict(),
                         'message': message}), status_codes.successfully_updated_code
 
+    @staticmethod
+    def __delete_user(organization_id: str, uid: str, user_instance: UserModel):
+        cell: str = user_instance.cell
+        email: str = user_instance.email
+        _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email,
+                             cell=cell)
+        app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
+        # TODO- rather mark user as deleted
+        user_instance.key.delete()
+        return jsonify(dict(status=True,
+                            payload=user_instance.to_dict(),
+                            message='successfully deleted user')), status_codes.successfully_updated_code
+
     @use_context
     @handle_view_errors
     def delete_user(self, organization_id: Optional[str], uid: Optional[str] = None,
@@ -905,36 +918,22 @@ class UserView(Validators, UserEmails):
         if isinstance(uid, str) and bool(uid.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.uid == uid).get()
-            if isinstance(user_instance, UserModel) and user_instance.uid == uid:
-                user_instance.key.delete()
-                return jsonify({'status': True,
-                                'message': 'successfully deleted user'}), status_codes.successfully_updated_code
+            if isinstance(user_instance, UserModel) and bool(user_instance):
+                return self.__delete_user(organization_id, uid, user_instance)
 
         elif isinstance(email, str) and bool(email.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.email == email).get()
-            if isinstance(user_instance, UserModel):
-                user_instance.key.delete()
-                return jsonify({'status': True,
-                                'message': 'successfully deleted user'}), status_codes.successfully_updated_code
+            if isinstance(user_instance, UserModel) and bool(user_instance):
+                return self.__delete_user(organization_id, uid, user_instance)
 
         elif isinstance(cell, str) and bool(cell.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.cell == cell).get()
-            if isinstance(user_instance, UserModel) and user_instance.uid == uid:
-                cell: str = user_instance.cell
-                email: str = user_instance.email
-                _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email,
-                                     cell=cell)
-                app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
+            if isinstance(user_instance, UserModel) and bool(user_instance):
+                return self.__delete_user(organization_id, uid, user_instance)
 
-                # TODO- rather mark user as deleted
-                user_instance.key.delete()
-
-                return jsonify({'status': True,
-                                'message': 'successfully deleted user'}), status_codes.successfully_updated_code
-
-        return jsonify({'status': False, 'message': 'user not found'}), status_codes.data_not_found_code
+        return jsonify(dict(status=False, message='User not found')), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -956,35 +955,20 @@ class UserView(Validators, UserEmails):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.uid == uid).get_async().get_result()
             if isinstance(user_instance, UserModel) and bool(user_instance):
-                user_instance.key.delete()
-                return jsonify(dict(status=True,
-                                    payload=user_instance.to_dict(),
-                                    message='successfully deleted user')), status_codes.successfully_updated_code
+                return self.__delete_user(organization_id, uid, user_instance)
 
         elif isinstance(email, str) and bool(email.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.email == email).get_async().get_result()
             if isinstance(user_instance, UserModel) and bool(user_instance):
-                user_instance.key.delete()
-                return jsonify(dict(status=True,
-                                    payload=user_instance.to_dict(),
-                                    message='successfully deleted user')), status_codes.successfully_updated_code
+                return self.__delete_user(organization_id, uid, user_instance)
 
         elif isinstance(cell, str) and bool(cell.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.cell == cell).get_async().get_result()
             if isinstance(user_instance, UserModel) and bool(user_instance):
                 # TODO- rather mark user as deleted
-                cell: str = user_instance.cell
-                email: str = user_instance.email
-                _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email,
-                                     cell=cell)
-                app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
-
-                user_instance.key.delete()
-                return jsonify(dict(status=True,
-                                    payload=user_instance.to_dict(),
-                                    message='successfully deleted user')), status_codes.successfully_updated_code
+                return self.__delete_user(organization_id, uid, user_instance)
 
         return jsonify(dict(status=False, message='User not found')), status_codes.data_not_found_code
 
