@@ -1244,8 +1244,8 @@ class MembershipsView(Validators, MembershipsEmails):
             return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
         if bool(membership_plan_instance.term_payment_amount) and bool(membership_plan_instance.registration_amount):
-            amount_data: dict = {'term_payment_amount': membership_plan_instance.term_payment_amount.to_dict(),
-                                 'registration_amount': membership_plan_instance.registration_amount.to_dict()}
+            amount_data: dict = dict(term_payment_amount=membership_plan_instance.term_payment_amount.to_dict(),
+                                     registration_amount=membership_plan_instance.registration_amount.to_dict())
             message: str = 'successfully returned payment details'
             return jsonify(dict(status=True,
                                 payload=amount_data,
@@ -1748,14 +1748,7 @@ class MembershipPlansView(Validators):
 
         membership_plan_list: List[MembershipPlans] = MembershipPlans.query(
             MembershipPlans.organization_id == organization_id, MembershipPlans.schedule_term == schedule_term).fetch()
-        if membership_plan_list:
-            message: str = 'successfully retrieved monthly membership plans'
-            return jsonify(dict(status=True,
-                                payload=[membership.to_dict() for membership in membership_plan_list],
-                                message=message)), status_codes.status_ok_code
-
-        message: str = "Unable to find plans by schedule term"
-        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
+        return self._return_membership_plans_list(membership_plan_list)
 
     @use_context
     @handle_view_errors
@@ -1773,14 +1766,7 @@ class MembershipPlansView(Validators):
             MembershipPlans.organization_id == organization_id,
             MembershipPlans.schedule_term == schedule_term).fetch_async().get_result()
 
-        if membership_plan_list:
-            message: str = 'successfully retrieved monthly membership plans'
-            return jsonify(dict(status=True,
-                                payload=[membership.to_dict() for membership in membership_plan_list],
-                                message=message)), status_codes.status_ok_code
-
-        message: str = "Unable to find plans by schedule term"
-        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
+        return self._return_membership_plans_list(membership_plan_list)
 
     @staticmethod
     @handle_store_errors
@@ -1831,13 +1817,11 @@ class MembershipPlansView(Validators):
             message: str = 'plan_id is required'
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        if isinstance(plan_id, str):
-            membership_plan_instance: MembershipPlans = MembershipPlans.query(
-                MembershipPlans.organization_id == organization_id,
-                MembershipPlans.plan_id == plan_id).get_async().get_result()
+        membership_plan_instance: MembershipPlans = MembershipPlans.query(
+            MembershipPlans.organization_id == organization_id,
+            MembershipPlans.plan_id == plan_id).get_async().get_result()
 
-            return membership_plan_instance if bool(membership_plan_instance) else None
-        return None
+        return membership_plan_instance if bool(membership_plan_instance) else None
 
     @use_context
     @handle_view_errors
