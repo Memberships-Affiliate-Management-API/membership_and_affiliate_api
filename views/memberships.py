@@ -1658,7 +1658,7 @@ class MembershipPlansView(Validators):
 
         if not isinstance(membership_plans_instance, MembershipPlans) or not bool(membership_plans_instance):
             message: str = 'Membership plan not found'
-            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+            return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
         curr_term_payment: AmountMixin = AmountMixin(amount=term_payment, currency=currency)
         curr_registration_amount: AmountMixin = AmountMixin(amount=registration_amount,
@@ -1678,8 +1678,10 @@ class MembershipPlansView(Validators):
             message: str = 'for some reason we are unable to create a new plan'
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-        return jsonify({'status': True, 'message': 'successfully created new membership plan',
-                        'payload': membership_plans_instance.to_dict()}), status_codes.status_ok_code
+        message: str = 'successfully created memberships plan instance'
+        return jsonify(dict(status=True,
+                            payload=membership_plans_instance.to_dict(),
+                            message=message)), status_codes.successfully_updated_code
 
     # noinspection DuplicatedCode
     @use_context
