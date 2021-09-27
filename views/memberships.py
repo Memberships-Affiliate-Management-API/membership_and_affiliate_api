@@ -1268,11 +1268,12 @@ class MembershipsView(Validators, MembershipsEmails):
                                                          Memberships.uid == uid).get_async().get_result()
 
         if isinstance(member_instance, Memberships) and bool(member_instance):
-            return jsonify({'status': True, 'payload': member_instance.to_dict(),
-                            'message': 'successfully fetched members'}), status_codes.status_ok_code
+            return jsonify(dict(status=True,
+                                payload=member_instance.to_dict(),
+                                message='successfully fetched members')), status_codes.status_ok_code
 
         message: str = 'user does not have any membership plan'
-        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -1304,7 +1305,7 @@ class MembershipsView(Validators, MembershipsEmails):
 
         if not isinstance(membership_instance, Memberships) and bool(membership_instance):
             message: str = 'unable to locate membership details'
-            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+            return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
         plan_id: str = membership_instance.plan_id
         membership_plan_instance: MembershipPlans = MembershipPlansView()._get_plan(organization_id=organization_id,
@@ -1312,14 +1313,15 @@ class MembershipsView(Validators, MembershipsEmails):
 
         if not bool(membership_plan_instance):
             message: str = 'could not find plan associate with the plan_id'
-            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+            return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
         if bool(membership_plan_instance.term_payment_amount) and bool(membership_plan_instance.registration_amount):
             amount_data: dict = {'term_payment_amount': membership_plan_instance.term_payment_amount.to_dict(),
                                  'registration_amount': membership_plan_instance.registration_amount.to_dict()}
             message: str = 'successfully returned payment details'
-            return jsonify({'status': True, 'payload': amount_data,
-                            'message': message}), status_codes.status_ok_code
+            return jsonify(dict(status=True,
+                                payload=amount_data,
+                                message=message)), status_codes.status_ok_code
 
     @use_context
     @handle_view_errors
@@ -1351,7 +1353,7 @@ class MembershipsView(Validators, MembershipsEmails):
 
         if not isinstance(membership_instance, Memberships) or not bool(membership_instance):
             message: str = 'unable to locate membership details'
-            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+            return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
         plan_id: str = membership_instance.plan_id
         membership_plan_instance: MembershipPlans = await MembershipPlansView()._get_plan_async(
@@ -1359,13 +1361,15 @@ class MembershipsView(Validators, MembershipsEmails):
 
         if not isinstance(membership_plan_instance, MembershipPlans) or not bool(membership_plan_instance):
             message: str = 'could not find plan associate with the plan_id'
-            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+            return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
         amount_data: dict = {'term_payment_amount': membership_plan_instance.term_payment_amount.to_dict(),
                              'registration_amount': membership_plan_instance.registration_amount.to_dict()}
 
         message: str = 'successfully returned payment details'
-        return jsonify({'status': True, 'payload': amount_data, 'message': message}), status_codes.status_ok_code
+        return jsonify(dict(status=True,
+                            payload=amount_data,
+                            message=message)), status_codes.status_ok_code
 
     @use_context
     @handle_view_errors
@@ -1401,7 +1405,7 @@ class MembershipsView(Validators, MembershipsEmails):
 
         if not isinstance(membership_instance, Memberships) or not bool(membership_instance):
             message: str = "Data Error: Unable to find membership record"
-            return jsonify(dict(status=False, message=message)), status_codes.data_not_found_codes
+            return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
         membership_instance.is_active_subscription = False
         key: Optional[ndb.Key] = membership_instance.put(retries=self._max_retries, timeout=self._max_timeout)
