@@ -1208,24 +1208,25 @@ class UserView(Validators, UserEmails):
         if isinstance(cell, str) and bool(cell.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.cell == cell).get_async().get_result()
-            if isinstance(user_instance, UserModel) and user_instance.cell == cell:
+            if isinstance(user_instance, UserModel) and bool(user_instance):
                 message: str = 'successfully retrieved user by cell'
-                return jsonify({'status': True,
-                                'payload': user_instance.to_dict(),
-                                'message': message}), status_codes.status_ok_code
+                return jsonify(dict(status=True,
+                                    payload=user_instance.to_dict(),
+                                    message=message)), status_codes.status_ok_code
             message: str = "Unable to find user with that cell number"
-            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+            return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
         if isinstance(email, str) and bool(email.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.email == email).get_async().get_result()
-            if isinstance(user_instance, UserModel) and user_instance.email == email:
+            if isinstance(user_instance, UserModel) and bool(user_instance):
                 message: str = 'successfully retrieved user by email'
-                return jsonify({'status': True,
-                                'payload': user_instance.to_dict(),
-                                'message': message}), status_codes.status_ok_code
+                return jsonify(dict(status=True,
+                                    payload=user_instance.to_dict(),
+                                    message=message)), status_codes.status_ok_code
+
             message: str = "Unable to find user with that email address"
-            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+            return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
         message: str = 'to retrieve a user either submit an email, cell or user id'
         raise InputError(status=error_codes.input_error_code, description=message)
@@ -1255,14 +1256,15 @@ class UserView(Validators, UserEmails):
 
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.uid == uid).get()
-        if isinstance(user_instance, UserModel) and user_instance.uid == uid:
-            if check_password_hash(password=password, pwhash=user_instance.password) is True:
-                return jsonify({'status': True, 'message': 'passwords match'}), status_codes.status_ok_code
+        if not (isinstance(user_instance, UserModel) and bool(user_instance)):
+            return jsonify(dict(status=False, message='User not found')), status_codes.data_not_found_code
 
-            return jsonify({'status': False,
-                            'message': 'passwords do not match'}), error_codes.authentication_required_error_code
-        else:
-            return jsonify({'status': False, 'message': 'user not found'}), status_codes.data_not_found_code
+        if check_password_hash(password=password, pwhash=user_instance.password):
+            return jsonify(dict(status=True, message='Passwords match')), status_codes.status_ok_code
+
+        message: str = 'Passwords do not match'
+        return jsonify(dict(status=False,
+                            message=message)), error_codes.authentication_required_error_code
 
     @use_context
     @handle_view_errors
@@ -1289,14 +1291,15 @@ class UserView(Validators, UserEmails):
 
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.uid == uid).get_async().get_result()
-        if isinstance(user_instance, UserModel) and user_instance.uid == uid:
-            if check_password_hash(password=password, pwhash=user_instance.password) is True:
-                return jsonify({'status': True, 'message': 'passwords match'}), status_codes.status_ok_code
+        if not (isinstance(user_instance, UserModel) and bool(user_instance)):
+            return jsonify(dict(status=False, message='User not found')), status_codes.data_not_found_code
 
-            return jsonify({'status': False,
-                            'message': 'passwords do not match'}), error_codes.authentication_required_error_code
-        else:
-            return jsonify({'status': False, 'message': 'user not found'}), status_codes.data_not_found_code
+        if check_password_hash(password=password, pwhash=user_instance.password):
+            return jsonify(dict(status=True, message='Passwords match')), status_codes.status_ok_code
+
+        message: str = 'Passwords do not match'
+        return jsonify(dict(status=False,
+                            message=message)), error_codes.authentication_required_error_code
 
     @use_context
     @handle_view_errors
@@ -1317,9 +1320,9 @@ class UserView(Validators, UserEmails):
 
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.uid == uid).get()
-        if not isinstance(user_instance, UserModel) or not bool(user_instance):
+        if not (isinstance(user_instance, UserModel) and bool(user_instance)):
             message: str = "User Not found"
-            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+            return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
         user_instance.is_active = False
         user_instance.put()
@@ -1328,8 +1331,7 @@ class UserView(Validators, UserEmails):
         email: str = user_instance.email
         _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
         app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
-
-        return jsonify({'status': True, 'message': 'user deactivated'}), status_codes.status_ok_code
+        return jsonify(dict(status=True, message='User Deactivated')), status_codes.status_ok_code
 
     @use_context
     @handle_view_errors
@@ -1353,15 +1355,16 @@ class UserView(Validators, UserEmails):
                                                    UserModel.uid == uid).get_async().get_result()
         if not isinstance(user_instance, UserModel) or not bool(user_instance):
             message: str = "User Not found"
-            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+            return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
         user_instance.is_active = False
         user_instance.put_async().get_result()
         cell: str = user_instance.cell
         email: str = user_instance.email
         _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
         app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
-
-        return jsonify({'status': True, 'message': 'user deactivated'}), status_codes.status_ok_code
+        return jsonify(dict(status=True,
+                            payload=user_instance.to_dict(),
+                            message='User Successfully Deactivated')), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
@@ -1403,14 +1406,12 @@ class UserView(Validators, UserEmails):
         if check_password_hash(user_model.password, password):
             token = encode_auth_token(uid=user_model.uid)
             payload: dict = dict(token=token, user=user_model.to_dict())
-            return jsonify({'status': True,
-                            'payload': payload,
-                            'message': "you have successfully logged in"}), status_codes.status_ok_code
+            return jsonify(dict(status=True,
+                                payload=payload,
+                                message='you are successfully logged in')), status_codes.status_ok_code
 
-        message: str = 'login was not successful please check your <strong>email: <code>{}</code> </strong> or ' \
-                       '<strong>password: <code>{}</code></strong>'.format(email, password)
-
-        return jsonify({"message": message}), error_codes.un_auth_error_code
+        message: str = f'login was not successful please check your email: {email} or password'
+        return jsonify(dict(message=message)), error_codes.un_auth_error_code
 
     @use_context
     @handle_view_errors
@@ -1426,7 +1427,8 @@ class UserView(Validators, UserEmails):
 
         user_model: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                 UserModel.email == email).get()
-        if isinstance(user_model, UserModel) and user_model.email == email:
+        if isinstance(user_model, UserModel) and bool(user_model):
+            # NOTE cannot send failure messages as it will give attackers more information than necessary
             user_model.recovery_code = create_id()
             key: Optional[ndb.Key] = user_model.put(retries=self._max_retries, timeout=self._max_timeout)
             if not isinstance(key, ndb.Key):
@@ -1443,8 +1445,8 @@ class UserView(Validators, UserEmails):
             self._base_email_scheduler(func=super().send_recovery_email, kwargs=kwargs)
 
         # NOTE cannot send failure messages as it will give attackers more information than necessary
-        message: str = "If your email is registered please check your inbox"
-        return jsonify({'status': True, 'message': message}), status_codes.successfully_updated_code
+        message: str = "A password recovery email has been sent to your email inbox"
+        return jsonify(dict(status=True, message=message)), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
@@ -1458,13 +1460,16 @@ class UserView(Validators, UserEmails):
         if isinstance(email, str) and bool(email.strip()):
             users_instance: UserModel = UserModel.query(UserModel.email == email).get()
             message: str = "user exist"
-            return jsonify({'status': True,
-                            'payload': users_instance.to_dict(), 'message': message}), status_codes.status_ok_code
+            return jsonify(dict(status=True,
+                                payload=users_instance.to_dict(),
+                                message=message)), status_codes.status_ok_code
+
         elif isinstance(uid, str) and bool(uid.strip()):
             users_instance: UserModel = UserModel.query(UserModel.uid == uid).get()
             message: str = "user exist"
-            return jsonify({'status': True,
-                            'payload': users_instance.to_dict(), 'message': message}), status_codes.status_ok_code
+            return jsonify(dict(status=True,
+                                payload=users_instance.to_dict(),
+                                message=message)), status_codes.status_ok_code
 
         message: str = "user not found"
-        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
