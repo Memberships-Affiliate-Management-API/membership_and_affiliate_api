@@ -266,6 +266,18 @@ class Validators(UserValidators, OrgValidators):
         self._max_timeout: int = current_app.config.get('DATASTORE_TIMEOUT')
 
     @staticmethod
+    def _check_password_org_email(email, organization_id, password):
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+        if not isinstance(email, str) or not bool(email.strip()):
+            message: str = "email is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+        if not isinstance(password, str) or not bool(password.strip()):
+            message: str = "password is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+    @staticmethod
     def check_required(organization_id: Optional[str], email: Optional[str],
                        cell: Optional[str]) -> None:
         """
@@ -304,6 +316,18 @@ class Validators(UserValidators, OrgValidators):
             message: str = "uid is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
+    @staticmethod
+    def _check_org_password_uid(organization_id, password, uid):
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+        if not isinstance(uid, str) or not bool(uid.strip()):
+            message: str = "uid is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+        if not isinstance(password, str) or not bool(password.strip()):
+            message: str = "password is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
     def can_add_user(self, organization_id: Optional[str], email: Optional[str],
                      cell: Optional[str]) -> bool:
         """
@@ -339,15 +363,25 @@ class UserView(Validators, UserEmails):
         super(UserView, self).__init__()
 
     @staticmethod
-    def __delete_user_cache(organization_id, uid, user_instance):
+    def _return_users_list(users_list: List[dict]):
+        if users_list:
+            message: str = 'successfully retrieved users'
+            return jsonify(dict(status=True,
+                                payload=users_list,
+                                message=message)), status_codes.status_ok_code
+        message: str = "Data Not found: Unable to find users"
+        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
+
+    @staticmethod
+    def _delete_user_cache(organization_id, uid, user_instance):
         cell: str = user_instance.cell
         email: str = user_instance.email
         _kwargs: dict = dict(user_view=UserView, organization_id=organization_id, uid=uid, email=email, cell=cell)
         app_cache._schedule_cache_deletion(func=app_cache._delete_user_cache, kwargs=_kwargs)
 
     @staticmethod
-    def __delete_user(organization_id: str, uid: str, user_instance: UserModel):
-        UserView.__delete_user_cache(organization_id, uid, user_instance)
+    def _delete_user(organization_id: str, uid: str, user_instance: UserModel):
+        UserView._delete_user_cache(organization_id, uid, user_instance)
         # TODO- rather mark user as deleted
         user_instance.key.delete()
         return jsonify(dict(status=True,
@@ -608,7 +642,7 @@ class UserView(Validators, UserEmails):
             message: str = "Database Error: unable to update names"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-        self.__delete_user_cache(organization_id, uid, user_instance)
+        self._delete_user_cache(organization_id, uid, user_instance)
 
         message: str = "Successfully updated user names"
         return jsonify(dict(status=True,
@@ -743,7 +777,7 @@ class UserView(Validators, UserEmails):
             message: str = "Database Error: unable to update password"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-        self.__delete_user_cache(organization_id, uid, user_instance)
+        self._delete_user_cache(organization_id, uid, user_instance)
 
         # TODO - logoff the user
         message: str = "Successfully Updated Password - please login again"
@@ -784,7 +818,7 @@ class UserView(Validators, UserEmails):
         else:
             self.send_goodbye_admin_email(organization_id=organization_id, uid=uid)
 
-        self.__delete_user_cache(organization_id, uid, user_instance)
+        self._delete_user_cache(organization_id, uid, user_instance)
 
         message: str = "Successfully Update admin status"
         return jsonify(dict(status=True,
@@ -824,7 +858,7 @@ class UserView(Validators, UserEmails):
         else:
             self.send_goodbye_support_email(organization_id=organization_id, uid=uid)
 
-        self.__delete_user_cache(organization_id, uid, user_instance)
+        self._delete_user_cache(organization_id, uid, user_instance)
 
         message: str = "Successfully Update support status"
         return jsonify(dict(status=True,
@@ -887,7 +921,7 @@ class UserView(Validators, UserEmails):
             message: str = "Database Error: unable to update user"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-        self.__delete_user_cache(organization_id, uid, user_instance)
+        self._delete_user_cache(organization_id, uid, user_instance)
         message: str = "Successfully updated user address"
         return jsonify(dict(status=True,
                             payload=user_instance.to_dict(),
@@ -913,19 +947,19 @@ class UserView(Validators, UserEmails):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.uid == uid).get()
             if isinstance(user_instance, UserModel) and bool(user_instance):
-                return self.__delete_user(organization_id, uid, user_instance)
+                return self._delete_user(organization_id, uid, user_instance)
 
         elif isinstance(email, str) and bool(email.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.email == email).get()
             if isinstance(user_instance, UserModel) and bool(user_instance):
-                return self.__delete_user(organization_id, uid, user_instance)
+                return self._delete_user(organization_id, uid, user_instance)
 
         elif isinstance(cell, str) and bool(cell.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.cell == cell).get()
             if isinstance(user_instance, UserModel) and bool(user_instance):
-                return self.__delete_user(organization_id, uid, user_instance)
+                return self._delete_user(organization_id, uid, user_instance)
 
         return jsonify(dict(status=False, message='User not found')), status_codes.data_not_found_code
 
@@ -949,20 +983,20 @@ class UserView(Validators, UserEmails):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.uid == uid).get_async().get_result()
             if isinstance(user_instance, UserModel) and bool(user_instance):
-                return self.__delete_user(organization_id, uid, user_instance)
+                return self._delete_user(organization_id, uid, user_instance)
 
         elif isinstance(email, str) and bool(email.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.email == email).get_async().get_result()
             if isinstance(user_instance, UserModel) and bool(user_instance):
-                return self.__delete_user(organization_id, uid, user_instance)
+                return self._delete_user(organization_id, uid, user_instance)
 
         elif isinstance(cell, str) and bool(cell.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.cell == cell).get_async().get_result()
             if isinstance(user_instance, UserModel) and bool(user_instance):
                 # TODO- rather mark user as deleted
-                return self.__delete_user(organization_id, uid, user_instance)
+                return self._delete_user(organization_id, uid, user_instance)
 
         return jsonify(dict(status=False, message='User not found')), status_codes.data_not_found_code
 
@@ -981,13 +1015,7 @@ class UserView(Validators, UserEmails):
         users_list: List[dict] = [user.to_dict() for user in UserModel.query(
             UserModel.organization_id == organization_id, UserModel.is_active == True).fetch()]
 
-        if users_list:
-            message: str = 'successfully retrieved active users'
-            return jsonify(dict(status=True,
-                                payload=users_list,
-                                message=message)), status_codes.status_ok_code
-        message: str = "Unable to find users"
-        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
+        return self._return_users_list(users_list=users_list)
 
     @use_context
     @handle_view_errors
@@ -1006,14 +1034,7 @@ class UserView(Validators, UserEmails):
         users_list: List[dict] = [user.to_dict() for user in UserModel.query(
             UserModel.organization_id == organization_id, UserModel.is_active == True).fetch_async().get_result()]
 
-        if users_list:
-            message: str = 'successfully retrieved active users'
-            return jsonify(dict(status=True,
-                                payload=users_list,
-                                message=message)), status_codes.status_ok_code
-
-        message: str = "Unable to find users list"
-        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
+        return self._return_users_list(users_list=users_list)
 
     @use_context
     @handle_view_errors
@@ -1031,14 +1052,7 @@ class UserView(Validators, UserEmails):
         users_list: List[dict] = [user.to_dict() for user in UserModel.query(
             UserModel.organization_id == organization_id, UserModel.is_active == False).fetch()]
 
-        if users_list:
-            message: str = 'successfully retrieved in-active users'
-            return jsonify(dict(status=True,
-                                payload=users_list,
-                                message=message)), status_codes.status_ok_code
-
-        message: str = "Unable to find active users"
-        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
+        return self._return_users_list(users_list=users_list)
 
     @use_context
     @handle_view_errors
@@ -1056,14 +1070,7 @@ class UserView(Validators, UserEmails):
         users_list: List[dict] = [user.to_dict() for user in UserModel.query(
             UserModel.organization_id == organization_id, UserModel.is_active == False).fetch_async().get_result()]
 
-        if users_list:
-            message: str = 'successfully retrieved in-active users'
-            return jsonify(dict(status=True,
-                                payload=users_list,
-                                message=message)), status_codes.status_ok_code
-
-        message: str = "Unable to find active users"
-        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
+        return self._return_users_list(users_list=users_list)
 
     @use_context
     @handle_view_errors
@@ -1081,14 +1088,7 @@ class UserView(Validators, UserEmails):
         users_list: List[dict] = [user.to_dict() for user in UserModel.query(
             UserModel.organization_id == organization_id).fetch()]
 
-        if users_list:
-            message: str = 'successfully retrieved active users'
-            return jsonify(dict(status=True,
-                                payload=users_list,
-                                message=message)), status_codes.status_ok_code
-
-        message: str = "Unable to retrieve active users"
-        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
+        return self._return_users_list(users_list=users_list)
 
     @use_context
     @handle_view_errors
@@ -1106,14 +1106,7 @@ class UserView(Validators, UserEmails):
         users_list: List[dict] = [user.to_dict() for user in UserModel.query(
             UserModel.organization_id == organization_id).fetch_async().get_result()]
 
-        if users_list:
-            message: str = 'successfully retrieved active users'
-            return jsonify(dict(status=True,
-                                payload=users_list,
-                                message=message)), status_codes.status_ok_code
-
-        message: str = "Unable to retrieve all users"
-        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
+        return self._return_users_list(users_list=users_list)
 
     @use_context
     @handle_view_errors
@@ -1231,17 +1224,7 @@ class UserView(Validators, UserEmails):
         :param password:
         :return:
         """
-        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            message: str = "organization_id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(uid, str) or not bool(uid.strip()):
-            message: str = "user Id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(password, str) or not bool(password.strip()):
-            message: str = "password is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
+        self._check_org_password_uid(organization_id, password, uid)
 
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.uid == uid).get()
@@ -1266,17 +1249,7 @@ class UserView(Validators, UserEmails):
         :param password:
         :return:
         """
-        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            message: str = "organization_id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(uid, str) or not bool(uid.strip()):
-            message: str = "uid is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(password, str) or not bool(password.strip()):
-            message: str = "password is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
+        self._check_org_password_uid(organization_id, password, uid)
 
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.uid == uid).get_async().get_result()
@@ -1299,13 +1272,7 @@ class UserView(Validators, UserEmails):
         :param uid:
         :return:
         """
-        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            message: str = "organization_id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(uid, str) or not bool(uid.strip()):
-            message: str = "UserID is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
+        self._check_org_uid(organization_id, uid)
 
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.uid == uid).get()
@@ -1316,8 +1283,17 @@ class UserView(Validators, UserEmails):
         user_instance.is_active = False
         user_instance.put()
 
-        self.__delete_user_cache(organization_id, uid, user_instance)
+        self._delete_user_cache(organization_id, uid, user_instance)
         return jsonify(dict(status=True, message='User Deactivated')), status_codes.status_ok_code
+
+    @staticmethod
+    def _check_org_uid(organization_id, uid):
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+        if not isinstance(uid, str) or not bool(uid.strip()):
+            message: str = "UserID is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
 
     @use_context
     @handle_view_errors
@@ -1344,7 +1320,7 @@ class UserView(Validators, UserEmails):
             return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
         user_instance.is_active = False
         user_instance.put_async().get_result()
-        self.__delete_user_cache(organization_id, uid, user_instance)
+        self._delete_user_cache(organization_id, uid, user_instance)
 
         return jsonify(dict(status=True,
                             payload=user_instance.to_dict(),
@@ -1364,17 +1340,7 @@ class UserView(Validators, UserEmails):
         :param password:
         :return:
         """
-        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            message: str = "organization_id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(email, str) or not bool(email.strip()):
-            message: str = "email is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(password, str) or not bool(password.strip()):
-            message: str = "password is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
+        self._check_password_org_email(email, organization_id, password)
 
         user_model: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                 UserModel.email == email).get()
