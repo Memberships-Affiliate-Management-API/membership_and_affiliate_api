@@ -196,7 +196,6 @@ class APIKeysView(APIKeysValidators):
 
         api_key_instance.is_active = True
         key: Optional[ndb.Key] = api_key_instance.put(retries=self._max_retries, timeout=self._max_timeout)
-        print(f'key: {key}')
         if not isinstance(key, ndb.Key):
             message: str = "database error: unable to activate_key"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
