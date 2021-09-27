@@ -2071,6 +2071,18 @@ class CouponsView(Validators):
         super(CouponsView, self).__init__()
 
     @staticmethod
+    def _check_org_code_exp_time(code, expiration_time, organization_id):
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+        if not isinstance(code, str) or not bool(code.strip()):
+            message: str = "code is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+        if not isinstance(expiration_time, int):
+            message: str = "expiration_time is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+    @staticmethod
     def _return_coupons_list(coupons_list):
         payload: List[dict] = [coupon.to_dict() for coupon in coupons_list]
         if payload:
@@ -2170,17 +2182,7 @@ class CouponsView(Validators):
             :param expiration_time: up-datable value indicates the time the coupon code will expire
             :return:  updated coupon
         """
-        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            message: str = "organization_id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(code, str) or not bool(code.strip()):
-            message: str = "code is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(expiration_time, int):
-            message: str = "expiration_time is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
+        self._check_org_code_exp_time(code, expiration_time, organization_id)
 
         if not self.can_update_coupon(code=code, expiration_time=expiration_time, discount=discount):
             message: str = "You are not authorized to update coupon codes"
@@ -2215,17 +2217,7 @@ class CouponsView(Validators):
             :param expiration_time: up-datable value for coupons
             :return:  updated coupon
         """
-        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            message: str = "organization_id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(code, str) or not bool(code.strip()):
-            message: str = "code is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(expiration_time, int) or expiration_time < timestamp():
-            message: str = "expiration_time is required and can only be a timestamp greater than now"
-            raise InputError(status=error_codes.input_error_code, description=message)
+        self._check_org_code_exp_time(code, expiration_time, organization_id)
 
         if await self.can_update_coupon_async(organization_id=organization_id, code=code,
                                               expiration_time=expiration_time, discount=discount) is False:
@@ -2257,16 +2249,7 @@ class CouponsView(Validators):
         :param coupon_data: contains coupon code and organization_id
         :return: cancelled coupon code
         """
-        code: str = coupon_data.get("code")
-        organization_id: str = coupon_data.get('organization_id')
-        if not isinstance(code, str) or not bool(code.strip()):
-            message: str = "coupon code is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            message: str = "organization id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
+        code, organization_id = self._check_org_coupon_code(coupon_data)
         coupon_instance: Coupons = Coupons.query(Coupons.organization_id == organization_id, Coupons.code == code).get()
 
         if not isinstance(coupon_instance, Coupons) or not bool(coupon_instance):
@@ -2292,17 +2275,7 @@ class CouponsView(Validators):
         :param coupon_data: contains coupon code and organization_id
         :return:
         """
-        code: str = coupon_data.get("code")
-        organization_id: str = coupon_data.get('organization_id')
-
-        if not isinstance(code, str) or not bool(code.strip()):
-            message: str = "coupon code is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            message: str = "organization_id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
+        code, organization_id = self._check_org_coupon_code(coupon_data)
         coupon_instance: Coupons = Coupons.query(Coupons.organization_id == organization_id,
                                                  Coupons.code == code).get_async().get_result()
 
@@ -2424,7 +2397,6 @@ class CouponsView(Validators):
             Coupons.expiration_time < timestamp()).fetch_async().get_result()
 
         return self._return_coupons_list(coupons_list)
-
 
     @use_context
     @handle_view_errors
