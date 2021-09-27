@@ -1401,7 +1401,7 @@ class MembershipsView(Validators, MembershipsEmails):
 
         if not isinstance(membership_instance, Memberships) or not bool(membership_instance):
             message: str = "Data Error: Unable to find membership record"
-            return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+            return jsonify(dict(status=False, message=message)), status_codes.data_not_found_codes
 
         membership_instance.is_active_subscription = False
         key: Optional[ndb.Key] = membership_instance.put(retries=self._max_retries, timeout=self._max_timeout)
@@ -1413,8 +1413,9 @@ class MembershipsView(Validators, MembershipsEmails):
         # TODO important please also un-subscribe from paypal services
 
         message: str = "Successfully un-subscribed from your membership plan"
-        return jsonify({'status': True, 'payload': membership_instance.to_dict(),
-                        'message': message}), status_codes.successfully_updated_code
+        return jsonify(dict(status=True,
+                            payload=membership_instance.to_dict(),
+                            message=message)), status_codes.successfully_updated_code
 
 
 def plan_data_wrapper(func):
