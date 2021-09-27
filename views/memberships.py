@@ -1413,6 +1413,16 @@ class MembershipPlansView(Validators):
     def __init__(self):
         super(MembershipPlansView, self).__init__()
 
+    @staticmethod
+    def _return_membership_plans_list(membership_plan_list):
+        plan_list: List[dict] = [plan.to_dict() for plan in membership_plan_list]
+        if plan_list:
+            return jsonify(status=True,
+                           payload=plan_list,
+                           message='plans successfully retrieved'), status_codes.status_ok_code
+        message: str = "Unable to find membership plans"
+        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
+
     # TODO - add Membership Plans Validators
 
     @staticmethod
@@ -1598,7 +1608,7 @@ class MembershipPlansView(Validators):
             message: str = 'for some reason we are unable to create a new plan'
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
-        message: str = 'successfully created memberships plan instance'
+        message: str = 'successfully updated memberships plan instance'
         return jsonify(dict(status=True,
                             payload=membership_plans_instance.to_dict(),
                             message=message)), status_codes.successfully_updated_code
@@ -1654,7 +1664,7 @@ class MembershipPlansView(Validators):
         if not isinstance(key, ndb.Key):
             message: str = 'for some reason we are unable to create a new plan'
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
-        message: str = 'successfully created memberships plan instance'
+        message: str = 'successfully updated memberships plan'
         return jsonify(dict(status=True,
                             payload=membership_plans_instance.to_dict(),
                             message=message)), status_codes.successfully_updated_code
@@ -1934,15 +1944,7 @@ class MembershipPlansView(Validators):
         membership_plan_list: List[MembershipPlans] = MembershipPlans.query(
             MembershipPlans.organization_id == organization_id).fetch()
 
-        plan_list: List[dict] = [plan.to_dict() for plan in membership_plan_list]
-
-        if plan_list:
-            return jsonify(status=True,
-                           payload=plan_list,
-                           message='plans successfully retrieved'), status_codes.status_ok_code
-
-        message: str = "Unable to find membership plans"
-        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
+        return MembershipPlansView._return_membership_plans_list(membership_plan_list)
 
     @staticmethod
     @use_context
@@ -1961,14 +1963,7 @@ class MembershipPlansView(Validators):
         membership_plan_list: List[MembershipPlans] = MembershipPlans.query(
             MembershipPlans.organization_id == organization_id).fetch_async().get_result()
 
-        plan_list: List[dict] = [plan.to_dict() for plan in membership_plan_list]
-        if plan_list:
-            return jsonify(status=True,
-                           payload=plan_list,
-                           message='plans successfully retrieved'), status_codes.status_ok_code
-
-        message: str = "Unable to find membership plans"
-        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
+        return MembershipPlansView._return_membership_plans_list(membership_plan_list)
 
 
 class AccessRightsView:
