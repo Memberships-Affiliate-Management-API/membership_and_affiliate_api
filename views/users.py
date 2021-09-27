@@ -1147,22 +1147,23 @@ class UserView(Validators, UserEmails):
         if isinstance(uid, str) and bool(uid.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.uid == uid).get()
-            if isinstance(user_instance, UserModel):
+            if isinstance(user_instance, UserModel) and bool(user_instance):
                 message: str = 'successfully retrieved user by uid'
-                return jsonify({'status': True,
-                                'payload': user_instance.to_dict(),
-                                'message': message}), status_codes.status_ok_code
+                return jsonify(dict(status=True,
+                                    payload=user_instance.to_dict(),
+                                    message=message)), status_codes.status_ok_code
             message: str = "Unable to find user with that uid"
             return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
         if isinstance(cell, str) and bool(cell.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                        UserModel.cell == cell).get()
-            if isinstance(user_instance, UserModel):
+            if isinstance(user_instance, UserModel) and bool(user_instance):
                 message: str = 'successfully retrieved user by cell'
-                return jsonify({'status': True,
-                                'payload': user_instance.to_dict(),
-                                'message': message}), status_codes.status_ok_code
+                return jsonify(dict(status=True,
+                                    payload=user_instance.to_dict(),
+                                    message=message)), status_codes.status_ok_code
+
             message: str = "Unable to find user with that cell number"
             return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
@@ -1172,14 +1173,15 @@ class UserView(Validators, UserEmails):
 
         user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,
                                                    UserModel.email == email).get()
-        if not isinstance(user_instance, UserModel) or not bool(user_instance):
-            message: str = "Unable to find user with that email address"
-            return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
+        if isinstance(user_instance, UserModel) and bool(user_instance):
+            message: str = 'successfully retrieved user by email'
+            return jsonify(dict(status=True,
+                                payload=user_instance.to_dict(),
+                                message=message)), status_codes.status_ok_code
 
-        message: str = 'successfully retrieved user by email'
-        return jsonify(dict(status=True,
-                            payload=user_instance.to_dict(),
-                            message=message)), status_codes.status_ok_code
+        message: str = "Unable to find user with that email address"
+        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
+
 
     @use_context
     @handle_view_errors
