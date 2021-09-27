@@ -1979,11 +1979,12 @@ class MembershipPlansView(Validators):
         plan_instance = await self._get_plan_async(organization_id=organization_id, plan_id=plan_id)
         if bool(plan_instance):
             message: str = "successfully fetched plan"
-            return jsonify({'status': True, 'payload': plan_instance.to_dict(),
-                            'message': message}), status_codes.status_ok_code
+            return jsonify(dict(status=True, payload=plan_instance.to_dict(),
+                                message=message)), status_codes.status_ok_code
 
-        return jsonify({'status': False,
-                        'message': 'Unable to get plan'}), status_codes.data_not_found_code
+        message: str = 'Data Not Found: unable to get memberships plans'
+        return jsonify(dict(status=False,
+                            message=message)), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -2007,13 +2008,12 @@ class MembershipPlansView(Validators):
                                                              Memberships.uid == uid).get()
 
         if not isinstance(membership_instance, Memberships) or not bool(membership_instance):
-            return jsonify({'status': False,
-                            'message': 'Unable to get plan'}), status_codes.data_not_found_code
+            return jsonify(dict(status=False,
+                                message='unable to get memberships plans')), status_codes.data_not_found_code
 
         plan_instance = self._get_plan(organization_id=organization_id, plan_id=membership_instance.plan_id)
         message: str = "successfully fetched user plan"
-        return jsonify({'status': True, 'payload': plan_instance.to_dict(),
-                        'message': message}), status_codes.status_ok_code
+        return jsonify(dict(status=True, payload=plan_instance.to_dict(), message=message)), status_codes.status_ok_code
 
     @staticmethod
     @use_context
@@ -2034,12 +2034,12 @@ class MembershipPlansView(Validators):
 
         plan_list: List[dict] = [plan.to_dict() for plan in membership_plan_list]
 
-        if isinstance(plan_list, list) and plan_list:
-            return jsonify({'status': True, 'payload': plan_list,
-                            'message': 'successfully fetched all memberships'}), status_codes.status_ok_code
+        if plan_list:
+            return jsonify(status=True, payload=plan_list,
+                           message='plans successfully retrieved'), status_codes.status_ok_code
 
         message: str = "Unable to find membership plans"
-        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
     @staticmethod
     @use_context
@@ -2059,12 +2059,12 @@ class MembershipPlansView(Validators):
             MembershipPlans.organization_id == organization_id).fetch_async().get_result()
 
         plan_list: List[dict] = [plan.to_dict() for plan in membership_plan_list]
-        if isinstance(plan_list, list) and plan_list:
-            return jsonify({'status': True, 'payload': plan_list,
-                            'message': 'successfully fetched all memberships'}), status_codes.status_ok_code
+        if plan_list:
+            return jsonify(status=True, payload=plan_list,
+                           message='plans successfully retrieved'), status_codes.status_ok_code
 
         message: str = "Unable to find membership plans"
-        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
 
 class AccessRightsView:
