@@ -481,6 +481,65 @@ class Validators(UserValid, PlanValid, MemberValid, CouponValid):
         message: str = "Unable to verify input data - could be due to database access errors - contact your admin"
         raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
+    @staticmethod
+    async def _check_org_uid(organization_id, uid):
+        if not isinstance(organization_id, str) or bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+        if not isinstance(uid, str) or not bool(uid.strip()):
+            message: str = "uid is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+    @staticmethod
+    def _check_org_uid_normal(organization_id, uid):
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+        if not isinstance(uid, str) or not bool(uid.strip()):
+            message: str = "uid is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+    @staticmethod
+    def _check_org_payment_uid(organization_id, payment_method, uid):
+        MembershipsView._check_org_uid_normal(organization_id, uid)
+        if not isinstance(payment_method, str) or payment_method.lower() not in get_payment_methods():
+            message: str = "payment method is required and should be one of : {}".format(get_payment_methods())
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+    @staticmethod
+    def _check_org_plan_uid_dest_plan(dest_plan_id, organization_id, origin_plan_id, uid):
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+        if not isinstance(uid, str) or not bool(uid.strip()):
+            message: str = "user id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+        if not isinstance(origin_plan_id, str) or not bool(origin_plan_id.strip()):
+            message: str = "origin_plan_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+        if not isinstance(dest_plan_id, str) or not bool(dest_plan_id.strip()):
+            message: str = "dest_plan_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+    @staticmethod
+    def _check_org_status_uid(organization_id, status, uid):
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = "Organization_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+        if not isinstance(uid, str) or not bool(uid.strip()):
+            message: str = "uid is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+        if not isinstance(status, str) or not bool(status.strip()):
+            message: str = "status is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+    @staticmethod
+    def _check_org_uid_plan_id(organization_id, plan_id, uid):
+        MembershipsView._check_org_uid_normal(organization_id, uid)
+        if not isinstance(plan_id, str) or not bool(plan_id.strip()):
+            message: str = "plan_id is required"
+            raise InputError(status=error_codes.input_error_code, description=message)
+
 
 # noinspection DuplicatedCode
 class MembershipsView(Validators, MembershipsEmails):
@@ -491,6 +550,16 @@ class MembershipsView(Validators, MembershipsEmails):
 
     def __init__(self):
         super(MembershipsView, self).__init__()
+
+    @staticmethod
+    def __return_membership_list(membership_list):
+        if membership_list:
+            message: str = 'successfully fetched members'
+            return jsonify(dict(status=True,
+                                payload=[member.to_dict() for member in membership_list],
+                                message=message)), status_codes.status_ok_code
+        message: str = "Unable to find members of plan"
+        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -610,17 +679,7 @@ class MembershipsView(Validators, MembershipsEmails):
         :param payment_method:
         :return:
         """
-        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            message: str = "organization_id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(uid, str) or not bool(uid.strip()):
-            message: str = "uid is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(plan_id, str) or not bool(plan_id.strip()):
-            message: str = "plan_id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
+        self._check_org_uid_plan_id(organization_id, plan_id, uid)
 
         # TODO - some form of error checking must be conducted here
         return self._create_or_update_membership(organization_id=organization_id, uid=uid, plan_id=plan_id,
@@ -640,17 +699,7 @@ class MembershipsView(Validators, MembershipsEmails):
         :param payment_method:
         :return:
         """
-        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            message: str = "organization_id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(uid, str) or not bool(uid.strip()):
-            message: str = "uid is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(plan_id, str) or not bool(plan_id.strip()):
-            message: str = "plan_id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
+        self._check_org_uid_plan_id(organization_id, plan_id, uid)
 
         return await self._create_or_update_membership_async(organization_id=organization_id, uid=uid,
                                                              plan_id=plan_id, plan_start_date=plan_start_date,
@@ -670,17 +719,7 @@ class MembershipsView(Validators, MembershipsEmails):
         :param payment_method:
         :return:
         """
-        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            message: str = "organization_id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(uid, str) or not bool(uid.strip()):
-            message: str = "uid is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(plan_id, str) or not bool(plan_id.strip()):
-            message: str = "plan_id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
+        self._check_org_uid_plan_id(organization_id, plan_id, uid)
 
         return self._create_or_update_membership(organization_id=organization_id, uid=uid, plan_id=plan_id,
                                                  plan_start_date=plan_start_date, payment_method=payment_method)
@@ -699,18 +738,7 @@ class MembershipsView(Validators, MembershipsEmails):
         :param payment_method:
         :return:
         """
-        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            message: str = "organization_id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(uid, str) or not bool(uid.strip()):
-            message: str = "uid is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(plan_id, str) or not bool(plan_id.strip()):
-            message: str = "plan_id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
+        self._check_org_uid_plan_id(organization_id, plan_id, uid)
         return await self._create_or_update_membership_async(organization_id=organization_id, uid=uid, plan_id=plan_id,
                                                              plan_start_date=plan_start_date,
                                                              payment_method=payment_method)
@@ -730,17 +758,7 @@ class MembershipsView(Validators, MembershipsEmails):
             :return:
         """
 
-        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            message: str = "Organization_id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(uid, str) or not bool(uid.strip()):
-            message: str = "uid is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(status, str) or not bool(status.strip()):
-            message: str = "status is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
+        self._check_org_status_uid(organization_id, status, uid)
 
         membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                              Memberships.uid == uid).get()
@@ -775,17 +793,7 @@ class MembershipsView(Validators, MembershipsEmails):
         :return:
         """
 
-        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            message: str = "Organization_id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(uid, str) or not bool(uid.strip()):
-            message: str = "uid is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(status, str) or not bool(status.strip()):
-            message: str = "status is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
+        self._check_org_status_uid(organization_id, status, uid)
 
         membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                              Memberships.uid == uid).get_async().get_result()
@@ -819,21 +827,7 @@ class MembershipsView(Validators, MembershipsEmails):
             :return:
         """
         # TODO sync this with paypal payment plans - or maybe this will occur after the changes have taken place
-        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            message: str = "organization_id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(uid, str) or not bool(uid.strip()):
-            message: str = "user id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(origin_plan_id, str) or not bool(origin_plan_id.strip()):
-            message: str = "origin_plan_id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(dest_plan_id, str) or not bool(dest_plan_id.strip()):
-            message: str = "dest_plan_id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
+        self._check_org_plan_uid_dest_plan(dest_plan_id, organization_id, origin_plan_id, uid)
 
         membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                              Memberships.uid == uid).get()
@@ -864,21 +858,7 @@ class MembershipsView(Validators, MembershipsEmails):
     async def change_membership_async(self, organization_id: Optional[str], uid: Optional[str],
                                       origin_plan_id: Optional[str], dest_plan_id: str) -> tuple:
 
-        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            message: str = "organization_id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(uid, str) or not bool(uid.strip()):
-            message: str = "user id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(origin_plan_id, str) or not bool(origin_plan_id.strip()):
-            message: str = "origin_plan_id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(dest_plan_id, str) or not bool(dest_plan_id.strip()):
-            message: str = "dest_plan_id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
+        self._check_org_plan_uid_dest_plan(dest_plan_id, organization_id, origin_plan_id, uid)
 
         membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                              Memberships.uid == uid).get_async().get_result()
@@ -920,16 +900,7 @@ class MembershipsView(Validators, MembershipsEmails):
         :param payment_method:
         :return:
         """
-        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            message: str = "organization_id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-        if not isinstance(uid, str) or not bool(uid.strip()):
-            message: str = "uid is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(payment_method, str) or payment_method.lower() not in get_payment_methods():
-            message: str = "payment method is required and should be one of : {}".format(get_payment_methods())
-            raise InputError(status=error_codes.input_error_code, description=message)
+        self._check_org_payment_uid(organization_id, payment_method, uid)
 
         membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                              Memberships.uid == uid).get()
@@ -1016,13 +987,7 @@ class MembershipsView(Validators, MembershipsEmails):
                                                                Memberships.plan_id == plan_id,
                                                                Memberships.payment_status == status).fetch()
 
-        if isinstance(membership_list, list) and membership_list:
-            response_data: List[dict] = [member.to_dict() for member in membership_list]
-            message: str = 'successfully fetched members'
-            return jsonify({'status': True, 'payload': response_data, 'message': message}), status_codes.status_ok_code
-
-        message: str = "Unable to find plan members whose payment status is {}".format(status)
-        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+        return self.__return_membership_list(membership_list)
 
     @use_context
     @handle_view_errors
@@ -1055,13 +1020,7 @@ class MembershipsView(Validators, MembershipsEmails):
             Memberships.organization_id == organization_id, Memberships.plan_id == plan_id,
             Memberships.payment_status == status).fetch_async().get_result()
 
-        if isinstance(membership_list, list) and membership_list:
-            response_data: List[dict] = [member.to_dict() for member in membership_list]
-            message: str = 'successfully fetched members'
-            return jsonify({'status': True, 'payload': response_data, 'message': message}), status_codes.status_ok_code
-
-        message: str = "Unable to find plan members whose payment status is {}".format(status)
-        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+        return self.__return_membership_list(membership_list)
 
     @use_context
     @handle_view_errors
@@ -1086,13 +1045,7 @@ class MembershipsView(Validators, MembershipsEmails):
         membership_list: List[Memberships] = Memberships.query(Memberships.organization_id == organization_id,
                                                                Memberships.payment_status == status).fetch()
 
-        if isinstance(membership_list, list) and membership_list:
-            response_data: List[dict] = [member.to_dict() for member in membership_list]
-            message: str = 'successfully fetched members'
-            return jsonify({'status': True, 'payload': response_data, 'message': message}), status_codes.status_ok_code
-
-        message: str = "Unable to find plan members whose payment status is {}".format(status)
-        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+        return self.__return_membership_list(membership_list)
 
     @use_context
     @handle_view_errors
@@ -1119,13 +1072,7 @@ class MembershipsView(Validators, MembershipsEmails):
                                                                Memberships.payment_status == status
                                                                ).fetch_async().get_result()
 
-        if isinstance(membership_list, list) and membership_list:
-            response_data: List[dict] = [member.to_dict() for member in membership_list]
-            message: str = 'successfully fetched members'
-            return jsonify({'status': True, 'payload': response_data, 'message': message}), status_codes.status_ok_code
-
-        message: str = "Unable to find plan members whose payment status is {}".format(status)
-        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+        return self.__return_membership_list(membership_list)
 
     @use_context
     @handle_view_errors
@@ -1150,13 +1097,7 @@ class MembershipsView(Validators, MembershipsEmails):
         membership_list: List[Memberships] = Memberships.query(Memberships.organization_id == organization_id,
                                                                Memberships.plan_id == plan_id).fetch()
 
-        if isinstance(membership_list, list) and membership_list:
-            response_data: List[dict] = [member.to_dict() for member in membership_list]
-            message: str = 'successfully fetched members'
-            return jsonify({'status': True, 'payload': response_data, 'message': message}), status_codes.status_ok_code
-
-        message: str = "Unable to find members of plan"
-        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+        return self.__return_membership_list(membership_list)
 
     @use_context
     @handle_view_errors
@@ -1176,14 +1117,7 @@ class MembershipsView(Validators, MembershipsEmails):
         membership_list: List[Memberships] = Memberships.query(Memberships.organization_id == organization_id,
                                                                Memberships.plan_id == plan_id
                                                                ).fetch_async().get_result()
-
-        if isinstance(membership_list, list) and membership_list:
-            response_data: List[dict] = [member.to_dict() for member in membership_list]
-            message: str = 'successfully fetched members'
-            return jsonify({'status': True, 'payload': response_data, 'message': message}), status_codes.status_ok_code
-
-        message: str = "Unable to find members of plan {}"
-        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+        return self.__return_membership_list(membership_list=membership_list)
 
     @use_context
     @handle_view_errors
@@ -1202,13 +1136,7 @@ class MembershipsView(Validators, MembershipsEmails):
             raise InputError(status=error_codes.input_error_code, description=message)
 
         members_list: List[Memberships] = Memberships.query(Memberships.organization_id == organization_id).fetch()
-        payload: List[dict] = [member.to_dict() for member in members_list]
-        if payload:
-            message: str = "memberships successfully retrieved"
-            return jsonify(dict(status=True, payload=payload, message=message)), status_codes.status_ok_code
-
-        message: str = " Unable to retrieve members/ subscribers"
-        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
+        return self.__return_membership_list(membership_list=members_list)
 
     @use_context
     @handle_view_errors
@@ -1221,23 +1149,18 @@ class MembershipsView(Validators, MembershipsEmails):
             :param uid -> string
             :return -> tuple : response, status_code
         """
-        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            message: str = "organization_id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(uid, str) or not bool(uid.strip()):
-            message: str = "uid is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
+        self._check_org_uid_normal(organization_id, uid)
 
         member_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                          Memberships.uid == uid).get()
 
         if isinstance(member_instance, Memberships) and bool(member_instance):
-            return jsonify({'status': True, 'payload': member_instance.to_dict(),
-                            'message': 'successfully fetched members'}), status_codes.status_ok_code
+            return jsonify(dict(status=True,
+                                payload=member_instance.to_dict(),
+                                message='successfully fetched members')), status_codes.status_ok_code
 
         message: str = 'user does not have any membership plan'
-        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -1256,13 +1179,7 @@ class MembershipsView(Validators, MembershipsEmails):
             :param uid -> string
             :return -> tuple response, status_code :
         """
-        if not isinstance(organization_id, str) or bool(organization_id.strip()):
-            message: str = "organization_id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(uid, str) or not bool(uid.strip()):
-            message: str = "uid is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
+        await self._check_org_uid(organization_id, uid)
 
         member_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                          Memberships.uid == uid).get_async().get_result()
@@ -1292,13 +1209,7 @@ class MembershipsView(Validators, MembershipsEmails):
                 :param uid -> string
                 :return tuple -> as response, status_code
         """
-        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            message: str = "organization_id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(uid, str) or not bool(uid.strip()):
-            message: str = "uid is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
+        self._check_org_uid_normal(organization_id, uid)
 
         membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                              Memberships.uid == uid).get()
@@ -1340,13 +1251,7 @@ class MembershipsView(Validators, MembershipsEmails):
                 :param uid: -> string
                 :return tuple: -> as response, status_code
         """
-        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            message: str = "organization_id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(uid, str) or not bool(uid.strip()):
-            message: str = "uid is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
+        self._check_org_uid_normal(organization_id, uid)
 
         membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                              Memberships.uid == uid).get_async().get_result()
@@ -1388,17 +1293,7 @@ class MembershipsView(Validators, MembershipsEmails):
                 :param plan_id:
                 :return: tuple -> as response, status_code
         """
-        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
-            message: str = "organization_id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(uid, str) or not bool(uid.strip()):
-            message: str = "uid is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
-
-        if not isinstance(plan_id, str) or not bool(plan_id.strip()):
-            message: str = "plan_id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
+        self._check_org_uid_plan_id(organization_id, plan_id, uid)
 
         membership_instance: Memberships = Memberships.query(Memberships.organization_id == organization_id,
                                                              Memberships.uid == uid).get()
@@ -2205,7 +2100,7 @@ class CouponsView(Validators):
             raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
 
         coupon_instance: Coupons = Coupons(organization_id=organization_id, code=code, discount=discount,
-                                            expiration_time=expiration_time)
+                                           expiration_time=expiration_time)
 
         key: Optional[ndb.Key] = coupon_instance.put(retries=self._max_retries, timeout=self._max_timeout)
         if not isinstance(key, ndb.Key):
@@ -2237,10 +2132,10 @@ class CouponsView(Validators):
             raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
 
         coupon_instance: Coupons = Coupons(organization_id=organization_id, code=code,
-                                            discount=discount, expiration_time=expiration_time)
+                                           discount=discount, expiration_time=expiration_time)
 
         key: Optional[ndb.Key] = coupon_instance.put_async(retries=self._max_retries,
-                                                            timeout=self._max_timeout).get_result()
+                                                           timeout=self._max_timeout).get_result()
         if not isinstance(key, ndb.Key):
             message: str = "an error occurred while creating coupon"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
