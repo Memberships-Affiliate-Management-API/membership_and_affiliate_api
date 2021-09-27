@@ -395,9 +395,9 @@ class WalletView(Validator, WalletEmails):
         # Sending an email notification to the user informing them that the wallet has been created successfully
         kwargs: dict = dict(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
         self._base_email_scheduler(func=self.wallet_created_successfully, kwargs=kwargs)
-
-        return jsonify({'status': True, 'message': 'successfully created wallet',
-                        'payload': wallet_instance.to_dict()}), status_codes.successfully_updated_code
+        return jsonify(dict(status=True,
+                            payload=wallet_instance.to_dict(),
+                            message='Successfully created wallet')), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
@@ -438,9 +438,9 @@ class WalletView(Validator, WalletEmails):
         # Sending an email notification to the user informing them that the wallet has been created successfully
         kwargs: dict = dict(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
         self._base_email_scheduler(func=self.wallet_created_successfully, kwargs=kwargs)
-
-        return jsonify({'status': True, 'message': 'successfully created wallet',
-                        'payload': wallet_instance.to_dict()}), status_codes.successfully_updated_code
+        return jsonify(dict(status=True,
+                            payload=wallet_instance.to_dict(),
+                            message='Successfully Created Wallet')), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
@@ -460,12 +460,13 @@ class WalletView(Validator, WalletEmails):
 
         wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
                                                          WalletModel.uid == uid).get()
-        if isinstance(wallet_instance, WalletModel) and wallet_instance.uid == uid:
-            return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
-                            'message': 'wallet found'}), status_codes.status_ok_code
+        if isinstance(wallet_instance, WalletModel) and bool(wallet_instance):
+            return jsonify(dict(status=True,
+                                payload=wallet_instance.to_dict(),
+                                message='wallet found')), status_codes.status_ok_code
 
         message: str = "Wallet not found"
-        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -482,12 +483,13 @@ class WalletView(Validator, WalletEmails):
 
         wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == organization_id,
                                                          WalletModel.uid == uid).get_async().get_result()
-        if isinstance(wallet_instance, WalletModel) and wallet_instance.uid == uid:
-            return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
-                            'message': 'wallet found'}), status_codes.status_ok_code
+        if isinstance(wallet_instance, WalletModel) and bool(wallet_instance):
+            return jsonify(dict(status=True,
+                                payload=wallet_instance.to_dict(),
+                                message='Wallet found')), status_codes.status_ok_code
 
         message: str = "Wallet not found"
-        return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+        return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
     @use_context
     @handle_view_errors
@@ -544,8 +546,9 @@ class WalletView(Validator, WalletEmails):
         kwargs: dict = dict(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
         self._base_email_scheduler(func=self.wallet_details_changed, kwargs=kwargs)
 
-        return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
-                        'message': 'successfully updated wallet'}), status_codes.successfully_updated_code
+        return jsonify(dict(status=True,
+                            payload=wallet_instance.to_dict(),
+                            message='successfully updated wallet')), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
@@ -603,8 +606,9 @@ class WalletView(Validator, WalletEmails):
         kwargs: dict = dict(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
         self._base_email_scheduler(func=self.wallet_details_changed, kwargs=kwargs)
 
-        return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
-                        'message': 'successfully updated wallet'}), status_codes.successfully_updated_code
+        return jsonify(dict(status=True,
+                            payload=wallet_instance.to_dict(),
+                            message='successfully updated wallet')), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
@@ -647,8 +651,9 @@ class WalletView(Validator, WalletEmails):
         kwargs: dict = dict(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
         self._base_email_scheduler(func=self.wallet_details_changed, kwargs=kwargs)
 
-        return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
-                        'message': 'wallet is rest'}), status_codes.successfully_updated_code
+        return jsonify(dict(status=True,
+                            payload=wallet_instance.to_dict(),
+                            message='Wallet successfully updated')), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
@@ -693,8 +698,9 @@ class WalletView(Validator, WalletEmails):
         kwargs: dict = dict(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
         self._base_email_scheduler(func=self.wallet_details_changed, kwargs=kwargs)
 
-        return jsonify({'status': True, 'payload': wallet_instance.to_dict(),
-                        'message': 'wallet is rest'}), status_codes.successfully_updated_code
+        return jsonify(dict(status=True,
+                            payload=wallet_instance.to_dict(),
+                            message='Wallet successfully updated')), status_codes.successfully_updated_code
 
     @use_context
     @handle_view_errors
@@ -715,8 +721,10 @@ class WalletView(Validator, WalletEmails):
         payload: List[dict] = [wallet.to_dict() for wallet in wallet_list]
 
         if payload:
-            return jsonify(dict(status=True, payload=payload,
+            return jsonify(dict(status=True,
+                                payload=payload,
                                 message='Wallets Found and Returned')), status_codes.status_ok_code
+
         message: str = 'Data Not Found: Wallets not found meeting the search criteria'
         return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
 
