@@ -262,11 +262,14 @@ class ServicesView(ServiceValidator):
         payload: List[Services] = [serv.to_dict() for serv in
                                    Services.query(Services.organization_id == organization_id)]
 
+        return self._return_payload(payload)
+
+    @staticmethod
+    def _return_payload(payload):
         if payload:
             message: str = "successfully retrieved services"
             return jsonify(dict(status=True,
                                 payload=payload,
                                 message=message)), status_codes.status_ok_code
-
         message: str = "Data Error: No services found"
         return jsonify(dict(status=False, message=message)), status_codes.data_not_found_code
