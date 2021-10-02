@@ -96,10 +96,18 @@ def admin_affiliates(path: str) -> tuple:
         is_active: bool = json_data.get('is_active')
         return affiliates_view.mark_active(affiliate_data=affiliate_data, is_active=is_active)
     elif path == "get-affiliate":
-        __doc__ = affiliates_view.get_affiliate.__doc__()
+        __doc__ = """
+            **get_affiliate**
+                obtains a record of one affiliate from the store. given either uid or affiliate_id, organization_id
+                must be valid
+
+        :param affiliate_data: contains affiliate_id and organization_id the affiliate must belong to the organization
+        :return: response contain affiliate record        
+        """
         return affiliates_view.get_affiliate(affiliate_data=get_affiliate_data(json_data))
     elif path == "get-affiliates-by-active-status":
         pass
+
 
 def get_affiliate_data(json_data: dict) -> dict:
     """
@@ -121,4 +129,3 @@ def get_affiliate_data(json_data: dict) -> dict:
         _message: str = 'please provide affiliate data in order to register affiliate'
         raise InputError(description=_message)
     return affiliate_data
-
