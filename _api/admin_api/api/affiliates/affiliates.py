@@ -106,7 +106,38 @@ def admin_affiliates(path: str) -> tuple:
         """
         return affiliates_view.get_affiliate(affiliate_data=get_affiliate_data(json_data))
     elif path == "get-affiliates-by-active-status":
-        pass
+        __doc__ = """
+            **get_active_affiliates**
+                NOTE: active affiliates but not deleted
+                returns a list of active affiliates in an organization
+
+        :param organization_id: the organization id of the organization to return the affiliates
+        :return: response containing the list of active affiliates        
+        """
+        affiliate_data: dict = get_affiliate_data(json_data)
+        if affiliate_data.get('is_active'):
+            return affiliates_view.get_active_affiliates(organization_id=affiliate_data.get('organization_id'))
+        return affiliates_view.get_in_active_affiliates(organization_id=affiliate_data.get('organization_id'))
+    elif path == 'get-deleted':
+        __doc__ = """
+                    **get_deleted_affiliates**
+                return deleted affiliates by organization_id
+
+        :param organization_id:
+        :return: response containing the list of affiliates who are deleted
+        """
+        affiliate_data: dict = get_affiliate_data(json_data)
+        return affiliates_view.get_deleted_affiliates(organization_id=affiliate_data.get('organization_id'))
+    elif path == 'get-not-deleted':
+        __doc__ = """
+            **get_not_deleted_affiliates**
+                # NOTE: this function may be redundant
+                returns a list of affiliates which are not deleted by  ORGANIZATION_ID
+        :param : organization_id: the organization to return deleted affiliates from
+        :return : response containing the list of deleted affiliates        
+        """
+        affiliate_data: dict = get_affiliate_data(json_data)
+        return affiliates_view.get_not_deleted_affiliates(organization_id=affiliate_data.get('organization_id'))
 
 
 def get_affiliate_data(json_data: dict) -> dict:
