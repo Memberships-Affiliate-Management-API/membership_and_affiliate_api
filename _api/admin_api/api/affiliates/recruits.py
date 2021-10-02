@@ -60,7 +60,14 @@ def recruits_admin(path: str) -> tuple:
         return recruits_view.get_recruit(recruit_data=get_recruit_data(json_data))
 
 
-def get_recruit_data(json_data):
+def get_recruit_data(json_data : dict) -> dict:
+    """
+        **get_recruit_data**
+            authenticate admin user and get recruit_data
+    :param json_data: dict
+    :raises InputError and UnAuthenticatedError
+    :return: recruit_data
+    """
     organization_id: str = json_data.get('organization_id')
     uid: str = json_data.get('uid')
     compare_organization: bool = hmac.compare_digest(organization_id, config_instance.ORGANIZATION_ID)
