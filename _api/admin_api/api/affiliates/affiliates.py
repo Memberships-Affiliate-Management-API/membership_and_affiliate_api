@@ -26,9 +26,10 @@ admin_affiliates_api_bp = Blueprint("admin_affiliates_api", __name__)
 @admin_affiliates_api_bp.route('/_api/v1/admin/affiliates/<string:path>', methods=["POST"])
 @handle_apps_authentication
 def admin_affiliates(path: str) -> tuple:
-    """
+    f"""
     **admin_affiliates**
-
+        get_affiliate
+            {affiliates_view.get_affiliate.__doc__}
     :param path:
     :return:
     """
@@ -48,10 +49,20 @@ def admin_affiliates(path: str) -> tuple:
         message: str = "You are not authorized to access this resource"
         raise UnAuthenticatedError(description=message)
     elif path == "register-affiliate":
-        __doc__ = """create a new memberships and admin affiliate"""
+        __doc__ = """           
+            **register_affiliate**
+                Register new affiliate, affiliate_data must contain the uid of the affiliate
+                being recruited and organization_id of the organization recruiting the affiliate.
+
+        :param affiliate_data:
+        :return: tuple with registered affiliate
+        """
         return affiliates_view.register_affiliate(affiliate_data=get_affiliate_data(json_data))
     elif path == "update-total-recruits":
-        __doc__ = """update total number of recruits for memberships and admin affiliate"""
+        __doc__ = """
+               **total_recruits**
+                    given an existing affiliate update total recruits field in the affiliate record
+        """
         affiliate_data: dict = get_affiliate_data(json_data)
         try:
             add: int = int(json_data.get('add'))
@@ -60,13 +71,35 @@ def admin_affiliates(path: str) -> tuple:
             raise InputError(description=_message)
         return affiliates_view.total_recruits(affiliate_data=affiliate_data, add=add)
     elif path == "delete-affiliate":
-        __doc__ = """delete affiliate"""
+        __doc__ = """
+            **delete_affiliate**
+                the function soft delete an affiliate record.
+
+                affiliate_id: is the id of the affiliate to be marked as deletedItem
+                organization_id: is the id of the organization from which the affiliate is to be deleted
+
+            :param affiliate_data: dict containing affiliate_id and organization_id
+            :return: tuple containing the record of the deleted affiliate    
+        """
         return affiliates_view.delete_affiliate(affiliate_data=get_affiliate_data(json_data))
     elif path == "mark-active":
+        __doc__ = """
+            **mark_active**        
+                    affiliate_id of the affiliate to be marked as active.
+                    this action will not have an effect if the affiliate has been soft-deleted
+    
+            :param affiliate_data: contains affiliate_id and organization_id
+            :param is_active:
+            :return:
+        """
         affiliate_data: dict = get_affiliate_data(json_data)
         is_active: bool = json_data.get('is_active')
         return affiliates_view.mark_active(affiliate_data=affiliate_data, is_active=is_active)
-
+    elif path == "get-affiliate":
+        __doc__ = affiliates_view.get_affiliate.__doc__()
+        return affiliates_view.get_affiliate(affiliate_data=get_affiliate_data(json_data))
+    elif path == "get-affiliates-by-active-status":
+        pass
 
 def get_affiliate_data(json_data: dict) -> dict:
     """
