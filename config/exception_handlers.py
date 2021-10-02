@@ -41,29 +41,28 @@ def handle_view_errors(func):
         except BadRequestError as e:
             if debug:
                 print(e)
-            message: str = '''<code>Bad Request:</code> while connecting to database'''
+            message: str = '''Bad Request: while connecting to database'''
             raise RequestError(status=error_codes.bad_request_error_code, description=message)
         except BadQueryError as e:
             if debug:
                 print(e)
-            message: str = '''<code>Database Query Error:</code> Error while querying database please inform admin'''
+            message: str = '''Database Query Error: Error while querying database please inform admin'''
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
         except ConnectionRefusedError as e:
             if debug:
                 print(e)
-            message: str = '''<code>Connection Refused:</code> Unable to connect to database please try again later'''
+            message: str = '''Connection Refused: Unable to connect to database please try again later'''
             raise RequestError(status=error_codes.remote_data_error, description=message)
         except RetryError as e:
             if debug:
                 print(e)
-            message: str = '''<code>Retries Exceeded:</code> Unable to connect to database please try again later 
+            message: str = '''Retries Exceeded: Unable to connect to database please try again later 
             or inform the administrator'''
             raise RequestError(status=error_codes.remote_data_error, description=message)
         except Aborted as e:
             if debug:
                 print(e)
-            message: str = '''<code>Abort Error:</code> due to some error on our servers your connection 
-            was aborted try again later'''
+            message: str = '''Abort Error: connection refused by remote server'''
             raise RequestError(status=error_codes.remote_data_error, description=message)
 
     return wrapper
