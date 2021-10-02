@@ -16,15 +16,14 @@ from typing import Optional
 from flask import Blueprint, request
 
 from config import config_instance
-from config.exceptions import UnAuthenticatedError
+from config.exceptions import UnAuthenticatedError, InputError
 from security.apps_authenticator import handle_apps_authentication, verify_secret_key
 from views import recruits_view
 
 admin_recruits_api_bp = Blueprint("admin_recruits_api", __name__)
 
-admin_recruits_api_bp.route('/_api/v1/admin/recruits/<string:path', methods=['POST'])
 
-
+@admin_recruits_api_bp.route('/_api/v1/admin/recruits/<string:path', methods=['POST'])
 @handle_apps_authentication
 def recruits_admin(path: str) -> tuple:
     """
@@ -37,6 +36,7 @@ def recruits_admin(path: str) -> tuple:
     secret_key: Optional[str] = json_data.get('SECRET_KEY')
     verify_secret_key(secret_key)
     if path == 'get-all':
+        __doc__ = """ get all recruits for memberships and affiliate management api"""
         organization_id: str = json_data.get('organization_id')
         uid: str = json_data.get('uid')
         compare_organization: bool = hmac.compare_digest(organization_id, config_instance.ORGANIZATION_ID)
@@ -45,4 +45,39 @@ def recruits_admin(path: str) -> tuple:
             message: str = 'you are not authorized to access this resource'
             raise UnAuthenticatedError(description=message)
         return recruits_view.get_all_recruits(organization_id=organization_id)
+    elif path == 'get-organization-recruits':
+        __doc__ = """ get specific organization recruit"""
+        organization_id: str = json_data.get('organization_id')
+        return recruits_view.get_all_recruits(organization_id=organization_id)
+    elif path == 'delete_recruit':
+        __doc__ = """delete any recruit from any any other organization"""
+        organization_id: str = json_data.get('organization_id')
+        uid: str = json_data.get('uid')
+        compare_organization: bool = hmac.compare_digest(organization_id, config_instance.ORGANIZATION_ID)
+        compare_uid: bool = hmac.compare_digest(uid, config_instance.ADMIN_UID)
+        if not (compare_organization and compare_uid):
+            message: str = 'you are not authorized to access this resource'
+            raise UnAuthenticatedError(description=message)
+        recruit_data: dict = json_data.get('recruit_data')
+        if not isinstance(recruit_data, dict):
+            _message: str = 'please supply the details of the recruit to delete in recruit_data'
+            raise InputError(description=_message)
+        return recruits_view.delete_recruit(recruit_data=recruit_data)
+    elif path == 'add-recruit':
+        __doc__ = """add new admin recruit"""
+        organization_id: str = json_data.get('organization_id')
+        uid: str = json_data.get('uid')
+        compare_organization: bool = hmac.compare_digest(organization_id, config_instance.ORGANIZATION_ID)
+        compare_uid: bool = hmac.compare_digest(uid, config_instance.ADMIN_UID)
+        if not (compare_organization and compare_uid):
+            message: str = 'you are not authorized to access this resource'
+            raise UnAuthenticatedError(description=message)
+        if not (compare_organization and compare_uid):
+            message: str = 'you are not authorized to access this resource'
+            raise UnAuthenticatedError(description=message)
+        recruit_data: dict = json_data.get('recruit_data')
+        if not isinstance(recruit_data, dict):
+            _message: str = 'please supply the details of the recruit to delete in recruit_data'
+            raise InputError(description=_message)
+        return recruits_view.add_recruit(recruit_data=recruit_data)
 
