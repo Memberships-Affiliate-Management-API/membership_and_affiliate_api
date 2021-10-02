@@ -88,6 +88,7 @@ def create_app(config_class=config_instance):
         from _api.admin_api.api.memberships.memberships import membership_admin_api_bp
         from _api.admin_api.api.apikeys.apikeys import admin_api_keys_api_bp
         from _api.admin_api.api.affiliates.affiliates import admin_affiliates_api_bp
+        from _api.admin_api.api.affiliates.recruits import admin_recruits_api_bp
 
         # v1 cron jobs
         from _cron.transactions import cron_transactions_bp
@@ -135,6 +136,7 @@ def create_app(config_class=config_instance):
         app.register_blueprint(membership_admin_api_bp)
         app.register_blueprint(admin_api_keys_api_bp)
         app.register_blueprint(admin_affiliates_api_bp)
+        app.register_blueprint(admin_recruits_api_bp)
 
         # cron jobs
         app.register_blueprint(cron_transactions_bp)

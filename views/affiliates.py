@@ -220,7 +220,7 @@ class AffiliatesView(Validator):
 
         affiliate_instance: Affiliates = Affiliates.query(Affiliates.organization_id == organization_id,
                                                           Affiliates.affiliate_id == affiliate_id).get()
-        if not(isinstance(affiliate_instance, Affiliates) and bool(affiliate_instance)):
+        if not (isinstance(affiliate_instance, Affiliates) and bool(affiliate_instance)):
             message: str = "Affiliate not found: delete operation cannot be completed"
             return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
@@ -564,7 +564,7 @@ class RecruitsView(Validator):
         recruit_instance: Recruits = Recruits.query(Recruits.organization_id == organization_id,
                                                     Recruits.affiliate_id == affiliate_id).get()
 
-        if not(bool(recruit_instance) and bool(recruit_instance)):
+        if not (bool(recruit_instance) and bool(recruit_instance)):
             # Soft Deleting Recruit
             message: str = "Recruit does not exist: Cannot Delete"
             return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
@@ -662,6 +662,27 @@ class RecruitsView(Validator):
 
         message: str = "Recruit does not exist"
         return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
+
+    @use_context
+    @handle_view_errors
+    @app_cache.cache.memoize(timeout=return_ttl('short'))
+    def get_all_recruits(self, organization_id: Optional[str]) -> tuple:
+        """
+
+        :param organization_id:
+        :return:
+        """
+        if not isinstance(organization_id, str) or not bool(organization_id.strip()):
+            message: str = 'organization_id is required'
+            raise InputError(status=error_codes.input_error_code, description=message)
+
+        recruits_list: List[Recruits] = Recruits.query(Recruits.organization_id == organization_id).fetch()
+        if not recruits_list:
+            return jsonify(dict(status=False, message='recruits not found')), status_codes.data_not_found_code
+
+        _payload: List[dict] = [recruit.to_dict() for recruit in recruits_list]
+        _message: str = 'successfully fetched recruits'
+        return jsonify(dict(status=True, message=_message, payload=_payload)), status_codes.status_ok_code
 
     @use_context
     @handle_view_errors

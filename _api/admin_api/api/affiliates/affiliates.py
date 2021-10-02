@@ -12,10 +12,11 @@ __licence__ = "MIT"
 
 import hmac
 from typing import Optional
-from flask import Blueprint, request, current_app
+
+from flask import Blueprint, request
 
 from config import config_instance
-from config.exceptions import UnAuthenticatedError, error_codes
+from config.exceptions import UnAuthenticatedError
 from security.apps_authenticator import handle_apps_authentication, verify_secret_key
 from views import affiliates_view
 
@@ -46,4 +47,3 @@ def admin_affiliates(path: str) -> tuple:
             return affiliates_view.get_all_affiliates(organization_id=organization_id)
         message: str = "You are not authorized to access this resource"
         raise UnAuthenticatedError(description=message)
-
