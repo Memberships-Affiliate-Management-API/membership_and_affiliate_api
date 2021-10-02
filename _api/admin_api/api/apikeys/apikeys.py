@@ -37,12 +37,23 @@ def api_keys(path: str) -> tuple:
     verify_secret_key(secret_key)
 
     if path == "get-all":
-        organization_id: str = json_data.get('organization_id')
-        uid: str = json_data.get('uid')
-        compare_uid: bool = hmac.compare_digest(uid, config_instance.ADMIN_UID)
-        compare_org: bool = hmac.compare_digest(organization_id, config_instance.ORGANIZATION_ID)
-        if compare_org and compare_uid:
-            return api_keys_view.return_all_organization_keys(organization_id=organization_id)
+        organization_id = is_admin_user(json_data)
+        return api_keys_view.return_all_organization_keys(organization_id=organization_id)
+    elif path == "return-active-org-keys":
+        organization_id = is_admin_user(json_data)
+        return api_keys_view.return_active_organization_keys(organization_id=organization_id)
+    elif path == "get-api-key":
+        organization_id = is_admin_user(json_data)
+        api_key: str = json_data.get('api_key')
+        return api_keys_view.get_api_key(api_key=api_key, organization_id=organization_id)
+
+
+def is_admin_user(json_data):
+    organization_id: str = json_data.get('organization_id')
+    uid: str = json_data.get('uid')
+    compare_uid: bool = hmac.compare_digest(uid, config_instance.ADMIN_UID)
+    compare_org: bool = hmac.compare_digest(organization_id, config_instance.ORGANIZATION_ID)
+    if not (compare_org and compare_uid):
         message: str = 'User Not Authorized: you cannot perform this action'
         raise UnAuthenticatedError(status=error_codes.access_forbidden_error_code, description=message)
-
+    return organization_id
