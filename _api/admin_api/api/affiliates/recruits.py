@@ -23,7 +23,7 @@ from views import recruits_view
 admin_recruits_api_bp = Blueprint("admin_recruits_api", __name__)
 
 
-@admin_recruits_api_bp.route('/_api/v1/admin/recruits/<string:path', methods=['POST'])
+@admin_recruits_api_bp.route('/_api/v1/admin/recruits/<string:path>', methods=['POST'])
 @handle_apps_authentication
 def recruits_admin(path: str) -> tuple:
     """
@@ -60,7 +60,7 @@ def recruits_admin(path: str) -> tuple:
         return recruits_view.get_recruit(recruit_data=get_recruit_data(json_data))
 
 
-def get_recruit_data(json_data : dict) -> dict:
+def get_recruit_data(json_data: dict) -> dict:
     """
         **get_recruit_data**
             authenticate admin user and get recruit_data
@@ -83,4 +83,3 @@ def get_recruit_data(json_data : dict) -> dict:
         _message: str = 'please supply the details of the recruit to delete in recruit_data'
         raise InputError(description=_message)
     return recruit_data
-
