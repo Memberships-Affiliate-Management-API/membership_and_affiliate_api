@@ -42,6 +42,7 @@ def recruits_admin(path: str) -> tuple:
         compare_organization: bool = hmac.compare_digest(organization_id, config_instance.ORGANIZATION_ID)
         compare_uid: bool = hmac.compare_digest(uid, config_instance.ADMIN_UID)
         if not (compare_organization and compare_uid):
+            message: str = 'you are not authorized to access this resource'
             raise UnAuthenticatedError(description=message)
-        return recruits_view.get_recruit
+        return recruits_view.get_all_recruits(organization_id=organization_id)
 
