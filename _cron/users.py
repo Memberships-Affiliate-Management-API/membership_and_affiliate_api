@@ -23,6 +23,7 @@ cron_users_bp = Blueprint('cron_users', __name__)
 def cron_users_jobs() -> tuple:
     """
     **cron_users_jobs**
+
         user cron jobs, will run cron services needed to manage users
     :return: tuple
     """

@@ -16,4 +16,4 @@ heroku_ipn_bp = Blueprint("heroku_ipn", __name__)
 
 @heroku_ipn_bp.route('/_ipn/auth/heroku', methods=["GET", "POST"])
 def heroku_auth_ipn():
-    return jsonify({'status': False, 'message': 'coming soon'}), status_codes.status_ok_code
+    return jsonify(dict(status=False, message='coming soon')), status_codes.status_ok_code
