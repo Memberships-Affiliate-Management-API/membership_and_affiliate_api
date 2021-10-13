@@ -18,7 +18,6 @@ email_ipn_bp = Blueprint("email_ipn", __name__)
 def email_received_ipn(path: str) -> tuple:
     """
     **email_received_ipn**
-
         :param path: organization_id
         :return: OK, 200
     """
