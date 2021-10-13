@@ -57,7 +57,7 @@
    - _API EndPoints_ [https://api.blueitmarketing.xyz](https://api.blueitmarketing.xyz)
    - _Documentations_ [http://memberships.blueitmarketing.xyz/](http://memberships.blueitmarketing.xyz/) 
 
-**Developer**
+**Maintainers**
 --
    - **Justice Ndou** _[https://justice-ndou.site](https://justice-ndou.site)_
    - **Email:** _mobiusndou@gmail.com_
