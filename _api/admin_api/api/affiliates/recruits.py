@@ -36,7 +36,7 @@ def recruits_admin(path: str) -> tuple:
     secret_key: Optional[str] = json_data.get('SECRET_KEY')
     verify_secret_key(secret_key)
     if path == 'get-all':
-        __doc__ = """ get all recruits for memberships and affiliate management api"""
+        """ get all recruits for memberships and affiliate management api"""
         organization_id: str = json_data.get('organization_id')
         uid: str = json_data.get('uid')
         compare_organization: bool = hmac.compare_digest(organization_id, config_instance.ORGANIZATION_ID)
@@ -46,17 +46,17 @@ def recruits_admin(path: str) -> tuple:
             raise UnAuthenticatedError(description=message)
         return recruits_view.get_all_recruits(organization_id=organization_id)
     elif path == 'get-organization-recruits':
-        __doc__ = """ get specific organization recruit"""
+        """ get specific organization recruit"""
         organization_id: str = json_data.get('organization_id')
         return recruits_view.get_all_recruits(organization_id=organization_id)
     elif path == 'delete_recruit':
-        __doc__ = """delete any recruit from any any other organization"""
+        """delete any recruit from any any other organization"""
         return recruits_view.delete_recruit(recruit_data=get_recruit_data(json_data))
     elif path == 'add-recruit':
-        __doc__ = """add new admin recruit"""
+        """add new admin recruit"""
         return recruits_view.add_recruit(recruit_data=get_recruit_data(json_data))
     elif path == "get-recruit":
-        __doc__ = """get a specific recruit"""
+        """get a specific recruit"""
         return recruits_view.get_recruit(recruit_data=get_recruit_data(json_data))
 
 

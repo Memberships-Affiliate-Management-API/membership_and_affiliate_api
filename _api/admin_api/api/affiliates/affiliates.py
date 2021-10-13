@@ -26,12 +26,12 @@ admin_affiliates_api_bp = Blueprint("admin_affiliates_api", __name__)
 @admin_affiliates_api_bp.route('/_api/v1/admin/affiliates/<string:path>', methods=["POST"])
 @handle_apps_authentication
 def admin_affiliates(path: str) -> tuple:
-    f"""
+    """
     **admin_affiliates**
         get_affiliate
-            {affiliates_view.get_affiliate.__doc__}
-    :param path:
-    :return:
+            
+        :param path:
+        :return:
     """
     json_data: dict = request.get_json()
     secret_key: Optional[str] = json_data.get('SECRET_KEY')
@@ -49,7 +49,7 @@ def admin_affiliates(path: str) -> tuple:
         message: str = "You are not authorized to access this resource"
         raise UnAuthenticatedError(description=message)
     elif path == "register-affiliate":
-        __doc__ = """           
+        """           
             **register_affiliate**
                 Register new affiliate, affiliate_data must contain the uid of the affiliate
                 being recruited and organization_id of the organization recruiting the affiliate.
@@ -59,7 +59,7 @@ def admin_affiliates(path: str) -> tuple:
         """
         return affiliates_view.register_affiliate(affiliate_data=get_affiliate_data(json_data))
     elif path == "update-total-recruits":
-        __doc__ = """
+        """
                **total_recruits**
                     given an existing affiliate update total recruits field in the affiliate record
         """
@@ -71,7 +71,7 @@ def admin_affiliates(path: str) -> tuple:
             raise InputError(description=_message)
         return affiliates_view.total_recruits(affiliate_data=affiliate_data, add=add)
     elif path == "delete-affiliate":
-        __doc__ = """
+        """
             **delete_affiliate**
                 the function soft delete an affiliate record.
 
@@ -83,7 +83,7 @@ def admin_affiliates(path: str) -> tuple:
         """
         return affiliates_view.delete_affiliate(affiliate_data=get_affiliate_data(json_data))
     elif path == "mark-active":
-        __doc__ = """
+        """
             **mark_active**        
                     affiliate_id of the affiliate to be marked as active.
                     this action will not have an effect if the affiliate has been soft-deleted
@@ -96,7 +96,7 @@ def admin_affiliates(path: str) -> tuple:
         is_active: bool = json_data.get('is_active')
         return affiliates_view.mark_active(affiliate_data=affiliate_data, is_active=is_active)
     elif path == "get-affiliate":
-        __doc__ = """
+        """
             **get_affiliate**
                 obtains a record of one affiliate from the store. given either uid or affiliate_id, organization_id
                 must be valid
@@ -106,7 +106,7 @@ def admin_affiliates(path: str) -> tuple:
         """
         return affiliates_view.get_affiliate(affiliate_data=get_affiliate_data(json_data))
     elif path == "get-affiliates-by-active-status":
-        __doc__ = """
+        """
             **get_active_affiliates**
                 NOTE: active affiliates but not deleted
                 returns a list of active affiliates in an organization
@@ -119,7 +119,7 @@ def admin_affiliates(path: str) -> tuple:
             return affiliates_view.get_active_affiliates(organization_id=affiliate_data.get('organization_id'))
         return affiliates_view.get_in_active_affiliates(organization_id=affiliate_data.get('organization_id'))
     elif path == 'get-deleted':
-        __doc__ = """
+        """
                     **get_deleted_affiliates**
                 return deleted affiliates by organization_id
 
@@ -129,7 +129,7 @@ def admin_affiliates(path: str) -> tuple:
         affiliate_data: dict = get_affiliate_data(json_data)
         return affiliates_view.get_deleted_affiliates(organization_id=affiliate_data.get('organization_id'))
     elif path == 'get-not-deleted':
-        __doc__ = """
+        """
             **get_not_deleted_affiliates**
                 # NOTE: this function may be redundant
                 returns a list of affiliates which are not deleted by  ORGANIZATION_ID
