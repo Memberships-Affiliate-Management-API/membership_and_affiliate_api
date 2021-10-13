@@ -133,7 +133,7 @@ class Config(Singleton):
             preferably host the cache as a docker instance on Cloud Run
         :return: dict
         """
-        # TODO : use memcached on docker
+        # TODO : add support for redis cache instead of using simple cache
         return {
             "CACHE_TYPE": "simple",
             "CACHE_DEFAULT_TIMEOUT": self.CACHE_DEFAULT_TIMEOUT,
