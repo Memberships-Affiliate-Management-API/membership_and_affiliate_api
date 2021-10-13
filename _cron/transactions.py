@@ -26,6 +26,5 @@ def cron_transactions_jobs() -> tuple:
     :return:
     """
     transactions: TransactionsJobs = TransactionsJobs()
-    print("Transactions Cron Jobs Running...")
     schedule_func(func=transactions.run, job_name='cron_transactions_jobs')
     return "OK", status_codes.status_ok_code
