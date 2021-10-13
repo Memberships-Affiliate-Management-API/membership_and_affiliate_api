@@ -79,9 +79,6 @@ def create_app(config_class=config_instance):
         # TODO remove to main application
         # from main.app.memberships_main.routes.routes import memberships_main_bp
 
-        # importing main api
-        from main.app.memberships_main.api.api import main_api_bp
-
         # admin api
         from _api.admin_api.api.users.users import admin_users_api_bp
         from _api.admin_api.api.organizations.organization import admin_organization_api_bp
@@ -123,12 +120,6 @@ def create_app(config_class=config_instance):
         app.register_blueprint(contact_api_bp)
         app.register_blueprint(services_client_api_bp)
         app.register_blueprint(memberships_client_api_bp)
-
-        # main app handlers
-        # app.register_blueprint(memberships_main_bp)
-
-        # registering main api handlers
-        app.register_blueprint(main_api_bp)
 
         # registering admin api users
         app.register_blueprint(admin_users_api_bp)
