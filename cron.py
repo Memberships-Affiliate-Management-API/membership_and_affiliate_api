@@ -29,12 +29,8 @@ def cron_logger(func: Callable) -> Callable:
 
     @wraps(func)
     def logger(*args, **kwargs) -> Callable:
-        print(f" Cron Job {func.__name__} is Running...")
         started: int = timestamp()
         _response: Optional[dict] = func(*args, **kwargs)
-        print(f"Total Time Cron Job Ran: {timestamp() - started}")
-        print(f"Response : {_response}")
-
     return logger
 
 
@@ -71,8 +67,8 @@ def heroku_cron_affiliate_jobs() -> tuple:
             executes cron jobs related to affiliates, recruits and affiliate earnings
         :return: tuple
     """
-    _endpoint: str = '_cron/v1/affiliates'
-    return asyncio.run(send_cron_request(_endpoint=_endpoint)), 200
+    _endpoint: str = ''
+    return asyncio.run(send_cron_request(_endpoint='_cron/v1/affiliates')), 200
 
 
 @cron_logger
@@ -82,8 +78,7 @@ def heroku_cron_memberships() -> tuple:
             executes tasks related to memberships, membership plans, services and products
         :return: tuple
     """
-    _endpoint: str = '_cron/v1/memberships'
-    return asyncio.run(send_cron_request(_endpoint=_endpoint)), 200
+    return asyncio.run(send_cron_request(_endpoint='_cron/v1/memberships')), 200
 
 
 @cron_logger
@@ -94,8 +89,7 @@ def heroku_cron_transactions() -> tuple:
 
     :return: tuple
     """
-    _endpoint: str = '_cron/v1/transactions'
-    return asyncio.run(send_cron_request(_endpoint=_endpoint)), 200
+    return asyncio.run(send_cron_request(_endpoint='_cron/v1/transactions')), 200
 
 
 @cron_logger
