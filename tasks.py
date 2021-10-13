@@ -9,10 +9,10 @@ from schedulers.scheduler import task_scheduler
 
 
 def start_task() -> None:
-    print(f'running tasks...')
+
     task_scheduler.run_all(delay_seconds=5)
     task_scheduler.clear()
-    print('done running tasks')
+
     return None
 
 

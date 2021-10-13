@@ -81,7 +81,7 @@ class AffiliateJobs:
             3. create a transaction on earnings transaction
         :return:
         """
-        print(f" running finalize_affiliate_earnings")
+
         earnings_future: Future = EarningsData.query(EarningsData.is_paid == False,
                                                      EarningsData.on_hold == False).fetch_async()
 

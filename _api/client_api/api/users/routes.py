@@ -46,12 +46,12 @@ def client_users(path: str) -> tuple:
         organization_id: Optional[str] = user_data.get("organization_id")
 
         return user_view.add_user(organization_id=organization_id, names=names, surname=surname, cell=cell,
-                                           email=email, password=password)
+                                  email=email, password=password)
 
     elif path == "send-email-recovery":
         email: Optional[str] = user_data.get("email")
         organization_id: Optional[str] = user_data.get("organization_id")
-        print(email, organization_id)
+
         return user_view.send_recovery_email(email=email, organization_id=organization_id)
     elif path == "get-user":
         pass

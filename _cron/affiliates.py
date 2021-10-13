@@ -31,8 +31,8 @@ def cron_affiliate_jobs() -> tuple:
                 2. sending finalized amounts to wallets
                 3. sending affiliate report - recruitments & earnings
     :return:
-    """    
+    """
     affiliate_cron_tasks: AffiliateJobs = AffiliateJobs()
-    print("Affiliates cron jobs running...")
+
     schedule_func(func=affiliate_cron_tasks.run, job_name='cron_affiliate')
     return "OK", status_codes.status_ok_code

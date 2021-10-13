@@ -97,7 +97,7 @@ def get_user_data() -> tuple:
     cell: str = user_mock_data.get('cell')
     email: str = user_mock_data.get('email')
     password: str = user_mock_data.get('password')
-    print(cell, email, names, organization_id, password, surname, uid)
+
     return cell, email, names, organization_id, password, surname, uid
 
 
@@ -120,21 +120,28 @@ def test_create_user(mocker):
     :return:
     """
     with get_client().context():
-        mocker.patch('database.users.UserModel.put', return_value=ndb.Key(UserModel, create_id()))
-        mocker.patch('database.users.UserModel.query', return_value=UsersQueryMock())
+        mocker.patch('database.users.UserModel.put',
+                     return_value=ndb.Key(UserModel, create_id()))
+        mocker.patch('database.users.UserModel.query',
+                     return_value=UsersQueryMock())
 
     with test_app().app_context():
-        mocker.patch('views.users.UserView.is_organization_exist', return_value=True)
-        mocker.patch('views.users.UserView.is_email_available', return_value=True)
-        mocker.patch('views.users.UserView.is_cell_available', return_value=True)
+        mocker.patch('views.users.UserView.is_organization_exist',
+                     return_value=True)
+        mocker.patch('views.users.UserView.is_email_available',
+                     return_value=True)
+        mocker.patch('views.users.UserView.is_cell_available',
+                     return_value=True)
 
         cell, email, names, organization_id, password, surname, uid = get_user_data()
         response, status = user_view.add_user(organization_id=organization_id, uid=uid, names=names,
                                               surname=surname, cell=cell, email=email, password=password)
         assert status == status_codes.successfully_updated_code
         json_data: dict = response.get_json()
-        assert isinstance(json_data, dict), 'response data not formatted correctly'
-        assert isinstance(json_data.get('payload'), dict), json_data.get('message')
+        assert isinstance(
+            json_data, dict), 'response data not formatted correctly'
+        assert isinstance(json_data.get('payload'),
+                          dict), json_data.get('message')
 
     mocker.stopall()
 
@@ -148,13 +155,18 @@ def test_create_user_un_auth(mocker):
     :return:
     """
     with get_client().context():
-        mocker.patch('database.users.UserModel.put', return_value=ndb.Key(UserModel, create_id()))
-        mocker.patch('database.users.UserModel.query', return_value=UsersQueryMock())
+        mocker.patch('database.users.UserModel.put',
+                     return_value=ndb.Key(UserModel, create_id()))
+        mocker.patch('database.users.UserModel.query',
+                     return_value=UsersQueryMock())
 
     with test_app().app_context():
-        mocker.patch('views.users.UserView.is_organization_exist', return_value=False)
-        mocker.patch('views.users.UserView.is_email_available', return_value=False)
-        mocker.patch('views.users.UserView.is_cell_available', return_value=True)
+        mocker.patch('views.users.UserView.is_organization_exist',
+                     return_value=False)
+        mocker.patch('views.users.UserView.is_email_available',
+                     return_value=False)
+        mocker.patch('views.users.UserView.is_cell_available',
+                     return_value=True)
 
         cell, email, names, organization_id, password, surname, uid = get_user_data()
         with raises(UnAuthenticatedError):
@@ -174,13 +186,18 @@ def test_create_user_input_errors(mocker):
     :return:
     """
     with get_client().context():
-        mocker.patch('database.users.UserModel.put', return_value=ndb.Key(UserModel, create_id()))
-        mocker.patch('database.users.UserModel.query', return_value=UsersQueryMock())
+        mocker.patch('database.users.UserModel.put',
+                     return_value=ndb.Key(UserModel, create_id()))
+        mocker.patch('database.users.UserModel.query',
+                     return_value=UsersQueryMock())
 
     with test_app().app_context():
-        mocker.patch('views.users.UserView.is_organization_exist', return_value=True)
-        mocker.patch('views.users.UserView.is_email_available', return_value=True)
-        mocker.patch('views.users.UserView.is_cell_available', return_value=True)
+        mocker.patch('views.users.UserView.is_organization_exist',
+                     return_value=True)
+        mocker.patch('views.users.UserView.is_email_available',
+                     return_value=True)
+        mocker.patch('views.users.UserView.is_cell_available',
+                     return_value=True)
 
         cell, email, names, organization_id, password, surname, uid = get_user_data()
 

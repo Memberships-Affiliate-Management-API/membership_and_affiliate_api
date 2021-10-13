@@ -31,7 +31,7 @@ def cron_memberships_jobs() -> tuple:
     :return:
     """
     memberships_jobs_instance: MembershipsJobs = MembershipsJobs()
-    print("Memberships cron jobs running...")
-    schedule_func(func=memberships_jobs_instance.run, job_name='cron_memberships_jobs')
-    return "OK", status_codes.status_ok_code
 
+    schedule_func(func=memberships_jobs_instance.run,
+                  job_name='cron_memberships_jobs')
+    return "OK", status_codes.status_ok_code

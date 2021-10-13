@@ -52,7 +52,8 @@ class Util:
         # maximum len for _id
         self._max_id_len: int = 64
         self._payment_statuses: List[str] = ['paid', 'unpaid']
-        self._transaction_types: List[str] = ['withdrawal', 'deposit', 'refund']
+        self._transaction_types: List[str] = [
+            'withdrawal', 'deposit', 'refund']
 
     @staticmethod
     def return_payment_status_list() -> List[str]:
@@ -122,12 +123,16 @@ class Util:
         :param domain: str -> domain name to check
         :return: bool: True -> if pattern matches
         """
-        to_check: str = domain.replace('https://', '') if domain.startswith('https://') else domain
+        to_check: str = domain.replace(
+            'https://', '') if domain.startswith('https://') else domain
         # noinspection HttpUrlsUsage
-        to_check: str = to_check.replace('http://', '') if to_check.startswith('http://') else to_check
-        to_check: str = to_check.replace('/', '') if to_check.endswith('/') else to_check
-        to_check: str = to_check.split(sep='/')[0] if '/' in to_check else to_check
-        print(f' domain to check : {to_check}')
+        to_check: str = to_check.replace(
+            'http://', '') if to_check.startswith('http://') else to_check
+        to_check: str = to_check.replace(
+            '/', '') if to_check.endswith('/') else to_check
+        to_check: str = to_check.split(
+            sep='/')[0] if '/' in to_check else to_check
+
         # to_check = 'google.com'
 
         regex_pattern = r'^[a-z0-9]([a-z0-9-]+\.){1,}[a-z0-9]+\Z'
@@ -165,7 +170,8 @@ class Util:
             cell_number = phonenumbers.parse(cell.strip(), None)
             return str(phonenumbers.format_number(cell_number, phonenumbers.PhoneNumberFormat.INTERNATIONAL))
         except NumberParseException:
-            raise ValueError("Please enter cell number in an international format")
+            raise ValueError(
+                "Please enter cell number in an international format")
 
     @staticmethod
     def regex_check_cell(cell: str) -> bool:
@@ -178,11 +184,13 @@ class Util:
         """
         try:
             cell_object = phonenumbers.parse(cell, None)
-            possibly_cell_number: bool = phonenumbers.is_possible_number(cell_object)
+            possibly_cell_number: bool = phonenumbers.is_possible_number(
+                cell_object)
             valid_cell_number: bool = phonenumbers.is_valid_number(cell_object)
             return possibly_cell_number and valid_cell_number
         except NumberParseException:
-            raise ValueError("Please enter cell number in an international format")
+            raise ValueError(
+                "Please enter cell number in an international format")
 
     # checks if percentage is valid
     @staticmethod
@@ -242,7 +250,8 @@ class PropertySetters(Events, Util):
         try:
             assert isinstance(value, str)
         except AssertionError:
-            raise ValueError(f"Must be an instance of: {property_name} , and can only be a string")
+            raise ValueError(
+                f"Must be an instance of: {property_name} , and can only be a string")
         try:
             assert len(value.strip()) == property_._max_coupon_code_len
         except AssertionError:
@@ -287,11 +296,13 @@ class PropertySetters(Events, Util):
         """
         property_name: str = property_.return_property_name(prop=prop)
         if not (isinstance(value, str)):
-            raise ValueError(f"transaction_type, is an instance of : {property_name} , and can only be a string")
+            raise ValueError(
+                f"transaction_type, is an instance of : {property_name} , and can only be a string")
 
         # NOTE: valid transaction types "withdrawal", "deposit", "refund"
         if value.strip().lower() not in property_.return_transaction_types():
-            raise ValueError("{} is not a valid transaction_type".format(value))
+            raise ValueError(
+                "{} is not a valid transaction_type".format(value))
 
         return value.strip().lower()
 
@@ -308,7 +319,8 @@ class PropertySetters(Events, Util):
         """
         property_name: str = property_.return_property_name(prop=prop)
         if not (isinstance(value, datetime)):
-            raise TypeError(f"datetime, is an instance of : {property_name} , must represent a valid python date")
+            raise TypeError(
+                f"datetime, is an instance of : {property_name} , must represent a valid python date")
         return value
 
     @staticmethod
@@ -323,7 +335,8 @@ class PropertySetters(Events, Util):
         """
         property_name: str = property_.return_property_name(prop=prop)
         if not (isinstance(value, bool)):
-            raise TypeError(f"boolean, is an instance of : {property_name} , and can only be Either True or False")
+            raise TypeError(
+                f"boolean, is an instance of : {property_name} , and can only be Either True or False")
         return value
 
     @staticmethod
@@ -347,7 +360,8 @@ class PropertySetters(Events, Util):
 
         temp = value.strip().lower()
         if not bool(temp):
-            raise ValueError(f"status, is an instance of : {property_name} , and cannot be Null")
+            raise ValueError(
+                f"status, is an instance of : {property_name} , and cannot be Null")
 
         if temp not in property_.return_payment_status_list():
             message: str = f"""Status should either paid or unpaid this {value} is not a valid status"""
@@ -419,7 +433,8 @@ class PropertySetters(Events, Util):
         # TODO - Rewrite this or create a translator for paypal plans payment schedule
         schedule_terms: List[str] = get_plan_scheduled_terms()
         if temp not in schedule_terms:
-            raise ValueError(f"scheduled term, can only be one of the following values : {schedule_terms}")
+            raise ValueError(
+                f"scheduled term, can only be one of the following values : {schedule_terms}")
         return temp
 
     @staticmethod
@@ -473,7 +488,8 @@ class PropertySetters(Events, Util):
         """
         property_name: str = property_.return_property_name(prop=prop)
         if not (isinstance(value, date)):
-            raise TypeError(f"{property_name}, can only be an instance of date")
+            raise TypeError(
+                f"{property_name}, can only be an instance of date")
         return value
 
     @staticmethod
@@ -543,7 +559,8 @@ class PropertySetters(Events, Util):
             message: str = f'''{property_name}, should be a string representation of a currency symbol'''
             raise TypeError(message)
         if value not in currency_util.currency_symbols():
-            raise ValueError(f"This value : {value} is not a valid currency symbol")
+            raise ValueError(
+                f"This value : {value} is not a valid currency symbol")
         return value
 
     # noinspection PyUnusedLocal,DuplicatedCode
@@ -662,15 +679,14 @@ class PropertySetters(Events, Util):
             raise TypeError(message)
 
         domain = value.strip()
-        print(f'testing domain : {domain}')
+
         regex_passes = property_.regex_check_domain(domain=domain)
         domain_valid = property_.resolve_domain_name(domain=domain)
-        print(f"domain valid : {domain_valid}")
-        print(f"regex_passes : {regex_passes}")
 
         if regex_passes or domain_valid:
             return domain
-        raise ValueError(f"This : {domain} is not a valid domain name, or the domain may not be accessible")
+        raise ValueError(
+            f"This : {domain} is not a valid domain name, or the domain may not be accessible")
 
 
 property_: PropertySetters = PropertySetters()

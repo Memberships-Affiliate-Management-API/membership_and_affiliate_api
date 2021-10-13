@@ -22,10 +22,11 @@ def contact(path: str) -> tuple:
     """
     if_bad_request_raise(request)
     json_data: dict = request.get_json()
-    # print(json_data)
+
     if not isinstance(json_data, dict):
         message: str = "Invalid Input format this endpoint accept only json_data"
-        raise InputError(status=error_codes.input_error_code, description=message)
+        raise InputError(status=error_codes.input_error_code,
+                         description=message)
 
     secret_key: Optional[str] = json_data.get('SECRET_KEY')
     verify_secret_key(secret_key)
@@ -42,6 +43,5 @@ def contact(path: str) -> tuple:
         uid: Optional[str] = json_data.get('uid')
         # TODO finish up contact its the same as helpdesk
 
-        print(f'Names: {names}, Email: {email}, Cell: {cell}, Topic: {topic}, Subject: {subject}, Body: {body}')
     elif path == "get":
         pass
