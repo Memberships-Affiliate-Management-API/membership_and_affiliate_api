@@ -62,11 +62,13 @@ class APIRequests:
         """
         # obtain the _request_id to be used as an identifier for this request
         _request_id: str = headers.get('_request_id')
-        print("sending request: ", _request_id)
-        response = asyncio.run(self._async_request(_url=_url, json_data=json_data, headers=headers))
+
+        response = asyncio.run(self._async_request(
+            _url=_url, json_data=json_data, headers=headers))
         # compiling a response dict to contain the _request_id and the returned results of the request
-        print("request sent response is : ", response)
-        self._responses_queue.append(dict(_request_id=_request_id, response=response))
+
+        self._responses_queue.append(
+            dict(_request_id=_request_id, response=response))
 
     def schedule_data_send(self, _endpoint: Optional[str], body: Optional[dict] = None) -> str:
         """
@@ -92,7 +94,8 @@ class APIRequests:
         headers.update(_request_id=_request_id)
         _kwargs: dict = dict(_url=_url, json_data=body, headers=headers)
         # Scheduling the request to run later and then continue
-        schedule_func(func=self._request, kwargs=_kwargs, job_name='data_send_')
+        schedule_func(func=self._request, kwargs=_kwargs,
+                      job_name='data_send_')
         # returning the _request_id so it can be used to retrieve the results at a later stage
         return _request_id
 
@@ -114,7 +117,7 @@ class APIRequests:
                 return None
 
         # Note: None results will not be cached
-        print('failed to get response : ', request_id)
+
         return None
 
 

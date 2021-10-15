@@ -73,7 +73,8 @@ class PayPalOrders(PayPalClient):
             print('Intent:', response.result.intent)
             print('Links:')
             for link in response.result.links:
-                print('\t{}: {}\tCall Type: {}'.format(link.rel, link.href, link.method))
+                print('\t{}: {}\tCall Type: {}'.format(
+                    link.rel, link.href, link.method))
             print('Total Amount: {} {}'.format(response.result.purchase_units[0].amount_cents.currency_code,
                                                response.result.purchase_units[0].amount_cents.value))
             json_data = self.object_to_json(response.result)
@@ -106,13 +107,16 @@ class PayPalOrders(PayPalClient):
             print('Status Code: ', response.status_code)
             print('Status: ', response.result.payment_status)
             print('Order ID: ', response.result.id)
-            print('Authorization ID:', response.result.purchase_units[0].payments.authorizations[0].id)
+            print('Authorization ID:',
+                  response.result.purchase_units[0].payments.authorizations[0].id)
             print('Links:')
             for link in response.result.links:
-                print('\t{}: {}\tCall Type: {}'.format(link.rel, link.href, link.method))
+                print('\t{}: {}\tCall Type: {}'.format(
+                    link.rel, link.href, link.method))
             print('Authorization Links:')
             for link in response.result.purchase_units[0].payments.authorizations[0].links:
-                print('\t{}: {}\tCall Type: {}'.format(link.rel, link.href, link.method))
+                print('\t{}: {}\tCall Type: {}'.format(
+                    link.rel, link.href, link.method))
             print("Buyer:")
             print("\tEmail Address: {}\n\tPhone Number: {}".format(response.result.payer.email_address,
                                                                    response.result.payer.phone.phone_number.national_number))
@@ -135,7 +139,8 @@ class PayPalOrders(PayPalClient):
         if isinstance(authorization_id, str):
             capture_request = AuthorizationsCaptureRequest(authorization_id)
         else:
-            capture_request = AuthorizationsCaptureRequest(self.authorization_id)
+            capture_request = AuthorizationsCaptureRequest(
+                self.authorization_id)
 
         capture_request.request_body(capture=self.build_order_request_body())
         response = self.client.execute(capture_request)
@@ -145,7 +150,8 @@ class PayPalOrders(PayPalClient):
             print('Capture ID: ', response.result.id)
             print('Links: ')
             for link in response.result.links:
-                print('\t{}: {}\tCall Type: {}'.format(link.rel, link.href, link.method))
+                print('\t{}: {}\tCall Type: {}'.format(
+                    link.rel, link.href, link.method))
             json_data = self.object_to_json(response.result)
             print("json_data: ", json.dumps(json_data, indent=4))
             self.capture_response = response
@@ -180,13 +186,13 @@ class PayPalRecurring(PayPalClient):
             :return: dict
         """
         return {
-                   "name": "{}".format(self.name),
-                   "description": "{}".format(self.description),
-                   "type": "SERVICE",
-                   "category": "{}".format(self.category),
-                   "image_url": "{}".format(self.image_url),
-                   "home_url": "{}".format(self.home_url)
-            }
+            "name": "{}".format(self.name),
+            "description": "{}".format(self.description),
+            "type": "SERVICE",
+            "category": "{}".format(self.category),
+            "image_url": "{}".format(self.image_url),
+            "home_url": "{}".format(self.home_url)
+        }
 
     @staticmethod
     def build_plan_body(product_id: str, plan_name: str, plan_description: str, plan_amount: AmountMixin,
@@ -339,7 +345,8 @@ class PayPalRecurring(PayPalClient):
         """
         service_request = PlansCreateServiceProduct()
         service_request.prefer(prefer='return=representation')
-        service_request.request_body(service_action_request=self.build_service_request_body())
+        service_request.request_body(
+            service_action_request=self.build_service_request_body())
         # NOTE: the serialize response encoder does support json content- but test this with v1 api
         response = self.client.execute(service_request)
         if self.debug:
@@ -353,7 +360,6 @@ class PayPalRecurring(PayPalClient):
     def create_a_plan(self, product_id: str, plan_name: str, plan_description: str, plan_amount: AmountMixin,
                       setup_amount: AmountMixin, include_trial: bool = True, interval: str = "MONTH",
                       total_cycles: int = 0, include_taxes: bool = False, tax_percent: int = 15):
-
         """
             from a defined service, create the plans needed
             example: Basic Plan,Standard and Premium
@@ -388,7 +394,8 @@ class PayPalRecurring(PayPalClient):
             print("Status: {}".format(response.result.payment_status))
             print("LINKS : ")
             for link in response.result.links:
-                print('\t{}: {}\tCall Type: {}'.format(link.rel, link.href, link.method))
+                print('\t{}: {}\tCall Type: {}'.format(
+                    link.rel, link.href, link.method))
 
         return response
 
@@ -400,28 +407,28 @@ class PayPalRecurring(PayPalClient):
                                  paypal_email_address: str, brand_name: str,
                                  return_url: str, cancel_url: str,  locale: str = "en-US"):
         return {
-                  "plan_id": "{}".format(plan_id),
-                  "start_time": "{}".format(start_time),
-                  "subscriber": {
-                    "name": {
-                      "given_name": "{}".format(name),
-                      "surname": "{}".format(surname)
-                    },
-                    "email_address": "{}".format(paypal_email_address)
-                  },
-                  "application_context": {
-                    "brand_name": "{}".format(brand_name),
-                    "locale": "{}".format(locale),
-                    "shipping_preference": "SET_PROVIDED_ADDRESS",
-                    "user_action": "SUBSCRIBE_NOW",
-                    "payment_method": {
-                      "payer_selected": "PAYPAL",
-                      "payee_preferred": "IMMEDIATE_PAYMENT_REQUIRED"
-                    },
-                    "return_url": "{}".format(return_url),
-                    "cancel_url": "{}".format(cancel_url)
-                  }
+            "plan_id": "{}".format(plan_id),
+            "start_time": "{}".format(start_time),
+            "subscriber": {
+                "name": {
+                          "given_name": "{}".format(name),
+                          "surname": "{}".format(surname)
+                },
+                "email_address": "{}".format(paypal_email_address)
+            },
+            "application_context": {
+                "brand_name": "{}".format(brand_name),
+                "locale": "{}".format(locale),
+                "shipping_preference": "SET_PROVIDED_ADDRESS",
+                "user_action": "SUBSCRIBE_NOW",
+                "payment_method": {
+                    "payer_selected": "PAYPAL",
+                          "payee_preferred": "IMMEDIATE_PAYMENT_REQUIRED"
+                },
+                "return_url": "{}".format(return_url),
+                "cancel_url": "{}".format(cancel_url)
             }
+        }
 
     # NOTE: Call this function to subscribe users to an existing and active plan
     # NOTE: on success redirect users to an authorize screen users will authorize the subscription
@@ -562,11 +569,13 @@ class PayPalRecurring(PayPalClient):
             print("Start Time: {}".format(response.result.start_time))
             print("Create Time: {}".format(response.result.create_time))
             print("STATUS : {}".format(response.result.payment_status))
-            print("STATUS UPDATE TIME: {}".format(response.results.status_update_time))
+            print("STATUS UPDATE TIME: {}".format(
+                response.results.status_update_time))
             print("Subscription Link :")
 
             for link in response.result.links:
-                print('\t{}: {}\tCall Type: {}'.format(link.rel, link.href, link.method))
+                print('\t{}: {}\tCall Type: {}'.format(
+                    link.rel, link.href, link.method))
 
         # NOTE: the user must be redirected to the approve link in order to approve the plan
         # link rel : "approve"

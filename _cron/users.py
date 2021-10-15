@@ -28,6 +28,5 @@ def cron_users_jobs() -> tuple:
     :return: tuple
     """
     user_jobs_instance: UserJobs = UserJobs()
-    print("Users cron jobs running...")
     schedule_func(func=user_jobs_instance.run, job_name='cron_user_jobs')
     return "OK", status_codes.status_ok_code

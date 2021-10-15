@@ -32,38 +32,45 @@ def handle_view_errors(func):
             message: str = str(e)
             if debug:
                 print(message)
-            raise InputError(status=error_codes.input_error_code, description=message)
+            raise InputError(
+                status=error_codes.input_error_code, description=message)
         except TypeError as e:
             message: str = str(e)
             if debug:
                 print(e)
-            raise InputError(status=error_codes.input_error_code, description=message)
+            raise InputError(
+                status=error_codes.input_error_code, description=message)
         except BadRequestError as e:
             if debug:
                 print(e)
             message: str = '''Bad Request: while connecting to database'''
-            raise RequestError(status=error_codes.bad_request_error_code, description=message)
+            raise RequestError(
+                status=error_codes.bad_request_error_code, description=message)
         except BadQueryError as e:
             if debug:
                 print(e)
             message: str = '''Database Query Error: Error while querying database please inform admin'''
-            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+            raise DataServiceError(
+                status=error_codes.data_service_error_code, description=message)
         except ConnectionRefusedError as e:
             if debug:
                 print(e)
             message: str = '''Connection Refused: Unable to connect to database please try again later'''
-            raise RequestError(status=error_codes.remote_data_error, description=message)
+            raise RequestError(
+                status=error_codes.remote_data_error, description=message)
         except RetryError as e:
             if debug:
                 print(e)
             message: str = '''Retries Exceeded: Unable to connect to database please try again later 
             or inform the administrator'''
-            raise RequestError(status=error_codes.remote_data_error, description=message)
+            raise RequestError(
+                status=error_codes.remote_data_error, description=message)
         except Aborted as e:
             if debug:
                 print(e)
             message: str = '''Abort Error: connection refused by remote server'''
-            raise RequestError(status=error_codes.remote_data_error, description=message)
+            raise RequestError(
+                status=error_codes.remote_data_error, description=message)
 
     return wrapper
 
