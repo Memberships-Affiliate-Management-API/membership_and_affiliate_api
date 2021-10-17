@@ -62,7 +62,6 @@ class TransactionsJobs:
         try:
             wallet_transactions: List[WalletTransactionsModel] = WalletTransactionsModel.query(
                 WalletTransactionsModel.is_verified == True, WalletTransactionsModel.is_settled == False).fetch_async().get_result()
-            print('approved withdrawals running')
 
             return [self.do_send_to_client_paypal(transaction=transaction) for transaction in wallet_transactions
                     if transaction.transaction_type == 'withdrawal']
@@ -107,7 +106,7 @@ class TransactionsJobs:
         try:
             wallet_transactions: List[WalletTransactionsModel] = WalletTransactionsModel.query(
                 WalletTransactionsModel.is_verified == True, WalletTransactionsModel.is_settled == False).fetch_async().get_result()
-            print("approved deposits running")
+
             return [self.do_send_to_client_wallet(transaction=transaction) for transaction in wallet_transactions
                     if transaction.transaction_type == 'deposit']
         except RetryError as e:

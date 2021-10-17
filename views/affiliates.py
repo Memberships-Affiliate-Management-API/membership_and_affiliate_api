@@ -70,11 +70,13 @@ class Validator(ValidAffiliate, ValidRecruit, ValidEarnings):
         """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
+            raise InputError(
+                status=error_codes.input_error_code, description=message)
 
         if not isinstance(uid, str) or not bool(uid.strip()):
             message: str = "uid is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
+            raise InputError(
+                status=error_codes.input_error_code, description=message)
 
         # this means the user recruiting this affiliate is already a registered affiliate
         already_registered: typing.Union[bool, None] = self.recruiter_registered(organization_id=organization_id,
@@ -82,7 +84,8 @@ class Validator(ValidAffiliate, ValidRecruit, ValidEarnings):
         if isinstance(already_registered, bool):
             return not already_registered
         message: str = "Unable to verify input data, due to database error, please try again later"
-        raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+        raise DataServiceError(
+            status=error_codes.data_service_error_code, description=message)
 
     def _create_unique_affiliate_id(self) -> str:
         """
@@ -91,7 +94,8 @@ class Validator(ValidAffiliate, ValidRecruit, ValidEarnings):
         :return:
         """
         _id = create_id()
-        affiliate_instance: Affiliates = Affiliates.query(Affiliates.affiliate_id == _id).get()
+        affiliate_instance: Affiliates = Affiliates.query(
+            Affiliates.affiliate_id == _id).get()
         return self._create_unique_affiliate_id() if affiliate_instance.uid == _id else _id
 
 
@@ -125,22 +129,26 @@ class AffiliatesView(Validator):
         # NOTE can register affiliate will check organization_id and uid are valid
         if not self.can_register_affiliate(organization_id=organization_id, uid=uid):
             message: str = "You are not authorized to register as an affiliate"
-            raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
+            raise UnAuthenticatedError(
+                status=error_codes.un_auth_error_code, description=message)
         # NOTE: this creates globally unique Affiliate Key
         affiliate_id: str = self._create_unique_affiliate_id()
         # NOTE: other affiliates fields will be auto completed - be defaults
 
         affiliate_instance: Affiliates = Affiliates(**affiliate_data)
 
-        key: Optional[ndb.Key] = affiliate_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+        key: Optional[ndb.Key] = affiliate_instance.put(
+            retries=self._max_retries, timeout=self._max_timeout)
         if not isinstance(key, ndb.Key):
             message: str = "There was an error creating Affiliate"
-            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+            raise DataServiceError(
+                status=error_codes.data_service_error_code, description=message)
 
-        print('affiliate instance: ', affiliate_instance)
         # scheduling cache deletions
-        _kwargs: dict = dict(affiliates_view=self, organization_id=organization_id, affiliate_id=affiliate_id)
-        app_cache._schedule_cache_deletion(func=app_cache._delete_affiliate_cache, kwargs=_kwargs)
+        _kwargs: dict = dict(
+            affiliates_view=self, organization_id=organization_id, affiliate_id=affiliate_id)
+        app_cache._schedule_cache_deletion(
+            func=app_cache._delete_affiliate_cache, kwargs=_kwargs)
 
         return jsonify({'status': True,
                         'message': 'successfully registered an affiliate',
@@ -162,15 +170,18 @@ class AffiliatesView(Validator):
 
         if not isinstance(affiliate_id, str) or not bool(affiliate_id.strip()):
             message = 'affiliate_id is required'
-            raise InputError(status=error_codes.input_error_code, description=message)
+            raise InputError(
+                status=error_codes.input_error_code, description=message)
 
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
-            raise InputError(status=error_codes.input_error_code, description=message)
+            raise InputError(
+                status=error_codes.input_error_code, description=message)
 
         if not isinstance(add, int):
             message: str = "add: amount to update total_recruits is required"
-            raise InputError(status=error_codes.input_error_code, description=message)
+            raise InputError(
+                status=error_codes.input_error_code, description=message)
 
         affiliate_instance: Affiliates = Affiliates.query(Affiliates.organization_id == organization_id,
                                                           Affiliates.affiliate_id == affiliate_id).get()
@@ -179,7 +190,8 @@ class AffiliatesView(Validator):
             return jsonify({'status': False, 'message': 'Failed to locate affiliate'}), status_codes.data_not_found_code
 
         affiliate_instance.total_recruits += add
-        key = affiliate_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+        key = affiliate_instance.put(
+            retries=self._max_retries, timeout=self._max_timeout)
         if not isinstance(key, ndb.Key):
             message: str = "Something went wrong while updating affiliate"
             raise DataServiceError(status=500, description=message)
@@ -188,7 +200,8 @@ class AffiliatesView(Validator):
         _kwargs: dict = dict(affiliates_view=AffiliatesView, organization_id=organization_id,
                              affiliate_id=affiliate_id)
 
-        app_cache._schedule_cache_deletion(func=app_cache._delete_affiliate_cache, kwargs=_kwargs)
+        app_cache._schedule_cache_deletion(
+            func=app_cache._delete_affiliate_cache, kwargs=_kwargs)
 
         return jsonify({'status': True,
                         'message': 'successfully incremented total recruits',
@@ -211,12 +224,14 @@ class AffiliatesView(Validator):
         affiliate_id: Optional[str] = affiliate_data.get('affiliate_id')
         if not isinstance(affiliate_id, str) or not bool(affiliate_id.strip()):
             message: str = 'affiliate_id is required'
-            raise InputError(status=error_codes.input_error_code, description=message)
+            raise InputError(
+                status=error_codes.input_error_code, description=message)
 
         organization_id: Optional[str] = affiliate_data.get('organization_id')
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
-            raise InputError(status=error_codes.input_error_code, description=message)
+            raise InputError(
+                status=error_codes.input_error_code, description=message)
 
         affiliate_instance: Affiliates = Affiliates.query(Affiliates.organization_id == organization_id,
                                                           Affiliates.affiliate_id == affiliate_id).get()
@@ -226,15 +241,18 @@ class AffiliatesView(Validator):
 
         affiliate_instance.is_active = False
         affiliate_instance.is_deleted = True
-        key: Optional[ndb.Key] = affiliate_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+        key: Optional[ndb.Key] = affiliate_instance.put(
+            retries=self._max_retries, timeout=self._max_timeout)
         if not isinstance(key, ndb.Key):
             message: str = 'something went wrong while deleting affiliate'
-            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+            raise DataServiceError(
+                status=error_codes.data_service_error_code, description=message)
 
         # scheduling affiliate cache deletions
         _kwargs: dict = dict(affiliates_view=AffiliatesView, organization_id=organization_id,
                              affiliate_id=affiliate_id)
-        app_cache._schedule_cache_deletion(func=app_cache._delete_affiliate_cache, kwargs=_kwargs)
+        app_cache._schedule_cache_deletion(
+            func=app_cache._delete_affiliate_cache, kwargs=_kwargs)
 
         return jsonify({'status': True,
                         'message': 'successfully deleted the affiliate',
@@ -255,12 +273,14 @@ class AffiliatesView(Validator):
         affiliate_id: Optional[str] = affiliate_data.get('affiliate_id')
         if not isinstance(affiliate_id, str) or not bool(affiliate_id.strip()):
             message: str = 'affiliate_id is required'
-            raise InputError(status=error_codes.input_error_code, description=message)
+            raise InputError(
+                status=error_codes.input_error_code, description=message)
 
         organization_id: Optional[str] = affiliate_data.get('organization_id')
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
-            raise InputError(status=error_codes.input_error_code, description=message)
+            raise InputError(
+                status=error_codes.input_error_code, description=message)
 
         if not isinstance(is_active, bool):
             raise ValueError("is_active is required and can only be a boolean")
@@ -274,18 +294,22 @@ class AffiliatesView(Validator):
 
         if affiliate_instance.is_deleted and is_active:
             message: str = "cannot activate / de-activate an affiliate if the affiliate has been deleted"
-            raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
+            raise UnAuthenticatedError(
+                status=error_codes.un_auth_error_code, description=message)
 
         affiliate_instance.is_active = is_active
-        key: Optional[ndb.Key] = affiliate_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+        key: Optional[ndb.Key] = affiliate_instance.put(
+            retries=self._max_retries, timeout=self._max_timeout)
         if not isinstance(key, ndb.Key):
             message: str = "An Unknown Error occurred while trying to mark affiliate as in-active"
-            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+            raise DataServiceError(
+                status=error_codes.data_service_error_code, description=message)
 
         # scheduling affiliate cache deletion
         _kwargs: dict = dict(affiliates_view=AffiliatesView, organization_id=organization_id,
                              affiliate_id=affiliate_id)
-        app_cache._schedule_cache_deletion(func=app_cache._delete_affiliate_cache, kwargs=_kwargs)
+        app_cache._schedule_cache_deletion(
+            func=app_cache._delete_affiliate_cache, kwargs=_kwargs)
 
         return jsonify({'status': True, 'message': 'successfully marked affiliate as inactive',
                         'payload': affiliate_instance.to_dict()}), status_codes.successfully_updated_code
@@ -305,7 +329,8 @@ class AffiliatesView(Validator):
         organization_id: Optional[str] = affiliate_data.get('organization_id')
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
-            raise InputError(status=error_codes.input_error_code, description=message)
+            raise InputError(
+                status=error_codes.input_error_code, description=message)
 
         affiliate_id: Optional[str] = affiliate_data.get('affiliate_id')
 
@@ -327,7 +352,8 @@ class AffiliatesView(Validator):
         # if we are here and still dont have a valid input set to true then we have a problem with input data
         if not valid_input:
             message: str = "affiliate_id or uid is required to get affiliate record"
-            raise InputError(status=error_codes.input_error_code, description=message)
+            raise InputError(
+                status=error_codes.input_error_code, description=message)
 
         # Note checking if we have valid data and then return to user
         if bool(affiliate_instance) and affiliate_instance.uid == uid:
@@ -353,12 +379,14 @@ class AffiliatesView(Validator):
 
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
-            raise InputError(status=error_codes.input_error_code, description=message)
+            raise InputError(
+                status=error_codes.input_error_code, description=message)
 
         affiliates_list: List[Affiliates] = Affiliates.query(
             Affiliates.organization_id == organization_id).order(Affiliates.datetime_recruited).fetch()
         # TODO use Generators to get affiliates in a batch of thousand at a time
-        payload: List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
+        payload: List[dict] = [affiliate.to_dict()
+                               for affiliate in affiliates_list]
 
         if payload:
             message: str = "Successfully returned all affiliates"
@@ -383,14 +411,16 @@ class AffiliatesView(Validator):
         """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
-            raise InputError(status=error_codes.input_error_code, description=message)
+            raise InputError(
+                status=error_codes.input_error_code, description=message)
 
         affiliates_list: List[Affiliates] = Affiliates.query(
             Affiliates.organization_id == organization_id,
             Affiliates.is_active == True, Affiliates.is_deleted == False).order(Affiliates.datetime_recruited).fetch()
 
         # TODO use Generators to get affiliates in a batch of thousand at a time
-        payload: List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
+        payload: List[dict] = [affiliate.to_dict()
+                               for affiliate in affiliates_list]
         if payload:
             return jsonify({'status': True, 'message': 'successfully returned all affiliates',
                             'payload': payload}), status_codes.status_ok_code
@@ -412,13 +442,15 @@ class AffiliatesView(Validator):
         """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
-            raise InputError(status=error_codes.input_error_code, description=message)
+            raise InputError(
+                status=error_codes.input_error_code, description=message)
 
         affiliates_list: List[Affiliates] = Affiliates.query(
             Affiliates.organization_id == organization_id, Affiliates.is_active == False,
             Affiliates.is_deleted == False).order(Affiliates.datetime_recruited).fetch()
 
-        payload: List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
+        payload: List[dict] = [affiliate.to_dict()
+                               for affiliate in affiliates_list]
         if payload:
             message: str = "successfully returned all affiliates"
             return jsonify({'status': True,
@@ -441,13 +473,15 @@ class AffiliatesView(Validator):
         """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
-            raise InputError(status=error_codes.input_error_code, description=message)
+            raise InputError(
+                status=error_codes.input_error_code, description=message)
 
         affiliates_list: List[Affiliates] = Affiliates.query(
             Affiliates.organization_id == organization_id,
             Affiliates.is_deleted == True).order(Affiliates.datetime_recruited).fetch()
 
-        payload: List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
+        payload: List[dict] = [affiliate.to_dict()
+                               for affiliate in affiliates_list]
         if payload:
             message: str = "Successfully returned deleted affiliates"
             return jsonify({'status': True,
@@ -469,13 +503,15 @@ class AffiliatesView(Validator):
         """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
-            raise InputError(status=error_codes.input_error_code, description=message)
+            raise InputError(
+                status=error_codes.input_error_code, description=message)
 
         affiliates_list: List[Affiliates] = Affiliates.query(
             Affiliates.organization_id == organization_id,
             Affiliates.is_deleted == False).order(Affiliates.datetime_recruited).fetch()
 
-        payload: List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
+        payload: List[dict] = [affiliate.to_dict()
+                               for affiliate in affiliates_list]
         if payload:
             message: str = "Successfully returned affiliates which are not deleted"
             return jsonify({'status': True,
@@ -514,26 +550,32 @@ class RecruitsView(Validator):
         referrer_uid: Optional[str] = recruit_data.get('referrer_uid')
         if not isinstance(referrer_uid, str) or not bool(referrer_uid.strip()):
             message: str = 'referrer_uid is required'
-            raise InputError(status=error_codes.input_error_code, description=message)
+            raise InputError(
+                status=error_codes.input_error_code, description=message)
 
         organization_id: Optional[str] = recruit_data.get('organization_id')
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
-            raise InputError(status=error_codes.input_error_code, description=message)
+            raise InputError(
+                status=error_codes.input_error_code, description=message)
 
         affiliate_id = self._create_unique_affiliate_id()
-        recruit_instance: Recruits = Recruits(**recruit_data, affiliate_id=affiliate_id)
+        recruit_instance: Recruits = Recruits(
+            **recruit_data, affiliate_id=affiliate_id)
 
-        key = recruit_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+        key = recruit_instance.put(
+            retries=self._max_retries, timeout=self._max_timeout)
         if not isinstance(key, ndb.Key):
             message: str = "An Error occurred while adding new recruit"
-            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+            raise DataServiceError(
+                status=error_codes.data_service_error_code, description=message)
 
         # NOTE scheduling recruits cache deleter
         _kwargs: dict = dict(recruits_view=RecruitsView, organization_id=organization_id,
                              is_active=recruit_instance.is_active, is_deleted=recruit_instance.is_deleted,
                              affiliate_data=None, recruit_data=recruit_data)
-        app_cache._schedule_cache_deletion(func=app_cache._delete_recruits_cache, kwargs=_kwargs)
+        app_cache._schedule_cache_deletion(
+            func=app_cache._delete_recruits_cache, kwargs=_kwargs)
 
         return jsonify({'status': True, 'message': 'Successfully created new recruit',
                         'payload': recruit_instance.to_dict()}), status_codes.successfully_updated_code
@@ -554,12 +596,14 @@ class RecruitsView(Validator):
         affiliate_id: Optional[str] = recruit_data.get('affiliate_id')
         if not isinstance(affiliate_id, str) or not bool(affiliate_id.strip()):
             message: str = 'affiliate_id is required'
-            raise InputError(status=error_codes.input_error_code, description=message)
+            raise InputError(
+                status=error_codes.input_error_code, description=message)
 
         organization_id: Optional[str] = recruit_data.get('organization_id')
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
-            raise InputError(status=error_codes.input_error_code, description=message)
+            raise InputError(
+                status=error_codes.input_error_code, description=message)
 
         recruit_instance: Recruits = Recruits.query(Recruits.organization_id == organization_id,
                                                     Recruits.affiliate_id == affiliate_id).get()
@@ -572,17 +616,20 @@ class RecruitsView(Validator):
         recruit_instance.is_deleted = True
         recruit_instance.is_active = False
         # TODO- update stats and organization Class - Consider doing this from an API
-        key = recruit_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+        key = recruit_instance.put(
+            retries=self._max_retries, timeout=self._max_timeout)
         if not isinstance(key, ndb.Key):
             message: str = "An Error occurred while deleting recruit"
-            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+            raise DataServiceError(
+                status=error_codes.data_service_error_code, description=message)
 
         # Note: scheduling recruits cache deletions
         _kwargs: dict = dict(recruits_view=RecruitsView, organization_id=organization_id,
                              is_active=recruit_instance.is_active, is_deleted=recruit_instance.is_deleted,
                              affiliate_data=None, recruit_data=recruit_data)
 
-        app_cache._schedule_cache_deletion(func=app_cache._delete_recruits_cache, kwargs=_kwargs)
+        app_cache._schedule_cache_deletion(
+            func=app_cache._delete_recruits_cache, kwargs=_kwargs)
 
         return jsonify({'status': True, 'message': 'Successfully deleted recruit',
                         'payload': recruit_instance.to_dict()}), status_codes.successfully_updated_code
@@ -599,16 +646,19 @@ class RecruitsView(Validator):
         affiliate_id: Optional[str] = recruit_data.get('affiliate_id')
         if not isinstance(affiliate_id, str) or not bool(affiliate_id.strip()):
             message: str = 'affiliate_id is required'
-            raise InputError(status=error_codes.input_error_code, description=message)
+            raise InputError(
+                status=error_codes.input_error_code, description=message)
 
         organization_id: Optional[str] = recruit_data.get('organization_id')
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
-            raise InputError(status=error_codes.input_error_code, description=message)
+            raise InputError(
+                status=error_codes.input_error_code, description=message)
 
         if not isinstance(is_active, bool):
             message: str = 'is_active is required and can only be a boolean'
-            raise InputError(status=error_codes.input_error_code, description=message)
+            raise InputError(
+                status=error_codes.input_error_code, description=message)
 
         recruit_instance: Recruits = Recruits.query(Recruits.organization_id == organization_id,
                                                     Recruits.affiliate_id == affiliate_id).get()
@@ -618,16 +668,19 @@ class RecruitsView(Validator):
             return jsonify({'status': False, 'message': message}), status_codes.data_not_found_code
 
         recruit_instance.is_active = is_active
-        key = recruit_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+        key = recruit_instance.put(
+            retries=self._max_retries, timeout=self._max_timeout)
         if not isinstance(key, ndb.Key):
             message: str = "An Error occurred while changing recruit active status"
-            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+            raise DataServiceError(
+                status=error_codes.data_service_error_code, description=message)
 
         _kwargs: dict = dict(recruits_view=RecruitsView, organization_id=organization_id,
                              is_active=is_active, is_deleted=recruit_instance.is_deleted,
                              affiliate_data=None, recruit_data=recruit_data)
 
-        app_cache._schedule_cache_deletion(func=app_cache._delete_recruits_cache, kwargs=_kwargs)
+        app_cache._schedule_cache_deletion(
+            func=app_cache._delete_recruits_cache, kwargs=_kwargs)
 
         return jsonify({'status': True, 'message': 'Successfully deleted recruit',
                         'payload': recruit_instance.to_dict()}), status_codes.successfully_updated_code
@@ -644,12 +697,14 @@ class RecruitsView(Validator):
         affiliate_id: Optional[str] = recruit_data.get('affiliate_id')
         if not isinstance(affiliate_id, str) or not bool(affiliate_id.strip()):
             message: str = 'affiliate_id is required'
-            raise InputError(status=error_codes.input_error_code, description=message)
+            raise InputError(
+                status=error_codes.input_error_code, description=message)
 
         organization_id: Optional[str] = recruit_data.get('organization_id')
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
-            raise InputError(status=error_codes.input_error_code, description=message)
+            raise InputError(
+                status=error_codes.input_error_code, description=message)
 
         recruit_instance: Recruits = Recruits.query(Recruits.organization_id == organization_id,
                                                     Recruits.affiliate_id == affiliate_id).get()
@@ -674,9 +729,11 @@ class RecruitsView(Validator):
         """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
-            raise InputError(status=error_codes.input_error_code, description=message)
+            raise InputError(
+                status=error_codes.input_error_code, description=message)
 
-        recruits_list: List[Recruits] = Recruits.query(Recruits.organization_id == organization_id).fetch()
+        recruits_list: List[Recruits] = Recruits.query(
+            Recruits.organization_id == organization_id).fetch()
         if not recruits_list:
             return jsonify(dict(status=False, message='recruits not found')), status_codes.data_not_found_code
 
@@ -696,16 +753,19 @@ class RecruitsView(Validator):
         """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
-            raise InputError(status=error_codes.input_error_code, description=message)
+            raise InputError(
+                status=error_codes.input_error_code, description=message)
 
         if not (isinstance(is_active, bool)):
             message: str = 'is_active status is required and its boolean'
-            raise InputError(status=error_codes.input_error_code, description=message)
+            raise InputError(
+                status=error_codes.input_error_code, description=message)
 
         recruits_list: List[Recruits] = Recruits.query(Recruits.organization_id == organization_id,
                                                        Recruits.is_active == is_active).fetch()
 
-        message: str = "{} recruits successfully fetched recruits by active status".format(str(len(recruits_list)))
+        message: str = "{} recruits successfully fetched recruits by active status".format(
+            str(len(recruits_list)))
         return jsonify({'status': True,
                         'message': message,
                         'payload': [recruit.to_dict() for recruit in recruits_list]}), status_codes.status_ok_code
@@ -725,16 +785,19 @@ class RecruitsView(Validator):
         """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
-            raise InputError(status=error_codes.input_error_code, description=message)
+            raise InputError(
+                status=error_codes.input_error_code, description=message)
 
         if not (isinstance(is_deleted, bool)):
             message: str = 'is_deleted status is required and is boolean'
-            raise InputError(status=error_codes.input_error_code, description=message)
+            raise InputError(
+                status=error_codes.input_error_code, description=message)
 
         recruits_list: List[Recruits] = Recruits.query(Recruits.organization_id == organization_id,
                                                        Recruits.is_deleted == is_deleted).fetch()
 
-        message: str = "{} recruits successfully fetched recruits by deleted status".format(str(len(recruits_list)))
+        message: str = "{} recruits successfully fetched recruits by deleted status".format(
+            str(len(recruits_list)))
         return jsonify({'status': True,
                         'message': message,
                         'payload': [recruit.to_dict() for recruit in recruits_list]}), status_codes.status_ok_code
@@ -754,19 +817,22 @@ class RecruitsView(Validator):
         affiliate_id: Optional[str] = affiliate_data.get('affiliate_id')
         if not isinstance(affiliate_id, str) or not bool(affiliate_id.strip()):
             message: str = 'affiliate_id is required'
-            raise InputError(status=error_codes.input_error_code, description=message)
+            raise InputError(
+                status=error_codes.input_error_code, description=message)
 
         organization_id: Optional[str] = affiliate_data.get('organization_id')
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
-            raise InputError(status=error_codes.input_error_code, description=message)
+            raise InputError(
+                status=error_codes.input_error_code, description=message)
 
         recruits_list: List[Recruits] = Recruits.query(Recruits.organization_id == organization_id,
                                                        Recruits.affiliate_id == affiliate_id).fetch()
 
         payload: List[dict] = [recruit.to_dict() for recruit in recruits_list]
         if payload:
-            message: str = "{} recruits successfully fetched recruits by active status".format(str(len(recruits_list)))
+            message: str = "{} recruits successfully fetched recruits by active status".format(
+                str(len(recruits_list)))
             return jsonify({'status': True, 'message': message, 'payload': payload}), status_codes.status_ok_code
 
         message: str = "affiliate recruits not found"
@@ -786,16 +852,19 @@ class RecruitsView(Validator):
         affiliate_id: Optional[str] = affiliate_data.get('affiliate_id')
         if not isinstance(affiliate_id, str) or not bool(affiliate_id.strip()):
             message: str = 'affiliate_id is required'
-            raise InputError(status=error_codes.input_error_code, description=message)
+            raise InputError(
+                status=error_codes.input_error_code, description=message)
 
         organization_id: Optional[str] = affiliate_data.get('organization_id')
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
-            raise InputError(status=error_codes.input_error_code, description=message)
+            raise InputError(
+                status=error_codes.input_error_code, description=message)
 
         if not (isinstance(is_active, bool)):
             message: str = 'is_active status is required and can only be a boolean'
-            raise InputError(status=error_codes.input_error_code, description=message)
+            raise InputError(
+                status=error_codes.input_error_code, description=message)
 
         recruits_list: List[Recruits] = Recruits.query(Recruits.organization_id == organization_id,
                                                        Recruits.affiliate_id == affiliate_id,
@@ -829,10 +898,12 @@ class EarningsView(Validator):
         """
         # TODO verify input data
         earnings_instance: EarningsData = EarningsData(**earnings_data)
-        key: Optional[ndb.Key] = earnings_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+        key: Optional[ndb.Key] = earnings_instance.put(
+            retries=self._max_retries, timeout=self._max_timeout)
         if not isinstance(key, ndb.Key):
             message: str = 'Database Error: creating new earnings record'
-            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+            raise DataServiceError(
+                status=error_codes.data_service_error_code, description=message)
 
         message: str = 'successfully created new earnings record'
         return jsonify(dict(status=True,
@@ -845,7 +916,8 @@ class EarningsView(Validator):
         """
         if not isinstance(is_paid, bool):
             message: str = 'is_paid is required and should be boolean'
-            raise InputError(status=error_codes.input_error_code, description=message)
+            raise InputError(
+                status=error_codes.input_error_code, description=message)
 
         earnings_instance: EarningsData = EarningsData.query(
             EarningsData.affiliate_id == earnings_data.get('affiliate_id'),
@@ -853,10 +925,12 @@ class EarningsView(Validator):
         if not (isinstance(earnings_instance, EarningsData) and bool(earnings_instance)):
             return jsonify(dict(status=False, message='earnings data not found')), status_codes.data_not_found_code
         earnings_instance.is_paid = is_paid
-        key: Optional[ndb.Key] = earnings_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+        key: Optional[ndb.Key] = earnings_instance.put(
+            retries=self._max_retries, timeout=self._max_timeout)
         if not isinstance(key, ndb.Key):
             message: str = 'Database Error: updating earnings record'
-            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+            raise DataServiceError(
+                status=error_codes.data_service_error_code, description=message)
 
         message: str = 'successfully updated earnings data'
         return jsonify(dict(status=True,
@@ -870,7 +944,8 @@ class EarningsView(Validator):
         """
         if not isinstance(on_hold, bool):
             message: str = 'on_hold is required and can only be a boolean'
-            raise InputError(status=error_codes.input_error_code, description=message)
+            raise InputError(
+                status=error_codes.input_error_code, description=message)
 
         affiliate_id: Optional[str] = earnings_data.get('affiliate_id')
         organization_id: Optional[str] = earnings_data.get('organization_id')
@@ -881,10 +956,12 @@ class EarningsView(Validator):
         if not (isinstance(earnings_instance, EarningsData) and bool(earnings_instance)):
             return jsonify(dict(status=False, message='earnings data not found')), status_codes.data_not_found_code
         earnings_instance.on_hold = on_hold
-        key: Optional[ndb.Key] = earnings_instance.put(retries=self._max_retries, timeout=self._max_timeout)
+        key: Optional[ndb.Key] = earnings_instance.put(
+            retries=self._max_retries, timeout=self._max_timeout)
         if not isinstance(key, ndb.Key):
             message: str = 'Database Error: updating earnings data'
-            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
+            raise DataServiceError(
+                status=error_codes.data_service_error_code, description=message)
         message: str = 'successfully updated earnings data'
         return jsonify(dict(status=True, payload=earnings_instance.to_dict(),
                             message=message)), status_codes.successfully_updated_code
