@@ -36,14 +36,14 @@ class Validators:
         if self._user_dict and self._user_dict.get('email') == email.lower().strip():
             return self._user_dict.get('uid')
 
-        _url: str = "{}{}".format(self._base_url, self._admin_check_user_endpoint)
+        _url: str = f"{self._base_url}{self._admin_check_user_endpoint}"
         response, _ = requests.post(url=_url, json=json.dumps(dict(email=email)))
         user_instance_dict: dict = response.get_json()
 
         # NOTE: if user is found it means there is a user with this record -
         # then return the uid of this user
         # TODO insure that one user can belong to multiple organizations with a single uid
-        if user_instance_dict['status']:
+        if user_instance_dict.get('status'):
             self._user_dict = user_instance_dict['payload']
             return self._user_dict.get('uid')
 
@@ -61,7 +61,7 @@ class Validators:
         response, _ = requests.post(url=_url, json=json.dumps(dict(uid=_uid)))
         user_instance_dict: dict = response.to_dict()
         # if user not found then this means there is no user with such an ID
-        return _uid if not user_instance_dict['status'] else self.create_unique_id()
+        return _uid if not user_instance_dict.get('status') else self.create_unique_id()
 
 
 def github_auth_get_user(user_details: dict) -> tuple:
