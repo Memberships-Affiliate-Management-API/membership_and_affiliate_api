@@ -30,10 +30,10 @@
    - **[_Affiliates_](_api/public_api/affiliates/Readme.md)**
    - **[_Coupon Codes_](_api/public_api/coupons/readme.md)**
 
-**[Documentations](http://memberships.blueitmarketing.xyz/)**
+**[Documentations](https://membership-api.site)**
 --
-  API detailed [developer documentations](http://memberships.blueitmarketing.xyz/) and 
-  [getting started documentations](http://memberships.blueitmarketing.xyz/)
+  API detailed [developer documentations](https://membership-api.site) and 
+  [getting started documentations](https://membership-api.site)
 
   
 
@@ -53,9 +53,9 @@
 **Links**
 --
    - _On RapidAPI_  coming soon...
-   - _Client Admin Dashboard_ [https://client-dashboard.blueitmarketing.xyz](https://client.blueitmarketing.xyz)
-   - _API EndPoints_ [https://api.blueitmarketing.xyz](https://api.blueitmarketing.xyz)
-   - _Documentations_ [http://memberships.blueitmarketing.xyz/](http://memberships.blueitmarketing.xyz/) 
+   - _Client Admin Dashboard_ [https://dashboard.membership-api.site](https://dashboard.membership-api.site)
+   - _API EndPoints_ [https://api.membership-api.site](https://api.membership-api.site)
+   - _Documentations_ [https://membership-api.site](https://membership-api.site) 
 
 **Maintainers**
 --

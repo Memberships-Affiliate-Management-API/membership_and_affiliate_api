@@ -43,7 +43,7 @@ def return_error(e) -> tuple:
     """
 
     if config_instance.DEBUG:
-
+        print(e.code, e.description)
     return jsonify(dict(status=False, message=e.description)), e.code
 
 
