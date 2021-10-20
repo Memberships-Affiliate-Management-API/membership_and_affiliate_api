@@ -28,7 +28,7 @@
    - **[_Memberships_](_api/public_api/memberships/readme.md)**
    - **[_Wallet_](_api/public_api/wallet/readme.md)**
    - **[_Affiliates_](_api/public_api/affiliates/Readme.md)**
-   - **[_Coupon Codes_](_api/public_api/coupons/readme.md)**
+   - **[_Coupon Codes_](_api/public_api/coupon****s/readme.md)**
 
 **[Documentations](https://membership-api.site)**
 --

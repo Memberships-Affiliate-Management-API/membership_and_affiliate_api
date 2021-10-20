@@ -12,10 +12,12 @@ from threading import Thread
 import json
 import os
 from flask import Response
+
+from cache.cache_manager import app_cache
 from config import config_instance
 from config.use_context import use_context
 from main import create_app
-from utils.utils import is_development, today
+from utils.utils import is_development, today, return_ttl
 from tasks import start_task
 # TODO create separate run files for client api, admin api, and public_api
 app = create_app(config_class=config_instance)
@@ -65,8 +67,10 @@ def main():
 
 
 @app.route('/redoc', methods=['GET', 'POST'])
+@app_cache.cache.memoize(timeout=return_ttl('short'))
 def redoc():
     message: str = f'Redoc Documentation coming soon'
+    print(message)
     return json.dumps(dict(status=True, message=message)), 200
 
 

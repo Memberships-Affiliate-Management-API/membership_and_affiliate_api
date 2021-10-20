@@ -83,7 +83,10 @@ class Config(Singleton):
         self.SECRET_KEY: str = os.environ.get("SECRET_KEY") or config("SECRET_KEY")
         self.DEBUG: bool = False
 
-        self.CACHE_TYPE: str = "simple"
+        self.CACHE_TYPE: str = "redis"
+        self.CACHE_REDIS_HOST: str = os.environ.get("CACHE_REDIS_HOST") or config("CACHE_REDIS_HOST")
+        self.CACHE_REDIS_PORT: str = os.environ.get("CACHE_REDIS_PORT") or config("CACHE_REDIS_PORT")
+        self.CACHE_REDIS_PASSWORD: str = os.environ.get("CACHE_REDIS_PASSWORD") or config("CACHE_REDIS_PASSWORD")
         self.CACHE_DEFAULT_TIMEOUT: int = 60 * 60 * 6
         self.MEM_CACHE_SERVER_URI: str = ""
         self.GOOGLE_APPLICATION_CREDENTIALS: str = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
@@ -135,9 +138,10 @@ class Config(Singleton):
         """
         # TODO : add support for redis cache instead of using simple cache
         return {
-            "CACHE_TYPE": "simple",
-            "CACHE_DEFAULT_TIMEOUT": self.CACHE_DEFAULT_TIMEOUT,
-            "CACHE_KEY_PREFIX": "memberships_cache_"
+            "CACHE_TYPE": self.CACHE_TYPE,
+            "CACHE_REDIS_HOST": self.CACHE_REDIS_HOST,
+            "CACHE_REDIS_PORT": self.CACHE_REDIS_PORT,
+            "CACHE_REDIS_PASSWORD": self.CACHE_REDIS_PASSWORD
         }
 
 
