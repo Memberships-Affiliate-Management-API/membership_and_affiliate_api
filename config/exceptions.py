@@ -74,7 +74,7 @@ class DataServiceError(HTTPException):
     description: str = 'We have a problem connection to the Database'
 
     def __init__(self, status: Optional[int] = None, description: Optional[str] = None):
-        super(DataServiceError, self).__init__(description=description)
+        super().__init__(description=description)
         if bool(description):
             self.description = description
         if bool(status):
@@ -99,7 +99,7 @@ class InputError(Exception):
     description: str = "Unable to process input"
 
     def __init__(self, status: Optional[int] = None, description: Optional[str] = None):
-        super(InputError, self).__init__()
+        super().__init__(description=description)
         if bool(description):
             self.description = description
         if bool(status):
@@ -122,7 +122,7 @@ class UnAuthenticatedError(HTTPException):
     description: str = "You are not authorized to use this resource"
 
     def __init__(self, status: Optional[int] = None, description: Optional[str] = None):
-        super(UnAuthenticatedError, self).__init__(description=description)
+        super().__init__(description=description)
         if bool(description):
             self.description = description
 
@@ -148,7 +148,7 @@ class RequestError(HTTPException):
 
     def __init__(self, status: Optional[int] = None, description: Optional[str] = None,
                  url: Optional[str] = None):
-        super(RequestError, self).__init__(description=description)
+        super().__init__(description=description)
         if bool(description):
             self.description = description
 
@@ -181,7 +181,7 @@ class RemoteDataError(IOError):
 
     def __init__(self, status: Optional[int] = None, description: Optional[str] = None,
                  url: Optional[str] = None):
-        super(RemoteDataError, self).__init__()
+        super().__init__(description=description)
 
         if bool(description):
             self.description = "{} {}".format(description, url)
@@ -209,7 +209,7 @@ class EnvironNotSet(Exception):
 
     def __init__(self, status: Optional[int] = None, description: Optional[str] = None,
                  url: Optional[str] = None):
-        super(EnvironNotSet, self).__init__()
+        super().__init__(description=description)
 
         if bool(description) and bool(url):
             self.description = "{} {}".format(description, url)
