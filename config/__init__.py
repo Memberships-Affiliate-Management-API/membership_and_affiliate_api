@@ -132,8 +132,8 @@ class Config(Singleton):
 
     def cache_dict(self) -> dict:
         """
-            Consider converting the cache to MEM_CACHE Type or Redis
-            preferably host the cache as a docker instance on Cloud Run
+            **cache_dict**
+            returns cache settings
         :return: dict
         """
         # TODO : add support for redis cache instead of using simple cache

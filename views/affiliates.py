@@ -11,7 +11,6 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 
 import typing
 from typing import Optional, List
-
 from flask import current_app, jsonify
 from google.cloud import ndb
 
@@ -449,8 +448,7 @@ class AffiliatesView(Validator):
             Affiliates.organization_id == organization_id, Affiliates.is_active == False,
             Affiliates.is_deleted == False).order(Affiliates.datetime_recruited).fetch()
 
-        payload: List[dict] = [affiliate.to_dict()
-                               for affiliate in affiliates_list]
+        payload: List[dict] = [affiliate.to_dict() for affiliate in affiliates_list]
         if payload:
             message: str = "successfully returned all affiliates"
             return jsonify({'status': True,
