@@ -97,9 +97,9 @@ def org_wallet() -> tuple:
         return wallet_view.update_wallet(wallet_data=json_data)
 
 
-@wallet_bp.route('/api/v1/public/wallet/organization/<path:path>', methods=["GET"])
+@wallet_bp.route('/api/v1/public/wallet/organization/<path:organization_id)>', methods=["GET"])
 @handle_api_auth
-def organization_wallets(path: str) -> tuple:
+def organization_wallets(organization_id: str) -> tuple:
     """
             returns all wallets relating to a specific organization.
             # TODO try and determine if we really need this functionality
@@ -108,4 +108,7 @@ def organization_wallets(path: str) -> tuple:
         :return: response as tuple
 
     """
-    pass
+    return wallet_view.return_all_wallets(organization_id=organization_id)
+        
+    
+
