@@ -3,6 +3,19 @@
 """
 from _api._swagger_api import ViewModel
 from security.api_authenticator import handle_api_auth
+from flask_restful import fields, marshal_with
+from views import wallet_view
+from database.wallet import WalletModel
+
+
+# Wallet Payload Schema
+WalletPayloadSchema = dict(**WalletModel().to_dict())
+
+# Wallet Response Schema
+WalletResponseSchema = dict(
+    status=fields.Boolean(default=False),
+    message=fields.String(),
+    payload=fields.Nested(WalletPayloadSchema))
 
 
 class WalletView(ViewModel):
@@ -16,23 +29,26 @@ class WalletView(ViewModel):
     def __init__(self) -> None:
         super().__init__()
 
-    def get(self):
+    @staticmethod
+    def get(self, organization_id: str, uid: str) -> tuple:
         """
-            fetches an existing wallet using uid
+            eval(wallet_view.get_wallet.__doc__)
         :return:
         """
-        pass
+        return wallet_view.get_wallet(organization_id=organization_id, uid=uid)
 
-    def put(self):
+    @staticmethod
+    def put(self, wallet_dict: dict) -> tuple:
         """
             updates an existing wallet by uid
         :return:
         """
-        pass
+        return wallet_view.update_wallet(wallet_data=wallet_dict)
 
-    def delete(self):
+    @staticmethod
+    def delete(self, organization_id: str, uid: str) -> tuple:
         """
             deletes an existing wallet by uid
         :return:
         """
-        pass
+        return wallet_view.reset_wallet(wallet_data=dict(organization_id=organization_id, uid=uid))
