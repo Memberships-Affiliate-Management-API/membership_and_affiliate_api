@@ -14,12 +14,20 @@ from database.wallet import WalletModel
 
 
 class AmountSchema(Schema):
+    """
+        ** Class AmountSchema **
+
+    """
     amount_cents = fields.Integer(default=0)
     currency: str = fields.String()
 
 
 # Wallet Payload Schema
 class WalletPayloadSchema(Schema):
+    """
+        **Class WalletPayloadSchema**
+            a schema for payload
+    """
     organization_id: str = fields.String()
     uid: str = fields.String()
     wallet_id: str = fields.String()
@@ -33,10 +41,15 @@ class WalletPayloadSchema(Schema):
 
 
 # Wallet Response Schema
-WalletResponseSchema = dict(
-    status=fields.Boolean(default=False),
-    message=fields.String(),
-    payload=fields.Nested(WalletPayloadSchema))
+class WalletResponseSchema(Schema):
+    """
+        **WalletResponseSchema**
+            a schema for wallet responses
+    """
+    status = fields.Boolean(default=False)
+    message = fields.String()
+    payload = fields.Nested(WalletPayloadSchema)
+
 
 # TODO add request Schema
 
