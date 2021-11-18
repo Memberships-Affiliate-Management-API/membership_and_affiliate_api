@@ -349,6 +349,7 @@ class AffiliateSettingsStats(BaseModel):
     total_affiliates_earnings: AmountMixin = ndb.StructuredProperty(AmountMixin)
     total_affiliates: int = ndb.IntegerProperty(default=0, validator=property_.set_number)
 
+
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
             return False
@@ -368,3 +369,5 @@ class AffiliateSettingsStats(BaseModel):
     def __bool__(self) -> bool:
         # return True if self.earnings_percent is not None else False
         return bool(self.earnings_percent) and bool(self.organization_id)
+
+    

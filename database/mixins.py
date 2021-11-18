@@ -125,6 +125,24 @@ class AddressMixin(BaseModel):
     state: str = ndb.StringProperty(default=None, validator=property_.set_string)
     country: str = ndb.StringProperty(default=None, validator=property_.set_string)
 
+
+    @property
+    def address_line(self) -> str:
+        return "{} {} {} {} {} {}".format(self.line_1, self.city, self.zip_code,
+                                          self.province, self.state, self.country)
+
+    @property
+    def address_dict(self) -> dict:
+        return {
+            "line_1": self.line_1,
+            "city": self.city,
+            "zip_code": self.zip_code,
+            "province": self.province,
+            "state": self.state,
+            "country": self.country
+        }
+
+
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
             return False
