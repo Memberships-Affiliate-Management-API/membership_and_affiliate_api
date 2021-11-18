@@ -1,6 +1,10 @@
+"""
+    BaseModels for Swagger based restful api
+"""
 
 from flask_apispec import MethodResource
 from flask_restful import Resource
+
 
 class ViewModel(MethodResource, Resource):
     """
@@ -14,7 +18,7 @@ class ViewModel(MethodResource, Resource):
         Constructor
         """
         super().__init__()
-    
+
 
 class ListViewModel(MethodResource, Resource):
     """
@@ -28,5 +32,3 @@ class ListViewModel(MethodResource, Resource):
         Constructor
         """
         super().__init__()
-
-
