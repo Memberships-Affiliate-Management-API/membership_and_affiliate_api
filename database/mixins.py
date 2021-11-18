@@ -85,6 +85,21 @@ class UserMixin(BaseModel):
     email: str = ndb.StringProperty(validator=property_.set_email)
     password: str = ndb.StringProperty(validator=property_.set_password)
 
+
+    def verify_login(self, password: str, email: str) -> bool:
+        """
+        **Method verify_login**
+            Verify the user password
+
+        **Parameters**
+            1. password: String -> User Password
+
+        **Returns**
+            Boolean -> True if password matches else False
+        """
+        return self.email == email and self.password == password
+    
+
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
             return False
