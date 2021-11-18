@@ -1,5 +1,5 @@
 aiodns==3.0.0
-aiohttp
+aiohttp~=3.7.4.post0
 astroid==2.7.3
 async-timeout==3.0.1
 atomicwrites==1.4.0
@@ -90,3 +90,5 @@ urllib3==1.26.6
 Werkzeug==1.0.1
 wrapt==1.12.1
 yarl==1.6.3
+marshmallow~=3.14.1
+pytest~=6.2.4
