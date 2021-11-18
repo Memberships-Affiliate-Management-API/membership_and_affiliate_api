@@ -42,7 +42,7 @@ def wallet() -> tuple:
 
         return wallet_view.get_wallet(organization_id=organization_id, uid=uid)
 
-    elif request.method == "POST":
+    if request.method == "POST":
 
         uid: str = json_data.get('uid')
         organization_id: str = json_data.get('organization_id')
@@ -53,13 +53,13 @@ def wallet() -> tuple:
                                          uid=uid,
                                          currency=currency,
                                          paypal_address=paypal_address)
-    elif request.method == "PUT":
+    if request.method == "PUT":
         return wallet_view.update_wallet(wallet_data=json_data)
 
-    elif request.method == "DELETE":
+    if request.method == "DELETE":
         return wallet_view.reset_wallet(wallet_data=json_data)
-    else:
-        return jsonify({'status': False, 'message': 'Unable to process this request please check your parameters'}), 500
+    
+    return jsonify({'status': False, 'message': 'Unable to process this request please check your parameters'}), 500
 
 
 @wallet_bp.route('/api/v1/public/wallet/organization', methods=["GET", "POST", "DELETE", "PUT"])
@@ -80,7 +80,7 @@ def org_wallet() -> tuple:
 
         return wallet_view.get_wallet(organization_id=organization_id, uid=uid)
 
-    elif request.method == "POST":
+    if request.method == "POST":
         # Creating organizational Wallet
         uid: str = json_data.get('uid')
         organization_id: str = json_data.get('organization_id')
@@ -92,9 +92,11 @@ def org_wallet() -> tuple:
                                          currency=currency,
                                          paypal_address=paypal_address,
                                          is_org_wallet=True)
-    elif request.method == "PUT":
+    if request.method == "PUT":
         # NOTE: Updating organization Wallet
         return wallet_view.update_wallet(wallet_data=json_data)
+    
+    return jsonify({'status': False, 'message': 'Unable to process this request please check your parameters'}), 500
 
 
 @wallet_bp.route('/api/v1/public/wallet/organization/<path:organization_id)>', methods=["GET"])

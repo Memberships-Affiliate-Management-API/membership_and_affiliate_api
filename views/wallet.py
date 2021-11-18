@@ -28,7 +28,7 @@ class WalletEmails(Mailgun):
     """
 
     def __init__(self) -> None:
-        super(WalletEmails, self).__init__()
+        super().__init__()
 
     def send_balance_changed_notification(self, wallet_instance: WalletModel, organization_id: str, uid: str) -> None:
         """
@@ -170,7 +170,7 @@ class Validator(WalletValidator):
     """
 
     def __init__(self) -> None:
-        super(Validator, self).__init__()
+        super().__init__()
         self._max_retries: int = current_app.config.get('DATASTORE_RETRIES')
         self._max_timeout: int = current_app.config.get('DATASTORE_TIMEOUT')
 
@@ -352,7 +352,7 @@ class WalletView(Validator, WalletEmails):
     """
 
     def __init__(self) -> None:
-        super(WalletView, self).__init__()
+        super().__init__()
 
     @use_context
     @handle_view_errors
@@ -406,12 +406,14 @@ class WalletView(Validator, WalletEmails):
         """
         **create_wallet_async**
             asynchronous version of create_wallet
-        :param organization_id:
-        :param uid:
-        :param currency:
-        :param paypal_address:
-        :param is_org_wallet:
-        :return:
+
+            :param organization_id:
+            :param uid:
+            :param currency:
+            :param paypal_address:
+            :param is_org_wallet:
+            
+        :return: tuple with created wallet_instance
         """
 
         # NOTE: no need to check if organization_id and uid are available
@@ -437,9 +439,8 @@ class WalletView(Validator, WalletEmails):
 
         # Sending an email notification to the user informing them that the wallet has been created successfully
         kwargs: dict = dict(wallet_instance=wallet_instance, organization_id=organization_id, uid=uid)
-        self._base_email_scheduler(func=self.wallet_created_successfully, kwargs=kwargs)
-        return jsonify(dict(status=True,
-                            payload=wallet_instance.to_dict(),
+        self._base_email_scheduler(func=self.wallet_created_successfully, kwargs=kwargs)        
+        return jsonify(dict(status=True, payload=wallet_instance.to_dict(),
                             message='Successfully Created Wallet')), status_codes.successfully_updated_code
 
     @use_context
@@ -448,10 +449,11 @@ class WalletView(Validator, WalletEmails):
     def get_wallet(self, organization_id: Optional[str], uid: Optional[str]) -> tuple:
         """
             **get_wallet**
-                # TODO - may need to update cache or find a way to update cache when there are updates
+                # TODO- may need to update cache or find a way to update cache when there are updates
                 # this could mean that the old method of having a separate cache for every module may be useful here
 
                 returns a specific wallet from database
+
         :param organization_id:
         :param uid:
         :return:
@@ -475,6 +477,7 @@ class WalletView(Validator, WalletEmails):
         """
             **get_wallet_async**
                 get_wallet_async an asynchronous version of get_wallet
+
         :param organization_id:
         :param uid:
         :return:
@@ -497,6 +500,7 @@ class WalletView(Validator, WalletEmails):
         """
             **update_wallet**
                 lets user or system update wallet
+
         :param wallet_data:
         :return:
         """
@@ -533,7 +537,7 @@ class WalletView(Validator, WalletEmails):
 
         # No need to test for wallet availability as can update returned True
         amount_instance: AmountMixin = AmountMixin(amount_cents=available_funds, currency=currency)
-        wallet_instance.available_funds = amount_instance
+        wallet_instance.available_funds = amount_instance        
         wallet_instance.paypal_address = paypal_address
         key: Optional[ndb.Key] = wallet_instance.put(retries=self._max_retries, timeout=self._max_timeout)
         if not isinstance(key, ndb.Key):
