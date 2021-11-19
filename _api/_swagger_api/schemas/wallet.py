@@ -1,7 +1,7 @@
 """
     **Wallet Schemas**
 """
-
+import required
 from marshmallow import Schema, fields
 from datetime import datetime
 from _api._swagger_api.schemas.amount import AmountSchema
@@ -13,9 +13,9 @@ class WalletPayloadSchema(Schema):
         **Class WalletPayloadSchema**
             a schema for payload
     """
-    organization_id: str = fields.String()
-    uid: str = fields.String()
-    wallet_id: str = fields.String()
+    organization_id: str = fields.String(required=True)
+    uid: str = fields.String(required=True)
+    wallet_id: str = fields.String(required=True)
     is_org_wallet: bool = fields.Boolean(default=False)
     available_funds = fields.Nested(AmountSchema)
     monthly_withdrawal_allowance = fields.Nested(AmountSchema)

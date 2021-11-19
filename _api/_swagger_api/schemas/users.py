@@ -12,12 +12,12 @@ class UserPayloadSchema(Schema):
     """
         Payload Schema for Users
     """
-    organization_id: str = fields.String()
-    uid: str = fields.String()
+    organization_id: str = fields.String(required=True)
+    uid: str = fields.String(required=True)
     names: str = fields.String()
     surname: str = fields.String()
     cell: str = fields.String()
-    email: str = fields.String()
+    email: str = fields.String(required=True)
     email_verified: bool = fields.Boolean(default=False)
     password: str = fields.String()
     is_active: bool = fields.Boolean(default=True)
