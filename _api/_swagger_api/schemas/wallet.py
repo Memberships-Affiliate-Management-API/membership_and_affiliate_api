@@ -2,19 +2,9 @@
     **Wallet Schemas**
 """
 
-from flask_restful import fields, marshal_with
 from marshmallow import Schema, fields
 from datetime import datetime
-
-
-
-class AmountSchema(Schema):
-    """
-        ** Class AmountSchema **
-
-    """
-    amount_cents = fields.Integer(default=0)
-    currency: str = fields.String()
+from _api._swagger_api.schemas.amount import AmountSchema
 
 
 # Wallet Payload Schema
