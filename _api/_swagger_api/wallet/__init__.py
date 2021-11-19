@@ -5,10 +5,10 @@ from datetime import datetime
 from flask_apispec import doc
 from _api._swagger_api import ViewModel
 from security.api_authenticator import handle_api_auth
-from flask_restful import fields, marshal_with
-from marshmallow import Schema, fields
+from flask_restful import  marshal_with
 from views import wallet_view
-from database.wallet import WalletModel
+from _api._swagger_api.schemas.wallet import WalletPayloadSchema, WalletResponseSchema
+
 
 
 # TODO add request Schema
@@ -26,7 +26,7 @@ class WalletView(ViewModel):
         super().__init__()
 
     @staticmethod
-    @doc(description=wallet_view.get_wallet.__doc__)
+    @doc(description=wallet_view.get_wallet.__doc__())
     @marshal_with(WalletResponseSchema)
     def get(organization_id: str, uid: str) -> tuple:
         """
@@ -36,7 +36,7 @@ class WalletView(ViewModel):
         return wallet_view.get_wallet(organization_id=organization_id, uid=uid)
 
     @staticmethod
-    @doc(description=wallet_view.update_wallet.__doc__)
+    @doc(description=wallet_view.update_wallet.__doc__())
     @marshal_with(WalletResponseSchema)
     def put(wallet_dict: dict) -> tuple:
         """
@@ -46,7 +46,7 @@ class WalletView(ViewModel):
         return wallet_view.update_wallet(wallet_data=wallet_dict)
 
     @staticmethod
-    @doc(description=wallet_view.reset_wallet.__doc__)
+    @doc(description=wallet_view.reset_wallet.__doc__())
     @marshal_with(WalletResponseSchema)
     def delete(organization_id: str, uid: str) -> tuple:
         """

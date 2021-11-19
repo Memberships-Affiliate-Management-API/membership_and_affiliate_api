@@ -456,7 +456,7 @@ class WalletView(Validator, WalletEmails):
 
         :param organization_id:
         :param uid:
-        :return:
+        :return: tuple
         """
         self.raise_input_error_if_not_available(organization_id=organization_id, uid=uid)
 
