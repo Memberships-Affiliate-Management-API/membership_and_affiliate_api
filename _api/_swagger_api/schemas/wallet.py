@@ -46,3 +46,10 @@ class WalletResponseSchema(Schema):
     payload = fields.Nested(WalletPayloadSchema)
 
 
+class WalletListResponseSchema(Schema):
+    """
+        a schema for returning list of wallets
+    """
+    status = fields.Boolean(default=False)
+    message = fields.String()
+    payload = fields.List(WalletPayloadSchema)
