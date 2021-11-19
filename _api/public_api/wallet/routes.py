@@ -99,13 +99,15 @@ def org_wallet() -> tuple:
     return jsonify({'status': False, 'message': 'Unable to process this request please check your parameters'}), 500
 
 
-@wallet_bp.route('/api/v1/public/wallet/organization/<path:organization_id)>', methods=["GET"])
+@wallet_bp.route('/api/v1/public/wallet/organization/<string:organization_id>', methods=["GET"])
 @handle_api_auth
 def organization_wallets(organization_id: str) -> tuple:
     """
+    **organization_wallets**
             returns all wallets relating to a specific organization.
             # TODO try and determine if we really need this functionality
 
+        :param organization_id: the id of the organization from which the wallets will be obtained
         :param path: organization_id for the organization to fetch wallets from
         :return: response as tuple
 

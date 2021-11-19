@@ -38,7 +38,7 @@ class ServiceValidator(OrgValidators, AuthUserValidators, UserValidators):
 
     """
     def __init__(self):
-        super(ServiceValidator, self).__init__()
+        super().__init__()
 
     @staticmethod
     @handle_store_errors
