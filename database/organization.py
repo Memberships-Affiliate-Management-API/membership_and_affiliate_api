@@ -94,6 +94,12 @@ class Organization(BaseModel):
     login_callback_url: str = ndb.StringProperty(validator=property_.set_domain)
     recovery_callback_url: str = ndb.StringProperty(validator=property_.set_domain)
 
+
+    @ndb.model.ComputedProperty
+    def balance(self) -> AmountMixin:
+        amount = self.total_membership_payments.amount_cents - self.total_paid.amount_cents
+        return AmountMixin(amount=amount, currency=self.total_paid.currency)
+
     def __str__(self) -> str:
         return "<Organization organization_id: {}, owner_uid: {}, wallet_id: {}, Name: {} Description: {} " \
                "Affiliates: {} Members: {}".format(self.organization_id, self.owner_uid, self.wallet_id,
@@ -110,10 +116,6 @@ class Organization(BaseModel):
     def __bool__(self) -> bool:
         return bool(self.organization_id) and bool(self.owner_uid) and bool(self.wallet_id)
 
-    @ndb.model.ComputedProperty
-    def balance(self) -> AmountMixin:
-        amount = self.total_membership_payments.amount_cents - self.total_paid.amount_cents
-        return AmountMixin(amount=amount, currency=self.total_paid.currency)
 
 
 class AuthUserValidators:
@@ -122,7 +124,7 @@ class AuthUserValidators:
             Used to validate users and input data for those accessing the Users View / API
     """
     def __init__(self) -> None:
-        pass
+        super().__init__()
 
     @staticmethod
     @handle_store_errors
