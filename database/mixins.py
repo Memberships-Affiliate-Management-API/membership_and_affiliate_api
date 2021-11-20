@@ -85,7 +85,6 @@ class UserMixin(BaseModel):
     email: str = ndb.StringProperty(validator=property_.set_email)
     password: str = ndb.StringProperty(validator=property_.set_password)
 
-
     def verify_login(self, password: str, email: str) -> bool:
         """
         **Method verify_login**
@@ -98,7 +97,6 @@ class UserMixin(BaseModel):
             Boolean -> True if password matches else False
         """
         return self.email == email and self.password == password
-    
 
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
@@ -140,7 +138,6 @@ class AddressMixin(BaseModel):
     state: str = ndb.StringProperty(default=None, validator=property_.set_string)
     country: str = ndb.StringProperty(default=None, validator=property_.set_string)
 
-
     @property
     def address_line(self) -> str:
         return "{} {} {} {} {} {}".format(self.line_1, self.city, self.zip_code,
@@ -156,7 +153,6 @@ class AddressMixin(BaseModel):
             "state": self.state,
             "country": self.country
         }
-
 
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
@@ -177,4 +173,3 @@ class AddressMixin(BaseModel):
 
     def __bool__(self) -> bool:
         return bool(self.line_1)
-
