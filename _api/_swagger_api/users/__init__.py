@@ -2,7 +2,7 @@ from __future__ import annotations
 from flask_apispec import doc, marshal_with
 
 from _api._swagger_api import ViewModel
-from _api._swagger_api.schemas.users import UserResponseSchema
+from _api._swagger_api.schemas.users import UserResponseSchema, UsersListResponseSchema
 from security.api_authenticator import handle_api_auth
 from views import user_view
 
@@ -107,3 +107,24 @@ class AuthViewModel(ViewModel):
         """
         return user_view.login(organization_id=organization_id, email=email, password=password)
 
+
+class UserListView(ViewModel):
+    """
+        **UserListView**
+            allows admins to access a list of users
+    """
+
+    def __init__(self):
+        super().__init__()
+
+    @staticmethod
+    @doc(description=user_view.get_all_users.__doc__)
+    @marshal_with(schema=UsersListResponseSchema)
+    def get(organization_id: str, uid: str):
+        """
+
+        :param organization_id: organization_id of the admin
+        :param uid:  user id of the admin users
+        :return: tuple
+        """
+        return user_view.get_all_users(organization_id=organization_id)
