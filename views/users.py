@@ -511,14 +511,14 @@ class UserView(Validators, UserEmails):
         """
                 update user details all fields are required -
                 if the purpose is to update only one of the fields use one of the specialized methods
-            :param organization_id:
-            :param uid:
-            :param names:
-            :param surname:
-            :param cell:
-            :param email:
-            :param is_admin:
-            :param is_support:
+            :param organization_id: the id of the organization the user belongs token
+            :param uid: user id
+            :param names: name of user
+            :param surname: surname of user
+            :param cell: cell
+            :param email: email
+            :param is_admin: if admin user True
+            :param is_support: if support user True
         :return:
         """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):

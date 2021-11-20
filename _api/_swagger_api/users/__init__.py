@@ -1,3 +1,5 @@
+
+from __future__ import annotations
 from flask_apispec import doc, marshal_with
 
 from _api._swagger_api import ViewModel
@@ -15,7 +17,7 @@ class UserViewModel(ViewModel):
 
     @staticmethod
     @doc(description=user_view.add_user.__doc__)
-    @marshal_with(UserResponseSchema)
+    @marshal_with(schema=UserResponseSchema)
     def get(organization_id: str, uid: str) -> tuple:
         """
             returns a user with a matching organization_id and uid
@@ -27,7 +29,7 @@ class UserViewModel(ViewModel):
 
     @staticmethod
     @doc(description=user_view.add_user.__doc__)
-    @marshal_with(UserResponseSchema)
+    @marshal_with(schema=UserResponseSchema)
     def post(user_data: dict) -> tuple:
         """
             fetches a single user by organization_id and uid
@@ -44,4 +46,27 @@ class UserViewModel(ViewModel):
 
         return user_view.add_user(organization_id=organization_id, uid=uid, names=names, surname=surname, cell=cell,
                                   email=email, password=password)
+
+    @staticmethod
+    @doc(description=user_view.update_user.__doc__)
+    @marshal_with(schema=UserResponseSchema)
+    def put(user_data: dict) -> tuple:
+        """
+            **updates**
+                provided the user already exists update the user
+        :param user_data:
+        :return: tuple
+        """
+        organization_id: str = user_data.get('organization_id')
+        names: str = user_data.get('names')
+        surname: str = user_data.get('surname')
+        cell: str = user_data.get('cell')
+        email: str = user_data.get('email')
+        password: str = user_data.get('password')
+        uid: str = user_data.get('uid')
+        is_admin: bool = user_data.get('is_admin')
+        is_support: bool = user_data.get('is_support')
+
+        return user_view.update_user(organization_id=organization_id, uid=uid, names=names, surname=surname, cell=cell,
+                                     email=email, is_admin=is_admin, is_support=is_support)
 
