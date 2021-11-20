@@ -1,7 +1,6 @@
 """
     **Users Schema Classes**
 """
-from lxml.html._diffcommand import description
 from marshmallow import Schema, fields
 from datetime import datetime, date
 
@@ -33,13 +32,13 @@ class UserResponseSchema(Schema):
     """
         Response Schema for users
     """
-    status: bool = fields.Boolean(default=False)
-    message: str = fields.String()
-    payload = fields.Nested(UserPayloadSchema)
+    status: bool = fields.Boolean(default=False, description='final status of request, True if successful')
+    message: str = fields.String(description='message describing the results of the request')
+    payload = fields.Nested(UserPayloadSchema, description='The Actual payload contained in the response object')
 
 
 class UsersListResponseSchema(UserResponseSchema):
     """
         List of Users Response Schema
     """
-    payload = fields.List(UserPayloadSchema)
+    payload = fields.List(UserPayloadSchema, description='The Actual payload contained in the response object')
