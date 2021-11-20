@@ -1,8 +1,7 @@
 """
     Swagger Compatible API for wallet
 """
-from flask_apispec import doc
-from flask_restful import marshal_with
+from flask_apispec import doc, marshal_with
 from _api._swagger_api import ViewModel
 from _api._swagger_api.schemas.wallet import WalletResponseSchema, WalletListResponseSchema
 from security.api_authenticator import handle_api_auth
