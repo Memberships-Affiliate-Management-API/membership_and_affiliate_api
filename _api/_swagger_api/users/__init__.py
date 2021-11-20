@@ -82,14 +82,14 @@ class AuthViewModel(ViewModel):
 
     @staticmethod
     @doc(description=user_view.logout.__doc__)
-    def get(self, organization_id: str, uid: str, token: str):
+    def get(organization_id: str, uid: str, token: str):
         """
-
-        :param self:
-        :param organization_id:
-        :param uid:
-        :param token:
-        :return:
+            **signout user**
+                will sign out the user through token invalidation
+        :param organization_id: the organization id the user is registered on
+        :param uid: the user id of the signed in user
+        :param token: valid authentication token
+        :return: tuple
         """
         return user_view.logout(organization_id=organization_id, uid=uid, token=token)
 
