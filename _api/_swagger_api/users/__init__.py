@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 from flask_apispec import doc, marshal_with
 
@@ -69,4 +68,26 @@ class UserViewModel(ViewModel):
 
         return user_view.update_user(organization_id=organization_id, uid=uid, names=names, surname=surname, cell=cell,
                                      email=email, is_admin=is_admin, is_support=is_support)
+
+
+class AuthViewModel(ViewModel):
+    """
+        an endpoint for handling user authentication
+    """
+    def __init__(self) -> None:
+        super().__init__()
+
+    @staticmethod
+    @doc(description=user_view.login.__doc__)
+    @marshal_with(schema=UserResponseSchema)
+    def post(organization_id: str, email: str, password: str) -> tuple:
+        """
+            **user login**
+                will login a user into his or her account
+            :param organization_id: the organization_id of the organization the user is registered in
+            :param email: the email attached to the account
+            :param password: password for the account
+            :return: tuple containing results
+        """
+        return user_view.login(organization_id=organization_id, email=email, password=password)
 
