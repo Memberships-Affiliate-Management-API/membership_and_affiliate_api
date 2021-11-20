@@ -1355,6 +1355,7 @@ class UserView(Validators, UserEmails):
 
         if check_password_hash(user_model.password, password):
             token = encode_auth_token(uid=user_model.uid)
+            # TODO check if token has not been manually signed out through cache
             payload: dict = dict(token=token, user=user_model.to_dict())
             return jsonify(dict(status=True,
                                 payload=payload,
@@ -1362,6 +1363,20 @@ class UserView(Validators, UserEmails):
 
         message: str = f'login was not successful please check your email: {email} or password'
         return jsonify(dict(message=message)), error_codes.un_auth_error_code
+
+    @use_context
+    @handle_view_errors
+    def logout(self, organization_id: str, uid: str, token: str) -> tuple:
+        """
+            **logout**
+                will logout the user
+        :param organization_id:
+        :param uid:
+        :param token:
+        :return:
+        """
+        # TODO add token by uid in manually signed out tokens
+        pass
 
     @use_context
     @handle_view_errors

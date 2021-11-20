@@ -74,8 +74,24 @@ class AuthViewModel(ViewModel):
     """
         an endpoint for handling user authentication
     """
+    methods = ['GET', 'POST', 'PUT']
+    method_decorators = [handle_api_auth]
+
     def __init__(self) -> None:
         super().__init__()
+
+    @staticmethod
+    @doc(description=user_view.logout.__doc__)
+    def get(self, organization_id: str, uid: str, token: str):
+        """
+
+        :param self:
+        :param organization_id:
+        :param uid:
+        :param token:
+        :return:
+        """
+        return user_view.logout(organization_id=organization_id, uid=uid, token=token)
 
     @staticmethod
     @doc(description=user_view.login.__doc__)
