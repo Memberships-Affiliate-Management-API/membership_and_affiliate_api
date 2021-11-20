@@ -4,7 +4,7 @@
 import required
 from marshmallow import Schema, fields
 from datetime import datetime
-from _api._swagger_api.schemas.amount import AmountSchema
+from _swagger_api.schemas.amount import AmountSchema
 
 
 # Wallet Payload Schema

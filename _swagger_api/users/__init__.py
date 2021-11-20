@@ -1,8 +1,8 @@
 from __future__ import annotations
 from flask_apispec import doc, marshal_with
 
-from _api._swagger_api import ViewModel
-from _api._swagger_api.schemas.users import UserResponseSchema, UsersListResponseSchema
+from _swagger_api import ViewModel
+from _swagger_api.schemas.users import UserResponseSchema, UsersListResponseSchema
 from security.api_authenticator import handle_api_auth
 from views import user_view
 
