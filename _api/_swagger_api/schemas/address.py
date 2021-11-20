@@ -3,7 +3,7 @@ from marshmallow import Schema, fields
 
 class AddressSchema(Schema):
     """
-
+            **Class AddressSchema**
     """
     organization_id: str = fields.String(required=True)
     uid: str = fields.String(required=True)
