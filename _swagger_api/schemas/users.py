@@ -16,7 +16,7 @@ class UserPayloadSchema(Schema):
     names: str = fields.String(description='name of user')
     surname: str = fields.String(description='surname of user')
     cell: str = fields.String(description='cell phone number of user')
-    email: str = fields.String(required=True, description='email address of user')
+    email: str = fields.Email(required=True, description='email address of user')
     email_verified: bool = fields.Boolean(default=False, description='if email is verified this should be True')
     password: str = fields.String(description='user password')
     is_active: bool = fields.Boolean(default=True, description='if user is active this will be true')
@@ -41,4 +41,6 @@ class UsersListResponseSchema(UserResponseSchema):
     """
         List of Users Response Schema
     """
-    payload = fields.List(UserPayloadSchema, description='The Actual payload contained in the response object')
+    payload = fields.List(fields.Nested(UserPayloadSchema),
+                          description='The Actual payload contained in the response object')
+
