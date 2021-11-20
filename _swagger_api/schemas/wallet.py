@@ -1,8 +1,6 @@
 """
     **Wallet Schemas**
 """
-import required
-from lxml.html._diffcommand import description
 from marshmallow import Schema, fields
 from datetime import datetime
 from _swagger_api.schemas.amount import AmountSchema
