@@ -136,7 +136,8 @@ def test_create_api_key_raises(mocker) -> None:
     mocker.stopall()
 
 
-def test_api_keys_validators() -> None:
+# noinspection PyShadowingNames
+def test_api_keys_validators(mocker) -> None:
     """
     **test_api_keys_validators**
         testing api keys validators
@@ -147,8 +148,8 @@ def test_api_keys_validators() -> None:
             with raises(InputError):
                 api_keys_view.organization_exist(organization_id="")
 
-            with raises(DataServiceError):
-                api_keys_view.organization_exist(organization_id=config_instance.ORGANIZATION_ID)
+            assert not api_keys_view.organization_exist(organization_id=config_instance.ORGANIZATION_ID), \
+                'Organization exist error'
 
             with raises(InputError):
                 api_keys_view.user_can_create_key(uid="", organization_id=config_instance.ORGANIZATION_ID)
