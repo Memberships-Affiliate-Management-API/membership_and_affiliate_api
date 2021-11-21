@@ -114,20 +114,16 @@ def handle_apps_authentication(func: Callable) -> Callable:
         domain: Optional[str] = json_data.get('domain')
         secret_key: Optional[str] = json_data.get('SECRET_KEY')
         auth_token: Optional[str] = json_data.get('app_token')
-        # print(f"Domain: {domain}, Secret_key: {secret_key}, Auth_token: {auth_token}")
         if domain is None:
-            # print(f'domain is Null: {domain}')
             message: str = "request not authorized"
             raise UnAuthenticatedError(
                 status=error_codes.un_auth_error_code, description=message)
         if secret_key is None:
-            # print(f'secret_key is Null: {secret_key}')
             message: str = "request not authorized"
             raise UnAuthenticatedError(
                 status=error_codes.un_auth_error_code, description=message)
 
         if auth_token is None:
-            # print(f'auth_token is Null: {auth_token}')
             message: str = "request not authorized"
             raise UnAuthenticatedError(
                 status=error_codes.un_auth_error_code, description=message)

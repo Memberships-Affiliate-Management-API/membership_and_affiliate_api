@@ -1,5 +1,4 @@
-
-
+# noinspection DuplicatedCode
 def register_v1_api(app):
     # user facing or public facing api's
     from _api.public_api.affiliates.routes import affiliates_bp

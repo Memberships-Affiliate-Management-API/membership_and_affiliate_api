@@ -11,7 +11,7 @@ __licence__ = "MIT"
 from threading import Thread
 import json
 import os
-from flask import Response
+from flask import Response, redirect
 
 from cache.cache_manager import app_cache
 from config import config_instance
@@ -69,9 +69,8 @@ def main():
 @app.route('/redoc', methods=['GET', 'POST'])
 @app_cache.cache.memoize(timeout=return_ttl('short'))
 def redoc():
-    message: str = f'Redoc Documentation coming soon'
-    print(message)
-    return json.dumps(dict(status=True, message=message)), 200
+    """this will display swagger documentation instead"""
+    return redirect('/api-ui'), 302
 
 
 @app.route('/warm-up', methods=['GET', 'POST'])

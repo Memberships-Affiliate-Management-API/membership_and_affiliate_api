@@ -8,6 +8,7 @@ docs = FlaskApiSpec()
 
 def register_v2_api(app):
     """
+        this function only adds version 2 of the public facing API
         register v2 swagger compatible api here
     :param app:
     :return:
