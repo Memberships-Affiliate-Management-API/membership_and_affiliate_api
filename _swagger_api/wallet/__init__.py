@@ -1,9 +1,9 @@
 """
     Swagger Compatible API for wallet
 """
-from flask_apispec import doc, marshal_with
-from _api._swagger_api import ViewModel
-from _api._swagger_api.schemas.wallet import WalletResponseSchema, WalletListResponseSchema
+from flask_apispec import doc, marshal_with, use_kwargs
+from _swagger_api import ViewModel
+from _swagger_api.schemas.wallet import WalletResponseSchema, WalletListResponseSchema, WalletRequestSchema
 from security.api_authenticator import handle_api_auth
 from views import wallet_view
 
@@ -35,26 +35,28 @@ class WalletView(ViewModel):
     @staticmethod
     @doc(description=wallet_view.update_wallet.__doc__)
     @marshal_with(WalletResponseSchema)
-    def put(wallet_dict: dict) -> tuple:
+    @use_kwargs(WalletRequestSchema, location='json')
+    def put(payload: dict) -> tuple:
         """
             updates an existing wallet by uid
         :return:
         """
-        return wallet_view.update_wallet(wallet_data=wallet_dict)
+        return wallet_view.update_wallet(wallet_data=payload)
 
     @staticmethod
     @doc(description=wallet_view.create_wallet.__doc__)
     @marshal_with(WalletResponseSchema)
-    def post(wallet_dict: dict) -> tuple:
+    @use_kwargs(WalletRequestSchema, location='json')
+    def post(payload: dict) -> tuple:
         """
         **Create User Wallet**
             create new user wallet
         :return:
         """
-        organization_id: str = wallet_dict.get('organization_id')
-        uid: str = wallet_dict.get('uid')
-        currency: str = wallet_dict.get('currency')
-        paypal_address: str = wallet_dict.get('paypal_address')
+        organization_id: str = payload.get('organization_id')
+        uid: str = payload.get('uid')
+        currency: str = payload.get('currency')
+        paypal_address: str = payload.get('paypal_address')
 
         return wallet_view.create_wallet(organization_id=organization_id,
                                          uid=uid,

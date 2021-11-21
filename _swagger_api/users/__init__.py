@@ -1,8 +1,8 @@
 from __future__ import annotations
-from flask_apispec import doc, marshal_with
+from flask_apispec import doc, marshal_with, use_kwargs
 
 from _swagger_api import ViewModel
-from _swagger_api.schemas.users import UserResponseSchema, UsersListResponseSchema
+from _swagger_api.schemas.users import UserResponseSchema, UsersListResponseSchema, UserRequestSchema
 from security.api_authenticator import handle_api_auth
 from views import user_view
 
@@ -29,19 +29,20 @@ class UserViewModel(ViewModel):
     @staticmethod
     @doc(description=user_view.add_user.__doc__)
     @marshal_with(schema=UserResponseSchema)
-    def post(user_data: dict) -> tuple:
+    @use_kwargs(UserRequestSchema)
+    def post(payload: dict) -> tuple:
         """
             fetches a single user by organization_id and uid
-        :param user_data: a dictionary containing user data
+        :param payload: a dictionary containing user data
         :return: user
         """
-        organization_id: str = user_data.get('organization_id')
-        names: str = user_data.get('names')
-        surname: str = user_data.get('surname')
-        cell: str = user_data.get('cell')
-        email: str = user_data.get('email')
-        password: str = user_data.get('password')
-        uid: str = user_data.get('uid')
+        organization_id: str = payload.get('organization_id')
+        names: str = payload.get('names')
+        surname: str = payload.get('surname')
+        cell: str = payload.get('cell')
+        email: str = payload.get('email')
+        password: str = payload.get('password')
+        uid: str = payload.get('uid')
 
         return user_view.add_user(organization_id=organization_id, uid=uid, names=names, surname=surname, cell=cell,
                                   email=email, password=password)
@@ -49,22 +50,23 @@ class UserViewModel(ViewModel):
     @staticmethod
     @doc(description=user_view.update_user.__doc__)
     @marshal_with(schema=UserResponseSchema)
-    def put(user_data: dict) -> tuple:
+    @use_kwargs(UserRequestSchema)
+    def put(payload: dict) -> tuple:
         """
             **updates**
                 provided the user already exists update the user
-        :param user_data:
+        :param payload:
         :return: tuple
         """
-        organization_id: str = user_data.get('organization_id')
-        names: str = user_data.get('names')
-        surname: str = user_data.get('surname')
-        cell: str = user_data.get('cell')
-        email: str = user_data.get('email')
-        password: str = user_data.get('password')
-        uid: str = user_data.get('uid')
-        is_admin: bool = user_data.get('is_admin')
-        is_support: bool = user_data.get('is_support')
+        organization_id: str = payload.get('organization_id')
+        names: str = payload.get('names')
+        surname: str = payload.get('surname')
+        cell: str = payload.get('cell')
+        email: str = payload.get('email')
+        password: str = payload.get('password')
+        uid: str = payload.get('uid')
+        is_admin: bool = payload.get('is_admin')
+        is_support: bool = payload.get('is_support')
 
         return user_view.update_user(organization_id=organization_id, uid=uid, names=names, surname=surname, cell=cell,
                                      email=email, is_admin=is_admin, is_support=is_support)
