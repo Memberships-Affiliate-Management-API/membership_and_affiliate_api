@@ -4,9 +4,10 @@
 from marshmallow import Schema, fields
 from datetime import datetime
 from _swagger_api.schemas.amount import AmountSchema
-
-
 # Wallet Payload Schema
+from _swagger_api.schemas.response import ResponseSchema
+
+
 class WalletPayloadSchema(Schema):
     """
         **Class WalletPayloadSchema**
@@ -25,18 +26,23 @@ class WalletPayloadSchema(Schema):
 
 
 # Wallet Response Schema
-class WalletResponseSchema(Schema):
+class WalletResponseSchema(ResponseSchema):
     """
         **WalletResponseSchema**
             a schema for wallet responses
     """
-    status = fields.Boolean(default=False)
-    message = fields.String()
-    payload = fields.Nested(WalletPayloadSchema)
+    payload = fields.Nested(WalletPayloadSchema, description='wallet payload')
 
 
-class WalletListResponseSchema(WalletResponseSchema):
+class WalletListResponseSchema(ResponseSchema):
     """
         a schema for returning list of wallets
     """
-    payload = fields.List(fields.Nested(WalletPayloadSchema), description='List of wallets')
+    payload = fields.Nested(WalletPayloadSchema(many=True), description='List of wallets')
+
+
+class WalletRequestSchema(Schema):
+    """
+        **Class WalletRequestSchema**
+    """
+    payload = fields.Nested(WalletPayloadSchema, description='description of wallet request')

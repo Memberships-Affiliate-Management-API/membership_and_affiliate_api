@@ -21,7 +21,7 @@ def register_v2_api(app):
             title='Memberships & Affiliate Management API',
             version='0.0.1',
             plugins=[MarshmallowPlugin()],
-            openapi_version='2.0.0'
+            openapi_version='3.0.0'
         ),
         'APISPEC_SWAGGER_URL': '/api',
         'APISPEC_SWAGGER_UI_URL': '/api-ui'
