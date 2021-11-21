@@ -14,12 +14,29 @@ def register_v2_api(app):
     """
     from _swagger_api.users import UserViewModel, UserListView, AuthViewModel
     api = Api(app)
-    api.add_resource(UserViewModel, '/api/v2/user', endpoint='create_user', methods=['POST'])
+
+    # User Endpoints
+    api.add_resource(UserViewModel,
+                     '/api/v2/user',
+                     endpoint='create_user',
+                     methods=['POST'])
+    api.add_resource(UserViewModel,
+                     '/api/v2/user/<string:organization_id>/<string:uid>',
+                     endpoint='update_user',
+                     methods=['PUT'])
+    api.add_resource(UserViewModel,
+                     '/api/v2/user/<string:organization_id>/<string:uid>',
+                     endpoint='get_user',
+                     methods=['GET'])
+
+    # Authentication endpoints
+    api.add_resource(AuthViewModel, '/api/v2/auth/login', endpoint='user_login', methods=['POST'])
+    api.add_resource(AuthViewModel, '/api/v2/auth/logout', endpoint='user_logout', methods=['GET'])
 
     app.config.update({
         'APISPEC_SPEC': APISpec(
             title='Memberships & Affiliate Management API',
-            version='0.0.1',
+            version='0.1.1',
             plugins=[MarshmallowPlugin()],
             openapi_version='3.0.0'
         ),
@@ -30,5 +47,9 @@ def register_v2_api(app):
     # registering documentation
     docs.init_app(app)
     docs.register(target=UserViewModel, endpoint='create_user')
-    return app
+    docs.register(target=UserViewModel, endpoint='update_user')
+    docs.register(target=UserViewModel, endpoint='get_user')
+    docs.register(target=AuthViewModel, endpoint='user_login')
+    docs.register(target=AuthViewModel, endpoint='user_logout')
 
+    return app

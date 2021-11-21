@@ -1077,9 +1077,11 @@ class UserView(Validators, UserEmails):
     @app_cache.cache.memoize(timeout=return_ttl('short'))
     def get_all_users(self, organization_id: Optional[str]) -> tuple:
         """
+        **get_all_users**
             get a list of all users
+
         :param organization_id:
-        :return:
+        :return: tuple
         """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
@@ -1095,7 +1097,9 @@ class UserView(Validators, UserEmails):
     @app_cache.cache.memoize(timeout=return_ttl('short'))
     async def get_all_users_async(self, organization_id: Optional[str]) -> tuple:
         """
+        **get_all_users_async**
             get a list of all users
+
         :param organization_id:
         :return:
         """
@@ -1114,12 +1118,14 @@ class UserView(Validators, UserEmails):
     def get_user(self, organization_id: Optional[str], uid: Optional[str] = None, cell: Optional[str] = None,
                  email: Optional[str] = None) -> tuple:
         """
+        **get_user**
             return a user either by uid, cell or email
+
             :param organization_id:
             :param uid:
             :param cell:
             :param email:
-            :return:
+        :return: tuple
         """
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = "organization_id is required"
@@ -1169,12 +1175,14 @@ class UserView(Validators, UserEmails):
     async def get_user_async(self, organization_id: Optional[str], uid: Optional[str] = None,
                              cell: Optional[str] = None, email: Optional[str] = None) -> tuple:
         """
+        **get_user_async**
             return a user either by uid, cell or email
+
             :param organization_id:
             :param uid:
             :param cell:
             :param email:
-            :return:
+        :return: tuple
         """
         if isinstance(uid, str) and bool(uid.strip()):
             user_instance: UserModel = UserModel.query(UserModel.organization_id == organization_id,

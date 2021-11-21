@@ -2,6 +2,7 @@ from __future__ import annotations
 from flask_apispec import doc, marshal_with, use_kwargs
 
 from _swagger_api import ViewModel
+from _swagger_api.schemas.auth import AuthSchema
 from _swagger_api.schemas.users import UserResponseSchema, UsersListResponseSchema, UserRequestSchema
 from security.api_authenticator import handle_api_auth
 from views import user_view
@@ -15,7 +16,7 @@ class UserViewModel(ViewModel):
         super().__init__()
 
     @staticmethod
-    @doc(description=user_view.add_user.__doc__)
+    @doc(description=user_view.get_user.__doc__)
     @marshal_with(schema=UserResponseSchema)
     def get(organization_id: str, uid: str) -> tuple:
         """
@@ -50,7 +51,7 @@ class UserViewModel(ViewModel):
     @staticmethod
     @doc(description=user_view.update_user.__doc__)
     @marshal_with(schema=UserResponseSchema)
-    @use_kwargs(UserRequestSchema)
+    @use_kwargs(UserRequestSchema, location='json')
     def put(payload: dict) -> tuple:
         """
             **updates**
@@ -84,35 +85,44 @@ class AuthViewModel(ViewModel):
 
     @staticmethod
     @doc(description=user_view.logout.__doc__)
-    def get(organization_id: str, uid: str, token: str):
+    @marshal_with(AuthSchema)
+    @use_kwargs(AuthSchema, location='json')
+    def get(payload: dict) -> tuple:
         """
-            **signout user**
-                will sign out the user through token invalidation
-        :param organization_id: the organization id the user is registered on
-        :param uid: the user id of the signed in user
-        :param token: valid authentication token
+        **sign-out user**
+            will sign out the user through token invalidation
+
+        :param payload: contains user authentication payload
         :return: tuple
         """
+        organization_id: str = payload.get('organization_id')
+        uid: str = payload.get('uid')
+        token: str = payload.get('token')
         return user_view.logout(organization_id=organization_id, uid=uid, token=token)
 
     @staticmethod
     @doc(description=user_view.login.__doc__)
     @marshal_with(schema=UserResponseSchema)
-    def post(organization_id: str, email: str, password: str) -> tuple:
+    @use_kwargs(AuthSchema, location='json')
+    def post(payload: dict) -> tuple:
         """
-            **user login**
-                will login a user into his or her account
-            :param organization_id: the organization_id of the organization the user is registered in
-            :param email: the email attached to the account
-            :param password: password for the account
-            :return: tuple containing results
+        **user-login**
+            will login a user into his or her account
+
+        :param payload: the organization_id of the organization the user is registered in
+        :return: tuple containing results
         """
+        # organization_id: str, email: str, password: str
+        organization_id: str = payload.get('organization_id')
+        email: str = payload.get('email')
+        password: str = payload.get('password')
+
         return user_view.login(organization_id=organization_id, email=email, password=password)
 
 
 class UserListView(ViewModel):
     """
-        **UserListView**
+        **Class UserListView**
             allows admins to access a list of users
     """
 

@@ -48,7 +48,7 @@ class UserRequestPayloadSchema(Schema):
         payload for user request schema
     """
     organization_id: str = fields.String(required=True, description='id of the registered organization')
-    uid: str = fields.String(missing=create_id(), required=True, description='user id of the user making the request')
+    uid: str = fields.String(description='user id of the user making the request')
     names: str = fields.String(description='name of user')
     surname: str = fields.String(description='surname of user')
     cell: str = fields.String(description='cell phone number of user')
