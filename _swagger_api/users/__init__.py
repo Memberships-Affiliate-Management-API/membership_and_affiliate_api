@@ -1,10 +1,10 @@
-from __future__ import annotations
 from flask_apispec import doc, marshal_with, use_kwargs
 
 from _swagger_api import ViewModel
 from _swagger_api.schemas.auth import AuthSchema
 from _swagger_api.schemas.users import UserResponseSchema, UsersListResponseSchema, UserRequestSchema
 from security.api_authenticator import handle_api_auth
+from security.apps_authenticator import handle_apps_authentication
 from views import user_view
 
 
@@ -21,16 +21,16 @@ class UserViewModel(ViewModel):
     def get(organization_id: str, uid: str) -> tuple:
         """
             returns a user with a matching organization_id and uid
-        :param organization_id:
-        :param uid:
-        :return:
+        :param organization_id: id of the organization the user belongs to
+        :param uid: user id
+        :return: tuple
         """
         return user_view.get_user(organization_id=organization_id, uid=uid)
 
     @staticmethod
     @doc(description=user_view.add_user.__doc__)
     @marshal_with(schema=UserResponseSchema)
-    @use_kwargs(UserRequestSchema)
+    @use_kwargs(UserRequestSchema, location='json')
     def post(payload: dict) -> tuple:
         """
             fetches a single user by organization_id and uid
@@ -119,12 +119,24 @@ class AuthViewModel(ViewModel):
 
         return user_view.login(organization_id=organization_id, email=email, password=password)
 
+    @staticmethod
+    @marshal_with(schema=UserResponseSchema)
+    @use_kwargs(AuthSchema, location='json')
+    def put(payload: dict) -> tuple:
+        """
+            update login information
+        :return:
+        """
+        pass
+
 
 class UserListView(ViewModel):
     """
         **Class UserListView**
             allows admins to access a list of users
     """
+    methods = ['GET']
+    method_decorators = [handle_apps_authentication]
 
     def __init__(self):
         super().__init__()
@@ -132,9 +144,8 @@ class UserListView(ViewModel):
     @staticmethod
     @doc(description=user_view.get_all_users.__doc__)
     @marshal_with(schema=UsersListResponseSchema)
-    def get(organization_id: str, uid: str):
+    def get(organization_id: str) -> tuple:
         """
-
         :param organization_id: organization_id of the admin
         :param uid:  user id of the admin users
         :return: tuple

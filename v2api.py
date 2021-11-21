@@ -21,7 +21,7 @@ def register_v2_api(app):
                      endpoint='create_user',
                      methods=['POST'])
     api.add_resource(UserViewModel,
-                     '/api/v2/user/<string:organization_id>/<string:uid>',
+                     '/api/v2/user',
                      endpoint='update_user',
                      methods=['PUT'])
     api.add_resource(UserViewModel,
@@ -49,6 +49,8 @@ def register_v2_api(app):
     docs.register(target=UserViewModel, endpoint='create_user')
     docs.register(target=UserViewModel, endpoint='update_user')
     docs.register(target=UserViewModel, endpoint='get_user')
+
+    # Authentication Docs
     docs.register(target=AuthViewModel, endpoint='user_login')
     docs.register(target=AuthViewModel, endpoint='user_logout')
 
