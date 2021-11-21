@@ -62,8 +62,8 @@ def start_thread(response: Response) -> Response:
 
 @app.route('/', methods=['GET', 'POST'])
 def main():
-    message: str = f'Welcome to Memberships & Affiliate Management API: Time: {today()}'
-    return json.dumps(dict(status=True, message=message)), 200
+    """will display swagger api documentations"""
+    return redirect('/api-ui'), 302
 
 
 @app.route('/redoc', methods=['GET', 'POST'])
