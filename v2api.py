@@ -2,10 +2,50 @@ from flask_restful import Api
 from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
 from flask_apispec.extension import FlaskApiSpec
-
 from _swagger_api.wallet import WalletView
+from _swagger_api.users import UserViewModel, UserListView, AuthViewModel
 
 docs = FlaskApiSpec()
+
+
+def add_wallet_endpoints(api: Api) -> Api:
+    """
+    **add_wallet_endpoints**
+        will create wallet related endpoints
+    :param api:
+    :return: api
+    """
+    # create new wallet
+    api.add_resource(WalletView, '/api/v2/wallet', endpoint='create_wallet', methods=['POST'])
+    # get an existing wallet
+    get_wallet_url: str = '/api/v2/wallet/<string:organization_id>/<string:uid>'
+    api.add_resource(WalletView, get_wallet_url , endpoint='get_wallet', methods=['GET'])
+    # update wallet
+    api.add_resource(WalletView, '/api/v2/wallet', endpoint='update_wallet', methods=['PUT'])
+    return api
+
+
+def add_user_endpoints(api: Api) -> Api:
+    """
+        **add_user_endpoints**
+            will add user related endpoints
+    :param api:
+    :return: Api
+    """
+    # Adds new User
+    api.add_resource(UserViewModel, '/api/v2/user', endpoint='create_user', methods=['POST'])
+    # Update existing user
+    api.add_resource(UserViewModel, '/api/v2/user', endpoint='update_user', methods=['PUT'])
+    # Get user record
+    get_user_url: str = '/api/v2/user/<string:organization_id>/<string:uid>'
+    api.add_resource(UserViewModel, get_user_url, endpoint='get_user', methods=['GET'])
+    return api
+
+
+def add_auth_endpoints(api):
+    api.add_resource(AuthViewModel, '/api/v2/auth/login', endpoint='user_login', methods=['POST'])
+    api.add_resource(AuthViewModel, '/api/v2/auth/logout', endpoint='user_logout', methods=['PUT'])
+    return api
 
 
 def register_v2_api(app):
@@ -15,42 +55,16 @@ def register_v2_api(app):
     :param app:
     :return:
     """
-    from _swagger_api.users import UserViewModel, UserListView, AuthViewModel
     api = Api(app)
-
+    docs.init_app(app)
     # User Endpoints
-    api.add_resource(UserViewModel,
-                     '/api/v2/user',
-                     endpoint='create_user',
-                     methods=['POST'])
-
-    api.add_resource(UserViewModel,
-                     '/api/v2/user',
-                     endpoint='update_user',
-                     methods=['PUT'])
-
-    api.add_resource(UserViewModel,
-                     '/api/v2/user/<string:organization_id>/<string:uid>',
-                     endpoint='get_user',
-                     methods=['GET'])
+    api = add_user_endpoints(api=api)
 
     # Wallet view endpoints
-
-    # create new wallet
-    api.add_resource(WalletView,
-                     '/api/v2/wallet',
-                     endpoint='create_wallet',
-                     methods=['POST'])
-
-    # get an exisiting wallet
-    api.add_resource(WalletView,
-                     '/api/v2/wallet/<string:organization_id>/<string:uid>',
-                     endpoint='get_wallet',
-                     methods=['GET'])
+    api = add_wallet_endpoints(api=api)
 
     # Authentication endpoints
-    api.add_resource(AuthViewModel, '/api/v2/auth/login', endpoint='user_login', methods=['POST'])
-    api.add_resource(AuthViewModel, '/api/v2/auth/logout', endpoint='user_logout', methods=['PUT'])
+    api = add_auth_endpoints(api=api)
 
     app.config.update({
         'APISPEC_SPEC': APISpec(
@@ -64,7 +78,7 @@ def register_v2_api(app):
 
     })
     # registering documentation
-    docs.init_app(app)
+
     docs.register(target=UserViewModel, endpoint='create_user')
     docs.register(target=UserViewModel, endpoint='update_user')
     docs.register(target=UserViewModel, endpoint='get_user')
