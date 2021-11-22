@@ -3,6 +3,8 @@ from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
 from flask_apispec.extension import FlaskApiSpec
 
+from _swagger_api.wallet import WalletView
+
 docs = FlaskApiSpec()
 
 
@@ -21,18 +23,34 @@ def register_v2_api(app):
                      '/api/v2/user',
                      endpoint='create_user',
                      methods=['POST'])
+
     api.add_resource(UserViewModel,
                      '/api/v2/user',
                      endpoint='update_user',
                      methods=['PUT'])
+
     api.add_resource(UserViewModel,
                      '/api/v2/user/<string:organization_id>/<string:uid>',
                      endpoint='get_user',
                      methods=['GET'])
 
+    # Wallet view endpoints
+
+    # create new wallet
+    api.add_resource(WalletView,
+                     '/api/v2/wallet',
+                     endpoint='create_wallet',
+                     methods=['POST'])
+
+    # get an exisiting wallet
+    api.add_resource(WalletView,
+                     '/api/v2/wallet/<string:organization_id>/<string:uid>',
+                     endpoint='get_wallet',
+                     methods=['GET'])
+
     # Authentication endpoints
     api.add_resource(AuthViewModel, '/api/v2/auth/login', endpoint='user_login', methods=['POST'])
-    api.add_resource(AuthViewModel, '/api/v2/auth/logout', endpoint='user_logout', methods=['GET'])
+    api.add_resource(AuthViewModel, '/api/v2/auth/logout', endpoint='user_logout', methods=['PUT'])
 
     app.config.update({
         'APISPEC_SPEC': APISpec(
@@ -54,5 +72,9 @@ def register_v2_api(app):
     # Authentication Docs
     docs.register(target=AuthViewModel, endpoint='user_login')
     docs.register(target=AuthViewModel, endpoint='user_logout')
+
+    # Wallet Docs
+    docs.register(target=WalletView, endpoint='create_wallet')
+    docs.register(target=WalletView, endpoint='get_wallet')
 
     return app

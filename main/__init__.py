@@ -19,8 +19,6 @@ from config import config_instance
 import tasks
 
 # github authenticate - enables developers to easily sign-up to our api
-from v1api import register_v1_api
-from v2api import register_v2_api
 
 oauth = OAuth()
 github_authorize = oauth.register(
@@ -50,6 +48,9 @@ def create_app(config_class=config_instance):
     CORS(app)
 
     with app.app_context():
+        from v1api import register_v1_api
+        from v2api import register_v2_api
+
         app = register_v1_api(app)
         app = register_v2_api(app)
         app.tasks_thread = None

@@ -88,7 +88,7 @@ class AuthViewModel(ViewModel):
     @doc(description=user_view.logout.__doc__)
     @marshal_with(AuthSchema)
     @use_kwargs(AuthSchema, location='json')
-    def get(**payload) -> tuple:
+    def put(**payload) -> tuple:
         """
         **sign-out user**
             will sign out the user through token invalidation
@@ -119,23 +119,6 @@ class AuthViewModel(ViewModel):
         password: str = payload.get('password')
         return user_view.login(organization_id=organization_id, email=email, password=password)
 
-    @staticmethod
-    @marshal_with(UserResponseSchema)
-    @use_kwargs({'organization_id': fields.String(), 'uid': fields.String(), 'email': fields.String(),
-                 'password': fields.String(), 'new_password': fields.String()}, location='json')
-    def put(**payload) -> tuple:
-        """
-            update login information
-        :return:
-        """
-        organization_id: str = payload.get('organization_id')
-        email: str = payload.get('email')
-        uid: str = payload.get('uid')
-        password: str = payload.get('password')
-        new_password: str = payload.get('new_password')
-        return user_view.update_password(organization_id=organization_id, uid=uid, password=password,
-                                         new_password=new_password)
-
 
 class UserListView(ViewModel):
     """
@@ -154,7 +137,7 @@ class UserListView(ViewModel):
     def get(organization_id: str) -> tuple:
         """
         :param organization_id: organization_id of the admin
-        :param uid:  user id of the admin users
+        :param uid :  user id of the admin users
         :return: tuple
         """
         return user_view.get_all_users(organization_id=organization_id)
