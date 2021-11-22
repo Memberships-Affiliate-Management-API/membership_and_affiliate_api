@@ -42,29 +42,30 @@ def add_user_endpoints(api: Api) -> Api:
     return api
 
 
-def add_auth_endpoints(api):
+def add_auth_endpoints(api: Api) -> Api:
+    """
+        **add_auth_endpoints**
+            adds authentication related endpoints
+    :param api:
+    :return: APi
+    """
+    # login user
     api.add_resource(AuthViewModel, '/api/v2/auth/login', endpoint='user_login', methods=['POST'])
+    # logout user
     api.add_resource(AuthViewModel, '/api/v2/auth/logout', endpoint='user_logout', methods=['PUT'])
     return api
 
 
 def register_v2_api(app):
     """
+    **register_v2_api**
         this function only adds version 2 of the public facing API
         register v2 swagger compatible api here
     :param app:
     :return:
     """
     api = Api(app)
-    docs.init_app(app)
-    # User Endpoints
-    api = add_user_endpoints(api=api)
-
-    # Wallet view endpoints
-    api = add_wallet_endpoints(api=api)
-
-    # Authentication endpoints
-    api = add_auth_endpoints(api=api)
+    api = add_auth_endpoints(api=add_wallet_endpoints(api=add_user_endpoints(api=api)))
 
     app.config.update({
         'APISPEC_SPEC': APISpec(
@@ -78,7 +79,7 @@ def register_v2_api(app):
 
     })
     # registering documentation
-
+    docs.init_app(app)
     docs.register(target=UserViewModel, endpoint='create_user')
     docs.register(target=UserViewModel, endpoint='update_user')
     docs.register(target=UserViewModel, endpoint='get_user')
