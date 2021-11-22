@@ -1,4 +1,5 @@
 from flask_apispec import doc, marshal_with, use_kwargs
+from marshmallow import fields
 
 from _swagger_api import ViewModel
 from _swagger_api.schemas.auth import AuthSchema
@@ -17,7 +18,7 @@ class UserViewModel(ViewModel):
 
     @staticmethod
     @doc(description=user_view.get_user.__doc__)
-    @marshal_with(schema=UserResponseSchema)
+    @marshal_with(UserResponseSchema)
     def get(organization_id: str, uid: str) -> tuple:
         """
             returns a user with a matching organization_id and uid
@@ -29,9 +30,9 @@ class UserViewModel(ViewModel):
 
     @staticmethod
     @doc(description=user_view.add_user.__doc__)
-    @marshal_with(schema=UserResponseSchema)
+    @marshal_with(UserResponseSchema)
     @use_kwargs(UserRequestSchema, location='json')
-    def post(payload: dict) -> tuple:
+    def post(**payload) -> tuple:
         """
             fetches a single user by organization_id and uid
         :param payload: a dictionary containing user data
@@ -50,9 +51,9 @@ class UserViewModel(ViewModel):
 
     @staticmethod
     @doc(description=user_view.update_user.__doc__)
-    @marshal_with(schema=UserResponseSchema)
+    @marshal_with(UserResponseSchema)
     @use_kwargs(UserRequestSchema, location='json')
-    def put(payload: dict) -> tuple:
+    def put(**payload) -> tuple:
         """
             **updates**
                 provided the user already exists update the user
@@ -87,7 +88,7 @@ class AuthViewModel(ViewModel):
     @doc(description=user_view.logout.__doc__)
     @marshal_with(AuthSchema)
     @use_kwargs(AuthSchema, location='json')
-    def get(payload: dict) -> tuple:
+    def get(**payload) -> tuple:
         """
         **sign-out user**
             will sign out the user through token invalidation
@@ -102,9 +103,9 @@ class AuthViewModel(ViewModel):
 
     @staticmethod
     @doc(description=user_view.login.__doc__)
-    @marshal_with(schema=UserResponseSchema)
+    @marshal_with(UserResponseSchema)
     @use_kwargs(AuthSchema, location='json')
-    def post(payload: dict) -> tuple:
+    def post(**payload) -> tuple:
         """
         **user-login**
             will login a user into his or her account
@@ -116,18 +117,24 @@ class AuthViewModel(ViewModel):
         organization_id: str = payload.get('organization_id')
         email: str = payload.get('email')
         password: str = payload.get('password')
-
         return user_view.login(organization_id=organization_id, email=email, password=password)
 
     @staticmethod
-    @marshal_with(schema=UserResponseSchema)
-    @use_kwargs(AuthSchema, location='json')
-    def put(payload: dict) -> tuple:
+    @marshal_with(UserResponseSchema)
+    @use_kwargs({'organization_id': fields.String(), 'uid': fields.String(), 'email': fields.String(),
+                 'password': fields.String(), 'new_password': fields.String()}, location='json')
+    def put(**payload) -> tuple:
         """
             update login information
         :return:
         """
-        pass
+        organization_id: str = payload.get('organization_id')
+        email: str = payload.get('email')
+        uid: str = payload.get('uid')
+        password: str = payload.get('password')
+        new_password: str = payload.get('new_password')
+        return user_view.update_password(organization_id=organization_id, uid=uid, password=password,
+                                         new_password=new_password)
 
 
 class UserListView(ViewModel):
@@ -143,7 +150,7 @@ class UserListView(ViewModel):
 
     @staticmethod
     @doc(description=user_view.get_all_users.__doc__)
-    @marshal_with(schema=UsersListResponseSchema)
+    @marshal_with(UsersListResponseSchema)
     def get(organization_id: str) -> tuple:
         """
         :param organization_id: organization_id of the admin
