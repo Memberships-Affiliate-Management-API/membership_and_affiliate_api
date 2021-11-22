@@ -69,6 +69,7 @@ def register_v2_api(app):
 
     app.config.update({
         'APISPEC_SPEC': APISpec(
+
             title='Memberships & Affiliate Management API',
             version='0.1.1',
             plugins=[MarshmallowPlugin()],
