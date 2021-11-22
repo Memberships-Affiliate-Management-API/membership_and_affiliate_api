@@ -14,7 +14,6 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
 from flask import Blueprint, request, jsonify
-
 from config.exceptions import if_bad_request_raise
 from security.api_authenticator import handle_api_auth
 from views import wallet_view
