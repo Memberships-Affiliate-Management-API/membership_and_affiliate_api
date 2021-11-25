@@ -3,6 +3,7 @@ from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
 from flask_apispec.extension import FlaskApiSpec
 
+from _swagger_api.affiliate import AffiliateView
 from _swagger_api.memberships import MembershipsView
 from _swagger_api.wallet import WalletView
 from _swagger_api.users import UserViewModel, UserListView, AuthViewModel
@@ -72,6 +73,18 @@ def add_membership_endpoints(api: Api) -> Api:
     return api
 
 
+def add_affiliate_endpoints(api: Api) -> Api:
+    """
+        ** add new affiliate **
+    :param api:
+    :return: Api
+    """
+    get_affiliate_url: str = '/api/v2/affiliate/<string:organization_id>/<string:affiliate_id>'
+    api.add_resource(AffiliateView, '/api/v2/affiliate', endpoint='create_affiliate', methods=['POST'])
+    api.add_resource(AffiliateView, get_affiliate_url, endpoint='get_affiliate', methods=['GET'])
+    return api
+
+
 def register_v2_api(app):
     """
     **register_v2_api**
@@ -84,6 +97,7 @@ def register_v2_api(app):
     # adding authentication & wallet and user endpoints
     api = add_auth_endpoints(api=add_wallet_endpoints(api=add_user_endpoints(api=api)))
     api = add_membership_endpoints(api=api)
+    api = add_affiliate_endpoints(api=api)
 
     app.config.update({
         'APISPEC_SPEC': APISpec(
@@ -115,5 +129,9 @@ def register_v2_api(app):
     docs.register(target=MembershipsView, endpoint='create_membership')
     docs.register(target=MembershipsView, endpoint='get_membership')
     docs.register(target=MembershipsView, endpoint='update_membership')
+
+    # Affiliate Docs
+    docs.register(target=AffiliateView, endpoint='create_affiliate')
+    docs.register(target=AffiliateView, endpoint='get_affiliate')
 
     return app

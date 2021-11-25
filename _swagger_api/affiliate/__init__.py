@@ -1,5 +1,4 @@
 from flask_apispec import doc, marshal_with, use_kwargs
-
 from _swagger_api import ViewModel
 from _swagger_api.schemas.affiliate import AffiliateResponseSchema
 from security.api_authenticator import handle_api_auth
