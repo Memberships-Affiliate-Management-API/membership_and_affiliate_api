@@ -1,6 +1,4 @@
 from flask_apispec import doc, marshal_with, use_kwargs
-from marshmallow import fields
-
 from _swagger_api import ViewModel
 from _swagger_api.schemas.auth import AuthSchema
 from _swagger_api.schemas.users import UserResponseSchema, UsersListResponseSchema, UserRequestSchema
@@ -10,6 +8,9 @@ from views import user_view
 
 
 class UserViewModel(ViewModel):
+    """
+        **Class UserViewModel**
+    """
     methods = ['GET', 'POST', 'PUT', 'DELETE']
     method_decorators = [handle_api_auth]
 
@@ -21,6 +22,7 @@ class UserViewModel(ViewModel):
     @marshal_with(UserResponseSchema)
     def get(organization_id: str, uid: str) -> tuple:
         """
+        ** get **
             returns a user with a matching organization_id and uid
         :param organization_id: id of the organization the user belongs to
         :param uid: user id
@@ -34,6 +36,7 @@ class UserViewModel(ViewModel):
     @use_kwargs(UserRequestSchema, location='json')
     def post(**payload) -> tuple:
         """
+        ** create post **
             fetches a single user by organization_id and uid
         :param payload: a dictionary containing user data
         :return: user

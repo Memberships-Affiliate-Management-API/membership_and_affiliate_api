@@ -9,7 +9,7 @@ class MembershipsView(ViewModel):
         ** Class  MembershipsView **
             View model for Memberships
     """
-    methods = ['GET', 'POST', 'PUT', 'DELETE']
+    methods = ['GET', 'POST', 'PUT']
     method_decorators = []
 
     def __init__(self):
