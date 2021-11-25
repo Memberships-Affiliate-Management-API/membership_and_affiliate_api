@@ -3,9 +3,12 @@ from _swagger_api import ViewModel
 
 class MembershipsView(ViewModel):
     """
-    View model for Memberships
+        ** Class  MembershipsView **
+            View model for Memberships
+            
     """
     methods = ['GET', 'POST', 'PUT', 'DELETE']
+    method_decorators = []
 
     def __init__(self):
         pass
@@ -39,4 +42,3 @@ class MembershipsView(ViewModel):
         Delete a membership
         """
         pass
-    
