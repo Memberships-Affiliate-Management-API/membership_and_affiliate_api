@@ -2,6 +2,8 @@ from flask_restful import Api
 from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
 from flask_apispec.extension import FlaskApiSpec
+
+from _swagger_api.memberships import MembershipsView
 from _swagger_api.wallet import WalletView
 from _swagger_api.users import UserViewModel, UserListView, AuthViewModel
 
@@ -56,6 +58,20 @@ def add_auth_endpoints(api: Api) -> Api:
     return api
 
 
+def add_membership_endpoints(api: Api) -> Api:
+    """
+        ** Adding resources for membership **
+        :param api:
+        :return: API
+    """
+    api.add_resource(MembershipsView, '/api/v2/membership', endpoint='create_membership', methods=['POST'])
+    api.add_resource(MembershipsView, '/api/v2/membership/<string:organization_id>/<string:uid>',
+                     endpoint='get_membership', methods=['GET'])
+    api.add_resource(MembershipsView, '/api/v2/membership', endpoint='update_membership', methods=['PUT'])
+
+    return api
+
+
 def register_v2_api(app):
     """
     **register_v2_api**
@@ -65,7 +81,9 @@ def register_v2_api(app):
     :return:
     """
     api = Api(app)
+    # adding authentication & wallet and user endpoints
     api = add_auth_endpoints(api=add_wallet_endpoints(api=add_user_endpoints(api=api)))
+    api = add_membership_endpoints(api=api)
 
     app.config.update({
         'APISPEC_SPEC': APISpec(
@@ -92,5 +110,10 @@ def register_v2_api(app):
     # Wallet Docs
     docs.register(target=WalletView, endpoint='create_wallet')
     docs.register(target=WalletView, endpoint='get_wallet')
+
+    # Memberships Docs
+    docs.register(target=MembershipsView, endpoint='create_membership')
+    docs.register(target=MembershipsView, endpoint='get_membership')
+    docs.register(target=MembershipsView, endpoint='update_membership')
 
     return app
