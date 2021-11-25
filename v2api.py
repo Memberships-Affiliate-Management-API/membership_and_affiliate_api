@@ -65,8 +65,8 @@ def add_membership_endpoints(api: Api) -> Api:
         :return: API
     """
     api.add_resource(MembershipsView, '/api/v2/membership', endpoint='create_membership', methods=['POST'])
-    api.add_resource(MembershipsView, '/api/v2/membership/<string:organization_id>/<string:uid>',
-                     endpoint='get_membership', methods=['GET'])
+    get_endpoint: str = '/api/v2/membership/<string:organization_id>/<string:uid>'
+    api.add_resource(MembershipsView, get_endpoint, endpoint='get_membership', methods=['GET'])
     api.add_resource(MembershipsView, '/api/v2/membership', endpoint='update_membership', methods=['PUT'])
 
     return api
