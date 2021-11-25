@@ -1,5 +1,4 @@
 from flask_apispec import doc, marshal_with
-
 from _swagger_api import ViewModel
 from _swagger_api.schemas.memberships import MembershipResponseSchema
 from views import memberships_view
@@ -9,7 +8,6 @@ class MembershipsView(ViewModel):
     """
         ** Class  MembershipsView **
             View model for Memberships
-
     """
     methods = ['GET', 'POST', 'PUT', 'DELETE']
     method_decorators = []
@@ -22,7 +20,8 @@ class MembershipsView(ViewModel):
     @marshal_with(MembershipResponseSchema)
     def get(self, **payload):
         """
-        Get all memberships
+        **get memberships**
+            Get all memberships
         """
         return memberships_view.is_member_off(**payload)
 
@@ -31,6 +30,7 @@ class MembershipsView(ViewModel):
     @marshal_with(MembershipResponseSchema)
     def post(self, **payload):
         """
+        **create memberships**
             Create a new membership
         """
         return memberships_view.add_membership(**payload)
@@ -40,6 +40,7 @@ class MembershipsView(ViewModel):
     @marshal_with(MembershipResponseSchema)
     def put(self, **payload):
         """
+        **update membership**
             Update a membership
         """
         return memberships_view.update_membership(**payload)
