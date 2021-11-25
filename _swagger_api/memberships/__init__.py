@@ -1,44 +1,45 @@
+from flask_apispec import doc, marshal_with
+
 from _swagger_api import ViewModel
+from _swagger_api.schemas.memberships import MembershipResponseSchema
+from views import memberships_view
 
 
 class MembershipsView(ViewModel):
     """
         ** Class  MembershipsView **
             View model for Memberships
-            
+
     """
     methods = ['GET', 'POST', 'PUT', 'DELETE']
     method_decorators = []
 
     def __init__(self):
-        pass
-    
+        super().__init__()
+
     @staticmethod
-    def get(self,**paylod):
+    @doc(description=memberships_view.is_member_off.__doc__)
+    @marshal_with(MembershipResponseSchema)
+    def get(self, **payload):
         """
         Get all memberships
         """
-        pass
-    
-
+        return memberships_view.is_member_off(**payload)
 
     @staticmethod
+    @doc(description=memberships_view.add_membership.__doc__)
+    @marshal_with(MembershipResponseSchema)
     def post(self, **payload):
         """
-        Create a new membership
+            Create a new membership
         """
-        pass
+        return memberships_view.add_membership(**payload)
 
     @staticmethod
+    @doc(description=memberships_view.update_membership.__doc__)
+    @marshal_with(MembershipResponseSchema)
     def put(self, **payload):
         """
-        Update a membership
+            Update a membership
         """
-        pass
-
-    @staticmethod
-    def delete(self, **payload):
-        """
-        Delete a membership
-        """
-        pass
+        return memberships_view.update_membership(**payload)
