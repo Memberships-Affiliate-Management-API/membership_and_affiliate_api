@@ -29,10 +29,9 @@ class APIKeys(BaseModel):
     is_active: bool = ndb.BooleanProperty(default=True, validator=property_.set_bool)
     is_deleted: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
 
-
     def __str__(self) -> str:
-        return "APIKeys: Organization: {}, key: {}, uid:{}, domain: {}".format(self.organization_id, self.api_key, 
-                                                                                self.uid, self.domain)
+        return "APIKeys: Organization: {}, key: {}, uid:{}, domain: {}".format(self.organization_id, self.api_key,
+                                                                               self.uid, self.domain)
 
     def __eq__(self, other) -> bool:
         if self.__class__ != other.__class__:
@@ -45,4 +44,3 @@ class APIKeys(BaseModel):
 
     def __bool__(self) -> bool:
         return bool(self.api_key) and bool(self.organization_id)
-
