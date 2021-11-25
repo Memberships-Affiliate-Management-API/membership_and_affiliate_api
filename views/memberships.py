@@ -126,8 +126,8 @@ class MembershipsEmails(Mailgun):
         loop.close()
 
         email: str = user_data.get('email')
-        names: str = user_data.get('names', " ")
-        surname: str = user_data.get('surname', " ")
+        names: str = user_data.get('names')
+        surname: str = user_data.get('surname')
         plan_name: str = membership_data.get('plan_name')
         plan_description: str = membership_data.get('description')
         organization_name: str = organization_data.get('organization_name')
@@ -164,7 +164,7 @@ class MembershipsEmails(Mailgun):
         subject: str = f"{organization_data.get('organization_name')} Your Membership Details have changed"
 
         text: str = f'''
-        Hi {user_data.get('names', " ")} {user_data.get('surname', " ")}
+        Hi {user_data.get('names')} {user_data.get('surname')}
         
         Your Subscription details have changed: 
         
@@ -179,7 +179,7 @@ class MembershipsEmails(Mailgun):
         '''
 
         html: str = f'''
-        <h3>Hi {user_data.get('names', " ")} {user_data.get('surname', " ")}</h3>
+        <h3>Hi {user_data.get('names')} {user_data.get('surname')}</h3>
         
         <h3>Your Subscription details have changed</h3> 
         
@@ -219,7 +219,7 @@ class MembershipsEmails(Mailgun):
         subject: str = f"From: {organization_data.get('organization_name')} Your Payment Method has changed"
 
         text: str = f'''
-        hi {user_data.get('names', " ")} {user_data.get('surname', " ")}
+        hi {user_data.get('names')} {user_data.get('surname')}
         
         Payment Method Changed Notification from : {organization_data.get('organization_name')}
         
@@ -230,7 +230,7 @@ class MembershipsEmails(Mailgun):
             Website: {organization_data.get('home_url')}        
         '''
         html: str = f'''
-        <h3>Hi {user_data.get('names', " ")} {user_data.get('surname', " ")}</h3>
+        <h3>Hi {user_data.get('names')} {user_data.get('surname')}</h3>
         
         <p>Payment Method Changed Notification from : {organization_data.get('organization_name')}</p>
         

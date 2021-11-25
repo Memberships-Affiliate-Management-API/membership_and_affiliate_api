@@ -50,7 +50,7 @@ class OrganizationEmails(Mailgun):
         subject: str = f"{organization_data.get('organization_name')} Organization was created successfully"
 
         text: str = f'''
-        Hi {user_data.get('names', " ")} {user_data.get('surname', " ")}
+        Hi {user_data.get('names')} {user_data.get('surname')}
         
         Organization has been successfully created : {organization_data.get('organization_name')}
         
@@ -65,7 +65,7 @@ class OrganizationEmails(Mailgun):
         {current_app.config.get('APP_NAME')}                
         '''
         html: str = f'''
-        <h3>Hi {user_data.get('names', " ")} {user_data.get('surname', " ")}</h3>
+        <h3>Hi {user_data.get('names')} {user_data.get('surname')}</h3>
         
         <p>Organization has been successfully created : {organization_data.get('organization_name')}</p>
         
@@ -102,7 +102,7 @@ class OrganizationEmails(Mailgun):
         # TODO - obtain wallet details
 
         text: str = f'''
-        Hi {user_data.get('names', " ")} {user_data.get('surname', " ")}
+        Hi {user_data.get('names')} {user_data.get('surname')}
 
         organization Wallet has been successfully created : {organization_data.get('organization_name')}
 
@@ -110,7 +110,7 @@ class OrganizationEmails(Mailgun):
         {current_app.config.get('APP_NAME')}                
         '''
         html: str = f'''
-        <h3>Hi {user_data.get('names', " ")} {user_data.get('surname', " ")}</h3>
+        <h3>Hi {user_data.get('names')} {user_data.get('surname')}</h3>
 
         <p>Organization Wallet has been successfully created : {organization_data.get('organization_name')}</p>
 
@@ -137,7 +137,7 @@ class OrganizationEmails(Mailgun):
         subject: str = f"{organization_data.get('organization_name')} Successfully updated"
 
         text: str = f'''
-            Hi {user_data.get('names', " ")} {user_data.get('surname', " ")}
+            Hi {user_data.get('names')} {user_data.get('surname')}
     
             Organization : {organization_data.get('organization_name')} has been updated successfully. 
     
@@ -152,7 +152,7 @@ class OrganizationEmails(Mailgun):
             {current_app.config.get('APP_NAME')}                
         '''
         html: str = f'''
-            <h3>Hi {user_data.get('names', " ")} {user_data.get('surname', " ")}</h3>
+            <h3>Hi {user_data.get('names')} {user_data.get('surname')}</h3>
     
             <p>Organization : {organization_data.get('organization_name')} has been updated successfully.</p> 
     
@@ -189,7 +189,7 @@ class OrganizationEmails(Mailgun):
         subject: str = f"User Statistics for {organization_data.get('organization_name')}"
 
         text: str = f'''
-            hi {user_data.get('names', " ")} {user_data.get('surname', " ")}
+            hi {user_data.get('names')} {user_data.get('surname')}
             
             Here are your organization statistics for {organization_data.get('organization_name')}
             
@@ -212,7 +212,7 @@ class OrganizationEmails(Mailgun):
         '''
 
         html: str = f'''
-            <h3>hi {user_data.get('names', " ")} {user_data.get('surname', " ")}</h3>
+            <h3>hi {user_data.get('names')} {user_data.get('surname')}</h3>
             
             <p>Here are your organization statistics for {organization_data.get('organization_name')}</p>
             
@@ -616,7 +616,8 @@ class OrganizationView(Validators):
             message: str = "organization_id is required"
             raise InputError(status=error_codes.input_error_code, description=message)
 
-        organization_instance: Optional[Organization] = Organization.query(Organization.organization_id == organization_id).get()
+        organization_instance: Optional[Organization] = Organization.query(
+            Organization.organization_id == organization_id).get()
 
         if not (isinstance(organization_instance, Organization) and bool(organization_instance)):
             message: str = "Organization not found: cannot update total_paid"

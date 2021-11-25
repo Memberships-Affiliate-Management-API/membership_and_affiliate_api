@@ -55,7 +55,7 @@ class UserEmails(Mailgun):
         subject: str = f"{organization_data.get('organization_name')} Welcome to to Admins"
 
         text: str = f'''
-        hi {user_data.get('names', " ")} {user_data.get('surname', " ")}
+        hi {user_data.get('names')} {user_data.get('surname')}
         you have been successfully registered as an administrator of {organization_data.get('organization_name')}
         
         Please contact fellow admins @ {organization_data.get('home_url')} 
@@ -66,7 +66,7 @@ class UserEmails(Mailgun):
         '''
 
         html: str = f'''
-        <h3>hi {user_data.get('names', " ")} {user_data.get('surname', " ")}</h3>
+        <h3>hi {user_data.get('names')} {user_data.get('surname')}</h3>
         <p>you have been successfully registered as an administrator of {organization_data.get('organization_name')}</p>
         
         <p>Please contact fellow admins @ {organization_data.get('home_url')} 
@@ -95,7 +95,7 @@ class UserEmails(Mailgun):
 
         subject: str = f"{organization_data.get('organization_name')} You are not longer admin"
         text: str = f'''
-        hi {user_data.get('names', " ")} {user_data.get('surname', " ")}
+        hi {user_data.get('names')} {user_data.get('surname')}
         you are no longer an admin of  {organization_data.get('organization_name')}
 
         Please contact fellow admins @ {organization_data.get('home_url')} 
@@ -106,7 +106,7 @@ class UserEmails(Mailgun):
         '''
 
         html: str = f'''
-        <h3>hi {user_data.get('names', " ")} {user_data.get('surname', " ")}</h3>
+        <h3>hi {user_data.get('names')} {user_data.get('surname')}</h3>
         <p>you are no longer an admin of  {organization_data.get('organization_name')}</p>
 
         <p>Please contact fellow admins @ {organization_data.get('home_url')} 
@@ -135,7 +135,7 @@ class UserEmails(Mailgun):
 
         subject: str = f"{organization_data.get('organization_name')} Welcomes you to its support team"
         text: str = f'''
-        hi {user_data.get('names', " ")} {user_data.get('surname', " ")}
+        hi {user_data.get('names')} {user_data.get('surname')}
         You are a member of the support team of : {organization_data.get('organization_name')}
 
         Please contact fellow support members  @ {organization_data.get('home_url')} 
@@ -146,7 +146,7 @@ class UserEmails(Mailgun):
         '''
 
         html: str = f'''
-        <h3>hi {user_data.get('names', " ")} {user_data.get('surname', " ")}</h3>
+        <h3>hi {user_data.get('names')} {user_data.get('surname')}</h3>
         <p>You are a member of the support team of : {organization_data.get('organization_name')}</p>
 
         <p>Please contact fellow support members  @ {organization_data.get('home_url')} 
@@ -175,7 +175,7 @@ class UserEmails(Mailgun):
 
         subject: str = f"{organization_data.get('organization_name')} You are not longer a member of our support team"
         text: str = f'''
-        hi {user_data.get('names', " ")} {user_data.get('surname', " ")}
+        hi {user_data.get('names')} {user_data.get('surname')}
         You are no longer a member of the support team of : {organization_data.get('organization_name')}
 
         Please contact fellow support members  @ {organization_data.get('home_url')} 
@@ -186,7 +186,7 @@ class UserEmails(Mailgun):
         '''
 
         html: str = f'''
-        <h3>hi {user_data.get('names', " ")} {user_data.get('surname', " ")}</h3>
+        <h3>hi {user_data.get('names')} {user_data.get('surname')}</h3>
         <p>You are no longer a member of the support team of : {organization_data.get('organization_name')}</p>
 
         <p>Please contact fellow support members  @ {organization_data.get('home_url')} 
@@ -216,14 +216,14 @@ class UserEmails(Mailgun):
         # NOTE during password recovery the link display should fit the look of the user of the api
         email_verified: bool = user_data.get('email_verified')
 
-        _url: str = organization_data.get('recovery_callback_url', self._base_url + 'password-reset')
+        _url: str = organization_data.get('recovery_callback_url')
         # NOTE splitting the forward slash if url endswith forward slash
         _url = _url[:-1] if _url.endswith("/") else _url
 
         password_reset_link: str = f"{_url}/{recovery_code}"
         subject = f"{organization_data.get('organization_name')} Please reset your password"
         text: str = f'''
-         Hi {user_data.get('names', " ")} {user_data.get('surname', " ")}
+         Hi {user_data.get('names')} {user_data.get('surname')}
         
          You are receiving this email because you requested
          a password reset please click on the following link to reset your password 
@@ -236,7 +236,7 @@ class UserEmails(Mailgun):
          {organization_data.get('organization_name')}
          '''
         html: str = f'''
-         <h3>Hi {user_data.get('names', " ")} {user_data.get('surname', " ")}</h3>
+         <h3>Hi {user_data.get('names')} {user_data.get('surname')}</h3>
          
          <p>You are receiving this email because you requested
          a password reset please click on the following link to reset your password</p>
