@@ -11,7 +11,7 @@ class AffiliateView(ViewModel):
         **Class AffiliateView**
 
     """
-    methods = ['GET', 'POST', 'PUT', 'GET']
+    methods = ['GET', 'POST']
     method_decorators = [handle_api_auth]
 
     def __init__(self) -> None:
