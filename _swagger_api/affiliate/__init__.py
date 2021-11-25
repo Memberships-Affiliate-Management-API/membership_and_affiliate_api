@@ -26,3 +26,15 @@ class AffiliateView(ViewModel):
             :return:
         """
         return affiliates_view.get_affiliate(payload)
+    
+    @staticmethod
+    @doc(description=affiliates_view.register_affiliate.__doc__)
+    @marshal_with(AffiliateResponseSchema)
+    def post(**payload) -> tuple:
+        """
+            **create a new affiliate**
+        :param payload:
+        :return:
+        """
+        return affiliates_view.register_affiliate(payload)
+
