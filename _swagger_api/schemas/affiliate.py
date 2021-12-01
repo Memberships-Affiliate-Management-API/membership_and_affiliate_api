@@ -1,6 +1,5 @@
 from datetime import datetime
 from marshmallow import Schema, fields
-
 from _swagger_api.schemas.response import ResponseSchema
 
 

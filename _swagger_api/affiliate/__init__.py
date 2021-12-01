@@ -37,3 +37,4 @@ class AffiliateView(ViewModel):
         """
         return affiliates_view.register_affiliate(payload)
 
+
