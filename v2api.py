@@ -75,7 +75,7 @@ def add_membership_endpoints(api: Api) -> Api:
 
 def add_affiliate_endpoints(api: Api) -> Api:
     """
-        ** add new affiliate **
+        ** adding affiliate endpoints **
     :param api:
     :return: Api
     """
