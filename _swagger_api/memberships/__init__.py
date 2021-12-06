@@ -1,9 +1,11 @@
+from marshmallow import fields
+
 from _swagger_api.schemas.coupons import CouponResponseSchema
-from flask_apispec import doc, marshal_with
+from flask_apispec import doc, marshal_with, use_kwargs
 from _swagger_api import ViewModel
 from _swagger_api.schemas.memberships import MembershipPaymentResponseSchema, MembershipResponseSchema
 from security.api_authenticator import handle_api_auth
-from views import memberships_view
+from views import memberships_view, coupons_view
 
 
 class MembershipsView(ViewModel):
@@ -107,26 +109,33 @@ class CouponsView(ViewModel):
         :param payload:
         :return:
         """
-        pass
+        # coupon_data must include organization_id and code
+        return coupons_view.get_coupon(coupon_data=payload)
 
     @staticmethod
     @doc(description="create coupon code")
     @marshal_with(CouponResponseSchema)
+    @use_kwargs({'organization_id': fields.String(), 'code': fields.String(), 'discount': fields.Integer(),
+                 'expiration_time': fields.Integer()}, location='json')
     def post(**payload):
         """
             create coupon codes
         :param payload:
         :return:
         """
-        pass
+        # organization_id: str, code: str, discount: int, expiration_time: str
+        return coupons_view.add_coupon(**payload)
 
     @staticmethod
     @doc(description="update coupon code")
     @marshal_with(CouponResponseSchema)
+    @use_kwargs({'organization_id': fields.String(), 'code': fields.String(), 'discount': fields.Integer(),
+                 'expiration_time': fields.Integer()}, location='json')
     def put(**payload):
         """
             update coupon codes
         :param payload:
         :return:
         """
-        pass
+        #  organization_id: str, code: str, discount: int, expiration_time: int
+        return coupons_view.add_coupon(**payload)
