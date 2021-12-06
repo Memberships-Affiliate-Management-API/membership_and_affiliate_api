@@ -18,26 +18,31 @@ class MembershipPayloadSchema(Schema):
 
 
 class MembershipResponseSchema(ResponseSchema):
-    """will send a single payload as response"""
+    """
+        **Class MembershipResponseSchema**
+            will send a single payload as response
+    """
     payload = fields.Nested(MembershipPayloadSchema)
 
 
 class MembershipResponseListSchema(ResponseSchema):
-    """ will send a list of payloads as response"""
+    """
+        ** Class MembershipResponseListSchema **
+            will send a list of payloads as response
+    """
     payload = fields.Nested(MembershipResponseSchema(many=True))
 
 
 class MembershipPaymentPayloadSchema(Schema):
     """
         ** Class MembershipPaymentPayloadSchema **
-
+            Membership Payments Schema
     """
     organization_id: str = fields.String()
     uid: str = fields.String()
     plan_id: str = fields.String()
     payment_method: str = fields.String(validate=validate.OneOf(['paypal', 'eft']))
     payment_amount: int = fields.Integer()
-
 
 
 class MembershipPaymentResponseSchema(ResponseSchema):

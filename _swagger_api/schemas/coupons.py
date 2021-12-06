@@ -2,6 +2,7 @@
     Coupons schema
 """
 from marshmallow import Schema, fields
+from _swagger_api.schemas.response import ResponseSchema
 
 
 class PayloadSchema(Schema):
@@ -17,12 +18,12 @@ class PayloadSchema(Schema):
     date_created = fields.DateTime(required=True)
     expiration_time = fields.Integer(required=True)
 
+
 class CouponResponseSchema(ResponseSchema):
     """
         Coupon schema
     """
     payload = fields.Nested(PayloadSchema)
-
 
 
 class CouponResponseListSchema(ResponseSchema):
