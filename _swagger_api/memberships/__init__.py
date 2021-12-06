@@ -125,5 +125,3 @@ class CouponsView(ViewModel):
         :return:
         """
         pass
-
-
