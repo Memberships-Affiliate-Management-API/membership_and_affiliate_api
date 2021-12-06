@@ -1,5 +1,4 @@
 from marshmallow import fields
-
 from _swagger_api.schemas.coupons import CouponResponseSchema
 from flask_apispec import doc, marshal_with, use_kwargs
 from _swagger_api import ViewModel
