@@ -7,6 +7,7 @@ from _swagger_api.affiliate import AffiliateView
 from _swagger_api.memberships import MembershipsView
 from _swagger_api.wallet import WalletView
 from _swagger_api.users import UserViewModel, UserListView, AuthViewModel
+from _swagger_api.memberships import CouponsView
 
 docs = FlaskApiSpec()
 
@@ -85,6 +86,20 @@ def add_affiliate_endpoints(api: Api) -> Api:
     return api
 
 
+def add_coupons_endpoints(api: Api) -> Api:
+    """
+        ** adding coupon endpoints **
+    :param api:
+    :return: Api
+    """
+    coupon_code_url: str = '/api/v2/coupon/<string:organization_id>/<string:code>'
+    api.add_resource(AffiliateView, coupon_code_url, endpoint='get_coupon', methods=['GET'])
+    api.add_resource(AffiliateView, '/api/v2/coupon', endpoint='create_coupon', methods=['POST'])
+    api.add_resource(AffiliateView, '/api/v2/coupon', endpoint='update_coupon', methods=['PUT'])
+    # api.add_resource(AffiliateView, coupon_code_url, endpoint='delete_coupon', methods=['DELETE'])
+    return api
+
+
 def register_v2_api(app):
     """
     **register_v2_api**
@@ -98,6 +113,7 @@ def register_v2_api(app):
     api = add_auth_endpoints(api=add_wallet_endpoints(api=add_user_endpoints(api=api)))
     api = add_membership_endpoints(api=api)
     api = add_affiliate_endpoints(api=api)
+    api = add_coupons_endpoints(api=api)
 
     app.config.update({
         'APISPEC_SPEC': APISpec(
@@ -133,5 +149,10 @@ def register_v2_api(app):
     # Affiliate Docs
     docs.register(target=AffiliateView, endpoint='create_affiliate')
     docs.register(target=AffiliateView, endpoint='get_affiliate')
+
+    # Coupon Code Docs
+    docs.register(target=CouponsView, endpoint='create_coupon')
+    docs.register(target=CouponsView, endpoint='update_coupon')
+    docs.register(target=CouponsView, endpoint='get_coupon')
 
     return app

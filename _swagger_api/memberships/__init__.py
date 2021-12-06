@@ -1,3 +1,4 @@
+from _swagger_api.schemas.coupons import CouponResponseSchema
 from flask_apispec import doc, marshal_with
 from _swagger_api import ViewModel
 from _swagger_api.schemas.memberships import MembershipPaymentResponseSchema, MembershipResponseSchema
@@ -99,7 +100,7 @@ class CouponsView(ViewModel):
 
     @staticmethod
     @doc(description="get coupon code")
-    @marshal_with(MembershipPaymentResponseSchema)
+    @marshal_with(CouponResponseSchema)
     def get(**payload):
         """
             get Coupons View
@@ -109,6 +110,8 @@ class CouponsView(ViewModel):
         pass
 
     @staticmethod
+    @doc(description="create coupon code")
+    @marshal_with(CouponResponseSchema)
     def post(**payload):
         """
             create coupon codes
@@ -118,6 +121,8 @@ class CouponsView(ViewModel):
         pass
 
     @staticmethod
+    @doc(description="update coupon code")
+    @marshal_with(CouponResponseSchema)
     def put(**payload):
         """
             update coupon codes
