@@ -1,6 +1,6 @@
 from flask_apispec import doc, marshal_with
 from _swagger_api import ViewModel
-from _swagger_api.schemas.memberships import MembershipResponseSchema
+from _swagger_api.schemas.memberships import MembershipPaymentResponseSchema, MembershipResponseSchema
 from security.api_authenticator import handle_api_auth
 from views import memberships_view
 
@@ -59,7 +59,7 @@ class MembershipPaymentsView(ViewModel):
 
     @staticmethod
     @doc(description="get membership payment record")
-    @marshal_with()
+    @marshal_with(MembershipPaymentResponseSchema)
     def get(**payload):
         """
             get membership payment record
@@ -68,6 +68,8 @@ class MembershipPaymentsView(ViewModel):
         pass
 
     @staticmethod
+    @doc(description="create membership payment record")
+    @marshal_with(MembershipPaymentResponseSchema)
     def post(**payload):
         """
             create membership payment record
@@ -76,6 +78,8 @@ class MembershipPaymentsView(ViewModel):
         pass
 
     @staticmethod
+    @doc(description="update membership payment record")
+    @marshal_with(MembershipPaymentResponseSchema)
     def put(**payload):
         """
             update membership payment record
@@ -86,6 +90,7 @@ class MembershipPaymentsView(ViewModel):
 
 class CouponsView(ViewModel):
     """
+        allows access and updating of coupon codes
 
     """
 
@@ -93,6 +98,8 @@ class CouponsView(ViewModel):
         super().__init__()
 
     @staticmethod
+    @doc(description="get coupon code")
+    @marshal_with(MembershipPaymentResponseSchema)
     def get(**payload):
         """
             get Coupons View
