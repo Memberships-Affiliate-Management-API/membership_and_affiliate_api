@@ -1,5 +1,4 @@
 from datetime import datetime, date
-
 from marshmallow import Schema, fields, validate, ValidationError
 from _swagger_api.schemas.response import ResponseSchema
 
@@ -30,9 +29,15 @@ class MembershipResponseListSchema(ResponseSchema):
 
 class MembershipPaymentPayloadSchema(Schema):
     """
+        ** Class MembershipPaymentPayloadSchema **
 
     """
-    pass
+    organization_id: str = fields.String()
+    uid: str = fields.String()
+    plan_id: str = fields.String()
+    payment_method: str = fields.String(validate=validate.OneOf(['paypal', 'eft']))
+    payment_amount: int = fields.Integer()
+
 
 
 class MembershipPaymentResponseSchema(ResponseSchema):
