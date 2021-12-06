@@ -136,7 +136,7 @@ class TicketThread(BaseModel):
 
     # noinspection DuplicatedCode
     def __eq__(self, other) -> bool:
-        if self.__class__ != other.__class__:
+        if self.__class__ is not other.__class__:
             return False
         if self.ticket_id != other.ticket_id:
             return False

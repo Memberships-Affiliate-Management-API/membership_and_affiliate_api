@@ -26,3 +26,26 @@ class MembershipResponseSchema(ResponseSchema):
 class MembershipResponseListSchema(ResponseSchema):
     """ will send a list of payloads as response"""
     payload = fields.Nested(MembershipResponseSchema(many=True))
+
+
+class MembershipPaymentPayloadSchema(Schema):
+    """
+
+    """
+    pass
+
+
+class MembershipPaymentResponseSchema(ResponseSchema):
+    """
+        ** Class MembershipPaymentResponseSchema **
+            membership payment response schema
+    """
+    payload = fields.Nested(MembershipPaymentPayloadSchema)
+
+
+class MembershipPaymentResponseListSchema(ResponseSchema):
+    """
+        **Class MembershipPaymentResponseListSchema **
+            membership payment list response schema
+    """
+    payload = fields.Nested(MembershipPaymentPayloadSchema)
