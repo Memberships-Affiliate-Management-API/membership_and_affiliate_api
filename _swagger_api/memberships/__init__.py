@@ -1,3 +1,7 @@
+"""
+    ** Class Memberships **
+        memberships view model
+"""
 from marshmallow import fields
 from _swagger_api.schemas.coupons import CouponResponseSchema
 from flask_apispec import doc, marshal_with, use_kwargs
@@ -21,30 +25,30 @@ class MembershipsView(ViewModel):
     @staticmethod
     @doc(description=memberships_view.is_member_off.__doc__)
     @marshal_with(MembershipResponseSchema)
-    def get(**payload):
+    def get(**payload) -> tuple:
         """
-        **get memberships**
-            Get all memberships
+            **get memberships**
+                Get all memberships
         """
         return memberships_view.is_member_off(**payload)
 
     @staticmethod
     @doc(description=memberships_view.add_membership.__doc__)
     @marshal_with(MembershipResponseSchema)
-    def post(**payload):
+    def post(**payload) -> tuple:
         """
-        **create memberships**
-            Create a new membership
+            **create memberships**
+                Create a new membership
         """
         return memberships_view.add_membership(**payload)
 
     @staticmethod
     @doc(description=memberships_view.update_membership.__doc__)
     @marshal_with(MembershipResponseSchema)
-    def put(**payload):
+    def put(**payload) -> tuple:
         """
-        **update membership**
-            Update a membership
+            ** update membership **
+                Update a membership
         """
         return memberships_view.update_membership(**payload)
 
@@ -62,7 +66,7 @@ class MembershipPaymentsView(ViewModel):
     @staticmethod
     @doc(description="get membership payment record")
     @marshal_with(MembershipPaymentResponseSchema)
-    def get(**payload):
+    def get(**payload) -> tuple:
         """
             get membership payment record
         :return:
@@ -72,8 +76,9 @@ class MembershipPaymentsView(ViewModel):
     @staticmethod
     @doc(description="create membership payment record")
     @marshal_with(MembershipPaymentResponseSchema)
-    def post(**payload):
+    def post(**payload) -> tuple:
         """
+        ** create membership **
             create membership payment record
         :return:
         """
@@ -82,9 +87,10 @@ class MembershipPaymentsView(ViewModel):
     @staticmethod
     @doc(description="update membership payment record")
     @marshal_with(MembershipPaymentResponseSchema)
-    def put(**payload):
+    def put(**payload) -> tuple:
         """
-            update membership payment record
+            ** update membership **
+                update membership payment record
         :return:
         """
         pass
@@ -102,8 +108,9 @@ class CouponsView(ViewModel):
     @staticmethod
     @doc(description="get coupon code")
     @marshal_with(CouponResponseSchema)
-    def get(**payload):
+    def get(**payload) -> tuple:
         """
+        ** get coupon codes **
             get Coupons View
         :param payload:
         :return:
@@ -116,9 +123,10 @@ class CouponsView(ViewModel):
     @marshal_with(CouponResponseSchema)
     @use_kwargs({'organization_id': fields.String(), 'code': fields.String(), 'discount': fields.Integer(),
                  'expiration_time': fields.Integer()}, location='json')
-    def post(**payload):
+    def post(**payload) -> tuple:
         """
-            create coupon codes
+            ** create coupon codes **
+                create new coupon codes
         :param payload:
         :return:
         """
@@ -130,9 +138,10 @@ class CouponsView(ViewModel):
     @marshal_with(CouponResponseSchema)
     @use_kwargs({'organization_id': fields.String(), 'code': fields.String(), 'discount': fields.Integer(),
                  'expiration_time': fields.Integer()}, location='json')
-    def put(**payload):
+    def put(**payload) -> tuple:
         """
-            update coupon codes
+            ** put coupon **
+                update coupon codes
         :param payload:
         :return:
         """
