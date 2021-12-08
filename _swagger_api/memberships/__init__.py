@@ -55,6 +55,7 @@ class MembershipsView(ViewModel):
 
 class MembershipPaymentsView(ViewModel):
     """
+        ** Class MembershipPaymentsView **
         allows clients to access & create memberships payment records
     """
     methods = ['GET', 'POST', 'PUT']
