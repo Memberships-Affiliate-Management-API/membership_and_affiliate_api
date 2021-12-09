@@ -2,6 +2,10 @@ from marshmallow import Schema, fields
 
 
 class AuthPayload(Schema):
+    """
+        ** Class AuthPayload **
+
+    """
     organization_id: str = fields.String(required=True)
     uid: str = fields.String()
     email: str = fields.String(required=True)
