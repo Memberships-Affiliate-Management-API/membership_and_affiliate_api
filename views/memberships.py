@@ -2242,8 +2242,7 @@ class CouponsView(Validators):
             message: str = "Unable to cancel coupon"
             raise DataServiceError(status=error_codes.data_service_error_code, description=message)
         message: str = 'successfully cancelled coupon code'
-        return jsonify(dict(status=True,
-                            message=message,
+        return jsonify(dict(status=True, message=message,
                             payload=coupon_instance.to_dict())), status_codes.successfully_updated_code
 
     @use_context
@@ -2409,8 +2408,7 @@ class CouponsView(Validators):
 
         if isinstance(coupon_instance, Coupons) and bool(coupon_instance):
             message: str = "Coupon found"
-            return jsonify(dict(status=True,
-                                message=message,
+            return jsonify(dict(status=True, message=message,
                                 payload=coupon_instance.to_dict())), status_codes.status_ok_code
 
         message: str = "Invalid Coupon Code - Or Coupon Code not found"
