@@ -102,6 +102,8 @@ class CouponsView(ViewModel):
         allows access and updating of coupon codes
 
     """
+    methods = ['GET', 'POST', 'PUT']
+    method_decorators = [handle_api_auth]
 
     def __init__(self):
         super().__init__()
@@ -148,3 +150,25 @@ class CouponsView(ViewModel):
         """
         #  organization_id: str, code: str, discount: int, expiration_time: int
         return coupons_view.add_coupon(**payload)
+
+
+class CouponsListView(ViewModel):
+    """
+
+    """
+    methods = ['GET', 'POST', 'PUT']
+    method_decorators = [handle_api_auth]
+
+    def __init__(self):
+        super().__init__()
+
+    @staticmethod
+    @doc(description="get coupons list")
+    @use_kwargs({'organization_id': fields.String()}, location='json')
+    def get(**payload) -> tuple:
+        """
+            will return a list of all coupon codes
+        :return:
+        """
+        return coupons_view.get_all_coupons(organization_id=payload.get('organization_id'))
+
