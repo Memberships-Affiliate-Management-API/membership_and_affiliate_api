@@ -154,7 +154,8 @@ class CouponsView(ViewModel):
 
 class CouponsListView(ViewModel):
     """
-
+        **Class CouponsListView **
+            will return a list of all coupon codes
     """
     methods = ['GET', 'POST', 'PUT']
     method_decorators = [handle_api_auth]
