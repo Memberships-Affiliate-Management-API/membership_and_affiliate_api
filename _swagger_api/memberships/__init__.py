@@ -154,7 +154,7 @@ class CouponsView(ViewModel):
 
 class CouponsListView(ViewModel):
     """
-        **Class CouponsListView **
+        **Class CouponsListView**
             will return a list of all coupon codes
     """
     methods = ['GET', 'POST', 'PUT']
@@ -172,4 +172,3 @@ class CouponsListView(ViewModel):
         :return:
         """
         return coupons_view.get_all_coupons(organization_id=payload.get('organization_id'))
-
