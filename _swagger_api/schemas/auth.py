@@ -4,7 +4,7 @@ from marshmallow import Schema, fields
 class AuthPayload(Schema):
     """
         ** Class AuthPayload **
-
+            Auth payload schema
     """
     organization_id: str = fields.String(required=True)
     uid: str = fields.String()
@@ -14,5 +14,9 @@ class AuthPayload(Schema):
 
 
 class AuthSchema(Schema):
+    """
+        ** Class AuthSchema **
+            authorization schema
+    """
     payload = fields.Nested(AuthPayload)
 

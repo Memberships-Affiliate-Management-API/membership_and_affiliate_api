@@ -7,9 +7,8 @@ from _swagger_api.schemas.response import ResponseSchema
 
 class PayloadSchema(Schema):
     """
-    ** Class CouponPayloadSchema **
-        Coupon schema
-
+        ** Class CouponPayloadSchema **
+            Coupon schema
     """
     organization_id = fields.Integer(required=True)
     code = fields.String(required=True)
@@ -21,14 +20,15 @@ class PayloadSchema(Schema):
 
 class CouponResponseSchema(ResponseSchema):
     """
-        Coupon schema
+        ** Class CouponResponseSchema **
+            Coupon schema
     """
     payload = fields.Nested(PayloadSchema)
 
 
 class CouponResponseListSchema(ResponseSchema):
     """
-        Coupon schema
+        ** Coupon Response List Schema **
             payload: request payload
     """
     payload = fields.Nested(PayloadSchema, many=True)
