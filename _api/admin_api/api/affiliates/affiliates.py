@@ -12,9 +12,7 @@ __licence__ = "MIT"
 
 import hmac
 from typing import Optional
-
 from flask import Blueprint, request
-
 from config import config_instance
 from config.exceptions import UnAuthenticatedError, InputError
 from security.apps_authenticator import handle_apps_authentication, verify_secret_key

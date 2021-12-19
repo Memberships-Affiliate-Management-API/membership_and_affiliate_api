@@ -548,25 +548,20 @@ class RecruitsView(Validator):
         referrer_uid: Optional[str] = recruit_data.get('referrer_uid')
         if not isinstance(referrer_uid, str) or not bool(referrer_uid.strip()):
             message: str = 'referrer_uid is required'
-            raise InputError(
-                status=error_codes.input_error_code, description=message)
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         organization_id: Optional[str] = recruit_data.get('organization_id')
         if not isinstance(organization_id, str) or not bool(organization_id.strip()):
             message: str = 'organization_id is required'
-            raise InputError(
-                status=error_codes.input_error_code, description=message)
+            raise InputError(status=error_codes.input_error_code, description=message)
 
         affiliate_id = self._create_unique_affiliate_id()
-        recruit_instance: Recruits = Recruits(
-            **recruit_data, affiliate_id=affiliate_id)
+        recruit_instance: Recruits = Recruits(**recruit_data, affiliate_id=affiliate_id)
 
-        key = recruit_instance.put(
-            retries=self._max_retries, timeout=self._max_timeout)
+        key = recruit_instance.put(retries=self._max_retries, timeout=self._max_timeout)
         if not isinstance(key, ndb.Key):
             message: str = "An Error occurred while adding new recruit"
-            raise DataServiceError(
-                status=error_codes.data_service_error_code, description=message)
+            raise DataServiceError(status=error_codes.data_service_error_code, description=message)
 
         # NOTE scheduling recruits cache deleter
         _kwargs: dict = dict(recruits_view=RecruitsView, organization_id=organization_id,

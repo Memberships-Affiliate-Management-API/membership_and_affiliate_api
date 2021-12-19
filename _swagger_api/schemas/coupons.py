@@ -29,5 +29,6 @@ class CouponResponseSchema(ResponseSchema):
 class CouponResponseListSchema(ResponseSchema):
     """
         Coupon schema
+            payload: request payload
     """
     payload = fields.Nested(PayloadSchema, many=True)

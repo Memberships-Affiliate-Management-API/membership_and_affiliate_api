@@ -12,7 +12,6 @@ __licence__ = "MIT"
 
 import hmac
 from typing import Optional
-
 from flask import Blueprint, request
 
 from config import config_instance
@@ -21,6 +20,12 @@ from security.apps_authenticator import handle_apps_authentication, verify_secre
 from views import recruits_view
 
 admin_recruits_api_bp = Blueprint("admin_recruits_api", __name__)
+
+
+def _compare_org_uid(organization_id, uid) -> tuple:
+    compare_organization: bool = hmac.compare_digest(organization_id, config_instance.ORGANIZATION_ID)
+    compare_uid: bool = hmac.compare_digest(uid, config_instance.ADMIN_UID)
+    return compare_organization, compare_uid
 
 
 @admin_recruits_api_bp.route('/_api/v1/admin/recruits/<string:path>', methods=['POST'])
@@ -39,8 +44,7 @@ def recruits_admin(path: str) -> tuple:
         """ get all recruits for memberships and affiliate management api"""
         organization_id: str = json_data.get('organization_id')
         uid: str = json_data.get('uid')
-        compare_organization: bool = hmac.compare_digest(organization_id, config_instance.ORGANIZATION_ID)
-        compare_uid: bool = hmac.compare_digest(uid, config_instance.ADMIN_UID)
+        compare_organization, compare_uid = _compare_org_uid(organization_id, uid)
         if not (compare_organization and compare_uid):
             message: str = 'you are not authorized to access this resource'
             raise UnAuthenticatedError(description=message)
@@ -70,8 +74,7 @@ def get_recruit_data(json_data: dict) -> dict:
     """
     organization_id: str = json_data.get('organization_id')
     uid: str = json_data.get('uid')
-    compare_organization: bool = hmac.compare_digest(organization_id, config_instance.ORGANIZATION_ID)
-    compare_uid: bool = hmac.compare_digest(uid, config_instance.ADMIN_UID)
+    compare_organization, compare_uid = _compare_org_uid(organization_id, uid)
     if not (compare_organization and compare_uid):
         message: str = 'you are not authorized to access this resource'
         raise UnAuthenticatedError(description=message)
