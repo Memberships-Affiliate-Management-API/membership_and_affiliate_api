@@ -10,7 +10,8 @@ from utils import create_id
 
 class UserPayloadSchema(Schema):
     """
-        Payload Schema for Users
+        ** Class UserPayloadSchema **
+            Payload Schema for Users
     """
     organization_id: str = fields.String(required=True, description='id of the registered organization')
     uid: str = fields.String(required=True, description='user id of the user making the request')
@@ -31,13 +32,15 @@ class UserPayloadSchema(Schema):
 
 class UserResponseSchema(ResponseSchema):
     """
-        Response Schema for users
+        ** Class UserResponseSchema **
+            Response Schema for users
     """
     payload = fields.Nested(UserPayloadSchema, description='The Actual payload contained in the response object')
 
 
 class UsersListResponseSchema(ResponseSchema):
     """
+        ** Class UsersListResponseSchema **
         List of Users Response Schema
     """
     payload = fields.Nested(UserPayloadSchema(many=True), description='users list')
@@ -45,7 +48,8 @@ class UsersListResponseSchema(ResponseSchema):
 
 class UserRequestPayloadSchema(Schema):
     """
-        payload for user request schema
+        ** Class UserRequestPayloadSchema **
+            payload for user request schema 
     """
     organization_id: str = fields.String(required=True, description='id of the registered organization')
     uid: str = fields.String(description='user id of the user making the request')
@@ -60,6 +64,7 @@ class UserRequestPayloadSchema(Schema):
 
 class UserRequestSchema(Schema):
     """
-        request schema for creating and updating user
+        ** User Request Schema **
+            request schema for creating and updating user
     """
     payload = fields.Nested(UserRequestPayloadSchema, description='user data for updating or creating new user')

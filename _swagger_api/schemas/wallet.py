@@ -36,7 +36,8 @@ class WalletResponseSchema(ResponseSchema):
 
 class WalletListResponseSchema(ResponseSchema):
     """
-        a schema for returning list of wallets
+        ** Class WalletListResponseSchema **
+            a schema for returning list of wallets
     """
     payload = fields.Nested(WalletPayloadSchema(many=True), description='List of wallets')
 
@@ -44,5 +45,6 @@ class WalletListResponseSchema(ResponseSchema):
 class WalletRequestSchema(Schema):
     """
         **Class WalletRequestSchema**
+            a schema for wallet requests
     """
     payload = fields.Nested(WalletPayloadSchema, description='description of wallet request')

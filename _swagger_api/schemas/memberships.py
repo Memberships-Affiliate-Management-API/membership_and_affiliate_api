@@ -5,7 +5,7 @@ from _swagger_api.schemas.response import ResponseSchema
 
 class MembershipPayloadSchema(Schema):
     """
-    ** Class
+    ** Class MembershipPayloadSchema **
         Schema for the response of a membership
     """
     organization_id: str = fields.String()
