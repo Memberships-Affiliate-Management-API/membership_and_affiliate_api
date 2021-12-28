@@ -12,6 +12,13 @@ class HelpDeskValid:
 
 
 class HelpDesk(BaseModel):
+    """
+        ** Class HelpDesk **
+            help_desk_active: bool = True if helpdesk is activated
+            total_tickets: int = 0 total number of help desk tickets
+            total_tickets_opened: int = 0 total number of opened tickets
+            total_tickets_closed: int = 0 total number of closed tickets
+    """
     help_desk_active: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
     total_tickets: int = ndb.IntegerProperty(default=0, validator=property_.set_number)
     total_tickets_opened: int = ndb.IntegerProperty(default=0, validator=property_.set_number)
@@ -36,8 +43,10 @@ class HelpDesk(BaseModel):
         return True
 
     def __bool__(self) -> bool:
-        # Cannot use bool as total_tickets of 0 will return False
-        # return True if self.total_tickets is not None else False
+        """
+            will return true if helpdesk holds valid data
+        :return:
+        """
         return bool(self.help_desk_active)
 
 
@@ -49,6 +58,12 @@ class TicketValid:
 
     @staticmethod
     def is_topic_valid(topic: Optional[str]) -> bool:
+        """
+            **is_topic_valid**
+                return true if topic is valid
+        :param topic:
+        :return:
+        """
         if not isinstance(topic, str) or not bool(topic.strip()):
             return False
         return True

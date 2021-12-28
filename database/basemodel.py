@@ -21,6 +21,10 @@ class BaseModel(ndb.Model):
             defines common d_under methods, properties and methods
             used to define all other Data Models
     """
+    def __bool__(self) -> bool:
+        """bool protocol"""
+        ...
+
     def __repr__(self) -> str:
         """
             **__repr__**

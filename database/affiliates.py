@@ -83,7 +83,7 @@ class RecruitsValidators:
     """
 
     def __init__(self) -> None:
-        super(RecruitsValidators, self).__init__()
+        super().__init__()
 
     # noinspection DuplicatedCode
     @staticmethod
@@ -135,7 +135,7 @@ class EarningsValidators:
     """
 
     def __init__(self) -> None:
-        super(EarningsValidators, self).__init__()
+        super().__init__()
 
     @staticmethod
     @handle_store_errors
