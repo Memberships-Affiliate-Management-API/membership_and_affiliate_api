@@ -21,9 +21,11 @@ class TasksRunManager:
         self.tasks_list: List[Optional[Thread]] = []
 
     def add_tasks(self, task: Thread):
-        if not len(self.tasks_list):
+        if not self.tasks_list:
+            # if tasks list is empty add task and start it
             self.tasks_list.append(task.start())
 
         for idx, tasks in enumerate(self.tasks_list):
+            # insert task in the first spot that contains a finished task and start it
             if tasks is None:
                 self.tasks_list[idx] = task.start()

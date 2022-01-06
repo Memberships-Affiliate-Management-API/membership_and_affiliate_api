@@ -121,7 +121,7 @@ def date_string_to_date(date_str: str) -> date:
     """
         **date_string_to_date**
             Turns a string representation of a date into python date object representing the date
-
+            eval(timestamp_difference.__doc__)
     :param date_str: string representation of date
     :return: returns a python date object
     """

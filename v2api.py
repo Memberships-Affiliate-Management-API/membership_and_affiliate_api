@@ -23,7 +23,7 @@ def add_wallet_endpoints(api: Api) -> Api:
     api.add_resource(WalletView, '/api/v2/wallet', endpoint='create_wallet', methods=['POST'])
     # get an existing wallet
     get_wallet_url: str = '/api/v2/wallet/<string:organization_id>/<string:uid>'
-    api.add_resource(WalletView, get_wallet_url , endpoint='get_wallet', methods=['GET'])
+    api.add_resource(WalletView, get_wallet_url, endpoint='get_wallet', methods=['GET'])
     # update wallet
     api.add_resource(WalletView, '/api/v2/wallet', endpoint='update_wallet', methods=['PUT'])
     return api

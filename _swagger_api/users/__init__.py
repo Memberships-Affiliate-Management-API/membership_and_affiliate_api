@@ -18,6 +18,24 @@ class UserViewModel(ViewModel):
         super().__init__()
 
     @staticmethod
+    def user_details(payload: dict) -> dict:
+        """
+            parses payload and returns valid variables
+        :param payload:
+        :return:
+        """
+        organization_id: str = payload.get('organization_id')
+        names: str = payload.get('names')
+        surname: str = payload.get('surname')
+        cell: str = payload.get('cell')
+        email: str = payload.get('email')
+        password: str = payload.get('password')
+        uid: str = payload.get('uid')
+
+        return dict(names=names, cell=cell, email=email, organization_id=organization_id, password=password,
+                    surname=surname, uid=uid)
+
+    @staticmethod
     @doc(description=user_view.get_user.__doc__)
     @marshal_with(UserResponseSchema)
     def get(organization_id: str, uid: str) -> tuple:
@@ -41,16 +59,7 @@ class UserViewModel(ViewModel):
         :param payload: a dictionary containing user data
         :return: user
         """
-        organization_id: str = payload.get('organization_id')
-        names: str = payload.get('names')
-        surname: str = payload.get('surname')
-        cell: str = payload.get('cell')
-        email: str = payload.get('email')
-        password: str = payload.get('password')
-        uid: str = payload.get('uid')
-
-        return user_view.add_user(organization_id=organization_id, uid=uid, names=names, surname=surname, cell=cell,
-                                  email=email, password=password)
+        return user_view.add_user(**UserViewModel.user_details(payload))
 
     @staticmethod
     @doc(description=user_view.update_user.__doc__)
@@ -63,18 +72,11 @@ class UserViewModel(ViewModel):
         :param payload:
         :return: tuple
         """
-        organization_id: str = payload.get('organization_id')
-        names: str = payload.get('names')
-        surname: str = payload.get('surname')
-        cell: str = payload.get('cell')
-        email: str = payload.get('email')
-        password: str = payload.get('password')
-        uid: str = payload.get('uid')
         is_admin: bool = payload.get('is_admin')
         is_support: bool = payload.get('is_support')
 
-        return user_view.update_user(organization_id=organization_id, uid=uid, names=names, surname=surname, cell=cell,
-                                     email=email, is_admin=is_admin, is_support=is_support)
+        return user_view.update_user(**UserViewModel.user_details(payload),
+                                     is_admin=is_admin, is_support=is_support)
 
 
 class AuthViewModel(ViewModel):

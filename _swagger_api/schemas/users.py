@@ -59,7 +59,8 @@ class UserRequestPayloadSchema(Schema):
     email: str = fields.Email(required=True, description='email address of user')
     password: str = fields.String(description='user password')
     is_admin: bool = fields.Boolean(default=False, description='if user is admin this would be True')
-    is_support: bool = fields.Boolean(default=False, description='if user is a member of the support team this will be true')
+    is_support: bool = fields.Boolean(default=False, description='if user is a member of the support team this '
+                                                                 'will be true')
 
 
 class UserRequestSchema(Schema):
