@@ -2,6 +2,9 @@
     ** Class Memberships **
         memberships view model
 """
+from collections import Callable
+from typing import List
+
 from marshmallow import fields
 from _swagger_api.schemas.coupons import CouponResponseSchema
 from flask_apispec import doc, marshal_with, use_kwargs
@@ -16,8 +19,10 @@ class MembershipsView(ViewModel):
         ** Class  MembershipsView **
             View model for Memberships
     """
-    methods = ['GET', 'POST', 'PUT']
-    method_decorators = [handle_api_auth]
+    def __new__(cls, *args, **kwargs):
+        cls.methods: List[str] = ['GET', 'POST', 'PUT']
+        cls.method_decorators: List[Callable] = [handle_api_auth]
+        return super().__new__(cls, *args, **kwargs)
 
     def __init__(self):
         super().__init__()

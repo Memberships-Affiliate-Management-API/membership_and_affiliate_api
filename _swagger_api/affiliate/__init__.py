@@ -1,3 +1,5 @@
+from typing import List, Callable
+
 from flask_apispec import doc, marshal_with, use_kwargs
 from _swagger_api import ViewModel
 from _swagger_api.schemas.affiliate import AffiliateResponseSchema
@@ -8,10 +10,11 @@ from views import affiliates_view
 class AffiliateView(ViewModel):
     """
         **Class AffiliateView**
-
     """
-    methods = ['GET', 'POST']
-    method_decorators = [handle_api_auth]
+    def __new__(cls, *args, **kwargs):
+        cls.methods: List[str] = ['GET', 'POST']
+        cls.method_decorators: List[Callable] = [handle_api_auth]
+        return super().__new__(cls, *args, **kwargs)
 
     def __init__(self) -> None:
         super().__init__()

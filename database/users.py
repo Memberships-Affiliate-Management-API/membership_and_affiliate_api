@@ -171,8 +171,9 @@ class UserModel(BaseModel):
                                                                                     self.email, self.cell)
 
     def __eq__(self, other) -> bool:
-        if self.__class__ != other.__class__:
+        if not super().__eq__(other):
             return False
+
         if self.uid != other.uid:
             return False
         if self.email != other.email:
@@ -296,9 +297,9 @@ class GithubUser(BaseModel):
     is_deleted: bool = ndb.BooleanProperty(default=False, validator=property_.set_bool)
 
     def __eq__(self, other) -> bool:
-        if self.__class__ != other.__class__:
+        if not super().__eq__(other):
             return False
-        
+
         if self.uid != other.uid:
             return False
         if self.email != other.email:

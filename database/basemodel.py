@@ -25,6 +25,15 @@ class BaseModel(ndb.Model):
         """bool protocol"""
         ...
 
+    def __str__(self) -> bool:
+        """string protocol"""
+        ...
+
+    def __eq__(self, other) -> bool:
+        if self.__class__ != other.__class__:
+            return False
+        return True
+
     def __repr__(self) -> str:
         """
             **__repr__**

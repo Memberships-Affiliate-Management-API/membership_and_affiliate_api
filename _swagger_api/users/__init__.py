@@ -11,8 +11,11 @@ class UserViewModel(ViewModel):
     """
         **Class UserViewModel**
     """
-    methods = ['GET', 'POST', 'PUT', 'DELETE']
-    method_decorators = [handle_api_auth]
+
+    def __new__(cls, *args, **kwargs):
+        cls.methods = ['GET', 'POST', 'PUT', 'DELETE']
+        cls.method_decorators = [handle_api_auth]
+        return super().__new__(cls, *args, **kwargs)
 
     def __init__(self) -> None:
         super().__init__()

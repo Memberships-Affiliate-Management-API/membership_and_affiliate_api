@@ -25,7 +25,6 @@ class WalletValidator:
         **Class WalletValidator**
             Validates User Inputs when creating updating and making transactions on clients
             and organizational wallets
-
     """
 
     def __init__(self):
