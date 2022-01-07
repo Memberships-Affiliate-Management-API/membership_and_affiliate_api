@@ -63,10 +63,15 @@ class MembershipPaymentsView(ViewModel):
         ** Class MembershipPaymentsView **
         allows clients to access & create memberships payment records
     """
-    methods = ['GET', 'POST', 'PUT']
-    method_decorators = [handle_api_auth]
+
+    def __new__(cls, *args, **kwargs):
+        """new MembershipPaymentsView"""
+        cls.methods = ['GET', 'POST', 'PUT']
+        cls.method_decorators = [handle_api_auth]
+        return super().__new__(cls, *args, **kwargs)
 
     def __init__(self):
+        """initialize MembershipPaymentsView"""
         super().__init__()
 
     @staticmethod
@@ -107,8 +112,10 @@ class CouponsView(ViewModel):
         allows access and updating of coupon codes
 
     """
-    methods = ['GET', 'POST', 'PUT']
-    method_decorators = [handle_api_auth]
+    def __new__(cls, *args, **kwargs):
+        cls.methods = ['GET', 'POST', 'PUT']
+        cls.method_decorators = [handle_api_auth]
+        return super().__new__(cls, *args, **kwargs)
 
     def __init__(self):
         super().__init__()
@@ -162,10 +169,15 @@ class CouponsListView(ViewModel):
         **Class CouponsListView**
             will return a list of all coupon codes
     """
-    methods = ['GET', 'POST', 'PUT']
-    method_decorators = [handle_api_auth]
+
+    def __new__(cls, *args, **kwargs):
+        """New CouponsListView"""
+        cls.methods = ['GET', 'POST', 'PUT', 'DELETE']
+        cls.method_decorators = [handle_api_auth]
+        return super().__new__(cls, *args, **kwargs)
 
     def __init__(self):
+        """initialize CouponsListView"""
         super().__init__()
 
     @staticmethod

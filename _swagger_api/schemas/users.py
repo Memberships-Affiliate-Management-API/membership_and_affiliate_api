@@ -24,7 +24,8 @@ class UserPayloadSchema(Schema):
     is_active: bool = fields.Boolean(default=True, description='if user is active this will be true')
     time_registered: int = fields.Integer(description='the time the user was registered')
     is_admin: bool = fields.Boolean(default=False, description='if user is admin this would be True')
-    is_support: bool = fields.Boolean(default=False, description='if user is a member of the support team this will be true')
+    is_support: bool = fields.Boolean(default=False, description='if user is a member of the support team this '
+                                                                 'will be true')
     address = fields.Nested(AddressSchema(exclude=('organization_id', 'uid', )), description='User Address')
     recovery_code: str = fields.String(description='recovery code if password reset is requested')
     last_login_date: date = fields.Date(description='date of last login')

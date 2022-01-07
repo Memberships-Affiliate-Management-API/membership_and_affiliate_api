@@ -21,8 +21,10 @@ class WalletPayloadSchema(Schema):
     monthly_withdrawal_allowance = fields.Nested(AmountSchema, description='indicates funds available for withdrawal')
     time_created: datetime = fields.DateTime(description='the date and time the wallet was created')
     last_transaction_time: datetime = fields.DateTime(description='the date the last transaction was performed')
-    paypal_address: str = fields.String(description='paypal address attached to wallet - withdrawals will be sent to this address')
-    is_verified: bool = fields.String(description='True if wallet is verified, only verified wallets can receive withdrawals')
+    paypal_address: str = fields.String(description='paypal address attached to wallet - withdrawals will be sent '
+                                                    'to this address')
+    is_verified: bool = fields.String(description='True if wallet is verified, only verified wallets can receive '
+                                                  'withdrawals')
 
 
 # Wallet Response Schema
