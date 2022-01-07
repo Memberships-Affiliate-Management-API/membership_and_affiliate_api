@@ -11,7 +11,6 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 
 import functools
 from typing import Callable, Optional
-
 from google.api_core.exceptions import Aborted, RetryError
 from google.cloud.ndb.exceptions import BadRequestError, BadQueryError
 from config.exceptions import InputError, RequestError, DataServiceError, error_codes
@@ -32,8 +31,7 @@ def handle_view_errors(func):
             message: str = str(e)
             if debug:
                 print(message)
-            raise InputError(
-                status=error_codes.input_error_code, description=message)
+            raise InputError(status=error_codes.input_error_code, description=message)
         except TypeError as e:
             message: str = str(e)
             if debug:
@@ -44,8 +42,7 @@ def handle_view_errors(func):
             if debug:
                 print(e)
             message: str = '''Bad Request: while connecting to database'''
-            raise RequestError(
-                status=error_codes.bad_request_error_code, description=message)
+            raise RequestError(status=error_codes.bad_request_error_code, description=message)
         except BadQueryError as e:
             if debug:
                 print(e)
@@ -56,21 +53,18 @@ def handle_view_errors(func):
             if debug:
                 print(e)
             message: str = '''Connection Refused: Unable to connect to database please try again later'''
-            raise RequestError(
-                status=error_codes.remote_data_error, description=message)
+            raise RequestError(status=error_codes.remote_data_error, description=message)
         except RetryError as e:
             if debug:
                 print(e)
             message: str = '''Retries Exceeded: Unable to connect to database please try again later 
             or inform the administrator'''
-            raise RequestError(
-                status=error_codes.remote_data_error, description=message)
+            raise RequestError(status=error_codes.remote_data_error, description=message)
         except Aborted as e:
             if debug:
                 print(e)
             message: str = '''Abort Error: connection refused by remote server'''
-            raise RequestError(
-                status=error_codes.remote_data_error, description=message)
+            raise RequestError(status=error_codes.remote_data_error, description=message)
 
     return wrapper
 

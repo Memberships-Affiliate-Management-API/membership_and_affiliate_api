@@ -171,9 +171,8 @@ class UserModel(BaseModel):
                                                                                     self.email, self.cell)
 
     def __eq__(self, other) -> bool:
-        if not super().__eq__(other):
+        if self.__class__ != other.__class__:
             return False
-
         if self.uid != other.uid:
             return False
         if self.email != other.email:

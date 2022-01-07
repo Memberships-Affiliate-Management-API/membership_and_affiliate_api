@@ -94,7 +94,6 @@ class Organization(BaseModel):
     login_callback_url: str = ndb.StringProperty(validator=property_.set_domain)
     recovery_callback_url: str = ndb.StringProperty(validator=property_.set_domain)
 
-
     @ndb.model.ComputedProperty
     def balance(self) -> AmountMixin:
         amount = self.total_membership_payments.amount_cents - self.total_paid.amount_cents
@@ -115,7 +114,6 @@ class Organization(BaseModel):
 
     def __bool__(self) -> bool:
         return bool(self.organization_id) and bool(self.owner_uid) and bool(self.wallet_id)
-
 
 
 class AuthUserValidators:

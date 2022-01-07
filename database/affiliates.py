@@ -361,7 +361,8 @@ class AffiliateSettingsStats(BaseModel):
         return True
 
     def __str__(self) -> str:
-        return "<AffiliateSettingsStats organization_id: {},  Earnings Percent: {}, Recurring Earnings: {}, Total Affiliates Earnings: {}, " \
+        return "<AffiliateSettingsStats organization_id: {},  Earnings Percent: {}, " \
+               "Recurring Earnings: {}, Total Affiliates Earnings: {}, " \
                "Total Affiliates: {}".format(self.organization_id, self.earnings_percent, self.recurring_earnings,
                                              self.total_affiliates_earnings.__str__(), self.total_affiliates)
 

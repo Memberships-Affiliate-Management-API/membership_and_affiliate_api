@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from flask_apispec import doc, marshal_with, use_kwargs
 from _swagger_api import ViewModel
 from _swagger_api.schemas.auth import AuthSchema
@@ -10,14 +12,17 @@ from views import user_view
 class UserViewModel(ViewModel):
     """
         **Class UserViewModel**
+
     """
 
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls, *args, **kwargs) -> UserViewModel:
+        """new UserViewModel"""
         cls.methods = ['GET', 'POST', 'PUT', 'DELETE']
         cls.method_decorators = [handle_api_auth]
         return super().__new__(cls, *args, **kwargs)
 
     def __init__(self) -> None:
+        """Initialize UserViewModel"""
         super().__init__()
 
     @staticmethod
@@ -86,10 +91,15 @@ class AuthViewModel(ViewModel):
     """
         an endpoint for handling user authentication
     """
-    methods = ['GET', 'POST', 'PUT']
-    method_decorators = [handle_api_auth]
+
+    def __new__(cls, *args, **kwargs):
+        """new AuthViewModel"""
+        cls.methods = ['GET', 'POST', 'PUT']
+        cls.method_decorators = [handle_api_auth]
+        return super().__new__(cls, *args, **kwargs)
 
     def __init__(self) -> None:
+        """initialize AuthViewModel"""
         super().__init__()
 
     @staticmethod
@@ -133,10 +143,15 @@ class UserListView(ViewModel):
         **Class UserListView**
             allows admins to access a list of users
     """
-    methods = ['GET']
-    method_decorators = [handle_apps_authentication]
+
+    def __new__(cls, *args, **kwargs):
+        """creating UserListView"""
+        cls.methods = ["GET"]
+        cls.method_decorators = [handle_apps_authentication]
+        return super().__new__(cls, *args, **kwargs)
 
     def __init__(self):
+        """initialize UserListView"""
         super().__init__()
 
     @staticmethod
@@ -144,8 +159,8 @@ class UserListView(ViewModel):
     @marshal_with(UsersListResponseSchema)
     def get(organization_id: str) -> tuple:
         """
-        :param organization_id: organization_id of the admin
-        :param uid :  user id of the admin users
-        :return: tuple
+            :param organization_id: organization_id of the admin
+            :param uid:  user id of the admin users
+            :return: tuple
         """
         return user_view.get_all_users(organization_id=organization_id)

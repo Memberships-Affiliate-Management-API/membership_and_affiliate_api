@@ -30,9 +30,8 @@ class BaseModel(ndb.Model):
         ...
 
     def __eq__(self, other) -> bool:
-        if self.__class__ != other.__class__:
-            return False
-        return True
+        """equal method"""
+        ...
 
     def __repr__(self) -> str:
         """

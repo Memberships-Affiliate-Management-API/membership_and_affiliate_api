@@ -68,15 +68,15 @@ def handle_api_auth(func):
         secret_token: Optional[str] = request.headers.get('x-secret-token')
         domain: Optional[str] = request.base_url
 
-        if api_key is None:
+        if not api_key:
             message: str = "request not authorized"
             raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
-        if secret_token is None:
+        if not secret_token:
             message: str = "request not authorized"
             raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
-        if domain is None:
+        if not domain:
             message: str = "request not authorized"
             raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 

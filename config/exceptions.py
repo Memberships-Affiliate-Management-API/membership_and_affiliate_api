@@ -11,7 +11,6 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
 from typing import Optional
-
 from werkzeug.exceptions import HTTPException
 
 
