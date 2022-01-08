@@ -24,7 +24,7 @@ microservices_ipn_bp = Blueprint("microservices_ipn", __name__)
 @microservices_ipn_bp.route('/_ipn/micro-services/auth', methods=["POST"])
 def micro_services_auth() -> tuple:
     """
-
+        will authenticate a web application to this API
     :return:
     """
     json_data: dict = request.get_json()

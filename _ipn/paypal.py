@@ -13,16 +13,14 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
 from flask import Blueprint
-
-
 paypal_ipn_bp = Blueprint("paypal_ipn", __name__)
 
 
 @paypal_ipn_bp.route('/_ipn/paypal/deposit/success/<path:path>', methods=["GET", "POST"])
-def deposit_successfull_ipn(path: str) -> tuple:
+def deposit_successful_ipn(path: str) -> tuple:
     """
-    **deposit_successfull_ipn**
-        deposit is successfull capture the approve url and redirect the user there after saving the deposit
+    **deposit_successful_ipn**
+        deposit is successful capture the approve url and redirect the user there after saving the deposit
         details to the store
 
         :param path: organization_id
@@ -69,9 +67,9 @@ def withdrawal_failed_ipn(path: str) -> tuple:
 
 
 @paypal_ipn_bp.route('/_ipn/paypal/withdrawal/success/<path:path>', methods=["GET", "POST"])
-def withdrawal_successfull_ipn(path: str) -> tuple:
+def withdrawal_successful_ipn(path: str) -> tuple:
     """
-        **withdrawal_successfull_ipn**
+        **withdrawal_successful_ipn**
 
         :param path: organization_id
         :return: "OK", 200

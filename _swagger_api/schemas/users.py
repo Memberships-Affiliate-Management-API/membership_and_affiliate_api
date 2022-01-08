@@ -5,7 +5,6 @@ from marshmallow import Schema, fields
 from datetime import datetime, date
 from _swagger_api.schemas.address import AddressSchema
 from _swagger_api.schemas.response import ResponseSchema
-from utils import create_id
 
 
 class UserPayloadSchema(Schema):

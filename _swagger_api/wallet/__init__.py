@@ -2,9 +2,7 @@
     Swagger Compatible API for wallet
 """
 from __future__ import annotations
-
 from typing import List, Callable
-
 from flask_apispec import doc, marshal_with, use_kwargs
 from _swagger_api import ViewModel
 from _swagger_api.schemas.wallet import WalletResponseSchema, WalletListResponseSchema, WalletRequestSchema
@@ -86,8 +84,6 @@ class WalletListView(ViewModel):
         **WalletListView**
             returns a list of all wallets for a specific organization
     """
-    methods = ["GET"]
-    method_decorators = [handle_api_auth]
 
     def __new__(cls, *args, **kwargs) -> WalletListView:
         """
