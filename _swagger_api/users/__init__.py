@@ -1,5 +1,4 @@
 from __future__ import annotations
-
 from flask_apispec import doc, marshal_with, use_kwargs
 from _swagger_api import ViewModel
 from _swagger_api.schemas.auth import AuthSchema
@@ -92,7 +91,7 @@ class AuthViewModel(ViewModel):
         an endpoint for handling user authentication
     """
 
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls, *args, **kwargs) -> AuthViewModel:
         """new AuthViewModel"""
         cls.methods = ['GET', 'POST', 'PUT']
         cls.method_decorators = [handle_api_auth]
