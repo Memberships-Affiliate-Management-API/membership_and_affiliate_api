@@ -80,6 +80,7 @@ class Util:
             :param prop: -> ndb.Property
             :return str: -> name of class
         """
+        # noinspection PyProtectedMember
         return prop._code_name
 
     @staticmethod
@@ -123,15 +124,11 @@ class Util:
         :param domain: str -> domain name to check
         :return: bool: True -> if pattern matches
         """
-        to_check: str = domain.replace(
-            'https://', '') if domain.startswith('https://') else domain
+        to_check: str = domain.replace('https://', '') if domain.startswith('https://') else domain
         # noinspection HttpUrlsUsage
-        to_check: str = to_check.replace(
-            'http://', '') if to_check.startswith('http://') else to_check
-        to_check: str = to_check.replace(
-            '/', '') if to_check.endswith('/') else to_check
-        to_check: str = to_check.split(
-            sep='/')[0] if '/' in to_check else to_check
+        to_check: str = to_check.replace('http://', '') if to_check.startswith('http://') else to_check
+        to_check: str = to_check.replace('/', '') if to_check.endswith('/') else to_check
+        to_check: str = to_check.split(sep='/')[0] if '/' in to_check else to_check
 
         # to_check = 'google.com'
 

@@ -2,6 +2,7 @@
     ** Class Memberships **
         memberships view model
 """
+from __future__ import annotations
 from collections import Callable
 from typing import List
 
@@ -19,7 +20,7 @@ class MembershipsView(ViewModel):
         ** Class  MembershipsView **
             View model for Memberships
     """
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls, *args, **kwargs) -> MembershipsView:
         cls.methods: List[str] = ['GET', 'POST', 'PUT']
         cls.method_decorators: List[Callable] = [handle_api_auth]
         return super().__new__(cls, *args, **kwargs)
@@ -64,7 +65,7 @@ class MembershipPaymentsView(ViewModel):
         allows clients to access & create memberships payment records
     """
 
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls, *args, **kwargs) -> MembershipPaymentsView:
         """new MembershipPaymentsView"""
         cls.methods = ['GET', 'POST', 'PUT']
         cls.method_decorators = [handle_api_auth]
@@ -112,7 +113,7 @@ class CouponsView(ViewModel):
         allows access and updating of coupon codes
 
     """
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls, *args, **kwargs) -> CouponsView:
         cls.methods = ['GET', 'POST', 'PUT']
         cls.method_decorators = [handle_api_auth]
         return super().__new__(cls, *args, **kwargs)
@@ -170,7 +171,7 @@ class CouponsListView(ViewModel):
             will return a list of all coupon codes
     """
 
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls, *args, **kwargs) -> CouponsListView:
         """New CouponsListView"""
         cls.methods = ['GET', 'POST', 'PUT', 'DELETE']
         cls.method_decorators = [handle_api_auth]

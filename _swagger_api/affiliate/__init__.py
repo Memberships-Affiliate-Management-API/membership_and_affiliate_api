@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import List, Callable
 
 from flask_apispec import doc, marshal_with, use_kwargs
@@ -11,7 +12,7 @@ class AffiliateView(ViewModel):
     """
         **Class AffiliateView**
     """
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls, *args, **kwargs) -> AffiliateView:
         cls.methods: List[str] = ['GET', 'POST']
         cls.method_decorators: List[Callable] = [handle_api_auth]
         return super().__new__(cls, *args, **kwargs)
