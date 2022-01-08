@@ -1,6 +1,9 @@
 """
     Swagger Compatible API for wallet
 """
+from __future__ import annotations
+
+from typing import List, Callable
 
 from flask_apispec import doc, marshal_with, use_kwargs
 from _swagger_api import ViewModel
@@ -17,7 +20,7 @@ class WalletView(ViewModel):
             get, update, delete Wallet
     """
 
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls, *args, **kwargs) -> WalletView:
         cls.methods = ["GET", "PUT", "PUT", "DELETE"]
         cls.method_decorators = [handle_api_auth]
         return super().__new__(cls, *args, **kwargs)
@@ -86,6 +89,15 @@ class WalletListView(ViewModel):
     methods = ["GET"]
     method_decorators = [handle_api_auth]
 
+    def __new__(cls, *args, **kwargs) -> WalletListView:
+        """
+            :param args:
+            :param kwargs:
+        """
+        cls.methods = ["GET"]
+        cls.method_decorators = [handle_api_auth]
+        return super().__new__(cls, *args, **kwargs)
+
     def __init__(self) -> None:
         super().__init__()
 
@@ -106,8 +118,14 @@ class OrganizationWallets(ViewModel):
         **OrganizationWallets**
             create organization wallets
     """
-    methods = ["POST"]
-    method_decorators = [handle_api_auth]
+
+    def __new__(cls, *args, **kwargs) -> OrganizationWallets:
+        cls.methods: List[str] = ["POST"]
+        cls.method_decorators: List[Callable] = [handle_api_auth]
+        return super().__new__(cls, *args, **kwargs)
+
+    def __init__(self) -> None:
+        super().__init__()
 
     @staticmethod
     @doc(description=wallet_view.create_wallet.__doc__)
