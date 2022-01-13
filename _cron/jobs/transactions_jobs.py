@@ -23,6 +23,7 @@ class TransactionsJobs:
     @use_context
     @toplevel
     def run(self):
+        """runs transactions cron jobs"""
         approved_withdrawals = yield self.send_approved_withdrawals_to_paypal_wallets()
         approved_deposits = yield self.add_approved_deposits_to_wallet()
 

@@ -64,6 +64,7 @@ def handle_api_auth(func):
     # noinspection DuplicatedCode
     @functools.wraps(func)
     def auth_wrapper(*args, **kwargs):
+        """authenticates api calls"""
         api_key: Optional[str] = request.headers.get('x-api-key')
         secret_token: Optional[str] = request.headers.get('x-secret-token')
         domain: Optional[str] = request.base_url
