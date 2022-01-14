@@ -5,6 +5,8 @@
 import asyncio
 from datetime import datetime, date
 from typing import List, Coroutine, Optional
+
+from google.cloud import ndb
 from google.cloud.ndb import Key as ndb_Key, tasklet, toplevel, Future, wait_all
 
 from config.use_context import use_context
@@ -44,14 +46,16 @@ class AffiliateJobs:
         :param earnings:
         :return:
         """
-        wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == earnings.organization_id,
-                                                         WalletModel.uid == earnings.affiliate_id).get_async().get_result()
+        wallet_query = WalletModel.query(WalletModel.organization_id == earnings.organization_id,
+                                         WalletModel.uid == earnings.affiliate_id)
+
+        wallet_instance: WalletModel = wallet_query.get_async().get_result()
 
         if wallet_instance.is_verified and (wallet_instance.available_funds.currency == earnings.total_earned.currency):
             wallet_instance.available_funds.amount_cents += earnings.total_earned.amount_cents
             key: Optional[ndb_Key] = wallet_instance.put_async(retries=self._max_retries,
                                                                timeout=self._max_timeout).get_result()
-            if bool(key):
+            if isinstance(key, ndb.Key):
                 amount_earned: AmountMixin = earnings.total_earned
                 earnings.total_earned.amount_cents = 0
                 today: date = datetime.now().date()
@@ -60,7 +64,7 @@ class AffiliateJobs:
                 earnings.is_paid = True
                 earnings_key: Optional[ndb_Key] = earnings.put_async(retries=self._max_retries,
                                                                      timeout=self._max_timeout).get_result()
-                if bool(earnings_key):
+                if isinstance(earnings_key, ndb.Key):
                     transaction_item: AffiliateTransactionItems = AffiliateTransactionItems()
                     transaction_item.amount = amount_earned
                     transaction_item.transaction_id = create_id()
@@ -68,7 +72,7 @@ class AffiliateJobs:
                     tran_key: Optional[ndb_Key] = transaction_item.put_async(retries=self._max_retries,
                                                                              timeout=self._max_timeout).get_result()
 
-                    yield bool(tran_key)
+                    yield isinstance(tran_key, ndb.Key)
         yield False
 
     @tasklet
