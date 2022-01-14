@@ -110,34 +110,38 @@ def handle_apps_authentication(func: Callable) -> Callable:
     # noinspection DuplicatedCode
     @functools.wraps(func)
     def auth_wrapper(*args, **kwargs) -> Callable:
+        """
+            **auth_wrapper**
+            wrapper for authenticating apps api calls
+        :param args:
+        :param kwargs:
+        :return:
+        """
         json_data: dict = request.get_json()
         domain: Optional[str] = json_data.get('domain')
         secret_key: Optional[str] = json_data.get('SECRET_KEY')
         auth_token: Optional[str] = json_data.get('app_token')
         if domain is None:
             message: str = "request not authorized"
-            raise UnAuthenticatedError(
-                status=error_codes.un_auth_error_code, description=message)
+            raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
         if secret_key is None:
             message: str = "request not authorized"
-            raise UnAuthenticatedError(
-                status=error_codes.un_auth_error_code, description=message)
+            raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
         if auth_token is None:
             message: str = "request not authorized"
-            raise UnAuthenticatedError(
-                status=error_codes.un_auth_error_code, description=message)
+            raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
         if not is_development() and ("localhost" in domain or "127.0.0.1" in domain):
             message: str = "request not authorized: local-development"
-            raise UnAuthenticatedError(
-                status=error_codes.un_auth_error_code, description=message)
+            raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
         if is_app_authenticated(domain=domain, secret_key=secret_key, auth_token=auth_token):
+            # if app is authenticated run the wrapped function
             return func(*args, **kwargs)
+
         message: str = "request not authorized- app not authenticated"
-        raise UnAuthenticatedError(
-            status=error_codes.un_auth_error_code, description=message)
+        raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
     return auth_wrapper
 
@@ -178,13 +182,13 @@ def handle_cron_auth(func: Callable) -> Callable:
         _secret_key: Optional[str] = json_data.get('SECRET_KEY')
 
         if _cron_domain is None:
-            # print(f'cron domain is Null: {_cron_domain}')
+            print(f'cron domain is Null: {_cron_domain}')
             message: str = "request not authorized"
             raise UnAuthenticatedError(
                 status=error_codes.un_auth_error_code, description=message)
 
         if _secret_key is None:
-            # print(f'secret key is Null: {_secret_key}')
+            print(f'secret key is Null: {_secret_key}')
             message: str = "request not authorized"
             raise UnAuthenticatedError(
                 status=error_codes.un_auth_error_code, description=message)

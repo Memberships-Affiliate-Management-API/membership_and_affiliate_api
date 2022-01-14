@@ -15,13 +15,13 @@ __github_profile__ = "https://github.com/freelancing-solutions/"
 
 import requests
 from flask import current_app
-from schedulers.scheduler import task_scheduler, schedule_func
+from schedulers.scheduler import schedule_func
 from config import config_instance
 from typing import List, Optional, Callable, Coroutine
 import aiohttp
 import asyncio
 from cache.cache_manager import app_cache
-from utils import return_ttl, datetime_now, create_id
+from utils import return_ttl, create_id
 from jinja2 import Template
 
 
@@ -54,7 +54,7 @@ class Mailgun(EmailTemplates):
             mailgun_domain : domain name registered with mailgun
             MAILGUN_API_KEY : can be found from mailgun control panel
         """
-        super(Mailgun, self).__init__()
+        super(Mailgun).__init__()
         self._base_url: str = config_instance.BASE_URL
         self._mailgun_api_key = config_instance.MAILGUN_API_KEY
         self._mailgun_end_point = "https://api.mailgun.net/v3/{}/messages".format(config_instance.MAILGUN_DOMAIN)

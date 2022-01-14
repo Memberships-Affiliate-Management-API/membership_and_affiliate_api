@@ -81,14 +81,14 @@ class TransactionsJobs:
         :return: bool indicating success or failure
         """
         # requesting the user wallet
-        wallet_instance: WalletModel = WalletModel.query(
-            WalletModel.organization_id == transaction.organization_id, WalletModel.uid == transaction.uid).get_async().get_result()
+        wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == transaction.organization_id,
+                                                         WalletModel.uid == transaction.uid).get_async().get_result()
 
         is_currency_valid: bool = wallet_instance.available_funds.currency == transaction.amount.currency
         if isinstance(wallet_instance, WalletModel) and is_currency_valid:
             wallet_instance.available_funds.amount_cents += transaction.amount.amount_cents
-            key: Optional[ndb.Key] = wallet_instance.put_async(
-                retries=self._max_retries, timeout=self._max_timeout).get_result()
+            key: Optional[ndb.Key] = wallet_instance.put_async(retries=self._max_retries,
+                                                               timeout=self._max_timeout).get_result()
             if bool(key):
                 transaction.is_settled = True
                 tran_key: Optional[ndb.Key] = transaction.put_async(retries=self._max_retries,

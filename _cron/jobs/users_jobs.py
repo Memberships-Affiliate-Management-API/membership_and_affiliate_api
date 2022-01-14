@@ -74,7 +74,8 @@ class UserJobs(Mailgun):
         """
         try:
             seven_days_ago = date_days_ago(days=7)
-            users_list: List[UserModel] = [user for user in UserModel.query(UserModel.email_verified == True).fetch_async().get_result()
+            users_list: List[UserModel] = [user for user in
+                                           UserModel.query(UserModel.email_verified == True).fetch_async().get_result()
                                            if user.last_login_date < seven_days_ago]
         except RetryError as e:
             return None
