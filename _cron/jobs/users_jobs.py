@@ -23,7 +23,7 @@ class UserJobs(Mailgun):
     """
 
     def __init__(self):
-        super(UserJobs, self).__init__()
+        super().__init__()
 
     @use_context
     @toplevel

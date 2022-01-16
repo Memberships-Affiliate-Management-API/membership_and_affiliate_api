@@ -196,8 +196,7 @@ def handle_cron_auth(func: Callable) -> Callable:
         if verify_cron_job(cron_domain=_cron_domain, secret_key=_secret_key):
             return func(*args, **kwargs)
         message: str = "request not authorized"
-        raise UnAuthenticatedError(
-            status=error_codes.un_auth_error_code, description=message)
+        raise UnAuthenticatedError(status=error_codes.un_auth_error_code, description=message)
 
     return auth_wrapper
 

@@ -265,7 +265,9 @@ class APIKeysView(APIKeysValidators):
     @app_cache.cache.memoize(timeout=return_ttl('short'))
     def get_api_key(self, api_key: Optional[str], organization_id: Optional[str]) -> tuple:
         """
+        **get_api_key**
             fetch a specific api key
+
         :param api_key:
         :param organization_id:
         :return:

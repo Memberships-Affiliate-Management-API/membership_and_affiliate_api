@@ -12,6 +12,7 @@ internal_api_bp = Blueprint('internal_api', __name__)
 @handle_internal_auth
 def int_organizational_wallets(path: str) -> tuple:
     """
+        **int_organizational_wallets**
 
         :return: tuple
     """

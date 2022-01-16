@@ -6,7 +6,9 @@ import asyncio
 from datetime import datetime, date
 from typing import List, Coroutine, Optional
 
+# noinspection PyPackageRequirements
 from google.cloud import ndb
+# noinspection PyPackageRequirements
 from google.cloud.ndb import Key as ndb_Key, tasklet, toplevel, Future, wait_all
 
 from config.use_context import use_context

@@ -14,6 +14,7 @@ class TransactionsJobs:
     """
     **TransactionsJobs**
         withdrawals and deposits cron jobs
+        executing the run function will run all Transactions related cron jobs
     """
 
     def __init__(self):
@@ -38,8 +39,8 @@ class TransactionsJobs:
         # TODO use paypal SDK to send transactions to paypal here
         # TODO then update transaction to reflect that transaction was sent
         # NOTE: Could also listen to an _ipn to find out if transaction succeeded on paypal side
-        wallet_instance: WalletModel = WalletModel.query(
-            WalletModel.organization_id == transaction.organization_id, WalletModel.uid == transaction.uid).get_async().get_result()
+        wallet_instance: WalletModel = WalletModel.query(WalletModel.organization_id == transaction.organization_id,
+                                                         WalletModel.uid == transaction.uid).get_async().get_result()
 
         if wallet_instance.is_verified:
             paypal_address = wallet_instance.paypal_address
@@ -61,8 +62,10 @@ class TransactionsJobs:
             :return: None
         """
         try:
-            wallet_transactions: List[WalletTransactionsModel] = WalletTransactionsModel.query(
-                WalletTransactionsModel.is_verified == True, WalletTransactionsModel.is_settled == False).fetch_async().get_result()
+            wallet_transactions_query = WalletTransactionsModel.query(
+                WalletTransactionsModel.is_verified == True, WalletTransactionsModel.is_settled == False)
+
+            wallet_transactions: List[WalletTransactionsModel] = wallet_transactions_query.fetch_async().get_result()
 
             return [self.do_send_to_client_paypal(transaction=transaction) for transaction in wallet_transactions
                     if transaction.transaction_type == 'withdrawal']
@@ -105,8 +108,10 @@ class TransactionsJobs:
         :return: None
         """
         try:
-            wallet_transactions: List[WalletTransactionsModel] = WalletTransactionsModel.query(
-                WalletTransactionsModel.is_verified == True, WalletTransactionsModel.is_settled == False).fetch_async().get_result()
+            wallet_transactions_query = WalletTransactionsModel.query(
+                WalletTransactionsModel.is_verified == True, WalletTransactionsModel.is_settled == False)
+
+            wallet_transactions = wallet_transactions_query.fetch_async().get_result()
 
             return [self.do_send_to_client_wallet(transaction=transaction) for transaction in wallet_transactions
                     if transaction.transaction_type == 'deposit']
