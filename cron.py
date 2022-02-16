@@ -67,8 +67,8 @@ def heroku_cron_affiliate_jobs() -> tuple:
             executes cron jobs related to affiliates, recruits and affiliate earnings
         :return: tuple
     """
-    _endpoint: str = ''
-    return asyncio.run(send_cron_request(_endpoint='_cron/v1/affiliates')), 200
+    _endpoint: str = '_cron/v1/affiliates'
+    return asyncio.run(send_cron_request(_endpoint=_endpoint)), 200
 
 
 @cron_logger
@@ -96,6 +96,7 @@ def heroku_cron_transactions() -> tuple:
 def heroku_cron_users() -> tuple:
     """
         **heroku_cron_users**
+            runs cron jobs related to users
 
         :return: tuple
     """
