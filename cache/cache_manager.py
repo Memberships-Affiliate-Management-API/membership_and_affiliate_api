@@ -11,11 +11,8 @@ __github_repo__ = "https://github.com/freelancing-solutions/memberships-and-affi
 __github_profile__ = "https://github.com/freelancing-solutions/"
 
 from flask_caching import Cache
-
-from datetime import timedelta, datetime
-from schedulers.scheduler import task_scheduler, schedule_func
+from schedulers.scheduler import schedule_func
 from config import config_instance
-
 from typing import Optional, Callable
 from utils import datetime_now, create_id
 

@@ -736,6 +736,7 @@ class OrganizationView(Validators):
                             payload=organization_instance.to_dict(),
                             message=message)), status_codes.successfully_updated_code
 
+    # noinspection PyProtectedMember
     @use_context
     @handle_view_errors
     def _update_total_membership_payments(self, organization_id: Optional[str],

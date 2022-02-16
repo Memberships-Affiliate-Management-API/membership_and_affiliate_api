@@ -43,7 +43,11 @@ class ServicesView(ServiceValidator):
     """
 
     def __init__(self) -> None:
-        super(ServicesView, self).__init__()
+        """
+            initialize ServicesView
+            :rtype: None
+        """
+        super().__init__()
         self._max_retries: int = current_app.config.get('DATASTORE_RETRIES')
         self._max_timeout: int = current_app.config.get('DATASTORE_TIMEOUT')
 

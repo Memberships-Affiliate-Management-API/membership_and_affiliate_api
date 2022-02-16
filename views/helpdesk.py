@@ -174,8 +174,7 @@ class TicketsMessaging(Mailgun):
     """
 
     def __init__(self) -> None:
-        super(TicketsMessaging, self).__init__()
-
+        super().__init__()
     def _send_ticket_response(self, ticket_id: str, subject: str, message: str) -> None:
         pass
 
@@ -191,7 +190,7 @@ class TicketView(Validators, TicketsMessaging):
     """
 
     def __init__(self):
-        super(TicketView, self).__init__()
+        super().__init__()
 
     @use_context
     @handle_view_errors
@@ -238,6 +237,7 @@ class TicketView(Validators, TicketsMessaging):
     @handle_view_errors
     def resolve_ticket(self, ticket_id: str) -> tuple:
         """
+
             ticket_id: str
             return: resolved ticket
         """

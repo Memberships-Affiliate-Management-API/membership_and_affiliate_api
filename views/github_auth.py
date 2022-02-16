@@ -16,7 +16,8 @@ from utils import create_id
 
 class Validators:
     """
-        **Utilities and Validators for GithubAuthView Class**
+        **Validators**
+            Utilities and Validators for GithubAuthView Class
     """
 
     def __init__(self) -> None:
