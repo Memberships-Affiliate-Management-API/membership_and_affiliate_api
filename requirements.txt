@@ -15,7 +15,7 @@ charset-normalizer==2.0.3
 click==7.1.2
 colorama==0.4.4
 coverage==5.5
-cryptography==3.4.7
+cryptography==39.0.1
 decorator==5.0.9
 elasticsearch==7.0.0
 Flask==1.1.4
