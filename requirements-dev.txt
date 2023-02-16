@@ -20,7 +20,7 @@ pyjwt
 requests~=2.25.1
 requests-toolbelt
 shortuuid
-Werkzeug~=1.0.1
+Werkzeug~=2.2.3
 gunicorn
 python-decouple
 aiohttp[speedups]
