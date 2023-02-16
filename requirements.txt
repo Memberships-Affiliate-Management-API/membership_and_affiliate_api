@@ -87,7 +87,7 @@ typing-extensions==3.10.0.0
 typing-inspect==0.7.1
 tzlocal==2.1
 urllib3==1.26.6
-Werkzeug==1.0.1
+Werkzeug==2.2.3
 wrapt==1.12.1
 yarl==1.6.3
 marshmallow~=3.14.1
